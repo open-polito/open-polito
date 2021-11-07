@@ -1,9 +1,11 @@
 <h1 align="center">Open PoliTo</h1>
 <p align="center">Unofficial, open-source mobile app for Politecnico di Torino students.</p>
 
-(BADGES...)
+<div align="center">
 
-(LOGO...)
+![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=for-the-badge) ![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=for-the-badge)
+
+</div>
 
 ## Contents
 
