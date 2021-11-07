@@ -35,4 +35,4 @@ Open a new terminal. From this new terminal start the Android app: `npx react-na
 
 ## License
 
-(TO ADD...)
+Open PoliTo is licensed under the terms of the GNU General Public License v3.0.
