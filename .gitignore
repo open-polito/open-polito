@@ -58,3 +58,9 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+
+# ttf fonts
+*.ttf
+
+# vscode
+.vscode/
