@@ -1,26 +1,31 @@
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-} from 'react-native';
+import {View} from 'react-native';
+import LoginScreen from './src/screens/LoginScreen';
 
-export default function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const Stack = createNativeStackNavigator();
 
+function Test() {
   return (
-    <SafeAreaView>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Text style={styles.text}>Open PoliTo</Text>
-    </SafeAreaView>
+    <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: 'white'}}></View>
+      <View style={{flex: 1, backgroundColor: 'black'}}></View>
+      <View style={{flex: 1, backgroundColor: 'magenta'}}></View>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 32,
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}>
+        {/* <Stack.Screen name="Test" component={Test} /> */}
+        <Stack.Screen name="Login" component={LoginScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
