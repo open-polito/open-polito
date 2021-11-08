@@ -50,7 +50,7 @@ export default function LoginScreen() {
       start={{x: 0, y: 0}}
       end={{x: 1, y: 1}}
       height={height}>
-      <ImageBackground source={require('../background.png')}>
+      <ImageBackground source={require('../../assets/images/background.png')}>
         <SafeAreaView style={styles.splash}>
           <StatusBar translucent backgroundColor="transparent" />
           <View behavior={'height'} style={styles.container}>
