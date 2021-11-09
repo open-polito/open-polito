@@ -15,11 +15,14 @@ import {Text, TextTitle, TextSubTitle, TextAction} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
 
-export default function LoginScreen() {
+export default function LoginScreen(props) {
   const [isKbdVisible, setIsKbdVisible] = useState('');
   const [height, setHeight] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
   );
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   // Listen for keyboard visibility changes
   useEffect(() => {
@@ -70,14 +73,25 @@ mobile app"
                 textContentType="emailAddress"
                 placeholder="Username or e-mail address"
                 icon="account-circle"
+                onChangeText={txt => {
+                  setUsername(txt);
+                }}
               />
               <TextInput
                 textContentType="password"
                 placeholder="Password"
                 icon="lock-outline"
                 secureTextEntry={true}
+                onChangeText={txt => {
+                  setPassword(txt);
+                }}
               />
-              <Button text="Log in" />
+              <Button
+                text="Log in"
+                onPress={() => {
+                  props.loginFunction(username, password);
+                }}
+              />
             </View>
             <View style={_styles.versionView}>
               <Text

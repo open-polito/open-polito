@@ -9,6 +9,7 @@ export default function TextInput({
   textContentType = 'none',
   icon = null,
   secureTextEntry = false,
+  onChangeText = () => {},
 }) {
   return (
     <View style={_styles.textInput}>
@@ -21,6 +22,7 @@ export default function TextInput({
         secureTextEntry={secureTextEntry}
         style={_styles.textInputText}
         placeholderTextColor={colors.gray}
+        onChangeText={onChangeText}
       />
     </View>
   );
