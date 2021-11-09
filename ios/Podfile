@@ -12,6 +12,8 @@ target 'OpenPoliTo' do
     :hermes_enabled => false
   )
 
+  pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
+
   target 'OpenPoliToTests' do
     inherit! :complete
     # Pods for testing
