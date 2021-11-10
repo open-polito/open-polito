@@ -18,12 +18,6 @@ export default function Router() {
 
   const [access, setAccess] = useState(false);
 
-  /**
-   * TODO fix api
-   * "open-polito-api" uses "node-fetch", which doesn't work in React Native.
-   * To get everything working, edit "utils.ts" from "open-polito-api" and remove
-   * the first six lines, then recompile the module with "tsc index.ts"
-   */
   function handleLogin(username, password) {
     (async () => {
       const device = new Device();
