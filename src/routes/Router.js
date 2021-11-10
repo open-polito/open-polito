@@ -1,6 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {ImageBackground, Platform, View} from 'react-native';
+import {
+  Dimensions,
+  ImageBackground,
+  Platform,
+  StatusBar,
+  View,
+} from 'react-native';
 import {TextTitle} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -9,6 +15,9 @@ import * as Keychain from 'react-native-keychain';
 import Home from '../screens/Home';
 import 'react-native-get-random-values';
 import {v4 as UUIDv4} from 'uuid';
+import LinearGradient from 'react-native-linear-gradient';
+import colors from '../colors';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -17,6 +26,10 @@ export default function Router() {
   const [loadedToken, setLoadedToken] = useState(false);
 
   const [access, setAccess] = useState(false);
+
+  const [height, setHeight] = useState(
+    Dimensions.get('window').height + StatusBar.currentHeight,
+  );
 
   function handleLogin(username, password) {
     (async () => {
@@ -70,17 +83,25 @@ export default function Router() {
   // TODO better design
   if (!loadedToken) {
     return (
-      <View>
+      <LinearGradient
+        colors={[colors.gradient1, colors.gradient2]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        height={height}>
         <ImageBackground
           style={{height: '100%'}}
           source={require('../../assets/images/background.png')}>
-          <TextTitle
-            text="Loading..."
-            color="white"
-            style={{marginTop: 200, width: '100%', textAlign: 'center'}}
-          />
+          <SafeAreaView>
+            <StatusBar translucent backgroundColor="transparent" />
+
+            <TextTitle
+              text="Loading..."
+              color="white"
+              style={{marginTop: 200, width: '100%', textAlign: 'center'}}
+            />
+          </SafeAreaView>
         </ImageBackground>
-      </View>
+      </LinearGradient>
     );
   }
 
