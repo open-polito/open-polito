@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {
+  Alert,
   Dimensions,
   ImageBackground,
   Platform,
@@ -42,13 +43,24 @@ export default function Router() {
         model: 'Generic',
         manufacturer: 'Unknown',
       };
-      await device.register(deviceData);
-      const {user, token} = await device.loginWithCredentials(
-        username,
-        password,
-      );
-      // console.log(user, token);
-      await Keychain.setGenericPassword('S' + user.anagrafica.matricola, token);
+      try {
+        await device.register(deviceData);
+        const {user, token} = await device.loginWithCredentials(
+          username,
+          password,
+        );
+        // console.log(user, token);
+        await Keychain.setGenericPassword(
+          'S' + user.anagrafica.matricola,
+          token,
+        );
+      } catch (error) {
+        // TODO custom alert component
+        Alert.alert(
+          'Login error',
+          'Your username/password may be incorrect or Internet connection is not available',
+        );
+      }
     })();
   }
 
