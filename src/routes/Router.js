@@ -56,6 +56,7 @@ export default function Router() {
         );
       } catch (error) {
         // TODO custom alert component
+        // TODO better error handling
         Alert.alert(
           'Login error',
           'Your username/password may be incorrect or Internet connection is not available',
