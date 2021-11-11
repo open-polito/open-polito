@@ -6,19 +6,21 @@ import {
   ImageBackground,
   Platform,
   StatusBar,
-  View,
 } from 'react-native';
 import {TextTitle} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api';
 import * as Keychain from 'react-native-keychain';
-import Home from '../screens/Home';
 import 'react-native-get-random-values';
 import {v4 as UUIDv4} from 'uuid';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
+
+import {useSelector, useDispatch} from 'react-redux';
+import {setUsername, setToken, setUuid, setUser} from '../store/sessionSlice';
+import HomeRouter from './HomeRouter';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -28,9 +30,12 @@ export default function Router() {
 
   const [access, setAccess] = useState(false);
 
-  const [height, setHeight] = useState(
+  const [height] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
   );
+
+  const {uuid} = useSelector(state => state.session);
+  const dispatch = useDispatch();
 
   function handleLogin(username, password) {
     (async () => {
@@ -50,10 +55,18 @@ export default function Router() {
           password,
         );
         // console.log(user, token);
-        await Keychain.setGenericPassword(
-          'S' + user.anagrafica.matricola,
-          token,
-        );
+
+        _username = 'S' + user.anagrafica.matricola;
+
+        item = JSON.stringify({uuid: uuid, token: token});
+        await Keychain.setGenericPassword(_username, item);
+
+        dispatch(setUuid(device.uuid));
+        dispatch(setUsername(_username));
+        dispatch(setToken(token));
+        dispatch(setUser(JSON.stringify(user)));
+
+        console.log(session);
       } catch (error) {
         // TODO custom alert component
         // TODO better error handling
@@ -75,6 +88,10 @@ export default function Router() {
           setAccess(true);
           // console.log(credentials);
           setLoadedToken(true);
+          dispatch(setUsername(credentials.username));
+          const {_uuid, _token} = JSON.parse(credentials.password);
+          dispatch(setToken(_token));
+          dispatch(setUuid(_uuid));
         } else {
           // console.log('No credentials found!');
           setLoadedToken(true);
@@ -125,14 +142,13 @@ export default function Router() {
           screenOptions={{
             headerShown: false,
           }}>
-          <AppStack.Screen name="Home" component={Home} />
+          <AppStack.Screen name="HomeRouter" component={HomeRouter} />
         </AppStack.Navigator>
       ) : (
         <AuthStack.Navigator
           screenOptions={{
             headerShown: false,
           }}>
-          {/* <AuthStack.Screen name="Login" component={LoginScreen} /> */}
           <AuthStack.Screen name="Login">
             {props => <LoginScreen {...props} loginFunction={handleLogin} />}
           </AuthStack.Screen>
