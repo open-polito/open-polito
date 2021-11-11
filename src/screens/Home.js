@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -16,6 +16,7 @@ import CategoryCard from '../components/CategoryCard';
 import NotificationButton from '../components/NotificationButton';
 import styles from '../styles';
 import {TextSubTitle, TextTitle} from '../components/Text';
+import Header from '../components/Header';
 
 export default function Home() {
   const [height] = useState(
@@ -37,6 +38,15 @@ export default function Home() {
       3,
   );
 
+  /**
+   * The status bar doesn't return to light mode
+   * when returning to Home screen.
+   * TODO fix
+   */
+  useEffect(() => {
+    StatusBar.setBarStyle('light-content');
+  });
+
   return (
     <LinearGradient
       colors={[colors.gradient1, colors.gradient2]}
@@ -45,7 +55,11 @@ export default function Home() {
       height={height}>
       <ImageBackground source={require('../../assets/images/background.png')}>
         <SafeAreaView style={{height: height - styles.tabNavigator.height}}>
-          <StatusBar translucent backgroundColor="transparent" />
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle="light-content"
+          />
           <View
             style={{
               ...styles.container,
@@ -60,11 +74,7 @@ export default function Home() {
                   borderRadius: 16,
                 }}>
                 {/* blue section */}
-                <View style={styles.titleBar}>
-                  {/* Title and notification container */}
-                  <TextTitle color="white" text="Home" />
-                  <NotificationButton color={colors.white} />
-                </View>
+                <Header color={colors.white} text="Home" />
                 <View style={{marginBottom: 16}}>
                   {/* quick search container */}
                   <TextInput
@@ -116,7 +126,7 @@ export default function Home() {
               </View>
               <View
                 style={{
-                  backgroundColor: 'white',
+                  backgroundColor: colors.white,
                 }}>
                 {/* white section container */}
                 <View
@@ -128,7 +138,7 @@ export default function Home() {
                   <TextSubTitle
                     style={{marginBottom: 16}}
                     text="All sections"
-                    color="black"
+                    color={colors.black}
                   />
                   <View
                     style={{
