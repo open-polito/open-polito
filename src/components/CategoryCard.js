@@ -12,7 +12,7 @@ export default function CategoryCard({category, size, style = {}}) {
         // TODO onPress go to category
         // onPress={onPress}
       >
-        <TextS text={category} weight="bold" color="black" />
+        <TextS text={category} weight="bold" color={colors.black} />
       </Pressable>
     </View>
   );

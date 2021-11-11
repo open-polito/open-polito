@@ -1,16 +1,16 @@
 import React from 'react';
 import {Text as RNText} from 'react-native';
+import colors from '../colors';
 import styles from '../styles';
 
 function TextBase({
   text,
-  color = 'black',
+  color = colors.black,
   weight = 'regular',
   size = 'normal',
   style = {},
 }) {
   // TODO execute check only once
-  const textColor = color == 'black' ? styles.blackText : styles.whiteText;
   let textWeight = null;
   let textSize = null;
   switch (weight) {
@@ -41,7 +41,7 @@ function TextBase({
   return (
     <RNText
       style={{
-        ...textColor,
+        color: color,
         ...textWeight,
         ...textSize,
         ...style,
@@ -53,7 +53,12 @@ function TextBase({
 
 // Custom base components, differing in size
 
-export function TextS({text, color = 'black', weight = 'regular', style = {}}) {
+export function TextS({
+  text,
+  color = colors.black,
+  weight = 'regular',
+  style = {},
+}) {
   return (
     <TextBase
       text={text}
@@ -65,7 +70,12 @@ export function TextS({text, color = 'black', weight = 'regular', style = {}}) {
   );
 }
 
-export function TextN({text, color = 'black', weight = 'regular', style = {}}) {
+export function TextN({
+  text,
+  color = colors.black,
+  weight = 'regular',
+  style = {},
+}) {
   return (
     <TextBase
       text={text}
@@ -77,7 +87,12 @@ export function TextN({text, color = 'black', weight = 'regular', style = {}}) {
   );
 }
 
-export function TextL({text, color = 'black', weight = 'regular', style = {}}) {
+export function TextL({
+  text,
+  color = colors.black,
+  weight = 'regular',
+  style = {},
+}) {
   return (
     <TextBase
       text={text}
@@ -91,7 +106,7 @@ export function TextL({text, color = 'black', weight = 'regular', style = {}}) {
 
 export function TextXL({
   text,
-  color = 'black',
+  color = colors.black,
   weight = 'regular',
   style = {},
 }) {
@@ -108,18 +123,18 @@ export function TextXL({
 
 // Components to use in the UI
 
-export function Text({text, color = 'black', style = {}}) {
+export function Text({text, color = colors.black, style = {}}) {
   return <TextN text={text} color={color} style={style} />;
 }
 
-export function TextTitle({text, color = 'black', style = {}}) {
+export function TextTitle({text, color = colors.black, style = {}}) {
   return <TextXL text={text} color={color} weight="bold" style={style} />;
 }
 
-export function TextSubTitle({text, color = 'black', style = {}}) {
+export function TextSubTitle({text, color = colors.black, style = {}}) {
   return <TextN text={text} color={color} weight="medium" style={style} />;
 }
 
-export function TextAction({text, color = 'black', style = {}}) {
+export function TextAction({text, color = colors.black, style = {}}) {
   return <TextL text={text} color={color} weight="regular" style={style} />;
 }

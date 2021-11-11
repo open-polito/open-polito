@@ -20,6 +20,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {setUsername, setToken, setUuid, setUser} from '../store/sessionSlice';
+import {setWindowHeight} from '../store/uiSlice';
 import HomeRouter from './HomeRouter';
 
 const AuthStack = createNativeStackNavigator();
@@ -30,12 +31,22 @@ export default function Router() {
 
   const [access, setAccess] = useState(false);
 
-  const [height] = useState(
-    Dimensions.get('window').height + StatusBar.currentHeight,
-  );
+  const dispatch = useDispatch();
+
+  const [height, setHeight] = useState(() => {
+    h = Dimensions.get('window').height + StatusBar.currentHeight;
+    dispatch(setWindowHeight(h));
+    return h;
+  });
+
+  useEffect(() => {
+    const sub = Dimensions.addEventListener('change', ({window}) => {
+      dispatch(setWindowHeight(window + StatusBar.currentHeight));
+    });
+    return () => sub.remove();
+  });
 
   const {uuid} = useSelector(state => state.session);
-  const dispatch = useDispatch();
 
   function handleLogin(username, password) {
     (async () => {
@@ -122,7 +133,11 @@ export default function Router() {
           style={{height: '100%'}}
           source={require('../../assets/images/background.png')}>
           <SafeAreaView>
-            <StatusBar translucent backgroundColor="transparent" />
+            <StatusBar
+              translucent
+              backgroundColor="transparent"
+              barStyle="light-content"
+            />
 
             <TextTitle
               text="Loading..."
