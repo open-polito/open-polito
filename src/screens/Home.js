@@ -72,6 +72,7 @@ export default function Home() {
                     placeholder="Quick search..."
                     borderColor="none"
                     borderWidth={0}
+                    iconColor={colors.gray}
                   />
                 </View>
                 <View>

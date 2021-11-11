@@ -24,7 +24,7 @@ export default function TextInput({
         borderWidth: borderWidth,
       }}>
       {typeof icon == 'string' ? (
-        <Icon name={icon} size={24} iconColor={iconColor} />
+        <Icon name={icon} size={24} color={iconColor} />
       ) : null}
       <RNTextInput
         placeholder={placeholder}
