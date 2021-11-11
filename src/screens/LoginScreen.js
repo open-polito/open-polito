@@ -56,7 +56,7 @@ export default function LoginScreen(props) {
       <ImageBackground source={require('../../assets/images/background.png')}>
         <SafeAreaView style={_styles.splash}>
           <StatusBar translucent backgroundColor="transparent" />
-          <View style={_styles.container}>
+          <View style={styles.container}>
             <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
               <TextTitle text="Open PoliTo" color="white" weight="bold" />
               <TextSubTitle
@@ -116,11 +116,6 @@ mobile app"
 const _styles = StyleSheet.create({
   splash: {
     height: '100%',
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignContent: 'space-between',
   },
   intro: {
     paddingTop: '15%',
