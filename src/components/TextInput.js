@@ -10,11 +10,21 @@ export default function TextInput({
   icon = null,
   secureTextEntry = false,
   onChangeText = () => {},
+  backgroundColor = colors.white,
+  borderColor = colors.gradient1,
+  iconColor = colors.gradient1,
+  borderWidth = 2,
 }) {
   return (
-    <View style={_styles.textInput}>
+    <View
+      style={{
+        ..._styles.textInput,
+        backgroundColor: backgroundColor,
+        borderColor: borderColor,
+        borderWidth: borderWidth,
+      }}>
       {typeof icon == 'string' ? (
-        <Icon name={icon} size={24} color={colors.gradient1} />
+        <Icon name={icon} size={24} iconColor={iconColor} />
       ) : null}
       <RNTextInput
         placeholder={placeholder}
@@ -33,9 +43,7 @@ const _styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 2,
     ...styles.withRoundedBorder,
-    borderColor: colors.gradient1,
     width: '100%',
     paddingHorizontal: 8,
   },

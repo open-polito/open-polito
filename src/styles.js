@@ -43,6 +43,27 @@ const styles = StyleSheet.create({
   withRoundedBorder: {
     borderRadius: 4,
   },
+  safePaddingTop: {
+    paddingTop: 40,
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignContent: 'space-between',
+  },
+  titleBar: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  tabNavigator: {
+    backgroundColor: colors.white,
+    height: 60,
+    tabBarActiveTintColor: colors.white,
+    paddingBottom: 8,
+  },
 });
 
 export default styles;

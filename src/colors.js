@@ -1,8 +1,8 @@
 const colors = {
   gradient1: '#0029FF',
   gradient2: '#0010A4',
-  black: '#222',
-  white: '#eee',
+  black: '#000',
+  white: '#fff',
   gray: '#777',
 };
 
