@@ -51,7 +51,7 @@ export default function Router() {
   function handleLogin(username, password) {
     (async () => {
       const device = new Device();
-      device.uuid = UUIDv4();
+      device.uuid = await UUIDv4();
       // console.log(device.uuid);
       const deviceData = {
         platform: Platform.OS,
@@ -67,9 +67,9 @@ export default function Router() {
         );
         // console.log(user, token);
 
-        sessionUsername = 'S' + user.anagrafica.matricola;
+        const sessionUsername = 'S' + user.anagrafica.matricola;
 
-        item = JSON.stringify({uuid: uuid, token: token});
+        const item = JSON.stringify({uuid: device.uuid, token: token});
 
         await Keychain.setGenericPassword(sessionUsername, item);
 
@@ -102,9 +102,12 @@ export default function Router() {
           // console.log(credentials);
           setLoadedToken(true);
           dispatch(setUsername(credentials.username));
-          const {_uuid, _token} = JSON.parse(credentials.password);
-          dispatch(setToken(_token));
-          dispatch(setUuid(_uuid));
+          const {uuid, token} = JSON.parse(credentials.password);
+          dispatch(setToken(token));
+          dispatch(setUuid(uuid));
+
+          // REMOVE IN PRODUCTION!
+          // console.log(uuid, token);
         } else {
           // console.log('No credentials found!');
           setLoadedToken(true);
