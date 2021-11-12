@@ -1,4 +1,4 @@
-package com.openpolito;
+package org.openpolito.app;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
