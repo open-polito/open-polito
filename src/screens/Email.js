@@ -15,7 +15,7 @@ export default function Email() {
     StatusBar.setBarStyle('dark-content');
   });
 
-  const {token} = useSelector(state => state.session);
+  const {uuid, token} = useSelector(state => state.session);
 
   return (
     <SafeAreaView style={{height: windowHeight - styles.tabNavigator.height}}>
@@ -47,8 +47,9 @@ export default function Email() {
           <Pressable
             android_ripple={{color: '#ccc'}}
             style={{marginTop: 16}}
-            onPress={() => {
-              Linking.openURL(emailUrlGenerator(token));
+            onPress={async () => {
+              const url = await emailUrlGenerator(uuid, token);
+              Linking.openURL(url);
             }}>
             <View
               style={{
