@@ -10,7 +10,7 @@ export default function NotificationButton({color = colors.black}) {
         android_ripple={{color: '#ccc'}}
         // TODO onPress go to category
         // onPress={onPress}
-        onPress={() => console.log('pressed!')}>
+        onPress={() => {}}>
         <Icon name="notifications-active" size={40} color={color} />
       </Pressable>
     </View>
