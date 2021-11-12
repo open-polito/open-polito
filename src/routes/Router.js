@@ -67,20 +67,22 @@ export default function Router() {
         );
         // console.log(user, token);
 
-        _username = 'S' + user.anagrafica.matricola;
+        sessionUsername = 'S' + user.anagrafica.matricola;
 
         item = JSON.stringify({uuid: uuid, token: token});
-        await Keychain.setGenericPassword(_username, item);
+
+        await Keychain.setGenericPassword(sessionUsername, item);
 
         dispatch(setUuid(device.uuid));
-        dispatch(setUsername(_username));
+        dispatch(setUsername(sessionUsername));
         dispatch(setToken(token));
         dispatch(setUser(JSON.stringify(user)));
 
-        console.log(session);
+        setAccess(true);
       } catch (error) {
         // TODO custom alert component
         // TODO better error handling
+        // console.log(error);
         Alert.alert(
           'Login error',
           'Your username/password may be incorrect or Internet connection is not available',
