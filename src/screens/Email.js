@@ -16,6 +16,7 @@ export default function Email() {
   });
 
   const {uuid, token} = useSelector(state => state.session);
+  const {unreadEmailCount} = useSelector(state => state.email);
 
   return (
     <SafeAreaView style={{height: windowHeight - styles.tabNavigator.height}}>
@@ -42,7 +43,7 @@ export default function Email() {
             marginTop:
               -styles.titleBar.marginBottom - styles.textExtraLarge.fontSize,
           }}>
-          <TextS text="[N.A.] unread e-mails" weight="bold" />
+          <TextS text={`${unreadEmailCount} unread e-mails`} weight="bold" />
           <TextS text="E-mail access is not possible yet." />
           <Pressable
             android_ripple={{color: '#ccc'}}
