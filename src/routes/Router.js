@@ -65,7 +65,6 @@ export default function Router() {
           username,
           password,
         );
-        // console.log(user, token);
 
         const sessionUsername = 'S' + user.anagrafica.matricola;
 
@@ -93,32 +92,49 @@ export default function Router() {
 
   // Get access token from keychain
   useEffect(() => {
-    setTimeout(async () => {
-      try {
-        // console.log('Accessing token...');
-        const credentials = await Keychain.getGenericPassword();
-        if (credentials) {
-          setAccess(true);
-          // console.log(credentials);
-          setLoadedToken(true);
-          dispatch(setUsername(credentials.username));
-          const {uuid, token} = JSON.parse(credentials.password);
-          dispatch(setToken(token));
-          dispatch(setUuid(uuid));
+    if (!access) {
+      // only log in again if not logged in yet (with token) (to prevent unnecessary token changes during development)
+      setTimeout(async () => {
+        try {
+          // console.log('Accessing token...');
+          const credentials = await Keychain.getGenericPassword();
+          if (credentials) {
+            dispatch(setUsername(credentials.username));
+            const {uuid, token} = JSON.parse(credentials.password);
+            dispatch(setToken(token));
+            dispatch(setUuid(uuid));
 
-          // REMOVE IN PRODUCTION!
-          // console.log(uuid, token);
-        } else {
-          // console.log('No credentials found!');
+            const dev = new Device(uuid);
+            const {user, token: newToken} = await dev.loginWithToken(
+              credentials.username,
+              token,
+            );
+
+            const sessionUsername = 'S' + user.anagrafica.matricola;
+
+            const item = JSON.stringify({uuid: dev.uuid, token: newToken});
+
+            await Keychain.setGenericPassword(sessionUsername, item);
+
+            dispatch(setToken(newToken));
+
+            setLoadedToken(true);
+            setAccess(true);
+
+            // REMOVE IN PRODUCTION!
+            // console.log(uuid, token);
+          } else {
+            // console.log('No credentials found!');
+            setLoadedToken(true);
+            setAccess(false);
+          }
+        } catch (error) {
           setLoadedToken(true);
           setAccess(false);
+          // console.log('Error!');
         }
-      } catch (error) {
-        setLoadedToken(true);
-        setAccess(false);
-        // console.log('Error!');
-      }
-    }, 1000);
+      }, 500);
+    }
   }, []);
 
   /**
