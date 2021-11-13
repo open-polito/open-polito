@@ -1,13 +1,16 @@
 import React from 'react';
 import styles from '../styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Home from '../screens/Home';
 import Email from '../screens/Email';
 import Settings from '../screens/Settings';
 import colors from '../colors';
+import {useSelector} from 'react-redux';
+import IconBadge from '../components/IconBadge';
 
 export default function HomeRouter() {
+  const {unreadEmailCount} = useSelector(state => state.email);
+
   const Tab = createBottomTabNavigator();
 
   return (
@@ -24,7 +27,7 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({color, size}) => {
-            return <Icon name="home" color={color} size={size} />;
+            return <IconBadge name="home" color={color} size={size} />;
           },
         }}
       />
@@ -34,7 +37,14 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: 'E-mail',
           tabBarIcon: ({color, size}) => {
-            return <Icon name="email" color={color} size={size} />;
+            return (
+              <IconBadge
+                name="email"
+                color={color}
+                size={size}
+                number={unreadEmailCount}
+              />
+            );
           },
         }}
       />
@@ -44,7 +54,7 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon: ({color, size}) => {
-            return <Icon name="settings" color={color} size={size} />;
+            return <IconBadge name="settings" color={color} size={size} />;
           },
         }}
       />

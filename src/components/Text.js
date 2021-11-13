@@ -31,6 +31,9 @@ function TextBase({
     case 'n':
       textSize = styles.textNormal;
       break;
+    case 'm':
+      textSize = styles.textMediumSize;
+      break;
     case 'l':
       textSize = styles.textLarge;
       break;
@@ -82,6 +85,23 @@ export function TextN({
       color={color}
       weight={weight}
       size="n"
+      style={style}
+    />
+  );
+}
+
+export function TextM({
+  text,
+  color = colors.black,
+  weight = 'regular',
+  style = {},
+}) {
+  return (
+    <TextBase
+      text={text}
+      color={color}
+      weight={weight}
+      size="m"
       style={style}
     />
   );
