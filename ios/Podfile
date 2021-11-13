@@ -14,6 +14,8 @@ target 'OpenPoliTo' do
 
   pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
 
+  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+
   target 'OpenPoliToTests' do
     inherit! :complete
     # Pods for testing
