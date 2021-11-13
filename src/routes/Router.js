@@ -21,7 +21,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useSelector, useDispatch} from 'react-redux';
 import {setUsername, setToken, setUuid, setUser} from '../store/sessionSlice';
 import {setWindowHeight} from '../store/uiSlice';
+import {setUnreadEmailCount} from '../store/emailSlice';
 import HomeRouter from './HomeRouter';
+import User from 'open-polito-api/user';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -46,7 +48,8 @@ export default function Router() {
     return () => sub.remove();
   });
 
-  const {uuid} = useSelector(state => state.session);
+  const {uuid, token} = useSelector(state => state.session);
+  // const {unreadEmailCount} = useSelector(state => state.email);
 
   function handleLogin(username, password) {
     (async () => {
@@ -120,6 +123,9 @@ export default function Router() {
 
             setLoadedToken(true);
             setAccess(true);
+
+            const {unread} = await user.unreadMail();
+            dispatch(setUnreadEmailCount(unread));
 
             // REMOVE IN PRODUCTION!
             // console.log(uuid, token);
