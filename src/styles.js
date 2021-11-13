@@ -29,6 +29,9 @@ const styles = StyleSheet.create({
   textNormal: {
     fontSize: 16,
   },
+  textMediumSize: {
+    fontSize: 20,
+  },
   textLarge: {
     fontSize: 24,
   },

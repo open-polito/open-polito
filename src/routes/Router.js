@@ -78,7 +78,7 @@ export default function Router() {
         dispatch(setUuid(device.uuid));
         dispatch(setUsername(sessionUsername));
         dispatch(setToken(token));
-        dispatch(setUser(JSON.stringify(user)));
+        dispatch(setUser(user.anagrafica));
 
         setAccess(true);
       } catch (error) {
@@ -120,6 +120,7 @@ export default function Router() {
             await Keychain.setGenericPassword(sessionUsername, item);
 
             dispatch(setToken(newToken));
+            dispatch(setUser(user.anagrafica));
 
             setLoadedToken(true);
             setAccess(true);

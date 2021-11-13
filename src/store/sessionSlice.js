@@ -4,7 +4,8 @@ const initialState = {
   uuid: null,
   username: null,
   token: null,
-  user: null,
+  name: null,
+  anagrafica: null,
 };
 
 export const sessionSlice = createSlice({
@@ -21,11 +22,7 @@ export const sessionSlice = createSlice({
       state.token = action.payload;
     },
     setUser: (state, action) => {
-      let _user = action.payload;
-      if (typeof _user == 'object') {
-        _user = JSON.stringify(_user);
-      }
-      state.user = _user;
+      state.anagrafica = action.payload;
     },
   },
 });
