@@ -20,6 +20,7 @@ export default function HomeRouter() {
         tabBarStyle: styles.tabNavigator,
         tabBarActiveTintColor: colors.gradient1,
         tabBarInactiveTintColor: colors.gray,
+        unmountOnBlur: true,
       }}>
       <Tab.Screen
         name="Home"

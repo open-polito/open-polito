@@ -20,6 +20,7 @@ function flashMessageBase(
   color,
   duration,
 ) {
+  StatusBar.setBarStyle('light-content');
   return {
     message,
     description,
