@@ -50,9 +50,7 @@ export default function Router() {
     return () => sub.remove();
   });
 
-  const {uuid, token, access, loadedToken} = useSelector(
-    state => state.session,
-  );
+  const {access, loadedToken} = useSelector(state => state.session);
   // const {unreadEmailCount} = useSelector(state => state.email);
 
   function handleLogin(username, password) {
