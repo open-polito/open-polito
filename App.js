@@ -9,8 +9,6 @@ import EN from './src/locales/en';
 import IT from './src/locales/it';
 import * as RNLocalize from 'react-native-localize';
 
-console.log(RNLocalize.getLocales());
-
 import {store} from './src/store/store';
 
 let lng = '';
