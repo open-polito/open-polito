@@ -83,6 +83,9 @@ export default function Router() {
         dispatch(setToken(token));
         dispatch(setUser(user.anagrafica));
 
+        const {unread} = await user.unreadMail();
+        dispatch(setUnreadEmailCount(unread));
+
         dispatch(setAccess(true));
         showMessage(loginSuccessFlashMessage());
       } catch (error) {
