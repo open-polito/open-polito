@@ -7,8 +7,10 @@ import {TextS} from '../components/Text';
 import styles from '../styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {emailUrlGenerator} from '../utils/uri_assembler';
+import {useTranslation} from 'react-i18next';
 
 export default function Email() {
+  const {t} = useTranslation();
   const {windowHeight} = useSelector(state => state.ui);
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function Email() {
           backgroundColor: colors.white,
           height: windowHeight,
         }}>
-        <Header text="E-mail" noMarginBottom={true} />
+        <Header text={t('email')} noMarginBottom={true} />
         <View
           style={{
             height: '100%',
@@ -43,8 +45,11 @@ export default function Email() {
             marginTop:
               -styles.titleBar.marginBottom - styles.textExtraLarge.fontSize,
           }}>
-          <TextS text={`${unreadEmailCount} unread e-mails`} weight="bold" />
-          <TextS text="E-mail access is not possible yet." />
+          <TextS
+            text={t('unreadEmail', {count: unreadEmailCount})}
+            weight="bold"
+          />
+          <TextS text={t('noEmailAccess')} />
           <Pressable
             android_ripple={{color: '#ccc'}}
             style={{marginTop: 16}}
@@ -64,7 +69,7 @@ export default function Email() {
               }}>
               <Icon name="open-in-new" size={48} color={colors.gray} />
               <TextS
-                text="Tap to open in browser"
+                text={t('openBrowser')}
                 color={colors.gray}
                 weight="bold"
               />

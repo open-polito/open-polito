@@ -13,6 +13,7 @@ function getPaddingTop() {
  */
 
 function flashMessageBase(
+  t,
   message,
   description,
   type,
@@ -22,8 +23,8 @@ function flashMessageBase(
 ) {
   StatusBar.setBarStyle('light-content');
   return {
-    message,
-    description,
+    message: t(message),
+    description: t(description),
     type,
     backgroundColor,
     color,
@@ -43,8 +44,9 @@ function flashMessageBase(
  * - success
  */
 
-export function infoFlashMessage(message, description) {
+export function infoFlashMessage(t, message, description) {
   return flashMessageBase(
+    t,
     message,
     description,
     'info',
@@ -54,8 +56,9 @@ export function infoFlashMessage(message, description) {
   );
 }
 
-export function warnFlashMessage(message, description) {
+export function warnFlashMessage(t, message, description) {
   return flashMessageBase(
+    t,
     message,
     description,
     'warning',
@@ -65,8 +68,9 @@ export function warnFlashMessage(message, description) {
   );
 }
 
-export function errorFlashMessage(message, description) {
+export function errorFlashMessage(t, message, description) {
   return flashMessageBase(
+    t,
     message,
     description,
     'danger',
@@ -76,8 +80,9 @@ export function errorFlashMessage(message, description) {
   );
 }
 
-export function successFlashMessage(message, description) {
+export function successFlashMessage(t, message, description) {
   return flashMessageBase(
+    t,
     message,
     description,
     'success',
@@ -91,21 +96,26 @@ export function successFlashMessage(message, description) {
  * Custom flash messages
  */
 
-export function logoutFlashMessage() {
-  return infoFlashMessage('Logging out...', 'You are being logged out');
+export function logoutFlashMessage(t) {
+  return infoFlashMessage(t, 'logoutFlashMessage', 'logoutFlashDesc');
 }
 
-export function loginPendingFlashMessage() {
-  return infoFlashMessage('Connecting...', 'Logging in');
-}
-
-export function loginErrorFlashMessage() {
-  return errorFlashMessage(
-    'Authentication error',
-    'Invalid credentials or Internet connection not available',
+export function loginPendingFlashMessage(t) {
+  return infoFlashMessage(
+    t,
+    'loginPendingFlashMessage',
+    'loginPendingFlashDesc',
   );
 }
 
-export function loginSuccessFlashMessage() {
-  return successFlashMessage('Log in successful!', 'You are now logged in');
+export function loginErrorFlashMessage(t) {
+  return errorFlashMessage(t, 'loginErrorFlashMessage', 'loginErrorFlashDesc');
+}
+
+export function loginSuccessFlashMessage(t) {
+  return successFlashMessage(
+    t,
+    'loginSuccessFlashMessage',
+    'loginSuccessFlashDesc',
+  );
 }

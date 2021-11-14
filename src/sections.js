@@ -1,5 +1,5 @@
 const sections = {
-  quickAccess: ['Esami', 'Orari', 'Materiale'],
+  quickAccess: ['exams', 'schedule', 'material'],
   other: [
     'section1',
     'section2',
