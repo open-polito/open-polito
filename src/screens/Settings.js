@@ -12,15 +12,17 @@ import * as Keychain from 'react-native-keychain';
 import {setAccess, setToken, setUsername, setUuid} from '../store/sessionSlice';
 import {showMessage} from 'react-native-flash-message';
 import {logoutFlashMessage} from '../components/CustomFlashMessages';
+import {useTranslation} from 'react-i18next';
 
 export default function Settings() {
+  const {t} = useTranslation();
   const {windowHeight} = useSelector(state => state.ui);
   const anagrafica = useSelector(state => state.session.anagrafica);
 
   const dispatch = useDispatch();
 
   function showLogoutMessage() {
-    showMessage(logoutFlashMessage());
+    showMessage(logoutFlashMessage(t));
   }
 
   function handleLogout() {
@@ -56,7 +58,7 @@ export default function Settings() {
           backgroundColor: colors.white,
           height: windowHeight,
         }}>
-        <Header text="Settings" noMarginBottom={true} />
+        <Header text={t('settings')} noMarginBottom={true} />
         <ScrollView>
           <AccountBox
             name={anagrafica.nome + ' ' + anagrafica.cognome}
@@ -66,18 +68,18 @@ export default function Settings() {
           <View style={{marginTop: 24}}>
             <SettingsItem
               iconName="notifications"
-              text="Notifications"
-              description="Manage your notification preferences"
+              text={t('notifications')}
+              description={t('notificationsDesc')}
             />
             <SettingsItem
               iconName="color-lens"
-              text="Theme"
-              description="Choose dark mode, customize colors"
+              text={t('theme')}
+              description={t('themeDesc')}
             />
             <SettingsItem
               iconName="info-outline"
-              text="About"
-              description="About Open PoliTo"
+              text={t('about')}
+              description={t('aboutDesc')}
             />
           </View>
         </ScrollView>

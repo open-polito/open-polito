@@ -11,6 +11,7 @@ import {v4 as UUIDv4} from 'uuid';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useTranslation} from 'react-i18next';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {
@@ -35,6 +36,7 @@ const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
 
 export default function Router() {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
 
   const [height, setHeight] = useState(() => {
@@ -54,7 +56,7 @@ export default function Router() {
   // const {unreadEmailCount} = useSelector(state => state.email);
 
   function handleLogin(username, password) {
-    showMessage(loginPendingFlashMessage());
+    showMessage(loginPendingFlashMessage(t));
     (async () => {
       const device = new Device();
       device.uuid = await UUIDv4();
@@ -87,12 +89,12 @@ export default function Router() {
         dispatch(setUnreadEmailCount(unread));
 
         dispatch(setAccess(true));
-        showMessage(loginSuccessFlashMessage());
+        showMessage(loginSuccessFlashMessage(t));
       } catch (error) {
         // TODO custom alert component
         // TODO better error handling
         // console.log(error);
-        showMessage(loginErrorFlashMessage());
+        showMessage(loginErrorFlashMessage(t));
       }
     })();
   }
@@ -100,7 +102,7 @@ export default function Router() {
   // Get access token from keychain
   useEffect(() => {
     if (!access) {
-      showMessage(loginPendingFlashMessage());
+      showMessage(loginPendingFlashMessage(t));
       // only log in again if not logged in yet (with token) (to prevent unnecessary token changes during development)
       setTimeout(async () => {
         try {
@@ -130,7 +132,7 @@ export default function Router() {
             dispatch(setLoadedToken(true));
             dispatch(setAccess(true));
 
-            showMessage(loginSuccessFlashMessage());
+            showMessage(loginSuccessFlashMessage(t));
 
             const {unread} = await user.unreadMail();
             dispatch(setUnreadEmailCount(unread));
@@ -175,7 +177,7 @@ export default function Router() {
             />
 
             <TextTitle
-              text="Loading..."
+              text={t('loading')}
               color="white"
               style={{marginTop: 200, width: '100%', textAlign: 'center'}}
             />

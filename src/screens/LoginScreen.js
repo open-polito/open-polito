@@ -14,8 +14,10 @@ import Button from '../components/Button';
 import {Text, TextTitle, TextSubTitle, TextAction} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
+import {useTranslation} from 'react-i18next';
 
 export default function LoginScreen(props) {
+  const {t} = useTranslation();
   const [isKbdVisible, setIsKbdVisible] = useState('');
   const [height, setHeight] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
@@ -60,18 +62,17 @@ export default function LoginScreen(props) {
             <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
               <TextTitle text="Open PoliTo" color="white" weight="bold" />
               <TextSubTitle
-                text="The unofficial, open-source
-mobile app"
+                text={t('caption')}
                 color="white"
                 style={{marginTop: 20}}
               />
             </View>
             <View
               style={{...styles.withHorizontalPadding, ..._styles.loginCard}}>
-              <TextAction text="Log in to continue" />
+              <TextAction text={t('loginCall')} />
               <TextInput
                 textContentType="emailAddress"
-                placeholder="Username or e-mail address"
+                placeholder={t('userPlaceholder')}
                 icon="account-circle"
                 onChangeText={txt => {
                   setUsername(txt);
@@ -79,7 +80,7 @@ mobile app"
               />
               <TextInput
                 textContentType="password"
-                placeholder="Password"
+                placeholder={t('passwordPlaceholder')}
                 icon="lock-outline"
                 secureTextEntry={true}
                 onChangeText={txt => {
@@ -87,7 +88,7 @@ mobile app"
                 }}
               />
               <Button
-                text="Log in"
+                text={t('login')}
                 onPress={() => {
                   props.loginFunction(username, password);
                 }}
@@ -95,7 +96,7 @@ mobile app"
             </View>
             <View style={_styles.versionView}>
               <Text
-                text="version 1.0.0"
+                text={`${t('version')} 1.0.0`}
                 color="white"
                 style={{
                   marginHorizontal: 'auto',

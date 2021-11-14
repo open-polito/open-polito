@@ -13,12 +13,13 @@ import colors from '../colors';
 import TextInput from '../components/TextInput';
 import sections from '../sections';
 import CategoryCard from '../components/CategoryCard';
-import NotificationButton from '../components/NotificationButton';
 import styles from '../styles';
-import {TextSubTitle, TextTitle} from '../components/Text';
+import {TextSubTitle} from '../components/Text';
 import Header from '../components/Header';
+import {useTranslation} from 'react-i18next';
 
 export default function Home() {
+  const {t} = useTranslation();
   const [height] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
   );
@@ -74,12 +75,12 @@ export default function Home() {
                   borderRadius: 16,
                 }}>
                 {/* blue section */}
-                <Header color={colors.white} text="Home" />
+                <Header color={colors.white} text={t('home')} />
                 <View style={{marginBottom: 16}}>
                   {/* quick search container */}
                   <TextInput
                     icon="search"
-                    placeholder="Quick search..."
+                    placeholder={t('quickSearch')}
                     borderColor="none"
                     borderWidth={0}
                     iconColor={colors.gray}
@@ -100,10 +101,13 @@ export default function Home() {
                         alignItems: 'center',
                       }}>
                       <Icon name="bookmark" size={24} color={colors.white} />
-                      <TextSubTitle text="Quick access" color={colors.white} />
+                      <TextSubTitle
+                        text={t('quickAccess')}
+                        color={colors.white}
+                      />
                     </View>
                     <View>
-                      <TextSubTitle text="EDIT" color={colors.white} />
+                      <TextSubTitle text={t('edit')} color={colors.white} />
                     </View>
                   </View>
                   <View
@@ -116,7 +120,7 @@ export default function Home() {
                       return (
                         <CategoryCard
                           key={qaSection}
-                          category={qaSection}
+                          category={t(qaSection)}
                           size={cardWidth}
                         />
                       );
@@ -137,7 +141,7 @@ export default function Home() {
                   }}>
                   <TextSubTitle
                     style={{marginBottom: 16}}
-                    text="All sections"
+                    text={t('allSections')}
                     color={colors.black}
                   />
                   <View

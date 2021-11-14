@@ -2,10 +2,12 @@ import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import colors from '../colors';
 import {TextN, TextS} from './Text';
+import {useTranslation} from 'react-i18next';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 export default function AccountBox({name, degree, logoutFunction}) {
+  const {t} = useTranslation();
   return (
     <View style={_styles.box}>
       <View style={_styles.infoContainer}>
@@ -22,7 +24,7 @@ export default function AccountBox({name, degree, logoutFunction}) {
       <View style={_styles.logoutBtnContainer}>
         <Pressable android_ripple={{color: '#ccc'}} onPress={logoutFunction}>
           <View style={_styles.logoutBtn}>
-            <TextN text="Logout" weight="medium" />
+            <TextN text={t('logout')} weight="medium" />
             <Icon
               name="logout"
               style={{marginLeft: 6}}
