@@ -94,9 +94,17 @@ export function logoutFlashMessage() {
   return infoFlashMessage('Logging out...', 'You are being logged out');
 }
 
+export function loginPendingFlashMessage() {
+  return infoFlashMessage('Connecting...', 'Logging in');
+}
+
 export function loginErrorFlashMessage() {
   return errorFlashMessage(
     'Authentication error',
     'Invalid credentials or Internet connection not available',
   );
+}
+
+export function loginSuccessFlashMessage() {
+  return successFlashMessage('Log in successful!', 'You are now logged in');
 }

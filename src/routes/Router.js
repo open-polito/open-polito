@@ -1,12 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {
-  Alert,
-  Dimensions,
-  ImageBackground,
-  Platform,
-  StatusBar,
-} from 'react-native';
+import {Dimensions, ImageBackground, Platform, StatusBar} from 'react-native';
 import {TextTitle} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -30,6 +24,12 @@ import {
 import {setWindowHeight} from '../store/uiSlice';
 import {setUnreadEmailCount} from '../store/emailSlice';
 import HomeRouter from './HomeRouter';
+import {showMessage} from 'react-native-flash-message';
+import {
+  loginErrorFlashMessage,
+  loginPendingFlashMessage,
+  loginSuccessFlashMessage,
+} from '../components/CustomFlashMessages';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -56,6 +56,7 @@ export default function Router() {
   // const {unreadEmailCount} = useSelector(state => state.email);
 
   function handleLogin(username, password) {
+    showMessage(loginPendingFlashMessage());
     (async () => {
       const device = new Device();
       device.uuid = await UUIDv4();
@@ -85,14 +86,12 @@ export default function Router() {
         dispatch(setUser(user.anagrafica));
 
         dispatch(setAccess(true));
+        showMessage(loginSuccessFlashMessage());
       } catch (error) {
         // TODO custom alert component
         // TODO better error handling
         // console.log(error);
-        Alert.alert(
-          'Login error',
-          'Your username/password may be incorrect or Internet connection is not available',
-        );
+        showMessage(loginErrorFlashMessage());
       }
     })();
   }
@@ -100,6 +99,7 @@ export default function Router() {
   // Get access token from keychain
   useEffect(() => {
     if (!access) {
+      showMessage(loginPendingFlashMessage());
       // only log in again if not logged in yet (with token) (to prevent unnecessary token changes during development)
       setTimeout(async () => {
         try {
@@ -128,6 +128,8 @@ export default function Router() {
 
             dispatch(setLoadedToken(true));
             dispatch(setAccess(true));
+
+            showMessage(loginSuccessFlashMessage());
 
             const {unread} = await user.unreadMail();
             dispatch(setUnreadEmailCount(unread));
