@@ -41,7 +41,6 @@ export default function FlashMessage({
   const statusBarHeight = StatusBar.currentHeight;
 
   useEffect(() => {
-    console.log('opening!!!');
     Animated.sequence([
       Animated.parallel([
         Animated.timing(animYPos, {
