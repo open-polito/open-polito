@@ -19,20 +19,22 @@ import colors from '../colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {setUsername, setToken, setUuid, setUser} from '../store/sessionSlice';
+import {
+  setUsername,
+  setToken,
+  setUuid,
+  setUser,
+  setAccess,
+  setLoadedToken,
+} from '../store/sessionSlice';
 import {setWindowHeight} from '../store/uiSlice';
 import {setUnreadEmailCount} from '../store/emailSlice';
 import HomeRouter from './HomeRouter';
-import User from 'open-polito-api/user';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
 
 export default function Router() {
-  const [loadedToken, setLoadedToken] = useState(false);
-
-  const [access, setAccess] = useState(false);
-
   const dispatch = useDispatch();
 
   const [height, setHeight] = useState(() => {
@@ -48,7 +50,9 @@ export default function Router() {
     return () => sub.remove();
   });
 
-  const {uuid, token} = useSelector(state => state.session);
+  const {uuid, token, access, loadedToken} = useSelector(
+    state => state.session,
+  );
   // const {unreadEmailCount} = useSelector(state => state.email);
 
   function handleLogin(username, password) {
@@ -80,7 +84,7 @@ export default function Router() {
         dispatch(setToken(token));
         dispatch(setUser(user.anagrafica));
 
-        setAccess(true);
+        dispatch(setAccess(true));
       } catch (error) {
         // TODO custom alert component
         // TODO better error handling
@@ -122,8 +126,8 @@ export default function Router() {
             dispatch(setToken(newToken));
             dispatch(setUser(user.anagrafica));
 
-            setLoadedToken(true);
-            setAccess(true);
+            dispatch(setLoadedToken(true));
+            dispatch(setAccess(true));
 
             const {unread} = await user.unreadMail();
             dispatch(setUnreadEmailCount(unread));
@@ -132,12 +136,12 @@ export default function Router() {
             // console.log(uuid, token);
           } else {
             // console.log('No credentials found!');
-            setLoadedToken(true);
-            setAccess(false);
+            dispatch(setLoadedToken(true));
+            dispatch(setAccess(false));
           }
         } catch (error) {
-          setLoadedToken(true);
-          setAccess(false);
+          dispatch(setLoadedToken(true));
+          dispatch(setAccess(false));
           // console.log('Error!');
         }
       }, 500);

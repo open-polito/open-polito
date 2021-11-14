@@ -1,6 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
+  loadedToken: false,
+  access: false,
   uuid: null,
   username: null,
   token: null,
@@ -12,6 +14,12 @@ export const sessionSlice = createSlice({
   name: 'session',
   initialState,
   reducers: {
+    setLoadedToken: (state, action) => {
+      state.loadedToken = action.payload;
+    },
+    setAccess: (state, action) => {
+      state.access = action.payload;
+    },
     setUuid: (state, action) => {
       state.uuid = action.payload;
     },
@@ -27,6 +35,13 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const {setUuid, setUsername, setToken, setUser} = sessionSlice.actions;
+export const {
+  setLoadedToken,
+  setAccess,
+  setUuid,
+  setUsername,
+  setToken,
+  setUser,
+} = sessionSlice.actions;
 
 export default sessionSlice.reducer;

@@ -20,7 +20,7 @@ export default function AccountBox({name, degree, logoutFunction}) {
         </View>
       </View>
       <View style={_styles.logoutBtnContainer}>
-        <Pressable android_ripple={{color: '#ccc'}}>
+        <Pressable android_ripple={{color: '#ccc'}} onPress={logoutFunction}>
           <View style={_styles.logoutBtn}>
             <TextN text="Logout" weight="medium" />
             <Icon
