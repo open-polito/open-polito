@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {SafeAreaView, StatusBar, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useSelector} from 'react-redux';
@@ -10,7 +10,7 @@ import styles from '../styles';
 import {useDispatch} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
 import {setAccess, setToken, setUsername, setUuid} from '../store/sessionSlice';
-import FlashMessage, {showMessage} from 'react-native-flash-message';
+import {showMessage} from 'react-native-flash-message';
 import {logoutFlashMessage} from '../components/CustomFlashMessages';
 
 export default function Settings() {
@@ -82,7 +82,6 @@ export default function Settings() {
           </View>
         </ScrollView>
       </View>
-      <FlashMessage position="top" />
     </SafeAreaView>
   );
 }
