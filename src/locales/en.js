@@ -41,14 +41,11 @@ const EN = {
 
   // Flash messages
   logoutFlashMessage: 'Logging out...',
-  logoutFlashDesc: 'You are being logged out',
   loginPendingFlashMessage: 'Connecting...',
-  loginPendingFlashDesc: 'Logging in',
   loginErrorFlashMessage: 'Authentication error',
   loginErrorFlashDesc:
     'Invalid credentials or Internet connection not available',
   loginSuccessFlashMessage: 'Log in successful!',
-  loginSuccessFlashDesc: 'You are now logged in',
 
   // Additional screens...
 };

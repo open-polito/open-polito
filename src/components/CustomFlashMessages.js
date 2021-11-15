@@ -15,7 +15,7 @@ function getPaddingTop() {
 function flashMessageBase(
   t,
   message,
-  description,
+  description = '',
   type,
   backgroundColor,
   color,
@@ -44,7 +44,7 @@ function flashMessageBase(
  * - success
  */
 
-export function infoFlashMessage(t, message, description) {
+export function infoFlashMessage(t, message, description = '') {
   return flashMessageBase(
     t,
     message,
@@ -56,7 +56,7 @@ export function infoFlashMessage(t, message, description) {
   );
 }
 
-export function warnFlashMessage(t, message, description) {
+export function warnFlashMessage(t, message, description = '') {
   return flashMessageBase(
     t,
     message,
@@ -68,7 +68,7 @@ export function warnFlashMessage(t, message, description) {
   );
 }
 
-export function errorFlashMessage(t, message, description) {
+export function errorFlashMessage(t, message, description = '') {
   return flashMessageBase(
     t,
     message,
@@ -80,7 +80,7 @@ export function errorFlashMessage(t, message, description) {
   );
 }
 
-export function successFlashMessage(t, message, description) {
+export function successFlashMessage(t, message, description = '') {
   return flashMessageBase(
     t,
     message,
@@ -97,15 +97,11 @@ export function successFlashMessage(t, message, description) {
  */
 
 export function logoutFlashMessage(t) {
-  return infoFlashMessage(t, 'logoutFlashMessage', 'logoutFlashDesc');
+  return infoFlashMessage(t, 'logoutFlashMessage');
 }
 
 export function loginPendingFlashMessage(t) {
-  return infoFlashMessage(
-    t,
-    'loginPendingFlashMessage',
-    'loginPendingFlashDesc',
-  );
+  return infoFlashMessage(t, 'loginPendingFlashMessage');
 }
 
 export function loginErrorFlashMessage(t) {
@@ -113,9 +109,5 @@ export function loginErrorFlashMessage(t) {
 }
 
 export function loginSuccessFlashMessage(t) {
-  return successFlashMessage(
-    t,
-    'loginSuccessFlashMessage',
-    'loginSuccessFlashDesc',
-  );
+  return successFlashMessage(t, 'loginSuccessFlashMessage');
 }
