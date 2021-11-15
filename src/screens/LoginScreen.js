@@ -26,29 +26,6 @@ export default function LoginScreen(props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // Listen for keyboard visibility changes
-  useEffect(() => {
-    const kbdShowSub = Keyboard.addListener('keyboardDidShow', () => {
-      setIsKbdVisible(true);
-    });
-    const kbdHideSub = Keyboard.addListener('keyboardDidHide', () => {
-      setIsKbdVisible(false);
-    });
-
-    return () => {
-      kbdShowSub.remove();
-      kbdHideSub.remove();
-    };
-  }, []);
-
-  // Handle keyboard visibility change
-  // TODO layout optimization when keyboard shown
-  useEffect(() => {
-    if (isKbdVisible) {
-    } else {
-    }
-  }, [isKbdVisible]);
-
   return (
     <LinearGradient
       colors={[colors.gradient1, colors.gradient2]}
