@@ -18,7 +18,6 @@ import {useTranslation} from 'react-i18next';
 
 export default function LoginScreen(props) {
   const {t} = useTranslation();
-  const [isKbdVisible, setIsKbdVisible] = useState('');
   const [height, setHeight] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
   );
