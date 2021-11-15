@@ -10,7 +10,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colors from '../colors';
 import Button from '../components/Button';
-import {Text, TextTitle, TextSubTitle, TextAction} from '../components/Text';
+import {
+  Text,
+  TextSubTitle,
+  TextAction,
+  TextTitleLarge,
+} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -35,7 +40,7 @@ export default function LoginScreen(props) {
           <StatusBar translucent backgroundColor="transparent" />
           <View style={styles.container}>
             <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
-              <TextTitle text="Open PoliTo" color="white" weight="bold" />
+              <TextTitleLarge text="Open PoliTo" color="white" weight="bold" />
               <TextSubTitle
                 text={t('caption')}
                 color="white"
