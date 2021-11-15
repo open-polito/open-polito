@@ -13,6 +13,7 @@ import {setAccess, setToken, setUsername, setUuid} from '../store/sessionSlice';
 import {showMessage} from 'react-native-flash-message';
 import {logoutFlashMessage} from '../components/CustomFlashMessages';
 import {useTranslation} from 'react-i18next';
+import notImplemented from '../utils/not_implemented';
 
 export default function Settings() {
   const {t} = useTranslation();
@@ -70,16 +71,25 @@ export default function Settings() {
               iconName="notifications"
               text={t('notifications')}
               description={t('notificationsDesc')}
+              settingsFunction={() => {
+                notImplemented(t);
+              }}
             />
             <SettingsItem
               iconName="color-lens"
               text={t('theme')}
               description={t('themeDesc')}
+              settingsFunction={() => {
+                notImplemented(t);
+              }}
             />
             <SettingsItem
               iconName="info-outline"
               text={t('about')}
               description={t('aboutDesc')}
+              settingsFunction={() => {
+                notImplemented(t);
+              }}
             />
           </View>
         </ScrollView>
