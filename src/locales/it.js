@@ -41,14 +41,11 @@ const IT = {
 
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
-  logoutFlashDesc: 'Disconnessione in corso',
   loginPendingFlashMessage: 'Accesso...',
-  loginPendingFlashDesc: 'Accesso in corso',
   loginErrorFlashMessage: 'Errore di accesso',
   loginErrorFlashDesc:
     'Credenziali invalide o connessione Internet non disponibile',
   loginSuccessFlashMessage: 'Accesso riuscito!',
-  loginSuccessFlashDesc: 'Sei connesso',
 
   // Additional screens...
 };
