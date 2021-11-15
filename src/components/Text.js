@@ -151,6 +151,17 @@ export function TextTitle({text, color = colors.black, style = {}}) {
   return <TextXL text={text} color={color} weight="bold" style={style} />;
 }
 
+export function TextTitleLarge({text, color = colors.black, style = {}}) {
+  return (
+    <TextTitle
+      text={text}
+      color={color}
+      weight="bold"
+      style={{...style, ...styles.textTitleLarge}}
+    />
+  );
+}
+
 export function TextSubTitle({text, color = colors.black, style = {}}) {
   return <TextN text={text} color={color} weight="medium" style={style} />;
 }
