@@ -39,6 +39,9 @@ const IT = {
   about: 'Informazioni',
   aboutDesc: 'Informazioni su Open PoliTo',
 
+  // Material screen
+  material: 'Materiale',
+
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
   loginPendingFlashMessage: 'Accesso...',
@@ -46,7 +49,9 @@ const IT = {
   loginErrorFlashDesc:
     'Credenziali invalide o connessione Internet non disponibile',
   loginSuccessFlashMessage: 'Accesso riuscito!',
-
+  notImplementedFlashMessage: 'Funzionalità in arrivo!',
+  notImplementedFlashMessageDesc:
+    'Questa funzionalità sarà disponibile in una prossima versione',
   // Additional screens...
 };
 
