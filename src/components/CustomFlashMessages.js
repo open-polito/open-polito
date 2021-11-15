@@ -111,3 +111,11 @@ export function loginErrorFlashMessage(t) {
 export function loginSuccessFlashMessage(t) {
   return successFlashMessage(t, 'loginSuccessFlashMessage');
 }
+
+export function notImplementedFlashMessage(t) {
+  return warnFlashMessage(
+    t,
+    'notImplementedFlashMessage',
+    'notImplementedFlashMessageDesc',
+  );
+}
