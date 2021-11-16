@@ -41,6 +41,10 @@ const EN = {
 
   // Material screen
   material: 'Material',
+  searchMaterial: 'Search material...',
+  recentMaterial: 'Recent material',
+  byCourse: 'By course',
+  selectCourse: 'Select a course to view its files',
 
   // Flash messages
   logoutFlashMessage: 'Logging out...',

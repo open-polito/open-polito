@@ -76,7 +76,7 @@ export default function Material() {
         </View>
         {selectorLoaded ? <RecentItems /> : <RecentItemsLoader />}
         <View>
-          <TextN text="byCourse" />
+          <TextSubTitle text={t('byCourse')} />
           {selectorLoaded ? (
             <CourseSelector
               courses={user.carico_didattico.corsi}
@@ -96,7 +96,7 @@ export default function Material() {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <TextN text="selectCourse" />
+              <TextN text={t('selectCourse')} />
             </View>
           ) : (
             <TextN text="Loading here..." />
