@@ -31,6 +31,7 @@ import {
   loginPendingFlashMessage,
   loginSuccessFlashMessage,
 } from '../components/CustomFlashMessages';
+import UserProvider from '../context/User';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -38,6 +39,8 @@ const AppStack = createNativeStackNavigator();
 export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
+
+  const [_user, _setUser] = useState();
 
   const [height, setHeight] = useState(() => {
     h = Dimensions.get('window').height + StatusBar.currentHeight;
@@ -85,6 +88,8 @@ export default function Router() {
         dispatch(setToken(token));
         dispatch(setUser(user.anagrafica));
 
+        _setUser(user);
+
         const {unread} = await user.unreadMail();
         dispatch(setUnreadEmailCount(unread));
 
@@ -128,6 +133,8 @@ export default function Router() {
 
             dispatch(setToken(newToken));
             dispatch(setUser(user.anagrafica));
+
+            _setUser(user);
 
             dispatch(setLoadedToken(true));
             dispatch(setAccess(true));
@@ -190,12 +197,14 @@ export default function Router() {
   return (
     <NavigationContainer>
       {access ? (
-        <AppStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <AppStack.Screen name="HomeRouter" component={HomeRouter} />
-        </AppStack.Navigator>
+        <UserProvider user={_user}>
+          <AppStack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <AppStack.Screen name="HomeRouter" component={HomeRouter} />
+          </AppStack.Navigator>
+        </UserProvider>
       ) : (
         <AuthStack.Navigator
           screenOptions={{
