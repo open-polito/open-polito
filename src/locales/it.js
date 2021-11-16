@@ -41,6 +41,10 @@ const IT = {
 
   // Material screen
   material: 'Materiale',
+  searchMaterial: 'Cerca materiale...',
+  recentMaterial: 'Materiali recenti',
+  byCourse: 'Per corso',
+  selectCourse: 'Seleziona un corso per vederne i file',
 
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
