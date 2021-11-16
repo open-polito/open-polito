@@ -22,6 +22,7 @@ export default function TextInput({
         backgroundColor: backgroundColor,
         borderColor: borderColor,
         borderWidth: borderWidth,
+        elevation: 4,
       }}>
       {typeof icon == 'string' ? (
         <Icon name={icon} size={24} color={iconColor} />

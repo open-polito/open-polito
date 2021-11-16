@@ -8,6 +8,7 @@ import colors from '../colors';
 import {useSelector} from 'react-redux';
 import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
+import Material from '../screens/Material';
 
 export default function HomeRouter() {
   const {t} = useTranslation();
@@ -31,6 +32,16 @@ export default function HomeRouter() {
           tabBarLabel: t('home'),
           tabBarIcon: ({color, size}) => {
             return <IconBadge name="home" color={color} size={size} />;
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Material"
+        component={Material}
+        options={{
+          tabBarLabel: t('material'),
+          tabBarIcon: ({color, size}) => {
+            return <IconBadge name="folder" color={color} size={size} />;
           },
         }}
       />
