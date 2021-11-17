@@ -16,14 +16,16 @@ import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
 import {setCarico} from '../store/userSlice';
+import {getRecentMaterial} from '../utils/material';
+import {setMaterial} from '../store/materialSlice';
 
 export default function Material() {
   const {t} = useTranslation();
   const {windowHeight} = useSelector(state => state.ui);
   const {carico_didattico} = useSelector(state => state.user);
+  const material = useSelector(state => state.material.material);
   const carico =
     carico_didattico == null ? carico_didattico : JSON.parse(carico_didattico);
-  console.log(carico);
 
   const dispatch = useDispatch();
 
@@ -38,11 +40,21 @@ export default function Material() {
         await user.populate();
         dispatch(setCarico(JSON.stringify(user.carico_didattico)));
         setSelectorLoaded(true);
+        loadMaterialIfNull();
       })();
     } else {
       setSelectorLoaded(true);
+      loadMaterialIfNull();
     }
   }, []);
+
+  function loadMaterialIfNull() {
+    if (material == null) {
+      getRecentMaterial(user).then(data => {
+        dispatch(setMaterial(data));
+      });
+    }
+  }
 
   function selectCourse(course_id) {
     setSelectedCourse(course_id);
