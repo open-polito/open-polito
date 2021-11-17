@@ -12,6 +12,8 @@ export default function DirectoryItem({
   data_inserimento,
   corso,
 }) {
+  const size_label =
+    size_kb > 999 ? (size_kb / 1000).toFixed(2) + ' MB' : size_kb + ' kB';
   return (
     <View
       style={{
@@ -49,7 +51,7 @@ export default function DirectoryItem({
             alignItems: 'flex-end',
             marginRight: 8,
           }}>
-          <TextS text={`${size_kb} KB`} />
+          <TextS text={size_label} />
           <TextS text={data_inserimento} />
         </View>
         <Icon name="file-download" size={24} color={colors.gradient1} />
