@@ -1,25 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {useContext} from 'react';
+import React from 'react';
 import {View} from 'react-native';
-import {UserContext} from '../context/User';
 import DirectoryItem from './DirectoryItem';
-import {getRecentMaterial} from '../utils/material';
 import DirectoryItemLoader from './DirectoryItemLoader';
-import {useSelector, useDispatch} from 'react-redux';
-import {setMaterial} from '../store/materialSlice';
+import {useSelector} from 'react-redux';
 
 export default function RecentItems() {
-  const {user} = useContext(UserContext);
-  const dispatch = useDispatch();
   const material = useSelector(state => state.material.material);
-
-  useEffect(() => {
-    if (material == null) {
-      getRecentMaterial(user).then(data => {
-        dispatch(setMaterial(data));
-      });
-    }
-  }, []);
 
   return (
     <View style={{flexDirection: 'column'}}>
