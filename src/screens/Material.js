@@ -4,7 +4,7 @@ import {SafeAreaView, StatusBar, View} from 'react-native';
 import styles from '../styles';
 import colors from '../colors';
 import Header from '../components/Header';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import TextInput from '../components/TextInput';
 import {TextN, TextSubTitle} from '../components/Text';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -15,10 +15,17 @@ import CourseSelector from '../components/CourseSelector';
 import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
+import {setCarico} from '../store/userSlice';
 
 export default function Material() {
   const {t} = useTranslation();
   const {windowHeight} = useSelector(state => state.ui);
+  const {carico_didattico} = useSelector(state => state.user);
+  const carico =
+    carico_didattico == null ? carico_didattico : JSON.parse(carico_didattico);
+  console.log(carico);
+
+  const dispatch = useDispatch();
 
   const {user} = useContext(UserContext);
 
@@ -26,10 +33,15 @@ export default function Material() {
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   useEffect(() => {
-    (async () => {
-      await user.populate();
+    if (carico == null) {
+      (async () => {
+        await user.populate();
+        dispatch(setCarico(JSON.stringify(user.carico_didattico)));
+        setSelectorLoaded(true);
+      })();
+    } else {
       setSelectorLoaded(true);
-    })();
+    }
   }, []);
 
   function selectCourse(course_id) {
@@ -78,10 +90,7 @@ export default function Material() {
         <View>
           <TextSubTitle text={t('byCourse')} />
           {selectorLoaded ? (
-            <CourseSelector
-              courses={user.carico_didattico.corsi}
-              selector={selectCourse}
-            />
+            <CourseSelector courses={carico.corsi} selector={selectCourse} />
           ) : (
             <SvgAnimatedLinearGradient height={32} width={400}>
               <Rect x="0" y="0" rx="4" ry="4" width="75" height="24" />
