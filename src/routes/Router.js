@@ -152,9 +152,9 @@ export default function Router() {
             dispatch(setAccess(false));
           }
         } catch (error) {
-          dispatch(setLoadedToken(true));
+          dispatch(setLoadedToken(false));
           dispatch(setAccess(false));
-          // console.log('Error!');
+          showMessage(loginErrorFlashMessage(t));
         }
       }, 500);
     }
