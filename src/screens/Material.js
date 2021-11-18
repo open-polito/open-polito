@@ -99,11 +99,12 @@ export default function Material() {
             />
           </View>
         </View>
-        <ScrollView contentContainerStyle={styles.withHorizontalPadding}>
+        <ScrollView>
           <View
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              ...styles.withHorizontalPadding,
             }}>
             <Icon name="history" size={24} color={colors.black} />
             <TextSubTitle
@@ -112,9 +113,13 @@ export default function Material() {
               style={{marginLeft: 4}}
             />
           </View>
-          {allLoaded ? <RecentItems /> : <RecentItemsLoader />}
-          <View>
+          <View style={styles.withHorizontalPadding}>
+            {allLoaded ? <RecentItems /> : <RecentItemsLoader />}
+          </View>
+          <View style={styles.withHorizontalPadding}>
             <TextSubTitle text={t('byCourse')} />
+          </View>
+          <View>
             {allLoaded ? (
               <CourseSelector courses={carico.corsi} selector={selectCourse} />
             ) : (
@@ -131,11 +136,14 @@ export default function Material() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
+                ...styles.withHorizontalPadding,
               }}>
               <TextN text={t('selectCourse')} />
             </View>
           ) : (
-            <MaterialExplorer course={selectedCourse} />
+            <View style={styles.withHorizontalPadding}>
+              <MaterialExplorer course={selectedCourse} />
+            </View>
           )}
         </ScrollView>
       </View>
