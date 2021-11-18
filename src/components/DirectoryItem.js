@@ -1,8 +1,10 @@
-import React from 'react';
-import {View} from 'react-native';
+import React, {useContext} from 'react';
+import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
-import {TextN, TextS} from './Text';
+import {UserContext} from '../context/User';
+import {getDownloadUrl} from '../utils/material';
+import {TextS} from './Text';
 
 export default function DirectoryItem({
   tipo, // "file" or "cartella"
@@ -20,6 +22,8 @@ export default function DirectoryItem({
   }
   const filenameLengthLimit = tipo == 'file' ? 20 : 40;
   const iconName = tipo == 'file' ? 'insert-drive-file' : 'folder-open';
+  const {user} = useContext(UserContext);
+
   return (
     <View style={{flexDirection: 'column'}}>
       <View
@@ -63,7 +67,13 @@ export default function DirectoryItem({
           </View>
 
           {tipo == 'file' ? (
-            <Icon name="file-download" size={24} color={colors.gradient1} />
+            <Pressable
+              android_ripple={{color: '#ccc'}}
+              onPress={() => {
+                getDownloadUrl(user, code).then(url => Linking.openURL(url));
+              }}>
+              <Icon name="file-download" size={24} color={colors.gradient1} />
+            </Pressable>
           ) : null}
         </View>
       </View>
