@@ -24,7 +24,6 @@ export default function DirectoryItemRecursive({item, getChildren}) {
           key={item.code}
           filename={item.filename}
           data_inserimento={item.data_inserimento}
-          corso="none"
           size_kb={item.size_kb}
         />
       ) : (

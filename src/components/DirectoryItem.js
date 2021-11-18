@@ -40,13 +40,13 @@ export default function DirectoryItem({
             <TextS
               text={
                 filename.length > filenameLengthLimit
-                  ? filename.substring(0, 20) + '...'
+                  ? filename.substring(0, filenameLengthLimit) + '...'
                   : filename
               }
               weight="bold"
             />
             <View flexDirection="column">
-              <TextS text={corso} />
+              <TextS text={corso != null ? corso : data_inserimento} />
             </View>
           </View>
         </View>
@@ -59,7 +59,7 @@ export default function DirectoryItem({
               marginRight: 8,
             }}>
             <TextS text={size_label} />
-            <TextS text={data_inserimento} />
+            {corso != null ? <TextS text={data_inserimento} /> : null}
           </View>
 
           {tipo == 'file' ? (
