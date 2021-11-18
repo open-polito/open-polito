@@ -18,6 +18,7 @@ export default function RecentItems() {
             data_inserimento={item.data_inserimento}
             corso={item.corso}
             size_kb={item.size_kb}
+            code={item.code}
           />
         ))
       ) : (
