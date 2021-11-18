@@ -30,14 +30,15 @@ export default function CourseSelector({courses, selector}) {
               paddingHorizontal: 16,
               paddingVertical: 4,
               marginRight: 8,
+              maxHeight: 24,
             }}
             onPress={() => {
               // set selected local state
               // then use parent component's change function
               setSelected(course.codice);
-              selector();
+              selector(course.codice);
             }}>
-            <View>
+            <View style={{height: '100%'}}>
               <TextS
                 text={course.nome}
                 color={color == colors.gradient1 ? colors.white : colors.black}

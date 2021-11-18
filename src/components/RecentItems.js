@@ -5,13 +5,14 @@ import DirectoryItemLoader from './DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 
 export default function RecentItems() {
-  const material = useSelector(state => state.material.material);
+  const recentMaterial = useSelector(state => state.material.recentMaterial);
 
   return (
     <View style={{flexDirection: 'column'}}>
-      {material != null ? (
-        material.map(item => (
+      {recentMaterial != null ? (
+        recentMaterial.map(item => (
           <DirectoryItem
+            tipo={item.tipo}
             key={item.code}
             filename={item.filename}
             data_inserimento={item.data_inserimento}

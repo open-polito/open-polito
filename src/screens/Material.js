@@ -1,6 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  View,
+} from 'react-native';
 import styles from '../styles';
 import colors from '../colors';
 import Header from '../components/Header';
@@ -16,12 +22,16 @@ import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
 import {setCarico} from '../store/userSlice';
-import {getRecentMaterial} from '../utils/material';
-import {setMaterial} from '../store/materialSlice';
+import {getMaterialTree, getRecentMaterial} from '../utils/material';
+import {setMaterial, setRecentMaterial} from '../store/materialSlice';
+import MaterialExplorer from '../components/MaterialExplorer';
 
 export default function Material() {
   const {t} = useTranslation();
-  const {windowHeight} = useSelector(state => state.ui);
+  // const {windowHeight} = useSelector(state => state.ui);
+  const [height] = useState(
+    Dimensions.get('window').height + StatusBar.currentHeight,
+  );
   const {carico_didattico} = useSelector(state => state.user);
   const material = useSelector(state => state.material.material);
   const carico =
@@ -50,8 +60,11 @@ export default function Material() {
 
   function loadMaterialIfNull() {
     if (material == null) {
-      getRecentMaterial(user).then(data => {
+      getMaterialTree(user).then(data => {
         dispatch(setMaterial(data));
+        dispatch(
+          setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
+        );
       });
     }
   }
@@ -61,7 +74,7 @@ export default function Material() {
   }
 
   return (
-    <SafeAreaView style={{height: windowHeight - styles.tabNavigator.height}}>
+    <SafeAreaView style={{height: height - styles.tabNavigator.height}}>
       <StatusBar
         translucent
         backgroundColor="transparent"
@@ -71,45 +84,47 @@ export default function Material() {
         style={{
           ...styles.container,
           ...styles.safePaddingTop,
-          ...styles.withHorizontalPadding,
           backgroundColor: colors.white,
-          height: windowHeight,
         }}>
-        <Header text={t('material')} noMarginBottom={true} />
-        <View style={{marginBottom: 16}}>
-          {/* search container */}
-          <TextInput
-            icon="search"
-            placeholder={t('searchMaterial')}
-            borderColor="none"
-            borderWidth={0}
-            iconColor={colors.gray}
-          />
+        <View style={styles.withHorizontalPadding}>
+          <Header text={t('material')} noMarginBottom={true} />
+          <View style={{marginBottom: 16}}>
+            {/* search container */}
+            <TextInput
+              icon="search"
+              placeholder={t('searchMaterial')}
+              borderColor="none"
+              borderWidth={0}
+              iconColor={colors.gray}
+            />
+          </View>
         </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <Icon name="history" size={24} color={colors.black} />
-          <TextSubTitle
-            text={t('recentMaterial')}
-            color={colors.black}
-            style={{marginLeft: 4}}
-          />
-        </View>
-        {selectorLoaded ? <RecentItems /> : <RecentItemsLoader />}
-        <View>
-          <TextSubTitle text={t('byCourse')} />
-          {selectorLoaded ? (
-            <CourseSelector courses={carico.corsi} selector={selectCourse} />
-          ) : (
-            <SvgAnimatedLinearGradient height={32} width={400}>
-              <Rect x="0" y="0" rx="4" ry="4" width="75" height="24" />
-              <Rect x="85" y="0" rx="4" ry="4" width="150" height="24" />
-              <Rect x="250" y="0" rx="4" ry="4" width="100" height="24" />
-            </SvgAnimatedLinearGradient>
-          )}
+        <ScrollView contentContainerStyle={styles.withHorizontalPadding}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
+            <Icon name="history" size={24} color={colors.black} />
+            <TextSubTitle
+              text={t('recentMaterial')}
+              color={colors.black}
+              style={{marginLeft: 4}}
+            />
+          </View>
+          {selectorLoaded ? <RecentItems /> : <RecentItemsLoader />}
+          <View>
+            <TextSubTitle text={t('byCourse')} />
+            {selectorLoaded ? (
+              <CourseSelector courses={carico.corsi} selector={selectCourse} />
+            ) : (
+              <SvgAnimatedLinearGradient height={32} width={400}>
+                <Rect x="0" y="0" rx="4" ry="4" width="75" height="24" />
+                <Rect x="85" y="0" rx="4" ry="4" width="150" height="24" />
+                <Rect x="250" y="0" rx="4" ry="4" width="100" height="24" />
+              </SvgAnimatedLinearGradient>
+            )}
+          </View>
           {selectedCourse == null ? (
             <View
               style={{
@@ -120,9 +135,9 @@ export default function Material() {
               <TextN text={t('selectCourse')} />
             </View>
           ) : (
-            <TextN text="Loading here..." />
+            <MaterialExplorer course={selectedCourse} />
           )}
-        </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

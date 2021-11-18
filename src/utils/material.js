@@ -14,22 +14,42 @@ function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
   }
 }
 
-export async function getRecentMaterial(user) {
-  // collect all material from all courses
+function getCourseNameFromCode(corsi, code) {
+  let _name = null;
+  corsi.map(corso => {
+    if (corso.codice == code) {
+      _name = corso.nome;
+    }
+  });
+  return _name;
+}
+
+export function getRecentMaterial(carico, materialTree) {
   let material = [];
   function addMaterial(item) {
     material.push(item);
   }
+  for (const [key, val] of Object.entries(materialTree)) {
+    findMaterialRecursively(
+      val,
+      addMaterial,
+      getCourseNameFromCode(carico.corsi, key),
+    );
+  }
+  material.sort((a, b) => a.data_inserimento < b.data_inserimento);
+  return material.slice(0, 3);
+}
+
+export async function getMaterialTree(user) {
+  let materialTree = {};
   await Promise.all(
     user.carico_didattico.corsi.map(async corso => {
-      const currentCourse = corso.nome;
+      const currentCourse = corso.codice;
       if (corso.materiale == undefined) {
         await corso.populate();
-        findMaterialRecursively(corso.materiale, addMaterial, currentCourse);
+        materialTree[currentCourse] = corso.materiale;
       }
     }),
   );
-
-  material.sort((a, b) => a.data_inserimento < b.data_inserimento);
-  return material.slice(0, 3);
+  return materialTree;
 }
