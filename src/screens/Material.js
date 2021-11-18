@@ -41,7 +41,7 @@ export default function Material() {
 
   const {user} = useContext(UserContext);
 
-  const [selectorLoaded, setSelectorLoaded] = useState(false);
+  const [allLoaded, setAllLoaded] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   useEffect(() => {
@@ -49,12 +49,11 @@ export default function Material() {
       (async () => {
         await user.populate();
         dispatch(setCarico(JSON.stringify(user.carico_didattico)));
-        setSelectorLoaded(true);
         loadMaterialIfNull();
       })();
     } else {
-      setSelectorLoaded(true);
       loadMaterialIfNull();
+      setAllLoaded(true);
     }
   }, []);
 
@@ -65,6 +64,7 @@ export default function Material() {
         dispatch(
           setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
         );
+        setAllLoaded(true);
       });
     }
   }
@@ -112,10 +112,10 @@ export default function Material() {
               style={{marginLeft: 4}}
             />
           </View>
-          {selectorLoaded ? <RecentItems /> : <RecentItemsLoader />}
+          {allLoaded ? <RecentItems /> : <RecentItemsLoader />}
           <View>
             <TextSubTitle text={t('byCourse')} />
-            {selectorLoaded ? (
+            {allLoaded ? (
               <CourseSelector courses={carico.corsi} selector={selectCourse} />
             ) : (
               <SvgAnimatedLinearGradient height={32} width={400}>
