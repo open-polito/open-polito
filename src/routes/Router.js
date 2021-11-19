@@ -119,11 +119,19 @@ export default function Router() {
             dispatch(setToken(token));
             dispatch(setUuid(uuid));
 
+            /**
+             * open-polito-api 1.0.8 introduced a change, moving the returned
+             * token to device.token. loginWithToken() returns the same input
+             * token, rendering access impossible.
+             * Solved: https://github.com/open-polito/open-polito/issues/4
+             */
             const dev = new Device(uuid);
-            const {user, token: newToken} = await dev.loginWithToken(
+            const {user} = await dev.loginWithToken(
               credentials.username,
               token,
             );
+
+            const newToken = dev.token;
 
             const sessionUsername = 'S' + user.anagrafica.matricola;
 
