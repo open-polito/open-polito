@@ -43,6 +43,7 @@ export default function Material() {
 
   const [allLoaded, setAllLoaded] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
+  const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
     if (carico == null) {
@@ -55,6 +56,9 @@ export default function Material() {
       loadMaterialIfNull();
       setAllLoaded(true);
     }
+    return () => {
+      setMounted(false);
+    };
   }, []);
 
   function loadMaterialIfNull() {
@@ -64,7 +68,9 @@ export default function Material() {
         dispatch(
           setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
         );
-        setAllLoaded(true);
+        if (mounted) {
+          setAllLoaded(true);
+        }
       });
     }
   }
