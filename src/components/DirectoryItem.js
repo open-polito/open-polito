@@ -3,6 +3,7 @@ import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {UserContext} from '../context/User';
+import getFileIcon from '../utils/get_file_icon';
 import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
 
@@ -21,7 +22,6 @@ export default function DirectoryItem({
     size_label = null;
   }
   const filenameLengthLimit = tipo == 'file' ? 20 : 40;
-  const iconName = tipo == 'file' ? 'insert-drive-file' : 'folder-open';
   const {user} = useContext(UserContext);
 
   return (
@@ -34,7 +34,11 @@ export default function DirectoryItem({
           marginVertical: 8,
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Icon name={iconName} color={colors.black} size={32} />
+          {tipo == 'file' ? (
+            getFileIcon(filename)
+          ) : (
+            <Icon name="folder-open" color={colors.black} size={32} />
+          )}
           <View
             style={{
               flexDirection: 'column',
