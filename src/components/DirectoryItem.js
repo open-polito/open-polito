@@ -37,7 +37,7 @@ export default function DirectoryItem({
           {tipo == 'file' ? (
             getFileIcon(filename)
           ) : (
-            <Icon name="folder-open" color={colors.black} size={32} />
+            <Icon name="folder-open" color={colors.black} size={28} />
           )}
           <View
             style={{
