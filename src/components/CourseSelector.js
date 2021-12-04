@@ -16,6 +16,7 @@ export default function CourseSelector({courses, selector}) {
         justifyContent: 'flex-start',
         paddingVertical: 8,
       }}>
+      <View style={{paddingLeft: 24}} />
       {courses.map(course => {
         const color =
           selected == course.codice ? colors.gradient1 : colors.white;
@@ -47,6 +48,7 @@ export default function CourseSelector({courses, selector}) {
           </Pressable>
         );
       })}
+      <View style={{paddingRight: 16}} />
     </ScrollView>
   );
 }
