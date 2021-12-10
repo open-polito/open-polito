@@ -109,6 +109,7 @@ export default function MaterialSearch({navigation}) {
                     </View>
                   );
                 })}
+                <View style={{marginBottom: 120}}></View>
               </ScrollView>
             ) : (
               <View
