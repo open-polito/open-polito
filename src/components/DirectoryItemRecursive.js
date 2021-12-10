@@ -23,6 +23,7 @@ export default function DirectoryItemRecursive({item, getChildren}) {
           tipo={item.tipo}
           key={item.code}
           nome={item.nome}
+          filename={item.filename}
           data_inserimento={item.data_inserimento}
           size_kb={item.size_kb}
           code={item.code}
