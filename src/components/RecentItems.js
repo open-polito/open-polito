@@ -15,6 +15,7 @@ export default function RecentItems() {
             tipo={item.tipo}
             key={item.code}
             nome={item.nome}
+            filename={item.filename}
             data_inserimento={item.data_inserimento}
             corso={item.corso}
             size_kb={item.size_kb}
