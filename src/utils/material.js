@@ -26,7 +26,7 @@ function getCourseNameFromCode(corsi, code) {
   return _name;
 }
 
-export function getRecentMaterial(carico, materialTree) {
+export function getMaterialList(carico, materialTree) {
   let material = [];
   function addMaterial(item) {
     material.push(item);
@@ -38,6 +38,11 @@ export function getRecentMaterial(carico, materialTree) {
       getCourseNameFromCode(carico.corsi, key),
     );
   }
+  return material;
+}
+
+export function getRecentMaterial(carico, materialTree) {
+  let material = getMaterialList(carico, materialTree);
   material.sort((a, b) => a.data_inserimento < b.data_inserimento);
   return material.slice(0, 3);
 }

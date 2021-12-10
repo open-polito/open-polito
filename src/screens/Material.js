@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
   Dimensions,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -26,7 +27,7 @@ import {getMaterialTree, getRecentMaterial} from '../utils/material';
 import {setMaterial, setRecentMaterial} from '../store/materialSlice';
 import MaterialExplorer from '../components/MaterialExplorer';
 
-export default function Material() {
+export default function Material({navigation}) {
   const {t} = useTranslation();
   // const {windowHeight} = useSelector(state => state.ui);
   const [height] = useState(
@@ -96,13 +97,21 @@ export default function Material() {
           <Header text={t('material')} noMarginBottom={true} />
           <View style={{marginBottom: 16}}>
             {/* search container */}
-            <TextInput
-              icon="search"
-              placeholder={t('searchMaterial')}
-              borderColor="none"
-              borderWidth={0}
-              iconColor={colors.gray}
-            />
+            {allLoaded && (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate('MaterialSearch');
+                }}>
+                <TextInput
+                  icon="search"
+                  placeholder={t('searchMaterial')}
+                  borderColor="none"
+                  borderWidth={0}
+                  iconColor={colors.gray}
+                  editable={false}
+                />
+              </Pressable>
+            )}
           </View>
         </View>
         <ScrollView>
