@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
@@ -21,8 +21,8 @@ export default function DirectoryItem({
   if (size_kb == null) {
     size_label = null;
   }
-  const filenameLengthLimit = tipo == 'file' ? 20 : 40;
   const {user} = useContext(UserContext);
+  const [textWidth, setTextWidth] = useState(null);
 
   return (
     <View style={{flexDirection: 'column'}}>
@@ -44,15 +44,19 @@ export default function DirectoryItem({
               flexDirection: 'column',
               justifyContent: 'flex-start',
               marginLeft: 8,
+              width:
+                textWidth == null
+                  ? '100%'
+                  : tipo == 'file'
+                  ? corso == null
+                    ? textWidth - 175
+                    : textWidth - 250
+                  : textWidth,
+            }}
+            onLayout={event => {
+              textWidth == null && setTextWidth(event.nativeEvent.layout.width);
             }}>
-            <TextS
-              text={
-                nome.length > filenameLengthLimit
-                  ? nome.substring(0, filenameLengthLimit) + '...'
-                  : nome
-              }
-              weight="bold"
-            />
+            <TextS text={nome} numberOfLines={1} weight="bold" />
             <View flexDirection="column">
               <TextS text={corso != null ? corso : data_inserimento} />
             </View>
