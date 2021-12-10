@@ -100,6 +100,7 @@ export default function MaterialSearch({navigation}) {
                         data_inserimento={item.data_inserimento}
                         size_kb={item.size_kb}
                         code={item.code}
+                        corso={item.corso}
                       />
                     </View>
                   );
