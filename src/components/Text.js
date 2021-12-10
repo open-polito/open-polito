@@ -9,6 +9,7 @@ function TextBase({
   weight = 'regular',
   size = 'normal',
   style = {},
+  ...props
 }) {
   // TODO execute check only once
   let textWeight = null;
@@ -48,7 +49,8 @@ function TextBase({
         ...textWeight,
         ...textSize,
         ...style,
-      }}>
+      }}
+      {...props}>
       {text}
     </RNText>
   );
@@ -61,6 +63,7 @@ export function TextS({
   color = colors.black,
   weight = 'regular',
   style = {},
+  ...props
 }) {
   return (
     <TextBase
@@ -69,6 +72,7 @@ export function TextS({
       weight={weight}
       size="s"
       style={style}
+      {...props}
     />
   );
 }
@@ -78,6 +82,7 @@ export function TextN({
   color = colors.black,
   weight = 'regular',
   style = {},
+  ...props
 }) {
   return (
     <TextBase
@@ -86,6 +91,7 @@ export function TextN({
       weight={weight}
       size="n"
       style={style}
+      {...props}
     />
   );
 }
@@ -95,6 +101,7 @@ export function TextM({
   color = colors.black,
   weight = 'regular',
   style = {},
+  ...props
 }) {
   return (
     <TextBase
@@ -103,6 +110,7 @@ export function TextM({
       weight={weight}
       size="m"
       style={style}
+      {...props}
     />
   );
 }
@@ -112,6 +120,7 @@ export function TextL({
   color = colors.black,
   weight = 'regular',
   style = {},
+  ...props
 }) {
   return (
     <TextBase
@@ -120,6 +129,7 @@ export function TextL({
       weight={weight}
       size="l"
       style={style}
+      {...props}
     />
   );
 }
@@ -129,6 +139,7 @@ export function TextXL({
   color = colors.black,
   weight = 'regular',
   style = {},
+  ...props
 }) {
   return (
     <TextBase
@@ -137,35 +148,59 @@ export function TextXL({
       weight={weight}
       size="xl"
       style={style}
+      {...props}
     />
   );
 }
 
 // Components to use in the UI
 
-export function Text({text, color = colors.black, style = {}}) {
-  return <TextN text={text} color={color} style={style} />;
+export function Text({text, color = colors.black, style = {}, ...props}) {
+  return <TextN text={text} color={color} style={style} {...props} />;
 }
 
-export function TextTitle({text, color = colors.black, style = {}}) {
-  return <TextXL text={text} color={color} weight="bold" style={style} />;
+export function TextTitle({text, color = colors.black, style = {}, ...props}) {
+  return (
+    <TextXL text={text} color={color} weight="bold" style={style} {...props} />
+  );
 }
 
-export function TextTitleLarge({text, color = colors.black, style = {}}) {
+export function TextTitleLarge({
+  text,
+  color = colors.black,
+  style = {},
+  ...props
+}) {
   return (
     <TextTitle
       text={text}
       color={color}
       weight="bold"
       style={{...style, ...styles.textTitleLarge}}
+      {...props}
     />
   );
 }
 
-export function TextSubTitle({text, color = colors.black, style = {}}) {
-  return <TextN text={text} color={color} weight="medium" style={style} />;
+export function TextSubTitle({
+  text,
+  color = colors.black,
+  style = {},
+  ...props
+}) {
+  return (
+    <TextN text={text} color={color} weight="medium" style={style} {...props} />
+  );
 }
 
-export function TextAction({text, color = colors.black, style = {}}) {
-  return <TextL text={text} color={color} weight="regular" style={style} />;
+export function TextAction({text, color = colors.black, style = {}, ...props}) {
+  return (
+    <TextL
+      text={text}
+      color={color}
+      weight="regular"
+      style={style}
+      {...props}
+    />
+  );
 }
