@@ -101,6 +101,7 @@ export default function MaterialSearch({navigation}) {
                         tipo="file"
                         key={item.code}
                         nome={item.nome}
+                        filename={item.filename}
                         data_inserimento={item.data_inserimento}
                         size_kb={item.size_kb}
                         code={item.code}
