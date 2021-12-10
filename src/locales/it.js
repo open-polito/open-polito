@@ -1,6 +1,8 @@
 const IT = {
   // General
   search: 'Cerca',
+  searchResults: 'Risultati della ricerca',
+  noResults: 'Nessun risultato',
 
   // Splash screen
   loading: 'Caricamento...',
