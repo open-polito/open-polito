@@ -14,6 +14,7 @@ export default function TextInput({
   borderColor = colors.gradient1,
   iconColor = colors.gradient1,
   borderWidth = 2,
+  ...props
 }) {
   return (
     <View
@@ -34,6 +35,7 @@ export default function TextInput({
         style={_styles.textInputText}
         placeholderTextColor={colors.gray}
         onChangeText={onChangeText}
+        {...props}
       />
     </View>
   );
