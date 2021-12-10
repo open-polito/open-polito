@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-  Dimensions,
   Pressable,
   SafeAreaView,
   ScrollView,
@@ -15,11 +14,12 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
 import {getMaterialList} from '../utils/material';
 import DirectoryItem from '../components/DirectoryItem';
+import {TextS, TextSubTitle} from '../components/Text';
 export default function MaterialSearch({navigation}) {
   const {t} = useTranslation();
   const [query, setQuery] = useState(null);
   const [materialList, setMaterialList] = useState([]);
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(null);
   const carico_didattico = JSON.parse(
     useSelector(state => state.user.carico_didattico),
   );
@@ -79,25 +79,48 @@ export default function MaterialSearch({navigation}) {
             onSubmitEditing={searchMaterial}
           />
         </View>
-        <ScrollView
+        {results != null && <TextSubTitle text={t('searchResults')} />}
+        <View
           style={{
             flexDirection: 'column',
           }}>
-          {results.map(item => {
-            return (
-              <View key={item.code}>
-                <DirectoryItem
-                  tipo="file"
-                  key={item.code}
-                  nome={item.nome}
-                  data_inserimento={item.data_inserimento}
-                  size_kb={item.size_kb}
-                  code={item.code}
+          {results != null &&
+            (results.length > 0 ? (
+              <ScrollView>
+                {results.map(item => {
+                  return (
+                    <View key={item.code}>
+                      <DirectoryItem
+                        tipo="file"
+                        key={item.code}
+                        nome={item.nome}
+                        data_inserimento={item.data_inserimento}
+                        size_kb={item.size_kb}
+                        code={item.code}
+                      />
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            ) : (
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  height: '100%',
+                  marginTop: -styles.textExtraLarge.fontSize,
+                }}>
+                <Icon name="search-off" color={colors.gray} size={64} />
+                <TextS
+                  text={t('noResults')}
+                  weight="bold"
+                  color={colors.gray}
                 />
               </View>
-            );
-          })}
-        </ScrollView>
+            ))}
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -1,6 +1,8 @@
 const EN = {
   // General
   search: 'Search',
+  searchResults: 'Search results',
+  noResults: 'No results',
 
   // Splash screen
   loading: 'Loading...',
