@@ -1,7 +1,7 @@
 const EN = {
   // General
   search: 'Search',
-  searchResults: 'Search results',
+  searchResults: '{{count}} results found',
   noResults: 'No results',
 
   // Splash screen

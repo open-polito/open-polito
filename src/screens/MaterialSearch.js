@@ -82,7 +82,9 @@ export default function MaterialSearch({navigation}) {
             onSubmitEditing={searchMaterial}
           />
         </View>
-        {results != null && <TextSubTitle text={t('searchResults')} />}
+        {results != null && (
+          <TextSubTitle text={t('searchResults', {count: results.length})} />
+        )}
         <View
           style={{
             flexDirection: 'column',

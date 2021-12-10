@@ -1,7 +1,7 @@
 const IT = {
   // General
   search: 'Cerca',
-  searchResults: 'Risultati della ricerca',
+  searchResults: '{{count}} risultati trovati',
   noResults: 'Nessun risultato',
 
   // Splash screen
