@@ -70,11 +70,13 @@ export default function MaterialSearch({navigation}) {
           <TextInput
             autoFocus={true}
             placeholder={t('search')}
+            placeholderTextColor={colors.mediumGray}
             style={{
               fontFamily: 'Montserrat-Bold',
               ...styles.textExtraLarge,
               ...styles.withHorizontalPadding,
               width: '100%',
+              color: colors.black,
             }}
             onChangeText={txt => {
               setQuery(txt.toLowerCase().trim());
