@@ -1,4 +1,7 @@
 const EN = {
+  // General
+  search: 'Search',
+
   // Splash screen
   loading: 'Loading...',
 

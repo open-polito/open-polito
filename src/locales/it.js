@@ -1,4 +1,7 @@
 const IT = {
+  // General
+  search: 'Cerca',
+
   // Splash screen
   loading: 'Caricamento...',
 
