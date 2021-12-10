@@ -31,6 +31,9 @@ export default function MaterialSearch({navigation}) {
 
   function searchMaterial() {
     let res = [];
+    if (query == '') {
+      return;
+    }
     materialList.forEach(item => {
       if ((item.nome + item.filename).toLowerCase().includes(query)) {
         res.push(item);
@@ -74,7 +77,7 @@ export default function MaterialSearch({navigation}) {
               width: '100%',
             }}
             onChangeText={txt => {
-              setQuery(txt.toLowerCase());
+              setQuery(txt.toLowerCase().trim());
             }}
             onSubmitEditing={searchMaterial}
           />
