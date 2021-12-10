@@ -9,7 +9,7 @@ import {TextS} from './Text';
 
 export default function DirectoryItem({
   tipo, // "file" or "cartella"
-  filename = null,
+  nome = null,
   code,
   size_kb = null,
   data_inserimento = null,
@@ -35,7 +35,7 @@ export default function DirectoryItem({
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           {tipo == 'file' ? (
-            getFileIcon(filename)
+            getFileIcon(nome)
           ) : (
             <Icon name="folder-open" color={colors.black} size={28} />
           )}
@@ -47,9 +47,9 @@ export default function DirectoryItem({
             }}>
             <TextS
               text={
-                filename.length > filenameLengthLimit
-                  ? filename.substring(0, filenameLengthLimit) + '...'
-                  : filename
+                nome.length > filenameLengthLimit
+                  ? nome.substring(0, filenameLengthLimit) + '...'
+                  : nome
               }
               weight="bold"
             />
