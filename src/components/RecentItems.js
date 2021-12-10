@@ -14,7 +14,7 @@ export default function RecentItems() {
           <DirectoryItem
             tipo={item.tipo}
             key={item.code}
-            filename={item.filename}
+            nome={item.nome}
             data_inserimento={item.data_inserimento}
             corso={item.corso}
             size_kb={item.size_kb}

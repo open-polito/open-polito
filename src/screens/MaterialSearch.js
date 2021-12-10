@@ -89,7 +89,7 @@ export default function MaterialSearch({navigation}) {
                 <DirectoryItem
                   tipo="file"
                   key={item.code}
-                  filename={item.nome}
+                  nome={item.nome}
                   data_inserimento={item.data_inserimento}
                   size_kb={item.size_kb}
                   code={item.code}

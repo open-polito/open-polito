@@ -22,7 +22,7 @@ export default function DirectoryItemRecursive({item, getChildren}) {
         <DirectoryItem
           tipo={item.tipo}
           key={item.code}
-          filename={item.filename}
+          nome={item.nome}
           data_inserimento={item.data_inserimento}
           size_kb={item.size_kb}
           code={item.code}
@@ -33,7 +33,7 @@ export default function DirectoryItemRecursive({item, getChildren}) {
           onPress={() => {
             setOpened(!opened);
           }}>
-          <DirectoryItem tipo={item.tipo} key={item.nome} filename={item.nome}>
+          <DirectoryItem tipo={item.tipo} key={item.nome} nome={item.nome}>
             {children.length > 0 && opened
               ? children.map(item => {
                   const key = item.tipo == 'file' ? item.code : item.nome;
