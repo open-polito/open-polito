@@ -38,12 +38,12 @@ export function getMaterialList(carico, materialTree) {
       getCourseNameFromCode(carico.corsi, key),
     );
   }
+  material.sort((a, b) => a.data_inserimento < b.data_inserimento);
   return material;
 }
 
 export function getRecentMaterial(carico, materialTree) {
   let material = getMaterialList(carico, materialTree);
-  material.sort((a, b) => a.data_inserimento < b.data_inserimento);
   return material.slice(0, 3);
 }
 
