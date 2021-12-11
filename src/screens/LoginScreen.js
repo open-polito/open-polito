@@ -76,7 +76,7 @@ export default function LoginScreen(props) {
             </View>
             <View style={_styles.versionView}>
               <Text
-                text={`${t('version')} 0.2.0`}
+                text={`${t('version')} 0.3.0`}
                 color="white"
                 style={{
                   marginHorizontal: 'auto',
