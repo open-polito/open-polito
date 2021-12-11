@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Pressable,
   SafeAreaView,
@@ -25,7 +25,7 @@ export default function MaterialSearch({navigation}) {
   );
   const material = useSelector(state => state.material.material);
 
-  const inputRef = React.useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     inputRef.current.focus();
