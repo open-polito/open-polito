@@ -25,7 +25,10 @@ export default function MaterialSearch({navigation}) {
   );
   const material = useSelector(state => state.material.material);
 
+  const inputRef = React.useRef(null);
+
   useEffect(() => {
+    inputRef.current.focus();
     setMaterialList(getMaterialList(carico_didattico, material));
   }, []);
 
@@ -69,6 +72,7 @@ export default function MaterialSearch({navigation}) {
           </Pressable>
           <TextInput
             autoFocus={true}
+            ref={inputRef}
             placeholder={t('search')}
             placeholderTextColor={colors.mediumGray}
             style={{
