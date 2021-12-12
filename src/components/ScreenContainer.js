@@ -3,14 +3,18 @@ import {SafeAreaView, StatusBar, View} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
 
-export default function ScreenContainer({children, style}) {
+export default function ScreenContainer({
+  children,
+  style,
+  barStyle = 'dark-content',
+}) {
   const _style = style != undefined && style;
   return (
     <SafeAreaView style={{height: '100%'}}>
       <StatusBar
         translucent
         backgroundColor="transparent"
-        barStyle="dark-content"
+        barStyle={barStyle}
       />
       <View
         style={{
