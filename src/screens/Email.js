@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Linking, Pressable, SafeAreaView, StatusBar, View} from 'react-native';
+import {Linking, Pressable, StatusBar, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
 import Header from '../components/Header';
@@ -8,10 +8,10 @@ import styles from '../styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {emailUrlGenerator} from '../utils/uri_assembler';
 import {useTranslation} from 'react-i18next';
+import ScreenContainer from '../components/ScreenContainer';
 
 export default function Email() {
   const {t} = useTranslation();
-  const {windowHeight} = useSelector(state => state.ui);
 
   useEffect(() => {
     StatusBar.setBarStyle('dark-content');
@@ -21,62 +21,44 @@ export default function Email() {
   const {unreadEmailCount} = useSelector(state => state.email);
 
   return (
-    <SafeAreaView style={{height: windowHeight - styles.tabNavigator.height}}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
+    <ScreenContainer>
+      <Header text={t('email')} noMarginBottom={true} />
       <View
         style={{
-          ...styles.container,
-          ...styles.safePaddingTop,
-          ...styles.withHorizontalPadding,
-          backgroundColor: colors.white,
-          height: windowHeight,
+          height: '100%',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop:
+            -styles.titleBar.marginBottom - styles.textExtraLarge.fontSize,
         }}>
-        <Header text={t('email')} noMarginBottom={true} />
-        <View
-          style={{
-            height: '100%',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop:
-              -styles.titleBar.marginBottom - styles.textExtraLarge.fontSize,
+        <TextS
+          text={t('unreadEmail', {count: unreadEmailCount})}
+          weight="bold"
+        />
+        <TextS text={t('noEmailAccess')} />
+        <Pressable
+          android_ripple={{color: '#ccc'}}
+          style={{marginTop: 16}}
+          onPress={async () => {
+            const url = await emailUrlGenerator(uuid, token);
+            Linking.openURL(url);
           }}>
-          <TextS
-            text={t('unreadEmail', {count: unreadEmailCount})}
-            weight="bold"
-          />
-          <TextS text={t('noEmailAccess')} />
-          <Pressable
-            android_ripple={{color: '#ccc'}}
-            style={{marginTop: 16}}
-            onPress={async () => {
-              const url = await emailUrlGenerator(uuid, token);
-              Linking.openURL(url);
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 16,
+              borderWidth: 2,
+              borderColor: colors.gray,
+              borderStyle: 'dashed',
             }}>
-            <View
-              style={{
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 16,
-                borderWidth: 2,
-                borderColor: colors.gray,
-                borderStyle: 'dashed',
-              }}>
-              <Icon name="open-in-new" size={48} color={colors.gray} />
-              <TextS
-                text={t('openBrowser')}
-                color={colors.gray}
-                weight="bold"
-              />
-            </View>
-          </Pressable>
-        </View>
+            <Icon name="open-in-new" size={48} color={colors.gray} />
+            <TextS text={t('openBrowser')} color={colors.gray} weight="bold" />
+          </View>
+        </Pressable>
       </View>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }

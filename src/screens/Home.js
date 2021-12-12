@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
-  SafeAreaView,
   ScrollView,
   StatusBar,
   View,
@@ -17,6 +16,7 @@ import styles from '../styles';
 import {TextSubTitle} from '../components/Text';
 import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
+import ScreenContainer from '../components/ScreenContainer';
 
 export default function Home() {
   const {t} = useTranslation();
@@ -39,15 +39,6 @@ export default function Home() {
       3,
   );
 
-  /**
-   * The status bar doesn't return to light mode
-   * when returning to Home screen.
-   * TODO fix
-   */
-  useEffect(() => {
-    StatusBar.setBarStyle('light-content');
-  });
-
   return (
     <LinearGradient
       colors={[colors.gradient1, colors.gradient2]}
@@ -55,121 +46,112 @@ export default function Home() {
       end={{x: 1, y: 1}}
       height={height}>
       <ImageBackground source={require('../../assets/images/background.png')}>
-        <SafeAreaView style={{height: height - styles.tabNavigator.height}}>
-          <StatusBar
-            translucent
-            backgroundColor="transparent"
-            barStyle="light-content"
-          />
-          <View
-            style={{
-              ...styles.container,
-              ...styles.safePaddingTop,
-            }}>
-            <ScrollView>
-              {/* blue section / white section container */}
+        <ScreenContainer
+          barStyle="light-content"
+          style={{backgroundColor: 'rgba(0, 0, 0, 0)', paddingHorizontal: 0}}>
+          <ScrollView>
+            {/* blue section / white section container */}
+            <View
+              style={{
+                ...styles.withHorizontalPadding,
+                marginBottom: 20,
+                borderRadius: 16,
+              }}>
+              {/* blue section */}
+              <Header color={colors.white} text={t('home')} />
+              <View style={{marginBottom: 16}}>
+                {/* quick search container */}
+                <TextInput
+                  icon="search"
+                  placeholder={t('quickSearch')}
+                  borderColor="none"
+                  borderWidth={0}
+                  iconColor={colors.gray}
+                />
+              </View>
+              <View>
+                {/* quick access section */}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: 16,
+                  }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}>
+                    <Icon name="bookmark" size={24} color={colors.white} />
+                    <TextSubTitle
+                      text={t('quickAccess')}
+                      color={colors.white}
+                    />
+                  </View>
+                  <View>
+                    <TextSubTitle text={t('edit')} color={colors.white} />
+                  </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  {/* quick access categories container */}
+                  {sections.quickAccess.map(qaSection => {
+                    return (
+                      <CategoryCard
+                        key={qaSection}
+                        category={t(qaSection)}
+                        size={cardWidth}
+                      />
+                    );
+                  })}
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                backgroundColor: colors.white,
+              }}>
+              {/* white section container */}
               <View
                 style={{
                   ...styles.withHorizontalPadding,
-                  marginBottom: 20,
-                  borderRadius: 16,
+                  paddingTop: 16,
+                  height: '100%',
                 }}>
-                {/* blue section */}
-                <Header color={colors.white} text={t('home')} />
-                <View style={{marginBottom: 16}}>
-                  {/* quick search container */}
-                  <TextInput
-                    icon="search"
-                    placeholder={t('quickSearch')}
-                    borderColor="none"
-                    borderWidth={0}
-                    iconColor={colors.gray}
-                  />
-                </View>
-                <View>
-                  {/* quick access section */}
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: 16,
-                    }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                      }}>
-                      <Icon name="bookmark" size={24} color={colors.white} />
-                      <TextSubTitle
-                        text={t('quickAccess')}
-                        color={colors.white}
-                      />
-                    </View>
-                    <View>
-                      <TextSubTitle text={t('edit')} color={colors.white} />
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                    }}>
-                    {/* quick access categories container */}
-                    {sections.quickAccess.map(qaSection => {
-                      return (
-                        <CategoryCard
-                          key={qaSection}
-                          category={t(qaSection)}
-                          size={cardWidth}
-                        />
-                      );
-                    })}
-                  </View>
-                </View>
-              </View>
-              <View
-                style={{
-                  backgroundColor: colors.white,
-                }}>
-                {/* white section container */}
+                <TextSubTitle
+                  style={{marginBottom: 16}}
+                  text={t('allSections')}
+                  color={colors.black}
+                />
                 <View
                   style={{
-                    ...styles.withHorizontalPadding,
-                    paddingTop: 16,
-                    height: '100%',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    flexWrap: 'wrap',
+                    gap: 250,
                   }}>
-                  <TextSubTitle
-                    style={{marginBottom: 16}}
-                    text={t('allSections')}
-                    color={colors.black}
-                  />
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      flexWrap: 'wrap',
-                      gap: 250,
-                    }}>
-                    {/* quick access categories container */}
-                    {sections.other.map(qaSection => {
-                      return (
-                        <CategoryCard
-                          key={qaSection}
-                          category={qaSection}
-                          size={cardWidth}
-                          style={{marginBottom: cardMargin}}
-                        />
-                      );
-                    })}
-                  </View>
-                  <View style={{height: 50}}></View>
+                  {/* quick access categories container */}
+                  {sections.other.map(qaSection => {
+                    return (
+                      <CategoryCard
+                        key={qaSection}
+                        category={qaSection}
+                        size={cardWidth}
+                        style={{marginBottom: cardMargin}}
+                      />
+                    );
+                  })}
                 </View>
+                <View style={{height: 50}}></View>
               </View>
-            </ScrollView>
-          </View>
-        </SafeAreaView>
+            </View>
+          </ScrollView>
+        </ScreenContainer>
       </ImageBackground>
     </LinearGradient>
   );
