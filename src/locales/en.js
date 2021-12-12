@@ -26,6 +26,7 @@ const EN = {
   exams: 'Exams',
   schedule: 'Schedule',
   material: 'Material',
+  courses: 'Courses',
 
   // Email screen
   email: 'E-mail',
