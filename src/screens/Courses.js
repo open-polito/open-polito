@@ -28,7 +28,6 @@ export default function Courses({navigation}) {
     } else {
       setCourses(JSON.parse(courses_json).corsi);
     }
-    console.log(user.carico_didattico.corsi[0]);
   }, []);
 
   return (
