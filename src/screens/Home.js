@@ -18,7 +18,7 @@ import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
 
-export default function Home() {
+export default function Home({navigation}) {
   const {t} = useTranslation();
   const [height] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
@@ -105,6 +105,13 @@ export default function Home() {
                         key={qaSection}
                         category={t(qaSection)}
                         size={cardWidth}
+                        onPress={
+                          qaSection == 'courses'
+                            ? () => {
+                                navigation.navigate('Courses');
+                              }
+                            : null
+                        }
                       />
                     );
                   })}

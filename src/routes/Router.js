@@ -33,6 +33,7 @@ import {
 } from '../components/CustomFlashMessages';
 import UserProvider from '../context/User';
 import MaterialSearch from '../screens/MaterialSearch';
+import Courses from '../screens/Courses';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -213,6 +214,7 @@ export default function Router() {
             }}>
             <AppStack.Screen name="HomeRouter" component={HomeRouter} />
             <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
+            <AppStack.Screen name="Courses" component={Courses} />
           </AppStack.Navigator>
         </UserProvider>
       ) : (

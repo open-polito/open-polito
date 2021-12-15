@@ -5,7 +5,12 @@ import notImplemented from '../utils/not_implemented';
 import {TextS} from './Text';
 import {useTranslation} from 'react-i18next';
 
-export default function CategoryCard({category, size, style = {}}) {
+export default function CategoryCard({
+  category,
+  size,
+  style = {},
+  onPress = undefined,
+}) {
   const {t} = useTranslation();
   return (
     <View style={style}>
@@ -14,7 +19,7 @@ export default function CategoryCard({category, size, style = {}}) {
         android_ripple={{color: '#ccc'}}
         // TODO onPress go to category
         onPress={() => {
-          notImplemented(t);
+          onPress ? onPress() : notImplemented(t);
         }}>
         <TextS text={category} weight="bold" color={colors.black} />
       </Pressable>
