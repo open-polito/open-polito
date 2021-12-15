@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   textExtraLarge: {
-    fontSize: 36,
+    fontSize: 32,
   },
   textTitleLarge: {
     fontSize: 42,
