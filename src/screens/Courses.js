@@ -56,14 +56,19 @@ export default function Courses({navigation}) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   }}>
-                  <View style={{flexDirection: 'column'}}>
-                    <TextN text={course.nome} weight="regular" style={{}} />
+                  <View style={{flexDirection: 'column', width: '90%'}}>
+                    <TextN
+                      text={course.nome}
+                      numberOfLines={1}
+                      weight="regular"
+                    />
                     <TextS text={course.cfu + ' CFU'} />
                   </View>
                   <Icon
                     name="chevron-right-circle-outline"
                     color={colors.gray}
                     size={24}
+                    style={{position: 'absolute', right: 0}}
                   />
                 </View>
               </Pressable>
