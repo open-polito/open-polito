@@ -1,19 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {useTranslation} from 'react-i18next';
 import {Pressable, View} from 'react-native';
-import {useDispatch} from 'react-redux';
 import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
-import {TextL, TextN, TextS, TextXL} from '../components/Text';
+import {TextL, TextS, TextXL} from '../components/Text';
 import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import styles from '../styles';
 import CourseInfo from '../components/CourseInfo';
 
 export default function Course({navigation, route}) {
-  const {t} = useTranslation();
-  const {dispatch} = useDispatch();
   const {user} = useContext(UserContext);
   const [courseData, setCourseData] = useState(null);
   const code = route.params.courseCode;
