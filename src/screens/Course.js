@@ -7,10 +7,12 @@ import {TextL, TextS, TextXL} from '../components/Text';
 import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CourseInfo from '../components/CourseInfo';
+import CourseVideos from '../components/CourseVideos';
 
 export default function Course({navigation, route}) {
   const {user} = useContext(UserContext);
   const [courseData, setCourseData] = useState(null);
+  const [mounted, setMounted] = useState(true);
   const code = route.params.courseCode;
 
   const [currentTab, setCurrentTab] = useState('info');
@@ -35,19 +37,21 @@ export default function Course({navigation, route}) {
         if (corso.codice == code) {
           const _course = corso;
           _course.populate().then(() => {
-            setCourseData(_course);
+            mounted && setCourseData(_course);
           });
         }
       });
     })();
+    return () => {
+      setMounted(false);
+    };
   }, []);
 
   return (
     <ScreenContainer>
       <ArrowHeader backFunc={navigation.goBack} />
-
       {courseData && (
-        <View>
+        <View style={{flex: 1}}>
           <TextXL
             text={courseData.nome}
             numberOfLines={2}
@@ -66,7 +70,6 @@ export default function Course({navigation, route}) {
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  borderWidth: 1,
                 }}>
                 <Icon name="person-outline" color={colors.gray} size={16} />
                 <TextS
@@ -75,7 +78,11 @@ export default function Course({navigation, route}) {
               </View>
             </View>
           </View>
-          <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-around',
+            }}>
             {tabs.map(tab => (
               <View
                 key={tab.name}
@@ -93,6 +100,7 @@ export default function Course({navigation, route}) {
                     width: '100%',
                     flexDirection: 'row',
                     justifyContent: 'center',
+                    paddingVertical: 16,
                   }}>
                   <Icon
                     name={tab.icon}
@@ -105,18 +113,14 @@ export default function Course({navigation, route}) {
               </View>
             ))}
           </View>
-
-          <View>
-            {(() => {
-              switch (currentTab) {
-                case 'info':
-                  return <CourseInfo />;
-                  break;
-                case 'videos':
-                  return <CourseVideos />;
-              }
-            })()}
-          </View>
+          {(() => {
+            switch (currentTab) {
+              case 'info':
+                return <CourseInfo />;
+              case 'videos':
+                return <CourseVideos videos={courseData.videolezioni} />;
+            }
+          })()}
         </View>
       )}
     </ScreenContainer>
