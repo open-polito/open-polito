@@ -44,11 +44,12 @@ export default function Courses({navigation}) {
                 }}
                 android_ripple={{color: colors.lightGray}}
                 style={{
-                  paddingVertical: 8,
+                  paddingVertical: 12,
                   paddingHorizontal: 16,
                   marginBottom: 16,
                   backgroundColor: colors.white,
                   borderRadius: 4,
+                  ...styles.elevatedSmooth,
                 }}>
                 <View
                   style={{
