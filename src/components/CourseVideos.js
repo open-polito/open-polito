@@ -40,7 +40,7 @@ export default function CourseVideos({videos}) {
                   alignItems: 'flex-start',
                 }}>
                 <TextN text={item.titolo} weight="medium" />
-                <TextS text={item.data} />
+                <TextS text={item.data.toString()} />
               </View>
             </View>
           );

@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Pressable, View} from 'react-native';
+import {Pressable, ScrollView, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
@@ -32,49 +32,57 @@ export default function Courses({navigation}) {
   }, []);
 
   return (
-    <ScreenContainer>
-      <ArrowHeader text={t('courses')} backFunc={navigation.goBack} />
-      <View>
-        {courses != null &&
-          courses.map(course => (
-            <View key={course.codice}>
-              <Pressable
-                onPress={() => {
-                  navigation.navigate('Course', {courseCode: course.codice});
-                }}
-                android_ripple={{color: colors.lightGray}}
-                style={{
-                  paddingVertical: 12,
-                  paddingHorizontal: 16,
-                  marginBottom: 16,
-                  backgroundColor: colors.white,
-                  borderRadius: 4,
-                  ...styles.elevatedSmooth,
-                }}>
-                <View
+    <ScreenContainer style={{paddingHorizontal: 0}}>
+      <View style={styles.withHorizontalPadding}>
+        <ArrowHeader text={t('courses')} backFunc={navigation.goBack} />
+      </View>
+      <View style={{flex: 1}}>
+        <ScrollView
+          contentContainerStyle={{
+            ...styles.withHorizontalPadding,
+            flex: 1,
+          }}>
+          {courses != null &&
+            courses.map(course => (
+              <View key={course.codice}>
+                <Pressable
+                  onPress={() => {
+                    navigation.navigate('Course', {courseCode: course.codice});
+                  }}
+                  android_ripple={{color: colors.lightGray}}
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    marginBottom: 16,
+                    backgroundColor: colors.white,
+                    borderRadius: 4,
+                    ...styles.elevatedSmooth,
                   }}>
-                  <View style={{flexDirection: 'column', width: '90%'}}>
-                    <TextN
-                      text={course.nome}
-                      numberOfLines={1}
-                      weight="regular"
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
+                    <View style={{flexDirection: 'column', width: '90%'}}>
+                      <TextN
+                        text={course.nome}
+                        numberOfLines={1}
+                        weight="regular"
+                      />
+                      <TextS text={course.cfu + ' CFU'} />
+                    </View>
+                    <Icon
+                      name="chevron-right-circle-outline"
+                      color={colors.gray}
+                      size={24}
+                      style={{position: 'absolute', right: 0}}
                     />
-                    <TextS text={course.cfu + ' CFU'} />
                   </View>
-                  <Icon
-                    name="chevron-right-circle-outline"
-                    color={colors.gray}
-                    size={24}
-                    style={{position: 'absolute', right: 0}}
-                  />
-                </View>
-              </Pressable>
-            </View>
-          ))}
+                </Pressable>
+              </View>
+            ))}
+        </ScrollView>
       </View>
     </ScreenContainer>
   );
