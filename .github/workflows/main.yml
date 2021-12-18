@@ -22,7 +22,7 @@ jobs:
             ${{ runner.os }}-
       - name: Install npm dependencies
         run: |
-          yarn install --production
+          npm install --production
       - name: Cache Gradle Wrapper
         uses: actions/cache@v2
         with:
