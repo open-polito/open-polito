@@ -1,18 +1,26 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {View} from 'react-native';
-import {TextN} from './Text';
+import {ScrollView, View} from 'react-native';
+import {TextN, TextS} from './Text';
 
 export default function CourseInfo({data}) {
   const {t} = useTranslation();
   return (
     <View
       style={{
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
+        flex: 1,
+        marginBottom: 32,
       }}>
-      <TextN text={t('notImplementedFlashMessageDesc')} />
+      <ScrollView>
+        {data.map((section, index) => {
+          return (
+            <View key={index}>
+              <TextN text={section.title} weight="medium" />
+              <TextS text={section.text} />
+            </View>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }

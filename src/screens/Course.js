@@ -120,7 +120,7 @@ export default function Course({navigation, route}) {
           {(() => {
             switch (currentTab) {
               case 'info':
-                return <CourseInfo />;
+                return <CourseInfo data={courseData.info} />;
               case 'recordings':
                 return (
                   <CourseVideos videos={courseData.vc_recordings.current} />
