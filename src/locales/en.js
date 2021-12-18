@@ -52,6 +52,12 @@ const EN = {
   byCourse: 'By course',
   selectCourse: 'Select a course to view its files',
 
+  // Course screen
+  info: 'Info',
+  recordings: 'Recordings',
+  videos: 'Videos',
+  noVideos: 'No videos',
+
   // Flash messages
   logoutFlashMessage: 'Logging out...',
   loginPendingFlashMessage: 'Connecting...',

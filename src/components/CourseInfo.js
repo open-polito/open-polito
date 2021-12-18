@@ -14,9 +14,19 @@ export default function CourseInfo({data}) {
       <ScrollView>
         {data.map((section, index) => {
           return (
-            <View key={index}>
-              <TextN text={section.title} weight="medium" />
-              <TextS text={section.text} />
+            <View
+              key={index}
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+              }}>
+              <TextN
+                text={section.title}
+                weight="medium"
+                style={{borderBottomWidth: 1, marginTop: index != 0 ? 12 : 0}}
+              />
+              <TextS text={section.text.trim()} />
             </View>
           );
         })}
