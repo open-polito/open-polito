@@ -1,0 +1,53 @@
+name: react-native-android-build-apk
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@master
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install npm dependencies
+        run: |
+          yarn install --production
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Make Gradlew executable
+        run: cd android && chmod +x ./gradlew
+      - name: Build debug variant
+        run: |
+          cd android && ./gradlew assembleDebug --no-daemon
+      - name: Upload ARM64 binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-arm64-v8a-debug.apk
+          path: android/app/build/outputs/apk/debug/
+      - name: Upload ARMEABI binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-armeabi-v7a-debug.apk
+          path: android/app/build/outputs/apk/debug/
