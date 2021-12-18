@@ -23,6 +23,10 @@ export default function Course({navigation, route}) {
       icon: 'info-outline',
     },
     {
+      name: 'recordings',
+      icon: 'videocam',
+    },
+    {
       name: 'videos',
       icon: 'ondemand-video',
     },
@@ -117,6 +121,10 @@ export default function Course({navigation, route}) {
             switch (currentTab) {
               case 'info':
                 return <CourseInfo />;
+              case 'recordings':
+                return (
+                  <CourseVideos videos={courseData.vc_recordings.current} />
+                );
               case 'videos':
                 return <CourseVideos videos={courseData.videolezioni} />;
             }
