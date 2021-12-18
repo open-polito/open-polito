@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "^6.2.5",
     "@reduxjs/toolkit": "^1.6.2",
     "i18next": "^21.4.2",
+    "moment": "^2.29.1",
     "open-polito-api": "^1.0.12",
     "react": "17.0.2",
     "react-i18next": "^11.14.2",
