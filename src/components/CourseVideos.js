@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 import {Dimensions, FlatList, Image, View} from 'react-native';
@@ -27,7 +28,9 @@ export default function CourseVideos({videos}) {
                 height: width / 4,
               }}>
               <Image
-                source={{uri: item.cover_url}}
+                source={{
+                  uri: item.cover_url.length != 0 ? item.cover_url : undefined,
+                }}
                 style={{width: width * 0.4, backgroundColor: '#000'}}
                 resizeMode="contain"
               />
@@ -39,8 +42,8 @@ export default function CourseVideos({videos}) {
                   justifyContent: 'flex-start',
                   alignItems: 'flex-start',
                 }}>
-                <TextN text={item.titolo} weight="medium" />
-                <TextS text={item.data.toString()} />
+                <TextN text={item.titolo} weight="medium" numberOfLines={2} />
+                <TextS text={moment(item.data).format('lll')} />
               </View>
             </View>
           );
