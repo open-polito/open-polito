@@ -16,7 +16,11 @@ export default function CourseVideos({videos}) {
       }}>
       <FlatList
         data={videos}
-        ListEmptyComponent={<TextN text="No videos" />}
+        ListEmptyComponent={
+          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <TextN text={t('noVideos')} />
+          </View>
+        }
         renderItem={({item}) => {
           return (
             <View

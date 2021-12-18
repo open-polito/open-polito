@@ -8,8 +8,12 @@ import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CourseInfo from '../components/CourseInfo';
 import CourseVideos from '../components/CourseVideos';
+import styles from '../styles';
+import {useTranslation} from 'react-i18next';
 
 export default function Course({navigation, route}) {
+  const {t} = useTranslation();
+
   const {user} = useContext(UserContext);
   const [courseData, setCourseData] = useState(null);
   const [mounted, setMounted] = useState(true);
@@ -84,8 +88,12 @@ export default function Course({navigation, route}) {
           </View>
           <View
             style={{
+              marginVertical: 16,
               flexDirection: 'row',
               justifyContent: 'space-around',
+              backgroundColor: colors.white,
+              borderRadius: 16,
+              ...styles.elevatedSmooth,
             }}>
             {tabs.map(tab => (
               <View
@@ -102,13 +110,19 @@ export default function Course({navigation, route}) {
                   }}
                   style={{
                     width: '100%',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    paddingVertical: 16,
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    paddingVertical: 12,
                   }}>
                   <Icon
                     name={tab.icon}
-                    size={32}
+                    size={24}
+                    color={
+                      tab.name == currentTab ? colors.gradient1 : colors.gray
+                    }
+                  />
+                  <TextS
+                    text={t(tab.name)}
                     color={
                       tab.name == currentTab ? colors.gradient1 : colors.gray
                     }

@@ -52,6 +52,12 @@ const IT = {
   byCourse: 'Per corso',
   selectCourse: 'Seleziona un corso per vederne i file',
 
+  // Course screen
+  info: 'Info',
+  recordings: 'Recordings',
+  videos: 'Video',
+  noVideos: 'Nessun video',
+
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
   loginPendingFlashMessage: 'Accesso...',
