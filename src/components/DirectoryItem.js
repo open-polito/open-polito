@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, {useContext, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -58,9 +59,17 @@ export default function DirectoryItem({
               textWidth == null && setTextWidth(event.nativeEvent.layout.width);
             }}>
             <TextS text={nome} numberOfLines={1} weight="bold" />
-            <View flexDirection="column">
-              <TextS text={corso != null ? corso : data_inserimento} />
-            </View>
+            {tipo == 'file' && (
+              <View flexDirection="column">
+                <TextS
+                  text={
+                    corso != null
+                      ? corso
+                      : moment(data_inserimento).format('lll')
+                  }
+                />
+              </View>
+            )}
           </View>
         </View>
         <View flexDirection="row" alignItems="center">
@@ -72,7 +81,9 @@ export default function DirectoryItem({
               marginRight: 8,
             }}>
             <TextS text={size_label} />
-            {corso != null ? <TextS text={data_inserimento} /> : null}
+            {corso != null ? (
+              <TextS text={moment(data_inserimento).format('lll')} />
+            ) : null}
           </View>
 
           {tipo == 'file' ? (
