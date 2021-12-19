@@ -3,6 +3,7 @@ const IT = {
   search: 'Cerca',
   searchResults: '{{count}} risultati trovati',
   noResults: 'Nessun risultato',
+  open: 'Apri',
 
   // Splash screen
   loading: 'Caricamento...',

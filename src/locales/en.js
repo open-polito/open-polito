@@ -3,6 +3,7 @@ const EN = {
   search: 'Search',
   searchResults: '{{count}} results found',
   noResults: 'No results',
+  open: 'Open',
 
   // Splash screen
   loading: 'Loading...',
