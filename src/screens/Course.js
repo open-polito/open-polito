@@ -17,6 +17,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {getMaterialTree, getRecentMaterial} from '../utils/material';
 import {setMaterial, setRecentMaterial} from '../store/materialSlice';
 import RecentItemsLoader from '../components/RecentItemsLoader';
+import CourseLoader from '../components/CourseLoader';
 
 export default function Course({navigation, route}) {
   const dispatch = useDispatch();
@@ -95,7 +96,7 @@ export default function Course({navigation, route}) {
   return (
     <ScreenContainer>
       <ArrowHeader backFunc={navigation.goBack} />
-      {courseData && (
+      {courseData ? (
         <View style={{flex: 1}}>
           <TextXL
             text={courseData.nome}
@@ -202,6 +203,8 @@ export default function Course({navigation, route}) {
             }
           })()}
         </View>
+      ) : (
+        <CourseLoader />
       )}
     </ScreenContainer>
   );
