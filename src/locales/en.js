@@ -53,6 +53,7 @@ const EN = {
   selectCourse: 'Select a course to view its files',
 
   // Course screen
+  overview: 'Overview',
   info: 'Info',
   recordings: 'Recordings',
   videos: 'Videos',

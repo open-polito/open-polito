@@ -53,6 +53,7 @@ const IT = {
   selectCourse: 'Seleziona un corso per vederne i file',
 
   // Course screen
+  overview: 'Riepilogo',
   info: 'Info',
   recordings: 'Registrazioni',
   videos: 'Video',

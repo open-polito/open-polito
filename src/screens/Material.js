@@ -52,6 +52,7 @@ export default function Material({navigation}) {
     };
   }, []);
 
+  // TODO extract function
   function loadMaterialIfNull() {
     if (material == null) {
       getMaterialTree(user).then(data => {
