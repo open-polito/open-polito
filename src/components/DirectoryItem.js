@@ -1,14 +1,16 @@
 import moment from 'moment';
 import React, {useContext, useState} from 'react';
-import {Linking, Pressable, View} from 'react-native';
+import {Dimensions, Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {UserContext} from '../context/User';
+import styles from '../styles';
 import getFileIcon from '../utils/get_file_icon';
 import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
 
 export default function DirectoryItem({
+  compact = false,
   tipo, // "file" or "cartella"
   nome = null,
   filename = null,
@@ -45,10 +47,13 @@ export default function DirectoryItem({
             style={{
               flexDirection: 'column',
               justifyContent: 'flex-start',
+              overflow: 'hidden',
               marginLeft: 8,
               width:
-                textWidth == null
-                  ? '100%'
+                textWidth == null || compact
+                  ? Dimensions.get('window').width -
+                    2 * styles.withHorizontalPadding.paddingHorizontal -
+                    250
                   : tipo == 'file'
                   ? corso == null
                     ? textWidth - 175
@@ -62,8 +67,9 @@ export default function DirectoryItem({
             {tipo == 'file' && (
               <View flexDirection="column">
                 <TextS
+                  numberOfLines={1}
                   text={
-                    corso != null
+                    corso != null && !compact
                       ? corso
                       : moment(data_inserimento).format('lll')
                   }
@@ -72,30 +78,32 @@ export default function DirectoryItem({
             )}
           </View>
         </View>
-        <View flexDirection="row" alignItems="center">
-          <View
-            flexDirection="column"
-            style={{
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              marginRight: 8,
-            }}>
-            <TextS text={size_label} />
-            {corso != null ? (
-              <TextS text={moment(data_inserimento).format('lll')} />
+        {!compact && (
+          <View flexDirection="row" alignItems="center">
+            <View
+              flexDirection="column"
+              style={{
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+                marginRight: 8,
+              }}>
+              <TextS text={size_label} />
+              {corso != null ? (
+                <TextS text={moment(data_inserimento).format('lll')} />
+              ) : null}
+            </View>
+
+            {tipo == 'file' ? (
+              <Pressable
+                android_ripple={{color: '#ccc'}}
+                onPress={() => {
+                  getDownloadUrl(user, code).then(url => Linking.openURL(url));
+                }}>
+                <Icon name="file-download" size={24} color={colors.gradient1} />
+              </Pressable>
             ) : null}
           </View>
-
-          {tipo == 'file' ? (
-            <Pressable
-              android_ripple={{color: '#ccc'}}
-              onPress={() => {
-                getDownloadUrl(user, code).then(url => Linking.openURL(url));
-              }}>
-              <Icon name="file-download" size={24} color={colors.gradient1} />
-            </Pressable>
-          ) : null}
-        </View>
+        )}
       </View>
       <View style={{marginLeft: 16}}>{children}</View>
     </View>

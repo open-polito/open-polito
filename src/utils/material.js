@@ -1,5 +1,3 @@
-import Corso from 'open-polito-api/corso';
-
 function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
   if (parentItem != undefined) {
     parentItem.map(item => {
@@ -35,7 +33,7 @@ export function getMaterialList(carico, materialTree) {
     findMaterialRecursively(
       val,
       addMaterial,
-      getCourseNameFromCode(carico.corsi, key),
+      carico != null ? getCourseNameFromCode(carico.corsi, key) : null,
     );
   }
   material.sort((a, b) => a.data_inserimento < b.data_inserimento);
@@ -44,6 +42,11 @@ export function getMaterialList(carico, materialTree) {
 
 export function getRecentMaterial(carico, materialTree) {
   let material = getMaterialList(carico, materialTree);
+  return material.slice(0, 3);
+}
+
+export function getRecentCourseMaterial(materialTree) {
+  let material = getMaterialList(null, {code: materialTree});
   return material.slice(0, 3);
 }
 

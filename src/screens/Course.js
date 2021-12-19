@@ -182,7 +182,12 @@ export default function Course({navigation, route}) {
           {(() => {
             switch (currentTab) {
               case 'overview':
-                return <CourseOverview courseData={courseData} />;
+                return (
+                  <CourseOverview
+                    courseData={courseData}
+                    changeTab={setCurrentTab}
+                  />
+                );
               case 'material':
                 return materialLoaded ? (
                   <ScrollView>

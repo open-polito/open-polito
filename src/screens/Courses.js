@@ -73,8 +73,8 @@ export default function Courses({navigation}) {
                       <TextS text={course.cfu + ' CFU'} />
                     </View>
                     <Icon
-                      name="chevron-right-circle-outline"
-                      color={colors.gray}
+                      name="chevron-right"
+                      color={colors.mediumGray}
                       size={24}
                       style={{position: 'absolute', right: 0}}
                     />
