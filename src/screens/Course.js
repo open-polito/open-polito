@@ -1,17 +1,26 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Pressable, View} from 'react-native';
+import {Pressable, ScrollView, View} from 'react-native';
 import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
 import {TextL, TextS, TextXL} from '../components/Text';
 import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
 import CourseInfo from '../components/CourseInfo';
 import CourseVideos from '../components/CourseVideos';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
+import CourseOverview from '../components/CourseOverview';
+import MaterialExplorer from '../components/MaterialExplorer';
+import {useDispatch, useSelector} from 'react-redux';
+import {getMaterialTree, getRecentMaterial} from '../utils/material';
+import {setMaterial, setRecentMaterial} from '../store/materialSlice';
+import RecentItemsLoader from '../components/RecentItemsLoader';
 
 export default function Course({navigation, route}) {
+  const dispatch = useDispatch();
+
   const {t} = useTranslation();
 
   const {user} = useContext(UserContext);
@@ -19,12 +28,35 @@ export default function Course({navigation, route}) {
   const [mounted, setMounted] = useState(true);
   const code = route.params.courseCode;
 
-  const [currentTab, setCurrentTab] = useState('info');
+  const [currentTab, setCurrentTab] = useState('overview');
+  const [materialLoaded, setMaterialLoaded] = useState(false);
+  const material = useSelector(state => state.material.material);
+
+  // TODO extract function
+  function loadMaterialIfNull() {
+    if (material == null) {
+      getMaterialTree(user).then(data => {
+        dispatch(setMaterial(data));
+        dispatch(
+          setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
+        );
+        if (mounted) {
+          setMaterialLoaded(true);
+        }
+      });
+    } else {
+      setMaterialLoaded(true);
+    }
+  }
 
   const tabs = [
     {
-      name: 'info',
-      icon: 'info-outline',
+      name: 'overview',
+      icon: 'apps',
+    },
+    {
+      name: 'material',
+      icon: 'file-outline',
     },
     {
       name: 'recordings',
@@ -33,6 +65,10 @@ export default function Course({navigation, route}) {
     {
       name: 'videos',
       icon: 'ondemand-video',
+    },
+    {
+      name: 'info',
+      icon: 'info-outline',
     },
   ];
 
@@ -50,6 +86,7 @@ export default function Course({navigation, route}) {
         }
       });
     })();
+    loadMaterialIfNull();
     return () => {
       setMounted(false);
     };
@@ -114,13 +151,23 @@ export default function Course({navigation, route}) {
                     alignItems: 'center',
                     paddingVertical: 12,
                   }}>
-                  <Icon
-                    name={tab.icon}
-                    size={24}
-                    color={
-                      tab.name == currentTab ? colors.gradient1 : colors.gray
-                    }
-                  />
+                  {tab.name == 'material' ? (
+                    <IconC
+                      name={tab.icon}
+                      size={24}
+                      color={
+                        tab.name == currentTab ? colors.gradient1 : colors.gray
+                      }
+                    />
+                  ) : (
+                    <Icon
+                      name={tab.icon}
+                      size={24}
+                      color={
+                        tab.name == currentTab ? colors.gradient1 : colors.gray
+                      }
+                    />
+                  )}
                   <TextS
                     text={t(tab.name)}
                     color={
@@ -133,6 +180,17 @@ export default function Course({navigation, route}) {
           </View>
           {(() => {
             switch (currentTab) {
+              case 'overview':
+                return <CourseOverview courseData={courseData} />;
+              case 'material':
+                return materialLoaded ? (
+                  <ScrollView>
+                    <MaterialExplorer course={courseData.codice} />
+                  </ScrollView>
+                ) : (
+                  <RecentItemsLoader />
+                );
+
               case 'info':
                 return <CourseInfo data={courseData.info} />;
               case 'recordings':
