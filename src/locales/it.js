@@ -54,7 +54,7 @@ const IT = {
 
   // Course screen
   info: 'Info',
-  recordings: 'Recordings',
+  recordings: 'Registrazioni',
   videos: 'Video',
   noVideos: 'Nessun video',
 
