@@ -29,7 +29,7 @@ export default function CourseOverview({courseData, changeTab}) {
           marginBottom: styles.withHorizontalPadding.paddingHorizontal / 2,
         }}>
         <MaterialWidget
-          courseCode={courseData.codice}
+          courseCode={courseData.codice + courseData.nome}
           action={() => {
             changeTab('material');
           }}

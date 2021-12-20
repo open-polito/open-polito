@@ -67,8 +67,8 @@ export default function Material({navigation}) {
     }
   }
 
-  function selectCourse(course_id) {
-    setSelectedCourse(course_id);
+  function selectCourse(course_code) {
+    setSelectedCourse(course_code);
   }
 
   return (

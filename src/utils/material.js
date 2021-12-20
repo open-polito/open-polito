@@ -17,7 +17,7 @@ function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
 function getCourseNameFromCode(corsi, code) {
   let _name = null;
   corsi.map(corso => {
-    if (corso.codice == code) {
+    if (corso.codice + corso.nome == code) {
       _name = corso.nome;
     }
   });
@@ -56,7 +56,7 @@ export async function getMaterialTree(user) {
   let materialTree = {};
   await Promise.all(
     user.carico_didattico.corsi.map(async corso => {
-      const currentCourse = corso.codice;
+      const currentCourse = corso.codice + corso.nome;
       if (corso.materiale == undefined) {
         await corso.populate();
         materialTree[currentCourse] = corso.materiale;

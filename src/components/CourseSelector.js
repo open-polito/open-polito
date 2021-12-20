@@ -19,10 +19,12 @@ export default function CourseSelector({courses, selector}) {
       <View style={{paddingLeft: 24}} />
       {courses.map(course => {
         const color =
-          selected == course.codice ? colors.gradient1 : colors.white;
+          selected == course.codice + course.nome
+            ? colors.gradient1
+            : colors.white;
         return (
           <Pressable
-            key={course.codice}
+            key={course.codice + course.nome}
             android_ripple={{color: '#fff'}}
             style={{
               elevation: 4,
@@ -36,8 +38,8 @@ export default function CourseSelector({courses, selector}) {
             onPress={() => {
               // set selected local state
               // then use parent component's change function
-              setSelected(course.codice);
-              selector(course.codice);
+              setSelected(course.codice + course.nome);
+              selector(course.codice + course.nome);
             }}>
             <View style={{height: '100%'}}>
               <TextS
