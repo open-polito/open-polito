@@ -5,7 +5,7 @@ import {TextN} from './Text';
 
 export default function Button({text, onPress}) {
   return (
-    <View>
+    <View style={{flexDirection: 'row'}}>
       <Pressable
         style={_styles.btn}
         android_ripple={{color: '#eee'}}
@@ -18,13 +18,13 @@ export default function Button({text, onPress}) {
 
 const _styles = StyleSheet.create({
   btn: {
-    alignSelf: 'flex-end',
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.gradient1,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderRadius: 4,
-    elevation: 3,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
   },
 });

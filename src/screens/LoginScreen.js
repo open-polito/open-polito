@@ -10,12 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colors from '../colors';
 import Button from '../components/Button';
-import {
-  Text,
-  TextSubTitle,
-  TextAction,
-  TextTitleLarge,
-} from '../components/Text';
+import {Text, TextSubTitle, TextTitleLarge, TextXL} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -30,67 +25,88 @@ export default function LoginScreen(props) {
   const [password, setPassword] = useState('');
 
   return (
-    <LinearGradient
-      colors={[colors.gradient1, colors.gradient2]}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      height={height}>
-      <ImageBackground source={require('../../assets/images/background.png')}>
-        <SafeAreaView style={_styles.splash}>
-          <StatusBar translucent backgroundColor="transparent" />
-          <View style={styles.container}>
-            <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
-              <TextTitleLarge text="Open PoliTo" color="white" weight="bold" />
-              <TextSubTitle
-                text={t('caption')}
-                color="white"
-                style={{marginTop: 20}}
-              />
-            </View>
+    <View>
+      <LinearGradient
+        colors={[colors.gradient1, colors.gradient2]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        height={height}>
+        <ImageBackground source={require('../../assets/images/background.png')}>
+          <SafeAreaView style={_styles.splash}>
+            <StatusBar translucent backgroundColor="transparent" />
             <View
-              style={{...styles.withHorizontalPadding, ..._styles.loginCard}}>
-              <TextAction text={t('loginCall')} />
-              <TextInput
-                textContentType="emailAddress"
-                placeholder={t('userPlaceholder')}
-                icon="account-circle"
-                onChangeText={txt => {
-                  setUsername(txt);
-                }}
-              />
-              <TextInput
-                textContentType="password"
-                placeholder={t('passwordPlaceholder')}
-                icon="lock-outline"
-                secureTextEntry={true}
-                onChangeText={txt => {
-                  setPassword(txt);
-                }}
-              />
-              <Button
-                text={t('login')}
-                onPress={() => {
-                  props.loginFunction(username, password);
-                }}
-              />
-            </View>
-            <View style={_styles.versionView}>
-              <Text
-                text={`${t('version')} 0.3.0`}
-                color="white"
+              style={{...styles.container, flex: 1, flexDirection: 'column'}}>
+              <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
+                <TextTitleLarge
+                  text="Open PoliTo"
+                  color="white"
+                  weight="bold"
+                />
+                <TextSubTitle
+                  text={t('caption')}
+                  color="white"
+                  style={{marginTop: 20}}
+                />
+              </View>
+              <View
                 style={{
-                  marginHorizontal: 'auto',
-                  position: 'absolute',
-                  textAlign: 'center',
-                  width: '100%',
-                  bottom: 24,
-                }}
-              />
+                  ...styles.withHorizontalPadding,
+                  ..._styles.loginCard,
+                }}>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                  }}>
+                  <TextXL
+                    style={{marginVertical: 32}}
+                    text={t('loginCall')}
+                    weight="bold"
+                  />
+                  <TextInput
+                    textContentType="emailAddress"
+                    placeholder={t('userPlaceholder')}
+                    icon="account-circle"
+                    onChangeText={txt => {
+                      setUsername(txt);
+                    }}
+                  />
+                  <TextInput
+                    textContentType="password"
+                    placeholder={t('passwordPlaceholder')}
+                    icon="lock-outline"
+                    secureTextEntry={true}
+                    onChangeText={txt => {
+                      setPassword(txt);
+                    }}
+                  />
+                  <Button
+                    text={t('login')}
+                    onPress={() => {
+                      props.loginFunction(username, password);
+                    }}
+                  />
+                </View>
+                <View style={_styles.versionView}>
+                  <Text
+                    text={`${t('version')} 0.3.0`}
+                    style={{
+                      marginHorizontal: 'auto',
+                      position: 'absolute',
+                      textAlign: 'center',
+                      width: '100%',
+                      bottom: 24,
+                    }}
+                  />
+                </View>
+              </View>
             </View>
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+          </SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </View>
   );
 }
 
@@ -107,13 +123,13 @@ const _styles = StyleSheet.create({
     flex: 1,
   },
   loginCard: {
-    flexBasis: 1.5,
-    flexGrow: 1.75,
-    flexShrink: 1.25,
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
+    flexDirection: 'column',
+    flex: 2.5,
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
     backgroundColor: colors.white,
-    paddingVertical: 24,
-    elevation: 8,
+    ...styles.elevatedSmooth,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
 });
