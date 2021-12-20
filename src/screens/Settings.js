@@ -60,7 +60,7 @@ export default function Settings() {
           height: windowHeight,
         }}>
         <Header text={t('settings')} noMarginBottom={true} />
-        <ScrollView>
+        <ScrollView style={styles.paddingFromHeader}>
           <AccountBox
             name={anagrafica.nome + ' ' + anagrafica.cognome}
             degree={anagrafica.nome_corso_laurea}

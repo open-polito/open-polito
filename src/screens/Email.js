@@ -30,7 +30,8 @@ export default function Email() {
           justifyContent: 'center',
           alignItems: 'center',
           marginTop:
-            -styles.titleBar.marginBottom - styles.textExtraLarge.fontSize,
+            -styles.paddingFromHeader.marginTop -
+            styles.textExtraLarge.fontSize,
         }}>
         <TextS
           text={t('unreadEmail', {count: unreadEmailCount})}

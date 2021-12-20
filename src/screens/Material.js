@@ -75,7 +75,7 @@ export default function Material({navigation}) {
     <ScreenContainer style={{paddingHorizontal: 0}}>
       <View style={styles.withHorizontalPadding}>
         <Header text={t('material')} noMarginBottom={true} />
-        <View style={{marginBottom: 16}}>
+        <View style={{marginBottom: 16, ...styles.paddingFromHeader}}>
           {/* search container */}
           {allLoaded && (
             <Pressable

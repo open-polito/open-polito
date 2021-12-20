@@ -41,6 +41,7 @@ export default function Courses({navigation}) {
           contentContainerStyle={{
             ...styles.withHorizontalPadding,
             paddingBottom: 32,
+            ...styles.paddingFromHeader,
           }}>
           {courses != null &&
             courses.map(course => (

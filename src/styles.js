@@ -57,12 +57,14 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignContent: 'space-between',
   },
+  paddingFromHeader: {
+    paddingTop: 32,
+  },
   titleBar: {
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
   },
   tabNavigator: {
     backgroundColor: colors.white,
