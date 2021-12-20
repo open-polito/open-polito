@@ -38,16 +38,21 @@ jobs:
             ${{ runner.os }}-gradle-caches-
       - name: Make Gradlew executable
         run: cd android && chmod +x ./gradlew
-      - name: Build debug variant
+      - name: Build release variant
         run: |
-          cd android && ./gradlew assembleDebug --no-daemon
+          cd android && ./gradlew assembleRelease --no-daemon
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
           name: arm64
-          path: android/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk
+          path: android/app/build/outputs/apk/release/app-arm64-v8a-release.apk
       - name: Upload ARMEABI binary
         uses: actions/upload-artifact@v1
         with:
           name: armeabi-v7a
-          path: android/app/build/outputs/apk/debug/app-armeabi-v7a-debug.apk
+          path: android/app/build/outputs/apk/release/app-armeabi-v7a-release.apk
+      - name: Upload universal binary
+        uses: actions/upload-artifact@v1
+        with:
+          name: universal
+          path: android/app/build/outputs/apk/release/app-universal-release.apk
