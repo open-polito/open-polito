@@ -107,20 +107,45 @@ export default function Course({navigation, route}) {
           <View
             style={{
               ...styles.withHorizontalPadding,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              flexDirection: 'column',
             }}>
             <TextL text={courseData.codice} color={colors.mediumGray} />
-            <View style={{flexDirection: 'column'}}>
+            <View style={{flexDirection: 'column', marginTop: 16}}>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'flex-end',
+                  justifyContent: 'flex-start',
                 }}>
                 <Icon name="person-outline" color={colors.gray} size={16} />
                 <TextS
+                  style={{marginLeft: 4}}
                   text={courseData.cognome_prof + ' ' + courseData.nome_prof}
+                />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}>
+                <IconC
+                  name="star-four-points-outline"
+                  color={colors.gray}
+                  size={16}
+                />
+                <TextS style={{marginLeft: 4}} text={courseData.cfu + ' CFU'} />
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                }}>
+                <IconC name="calendar" color={colors.gray} size={16} />
+                <TextS
+                  style={{marginLeft: 4}}
+                  text={'A.A. ' + courseData.anno_accademico}
                 />
               </View>
             </View>
