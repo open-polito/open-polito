@@ -194,7 +194,9 @@ export default function Course({navigation, route}) {
                 return materialLoaded ? (
                   <ScrollView
                     contentContainerStyle={styles.withHorizontalPadding}>
-                    <MaterialExplorer course={courseData.codice} />
+                    <MaterialExplorer
+                      course={courseData.codice + courseData.nome}
+                    />
                   </ScrollView>
                 ) : (
                   <RecentItemsLoader />
