@@ -46,6 +46,9 @@ export default function CourseAlert({alert, compact = false}) {
           <RenderHTML
             source={{html: alert.info}}
             tagsStyles={{
+              body: {
+                color: colors.black,
+              },
               p: {
                 marginTop: 0,
               },
