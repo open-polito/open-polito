@@ -44,9 +44,9 @@ export default function CourseOverview({courseData, changeTab}) {
       <TextWidget name={t('courseInfo')} expandable>
         <CourseInfo data={courseData.info} />
       </TextWidget>
-      <TextWidget name={t('oldVideos')} expandable>
+      {/* <TextWidget name={t('oldVideos')} expandable>
         <CourseVideos videos={courseData.videolezioni} />
-      </TextWidget>
+      </TextWidget> */}
     </ScrollView>
   );
 }
