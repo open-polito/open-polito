@@ -5,6 +5,7 @@ import styles from '../styles';
 import colors from '../colors';
 
 export default function TextInput({
+  spaced = false,
   placeholder,
   textContentType = 'none',
   icon = null,
@@ -22,6 +23,7 @@ export default function TextInput({
         ..._styles.textInput,
         backgroundColor: backgroundColor,
         ...styles.elevatedSmooth,
+        marginBottom: spaced ? 24 : 0,
       }}>
       {typeof icon == 'string' ? (
         <Icon name={icon} size={24} color={iconColor} />
@@ -47,7 +49,6 @@ const _styles = StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 8,
     paddingHorizontal: 8,
-    marginBottom: 24,
   },
   textInputText: {
     flex: 1,

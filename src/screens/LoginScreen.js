@@ -66,6 +66,7 @@ export default function LoginScreen(props) {
                     weight="bold"
                   />
                   <TextInput
+                    spaced
                     textContentType="emailAddress"
                     placeholder={t('userPlaceholder')}
                     icon="account-circle"
@@ -74,6 +75,7 @@ export default function LoginScreen(props) {
                     }}
                   />
                   <TextInput
+                    spaced
                     textContentType="password"
                     placeholder={t('passwordPlaceholder')}
                     icon="lock-outline"
