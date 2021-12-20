@@ -50,11 +50,11 @@ export default function Courses({navigation}) {
           }}>
           {courses != null &&
             courses.map(course => (
-              <View key={course.codice}>
+              <View key={course.codice + course.nome}>
                 <Pressable
                   onPress={() => {
                     navigation.navigate('Course', {
-                      courseCode: course.codice,
+                      courseCode: course.codice + course.nome,
                     });
                   }}
                   android_ripple={{color: colors.lightGray}}
