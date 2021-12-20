@@ -109,7 +109,7 @@ export default function Material({navigation}) {
           />
         </View>
         <View style={styles.withHorizontalPadding}>
-          {allLoaded ? <RecentItems /> : <RecentItemsLoader />}
+          {allLoaded ? <RecentItems relative_date /> : <RecentItemsLoader />}
         </View>
         <View style={styles.withHorizontalPadding}>
           <TextSubTitle text={t('byCourse')} />
