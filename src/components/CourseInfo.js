@@ -9,7 +9,7 @@ export default function CourseInfo({data}) {
     <View
       style={{
         flex: 1,
-        marginBottom: 32,
+        marginBottom: 16,
       }}>
       <ScrollView>
         {data.map((section, index) => {
