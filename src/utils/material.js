@@ -36,7 +36,9 @@ export function getMaterialList(carico, materialTree) {
       carico != null ? getCourseNameFromCode(carico.corsi, key) : null,
     );
   }
-  material.sort((a, b) => a.data_inserimento < b.data_inserimento);
+  material.sort((a, b) => {
+    return new Date(b.data_inserimento) - new Date(a.data_inserimento);
+  });
   return material;
 }
 
