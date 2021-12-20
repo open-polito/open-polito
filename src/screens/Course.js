@@ -75,7 +75,7 @@ export default function Course({navigation, route}) {
     }
     (async () => {
       user.carico_didattico.corsi.forEach(corso => {
-        if (corso.codice == code) {
+        if (corso.codice + corso.nome == code) {
           const _course = corso;
           _course.populate().then(() => {
             mounted && setCourseData(_course);
@@ -110,7 +110,7 @@ export default function Course({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <TextL text={code} color={colors.mediumGray} />
+            <TextL text={courseData.codice} color={colors.mediumGray} />
             <View style={{flexDirection: 'column'}}>
               <View
                 style={{
