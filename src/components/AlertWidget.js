@@ -9,7 +9,7 @@ export default function AlertWidget({action, alerts}) {
   const {t} = useTranslation();
 
   return (
-    <WidgetBase name={t('alerts')} action={action}>
+    <WidgetBase name={t('alerts')} action={action} compact>
       {alerts ? (
         <View style={{flexDirection: 'column', marginTop: 8}}>
           {alerts.map(alert => (

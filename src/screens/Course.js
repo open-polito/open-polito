@@ -61,21 +61,21 @@ export default function Course({navigation, route}) {
       icon: 'file-outline',
     },
     {
-      name: 'alerts',
-      icon: 'bell-alert-outline',
-    },
-    {
       name: 'recordings',
       icon: 'videocam',
     },
     {
-      name: 'videos',
-      icon: 'ondemand-video',
+      name: 'alerts',
+      icon: 'bell-alert-outline',
     },
-    {
-      name: 'info',
-      icon: 'info-outline',
-    },
+    // {
+    //   name: 'videos',
+    //   icon: 'ondemand-video',
+    // },
+    // {
+    //   name: 'info',
+    //   icon: 'info-outline',
+    // },
   ];
 
   useEffect(() => {
@@ -99,18 +99,23 @@ export default function Course({navigation, route}) {
   }, []);
 
   return (
-    <ScreenContainer>
-      <ArrowHeader backFunc={navigation.goBack} />
+    <ScreenContainer style={{paddingHorizontal: 0}}>
+      <View style={styles.withHorizontalPadding}>
+        <ArrowHeader backFunc={navigation.goBack} />
+      </View>
       {courseData ? (
         <View style={{flex: 1}}>
-          <TextXL
-            text={courseData.nome}
-            numberOfLines={2}
-            weight="medium"
-            color={colors.black}
-          />
+          <View style={styles.withHorizontalPadding}>
+            <TextXL
+              text={courseData.nome}
+              numberOfLines={2}
+              weight="medium"
+              color={colors.black}
+            />
+          </View>
           <View
             style={{
+              ...styles.withHorizontalPadding,
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
@@ -137,6 +142,7 @@ export default function Course({navigation, route}) {
               backgroundColor: colors.white,
               borderRadius: 16,
               ...styles.elevatedSmooth,
+              marginHorizontal: styles.withHorizontalPadding.paddingHorizontal,
             }}>
             {tabs.map(tab => (
               <View
@@ -195,22 +201,33 @@ export default function Course({navigation, route}) {
                 );
               case 'material':
                 return materialLoaded ? (
-                  <ScrollView>
+                  <ScrollView
+                    contentContainerStyle={styles.withHorizontalPadding}>
                     <MaterialExplorer course={courseData.codice} />
                   </ScrollView>
                 ) : (
                   <RecentItemsLoader />
                 );
               case 'alerts':
-                return <CourseAlerts alerts={courseData.avvisi} />;
+                return (
+                  <View style={{...styles.withHorizontalPadding, flex: 1}}>
+                    <CourseAlerts alerts={courseData.avvisi} />
+                  </View>
+                );
               case 'info':
                 return <CourseInfo data={courseData.info} />;
               case 'recordings':
                 return (
-                  <CourseVideos videos={courseData.vc_recordings.current} />
+                  <View style={{...styles.withHorizontalPadding, flex: 1}}>
+                    <CourseVideos videos={courseData.vc_recordings.current} />
+                  </View>
                 );
               case 'videos':
-                return <CourseVideos videos={courseData.videolezioni} />;
+                return (
+                  <View style={{...styles.withHorizontalPadding, flex: 1}}>
+                    <CourseVideos videos={courseData.videolezioni} />
+                  </View>
+                );
             }
           })()}
         </View>

@@ -11,7 +11,7 @@ export default function MaterialWidget({action, courseCode}) {
   const material = useSelector(state => state.material.material);
 
   return (
-    <WidgetBase name={t('material')} action={action}>
+    <WidgetBase name={t('material')} action={action} compact>
       {material ? (
         <RecentItems compact relative_date course={courseCode} />
       ) : (

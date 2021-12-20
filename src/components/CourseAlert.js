@@ -17,7 +17,7 @@ export default function CourseAlert({alert, compact = false}) {
         justifyContent: 'space-between',
         alignItems: compact ? 'center' : 'flex-start',
         width: '100%',
-        borderBottomWidth: 1,
+        borderBottomWidth: compact ? 0 : 1,
       }}>
       <View
         style={{

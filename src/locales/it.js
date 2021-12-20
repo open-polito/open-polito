@@ -5,6 +5,7 @@ const IT = {
   noResults: 'Nessun risultato',
   open: 'Apri',
   alerts: 'Avvisi',
+  oldVideos: 'Video di anni precedenti',
 
   // Splash screen
   loading: 'Caricamento...',
@@ -57,6 +58,7 @@ const IT = {
   // Course screen
   overview: 'Riepilogo',
   info: 'Info',
+  courseInfo: 'Informazioni sul corso',
   recordings: 'Registrazioni',
   videos: 'Video',
   noVideos: 'Nessun video',

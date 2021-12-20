@@ -12,7 +12,7 @@ export default function CourseLoader() {
   const r = 8; // border radius
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View style={{flexDirection: 'column', ...styles.withHorizontalPadding}}>
       <SvgAnimatedLinearGradient height={200} width={w}>
         <Rect x={0} y={0} rx={r} ry={r} width="190" height="36" />
         <Rect x={0} y="48" rx={r} ry={r} width="128" height="24" />
