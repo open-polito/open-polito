@@ -7,7 +7,6 @@ import {TextL, TextS, TextXL} from '../components/Text';
 import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
-import CourseInfo from '../components/CourseInfo';
 import CourseVideos from '../components/CourseVideos';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -68,14 +67,6 @@ export default function Course({navigation, route}) {
       name: 'alerts',
       icon: 'bell-alert-outline',
     },
-    // {
-    //   name: 'videos',
-    //   icon: 'ondemand-video',
-    // },
-    // {
-    //   name: 'info',
-    //   icon: 'info-outline',
-    // },
   ];
 
   useEffect(() => {
@@ -214,18 +205,10 @@ export default function Course({navigation, route}) {
                     <CourseAlerts alerts={courseData.avvisi} />
                   </View>
                 );
-              case 'info':
-                return <CourseInfo data={courseData.info} />;
               case 'recordings':
                 return (
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
                     <CourseVideos videos={courseData.vc_recordings.current} />
-                  </View>
-                );
-              case 'videos':
-                return (
-                  <View style={{...styles.withHorizontalPadding, flex: 1}}>
-                    <CourseVideos videos={courseData.videolezioni} />
                   </View>
                 );
             }
