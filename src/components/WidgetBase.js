@@ -5,7 +5,7 @@ import styles from '../styles';
 import {TextN, TextS} from './Text';
 import {useTranslation} from 'react-i18next';
 
-export default function WidgetBase({name, action, children}) {
+export default function WidgetBase({name, action, children, compact = false}) {
   const {t} = useTranslation();
 
   return (
@@ -14,7 +14,7 @@ export default function WidgetBase({name, action, children}) {
         ...styles.elevatedSmooth,
         backgroundColor: colors.white,
         borderRadius: 16,
-        width: '48%',
+        width: compact ? '48%' : '100%',
       }}>
       <Pressable
         style={{paddingHorizontal: 12, paddingVertical: 8}}

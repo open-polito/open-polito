@@ -1,23 +1,48 @@
-import React from 'react';
-import {View} from 'react-native';
+import React, {useState} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ScrollView, View} from 'react-native';
+import styles from '../styles';
 import AlertWidget from './AlertWidget';
+import CourseInfo from './CourseInfo';
 import MaterialWidget from './MaterialWidget';
+import TextWidget from './TextWidget';
 
 export default function CourseOverview({courseData, changeTab}) {
+  const {t} = useTranslation();
+
+  const [offsetY, setOffsetY] = useState(0);
+
   return (
-    <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-      <MaterialWidget
-        courseCode={courseData.codice}
-        action={() => {
-          changeTab('material');
-        }}
-      />
-      <AlertWidget
-        alerts={courseData.avvisi.slice(0, 3)}
-        action={() => {
-          changeTab('alerts');
-        }}
-      />
-    </View>
+    <ScrollView
+      onScroll={e => {
+        setOffsetY(e.nativeEvent.contentOffset.y);
+      }}
+      contentContainerStyle={{
+        ...styles.withHorizontalPadding,
+        paddingBottom: offsetY == 0 ? 32 : 16,
+      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginBottom: styles.withHorizontalPadding.paddingHorizontal / 2,
+        }}>
+        <MaterialWidget
+          courseCode={courseData.codice}
+          action={() => {
+            changeTab('material');
+          }}
+        />
+        <AlertWidget
+          alerts={courseData.avvisi.slice(0, 3)}
+          action={() => {
+            changeTab('alerts');
+          }}
+        />
+      </View>
+      <TextWidget name={t('courseInfo')} expandable>
+        <CourseInfo data={courseData.info} />
+      </TextWidget>
+    </ScrollView>
   );
 }

@@ -5,6 +5,7 @@ const EN = {
   noResults: 'No results',
   open: 'Open',
   alerts: 'Alerts',
+  oldVideos: 'Videos from previous years',
 
   // Splash screen
   loading: 'Loading...',
@@ -57,6 +58,7 @@ const EN = {
   // Course screen
   overview: 'Overview',
   info: 'Info',
+  courseInfo: 'About this course',
   recordings: 'Recordings',
   videos: 'Videos',
   noVideos: 'No videos',
