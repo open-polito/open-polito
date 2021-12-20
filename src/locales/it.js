@@ -4,6 +4,7 @@ const IT = {
   searchResults: '{{count}} risultati trovati',
   noResults: 'Nessun risultato',
   open: 'Apri',
+  alerts: 'Avvisi',
 
   // Splash screen
   loading: 'Caricamento...',

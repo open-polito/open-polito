@@ -14,13 +14,18 @@ export default function WidgetBase({name, action, children}) {
         ...styles.elevatedSmooth,
         backgroundColor: colors.white,
         borderRadius: 16,
-        width: '50%',
+        width: '48%',
       }}>
       <Pressable
         style={{paddingHorizontal: 12, paddingVertical: 8}}
         android_ripple={{color: colors.lightGray}}
         onPress={action}>
-        <View style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+        <View
+          style={{
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+          }}>
           <TextN text={name} weight="medium" />
           {children}
           <View
