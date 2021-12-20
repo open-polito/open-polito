@@ -21,7 +21,7 @@ export default function WidgetBase({name, action, children}) {
         android_ripple={{color: colors.lightGray}}
         onPress={action}>
         <View style={{flexDirection: 'column', alignItems: 'flex-start'}}>
-          <TextN text={name} />
+          <TextN text={name} weight="medium" />
           {children}
           <View
             style={{
@@ -33,7 +33,7 @@ export default function WidgetBase({name, action, children}) {
               flexDirection: 'row',
               justifyContent: 'center',
             }}>
-            <TextS text={t('open')} color={colors.black} />
+            <TextS text={t('open')} color={colors.black} weight="medium" />
           </View>
         </View>
       </Pressable>
