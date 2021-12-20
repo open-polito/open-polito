@@ -12,7 +12,12 @@ export default function CourseOverview({courseData, changeTab}) {
           changeTab('material');
         }}
       />
-      <AlertWidget alerts={courseData.avvisi.slice(0, 3)} />
+      <AlertWidget
+        alerts={courseData.avvisi.slice(0, 3)}
+        action={() => {
+          changeTab('alerts');
+        }}
+      />
     </View>
   );
 }

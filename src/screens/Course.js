@@ -18,6 +18,7 @@ import {getMaterialTree, getRecentMaterial} from '../utils/material';
 import {setMaterial, setRecentMaterial} from '../store/materialSlice';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import CourseLoader from '../components/CourseLoader';
+import CourseAlerts from '../components/CourseAlerts';
 
 export default function Course({navigation, route}) {
   const dispatch = useDispatch();
@@ -58,6 +59,10 @@ export default function Course({navigation, route}) {
     {
       name: 'material',
       icon: 'file-outline',
+    },
+    {
+      name: 'alerts',
+      icon: 'bell-alert-outline',
     },
     {
       name: 'recordings',
@@ -152,7 +157,7 @@ export default function Course({navigation, route}) {
                     alignItems: 'center',
                     paddingVertical: 12,
                   }}>
-                  {tab.name == 'material' ? (
+                  {tab.name == 'material' || tab.name == 'alerts' ? (
                     <IconC
                       name={tab.icon}
                       size={24}
@@ -196,7 +201,8 @@ export default function Course({navigation, route}) {
                 ) : (
                   <RecentItemsLoader />
                 );
-
+              case 'alerts':
+                return <CourseAlerts alerts={courseData.avvisi} />;
               case 'info':
                 return <CourseInfo data={courseData.info} />;
               case 'recordings':
