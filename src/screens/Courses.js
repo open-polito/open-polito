@@ -40,7 +40,7 @@ export default function Courses({navigation}) {
         <ScrollView
           contentContainerStyle={{
             ...styles.withHorizontalPadding,
-            flex: 1,
+            paddingBottom: 32,
           }}>
           {courses != null &&
             courses.map(course => (
