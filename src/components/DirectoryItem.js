@@ -49,16 +49,17 @@ export default function DirectoryItem({
               justifyContent: 'flex-start',
               overflow: 'hidden',
               marginLeft: 8,
-              width:
-                textWidth == null || compact
-                  ? Dimensions.get('window').width -
-                    2 * styles.withHorizontalPadding.paddingHorizontal -
-                    250
-                  : tipo == 'file'
-                  ? corso == null
-                    ? textWidth - 175
-                    : textWidth - 250
-                  : textWidth,
+              width: compact
+                ? Dimensions.get('window').width -
+                  2 * styles.withHorizontalPadding.paddingHorizontal -
+                  240
+                : textWidth == null
+                ? '100%'
+                : tipo == 'file'
+                ? corso == null
+                  ? textWidth - 175
+                  : textWidth - 250
+                : textWidth,
             }}
             onLayout={event => {
               textWidth == null && setTextWidth(event.nativeEvent.layout.width);
