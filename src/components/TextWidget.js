@@ -49,7 +49,7 @@ export default function TextWidget({
               size={24}
             />
           )}
-          <TextN style={{marginLeft: 8}} text={name} />
+          <TextN style={{marginLeft: 8}} text={name} weight="medium" />
           <Icon
             name={expanded ? 'chevron-down' : 'chevron-right'}
             color={colors.mediumGray}
