@@ -21,9 +21,7 @@ export default function TextInput({
       style={{
         ..._styles.textInput,
         backgroundColor: backgroundColor,
-        borderColor: borderColor,
-        borderWidth: borderWidth,
-        elevation: 4,
+        ...styles.elevatedSmooth,
       }}>
       {typeof icon == 'string' ? (
         <Icon name={icon} size={24} color={iconColor} />
@@ -46,12 +44,13 @@ const _styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    ...styles.withRoundedBorder,
-    width: '100%',
+    justifyContent: 'flex-start',
+    borderRadius: 8,
     paddingHorizontal: 8,
+    marginBottom: 24,
   },
   textInputText: {
-    width: '100%',
+    flex: 1,
     ...styles.blackText,
     ...styles.textSmall,
     ...styles.textRegular,

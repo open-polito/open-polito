@@ -12,7 +12,7 @@ const EN = {
 
   // Login screen
   caption: 'The unofficial, open-source\nmobile app',
-  loginCall: 'Log in to continue',
+  loginCall: 'Log in',
   userPlaceholder: 'Username or e-mail address',
   passwordPlaceholder: 'Password',
   login: 'Log in',

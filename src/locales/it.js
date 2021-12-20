@@ -12,7 +12,7 @@ const IT = {
 
   // Login screen
   caption: "L'app open-source\nnon ufficiale",
-  loginCall: 'Accedi per continuare',
+  loginCall: 'Accedi',
   userPlaceholder: 'Codice utente o indirizzo e-mail',
   passwordPlaceholder: 'Password',
   login: 'Accedi',

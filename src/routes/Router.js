@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Dimensions, ImageBackground, Platform, StatusBar} from 'react-native';
-import {TextTitle} from '../components/Text';
+import {Dimensions, Platform, StatusBar, View} from 'react-native';
+import {TextXL} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api';
@@ -179,29 +179,31 @@ export default function Router() {
   // TODO better design
   if (!loadedToken) {
     return (
-      <LinearGradient
-        colors={[colors.gradient1, colors.gradient2]}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}
-        height={height}>
-        <ImageBackground
-          style={{height: '100%'}}
-          source={require('../../assets/images/background.png')}>
+      <View style={{flex: 1}}>
+        <LinearGradient
+          colors={[colors.gradient1, colors.gradient2]}
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          height={height}>
           <SafeAreaView>
             <StatusBar
               translucent
               backgroundColor="transparent"
               barStyle="light-content"
             />
-
-            <TextTitle
-              text={t('loading')}
-              color="white"
-              style={{marginTop: 200, width: '100%', textAlign: 'center'}}
-            />
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '95%',
+              }}>
+              <TextXL text="Open PoliTo" color="white" weight="bold" />
+            </View>
           </SafeAreaView>
-        </ImageBackground>
-      </LinearGradient>
+        </LinearGradient>
+      </View>
     );
   }
 

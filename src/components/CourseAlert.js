@@ -36,7 +36,7 @@ export default function CourseAlert({alert, compact = false}) {
       </View>
       <View
         style={{
-          flex: compact ? 4 : 7,
+          flex: compact ? 4 : 9,
         }}>
         {compact ? (
           <TextS
