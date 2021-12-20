@@ -4,6 +4,7 @@ import {ScrollView, View} from 'react-native';
 import styles from '../styles';
 import AlertWidget from './AlertWidget';
 import CourseInfo from './CourseInfo';
+import CourseVideos from './CourseVideos';
 import MaterialWidget from './MaterialWidget';
 import TextWidget from './TextWidget';
 
@@ -42,6 +43,9 @@ export default function CourseOverview({courseData, changeTab}) {
       </View>
       <TextWidget name={t('courseInfo')} expandable>
         <CourseInfo data={courseData.info} />
+      </TextWidget>
+      <TextWidget name={t('oldVideos')} expandable>
+        <CourseVideos videos={courseData.videolezioni} />
       </TextWidget>
     </ScrollView>
   );
