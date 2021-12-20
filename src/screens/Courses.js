@@ -19,6 +19,8 @@ export default function Courses({navigation}) {
   const courses_json = useSelector(state => state.user.carico_didattico);
   const [courses, setCourses] = useState(null);
 
+  const [offsetY, setOffsetY] = useState(0);
+
   useEffect(() => {
     if (courses_json == null) {
       (async () => {
@@ -38,9 +40,12 @@ export default function Courses({navigation}) {
       </View>
       <View style={{flex: 1}}>
         <ScrollView
+          onScroll={e => {
+            setOffsetY(e.nativeEvent.contentOffset.y);
+          }}
           contentContainerStyle={{
             ...styles.withHorizontalPadding,
-            paddingBottom: 32,
+            paddingBottom: offsetY == 0 ? 32 : 16,
             ...styles.paddingFromHeader,
           }}>
           {courses != null &&
@@ -48,7 +53,9 @@ export default function Courses({navigation}) {
               <View key={course.codice}>
                 <Pressable
                   onPress={() => {
-                    navigation.navigate('Course', {courseCode: course.codice});
+                    navigation.navigate('Course', {
+                      courseCode: course.codice,
+                    });
                   }}
                   android_ripple={{color: colors.lightGray}}
                   style={{
