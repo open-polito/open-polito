@@ -59,7 +59,7 @@ export default function Home({navigation}) {
               }}>
               {/* blue section */}
               <Header color={colors.white} text={t('home')} />
-              <View style={{marginBottom: 16}}>
+              <View style={{marginBottom: 16, ...styles.paddingFromHeader}}>
                 {/* quick search container */}
                 <TextInput
                   icon="search"
