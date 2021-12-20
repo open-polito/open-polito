@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
   },
   // Text sizes
+  textExtraSmall: {
+    fontSize: 10,
+  },
   textSmall: {
     fontSize: 12,
   },

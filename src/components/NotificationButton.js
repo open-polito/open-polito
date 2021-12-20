@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Pressable, StyleSheet} from 'react-native';
 import colors from '../colors';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import notImplemented from '../utils/not_implemented';
 import {useTranslation} from 'react-i18next';
 
@@ -16,7 +16,7 @@ export default function NotificationButton({color = colors.black}) {
         onPress={() => {
           notImplemented(t);
         }}>
-        <Icon name="notifications-active" size={40} color={color} />
+        <Icon name="bell-outline" size={40} color={color} />
       </Pressable>
     </View>
   );

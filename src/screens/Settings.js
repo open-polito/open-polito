@@ -44,7 +44,7 @@ export default function Settings() {
   return (
     <SafeAreaView
       style={{
-        height: windowHeight - styles.tabNavigator.height,
+        flex: 1,
       }}>
       <StatusBar
         translucent
@@ -55,20 +55,24 @@ export default function Settings() {
         style={{
           ...styles.container,
           ...styles.safePaddingTop,
-          ...styles.withHorizontalPadding,
           backgroundColor: colors.white,
           height: windowHeight,
         }}>
-        <Header text={t('settings')} noMarginBottom={true} />
-        <ScrollView style={styles.paddingFromHeader}>
-          <AccountBox
-            name={anagrafica.nome + ' ' + anagrafica.cognome}
-            degree={anagrafica.nome_corso_laurea}
-            logoutFunction={handleLogout}
-          />
-          <View style={{marginTop: 24}}>
+        <View style={styles.withHorizontalPadding}>
+          <Header text={t('settings')} noMarginBottom={true} />
+        </View>
+
+        <ScrollView>
+          <View style={styles.paddingFromHeader}>
+            <AccountBox
+              name={anagrafica.nome + ' ' + anagrafica.cognome}
+              degree={anagrafica.nome_corso_laurea}
+              logoutFunction={handleLogout}
+            />
+          </View>
+          <View style={{marginTop: 24, ...styles.withHorizontalPadding}}>
             <SettingsItem
-              iconName="notifications"
+              iconName="bell-alert-outline"
               text={t('notifications')}
               description={t('notificationsDesc')}
               settingsFunction={() => {
@@ -76,7 +80,7 @@ export default function Settings() {
               }}
             />
             <SettingsItem
-              iconName="color-lens"
+              iconName="drawing"
               text={t('theme')}
               description={t('themeDesc')}
               settingsFunction={() => {
@@ -84,7 +88,7 @@ export default function Settings() {
               }}
             />
             <SettingsItem
-              iconName="info-outline"
+              iconName="information-outline"
               text={t('about')}
               description={t('aboutDesc')}
               settingsFunction={() => {

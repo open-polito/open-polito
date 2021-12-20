@@ -26,6 +26,9 @@ function TextBase({
       break;
   }
   switch (size) {
+    case 'xs':
+      textSize = styles.textExtraSmall;
+      break;
     case 's':
       textSize = styles.textSmall;
       break;
@@ -57,6 +60,25 @@ function TextBase({
 }
 
 // Custom base components, differing in size
+
+export function TextXS({
+  text,
+  color = colors.black,
+  weight = 'regular',
+  style = {},
+  ...props
+}) {
+  return (
+    <TextBase
+      text={text}
+      color={color}
+      weight={weight}
+      size="xs"
+      style={style}
+      {...props}
+    />
+  );
+}
 
 export function TextS({
   text,

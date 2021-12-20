@@ -1,8 +1,8 @@
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../colors';
-import {TextM, TextS} from './Text';
+import {TextN, TextS} from './Text';
 
 export default function SettingsItem({
   iconName,
@@ -16,7 +16,7 @@ export default function SettingsItem({
         <View style={_styles.settingsItemContainer}>
           <Icon name={iconName} size={32} color={colors.black} />
           <View style={_styles.settingsItemTextContainer}>
-            <TextM text={text} weight="medium" />
+            <TextN text={text} weight="medium" />
             <TextS text={description} />
           </View>
         </View>

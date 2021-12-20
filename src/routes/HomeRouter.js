@@ -31,7 +31,7 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: t('home'),
           tabBarIcon: ({color, size}) => {
-            return <IconBadge name="home" color={color} size={size} />;
+            return <IconBadge name="home-outline" color={color} size={size} />;
           },
         }}
       />
@@ -41,7 +41,9 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: t('material'),
           tabBarIcon: ({color, size}) => {
-            return <IconBadge name="folder" color={color} size={size} />;
+            return (
+              <IconBadge name="folder-outline" color={color} size={size} />
+            );
           },
         }}
       />
@@ -53,7 +55,7 @@ export default function HomeRouter() {
           tabBarIcon: ({color, size}) => {
             return (
               <IconBadge
-                name="email"
+                name="email-outline"
                 color={color}
                 size={size}
                 number={unreadEmailCount}
@@ -68,7 +70,7 @@ export default function HomeRouter() {
         options={{
           tabBarLabel: t('settings'),
           tabBarIcon: ({color, size}) => {
-            return <IconBadge name="settings" color={color} size={size} />;
+            return <IconBadge name="cog-outline" color={color} size={size} />;
           },
         }}
       />
