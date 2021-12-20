@@ -4,6 +4,7 @@ const EN = {
   searchResults: '{{count}} results found',
   noResults: 'No results',
   open: 'Open',
+  alerts: 'Alerts',
 
   // Splash screen
   loading: 'Loading...',
