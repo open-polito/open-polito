@@ -18,7 +18,7 @@ export default function CourseInfo({data}) {
             <TextN
               text={section.title}
               weight="medium"
-              style={{borderBottomWidth: 1, marginTop: index != 0 ? 12 : 0}}
+              style={{marginTop: index != 0 ? 16 : 0}}
             />
             <TextS text={section.text.trim()} />
           </View>

@@ -5,6 +5,7 @@ import {TextN, TextS} from './Text';
 import {useTranslation} from 'react-i18next';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import styles from '../styles';
 
 export default function AccountBox({name, degree, logoutFunction}) {
   const {t} = useTranslation();
@@ -40,12 +41,13 @@ export default function AccountBox({name, degree, logoutFunction}) {
 
 const _styles = StyleSheet.create({
   box: {
-    // backgroundColor: colors.lightGray,
     borderRadius: 8,
     flexDirection: 'column',
     justifyContent: 'space-between',
     padding: 16,
-    borderWidth: 1,
+    backgroundColor: colors.white,
+    ...styles.elevatedSmooth,
+    marginHorizontal: styles.withHorizontalPadding.paddingHorizontal,
   },
   infoContainer: {
     flexDirection: 'row',

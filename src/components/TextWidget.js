@@ -6,6 +6,7 @@ import styles from '../styles';
 import {TextN} from './Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 export default function TextWidget({
+  icon = null,
   name,
   action,
   expandable = false,
@@ -36,12 +37,19 @@ export default function TextWidget({
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-start',
             alignItems: 'center',
             paddingVertical: 4,
             paddingHorizontal: 4,
           }}>
-          <TextN text={name} />
+          {icon && (
+            <Icon
+              name={icon}
+              color={expanded ? colors.gradient1 : colors.mediumGray}
+              size={24}
+            />
+          )}
+          <TextN style={{marginLeft: 8}} text={name} />
           <Icon
             name={expanded ? 'chevron-down' : 'chevron-right'}
             color={colors.mediumGray}

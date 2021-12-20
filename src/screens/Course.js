@@ -61,7 +61,7 @@ export default function Course({navigation, route}) {
     },
     {
       name: 'recordings',
-      icon: 'videocam',
+      icon: 'video-outline',
     },
     {
       name: 'alerts',
@@ -154,23 +154,13 @@ export default function Course({navigation, route}) {
                     alignItems: 'center',
                     paddingVertical: 12,
                   }}>
-                  {tab.name == 'material' || tab.name == 'alerts' ? (
-                    <IconC
-                      name={tab.icon}
-                      size={24}
-                      color={
-                        tab.name == currentTab ? colors.gradient1 : colors.gray
-                      }
-                    />
-                  ) : (
-                    <Icon
-                      name={tab.icon}
-                      size={24}
-                      color={
-                        tab.name == currentTab ? colors.gradient1 : colors.gray
-                      }
-                    />
-                  )}
+                  <IconC
+                    name={tab.icon}
+                    size={24}
+                    color={
+                      tab.name == currentTab ? colors.gradient1 : colors.gray
+                    }
+                  />
                   <TextS
                     text={t(tab.name)}
                     color={

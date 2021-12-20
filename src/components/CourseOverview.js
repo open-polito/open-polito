@@ -41,7 +41,7 @@ export default function CourseOverview({courseData, changeTab}) {
           }}
         />
       </View>
-      <TextWidget name={t('courseInfo')} expandable>
+      <TextWidget icon="information-outline" name={t('courseInfo')} expandable>
         <CourseInfo data={courseData.info} />
       </TextWidget>
       {/* <TextWidget name={t('oldVideos')} expandable>
