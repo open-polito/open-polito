@@ -5,7 +5,11 @@ import DirectoryItemLoader from './DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 import {getRecentCourseMaterial} from '../utils/material';
 
-export default function RecentItems({course = null, compact = false}) {
+export default function RecentItems({
+  course = null,
+  compact = false,
+  relative_date = false,
+}) {
   const materialTree = useSelector(state => state.material.material);
   const recentMaterial = course
     ? getRecentCourseMaterial(materialTree[course])
@@ -17,6 +21,7 @@ export default function RecentItems({course = null, compact = false}) {
         recentMaterial.map(item => (
           <DirectoryItem
             compact={compact}
+            relative_date={relative_date}
             tipo={item.tipo}
             key={item.code}
             nome={item.nome}

@@ -11,6 +11,7 @@ import {TextS} from './Text';
 
 export default function DirectoryItem({
   compact = false,
+  relative_date = false, // show as "X days/hours ago instead of plain date"
   tipo, // "file" or "cartella"
   nome = null,
   filename = null,
@@ -72,6 +73,8 @@ export default function DirectoryItem({
                   text={
                     corso != null && !compact
                       ? corso
+                      : relative_date
+                      ? moment(data_inserimento).fromNow()
                       : moment(data_inserimento).format('lll')
                   }
                 />
@@ -90,7 +93,13 @@ export default function DirectoryItem({
               }}>
               <TextS text={size_label} />
               {corso != null ? (
-                <TextS text={moment(data_inserimento).format('lll')} />
+                <TextS
+                  text={
+                    relative_date
+                      ? moment(data_inserimento).fromNow()
+                      : moment(data_inserimento).format('lll')
+                  }
+                />
               ) : null}
             </View>
 

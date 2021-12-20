@@ -13,7 +13,7 @@ export default function MaterialWidget({action, courseCode}) {
   return (
     <WidgetBase name={t('material')} action={action}>
       {material ? (
-        <RecentItems compact course={courseCode} />
+        <RecentItems compact relative_date course={courseCode} />
       ) : (
         <TextS text={t('loading')} />
       )}
