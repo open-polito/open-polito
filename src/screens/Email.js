@@ -29,9 +29,7 @@ export default function Email() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          marginTop:
-            -styles.paddingFromHeader.marginTop -
-            styles.textExtraLarge.fontSize,
+          marginTop: -styles.textExtraLarge.fontSize,
         }}>
         <TextS
           text={t('unreadEmail', {count: unreadEmailCount})}
