@@ -6,7 +6,7 @@ import NoContent from './NoContent';
 
 export default function MaterialExplorer({course: course_id}) {
   const material =
-    course_id != null
+    course_id && useSelector(state => state.material)
       ? useSelector(state => state.material.material[course_id])
       : [];
 
