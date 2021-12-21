@@ -3,6 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
   material: null,
   recentMaterial: null,
+  loadingMaterial: false, // true when loading material, to avoid multiple loads if opening-closing Material screen
 };
 
 export const materialSlice = createSlice({
@@ -15,9 +16,13 @@ export const materialSlice = createSlice({
     setRecentMaterial: (state, action) => {
       state.recentMaterial = action.payload;
     },
+    setLoadingMaterial: (state, action) => {
+      state.loadingMaterial = action.payload;
+    },
   },
 });
 
-export const {setMaterial, setRecentMaterial} = materialSlice.actions;
+export const {setMaterial, setRecentMaterial, setLoadingMaterial} =
+  materialSlice.actions;
 
 export default materialSlice.reducer;

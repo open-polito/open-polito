@@ -17,7 +17,11 @@ import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
 import {setCarico} from '../store/userSlice';
 import {getMaterialTree, getRecentMaterial} from '../utils/material';
-import {setMaterial, setRecentMaterial} from '../store/materialSlice';
+import {
+  setLoadingMaterial,
+  setMaterial,
+  setRecentMaterial,
+} from '../store/materialSlice';
 import MaterialExplorer from '../components/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';
 
@@ -25,6 +29,7 @@ export default function Material({navigation}) {
   const {t} = useTranslation();
   const {carico_didattico} = useSelector(state => state.user);
   const material = useSelector(state => state.material.material);
+  const loadingMaterial = useSelector(state => state.material.loadingMaterial);
   const carico =
     carico_didattico == null ? carico_didattico : JSON.parse(carico_didattico);
 
@@ -54,7 +59,8 @@ export default function Material({navigation}) {
 
   // TODO extract function
   function loadMaterialIfNull() {
-    if (material == null) {
+    if (material == null && !loadingMaterial) {
+      dispatch(setLoadingMaterial(true));
       getMaterialTree(user).then(data => {
         dispatch(setMaterial(data));
         dispatch(
