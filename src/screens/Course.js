@@ -14,7 +14,11 @@ import CourseOverview from '../components/CourseOverview';
 import MaterialExplorer from '../components/MaterialExplorer';
 import {useDispatch, useSelector} from 'react-redux';
 import {getMaterialTree, getRecentMaterial} from '../utils/material';
-import {setMaterial, setRecentMaterial} from '../store/materialSlice';
+import {
+  setLoadingMaterial,
+  setMaterial,
+  setRecentMaterial,
+} from '../store/materialSlice';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import CourseLoader from '../components/CourseLoader';
 import CourseAlerts from '../components/CourseAlerts';
@@ -32,10 +36,12 @@ export default function Course({navigation, route}) {
   const [currentTab, setCurrentTab] = useState('overview');
   const [materialLoaded, setMaterialLoaded] = useState(false);
   const material = useSelector(state => state.material.material);
+  const loadingMaterial = useSelector(state => state.material.loadingMaterial);
 
   // TODO extract function
   function loadMaterialIfNull() {
-    if (material == null) {
+    if (material == null && !loadingMaterial) {
+      dispatch(setLoadingMaterial(true));
       getMaterialTree(user).then(data => {
         dispatch(setMaterial(data));
         dispatch(
