@@ -1,0 +1,35 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "contributors": [
+    {
+      "login": "robertolaru",
+      "name": "Robert Olaru",
+      "avatar_url": "https://avatars.githubusercontent.com/u/77898084?v=4",
+      "profile": "https://github.com/robertolaru",
+      "contributions": [
+        "maintenance",
+        "code",
+        "design"
+      ]
+    },
+    {
+      "login": "CapacitorSet",
+      "name": "Giulio Muscarello",
+      "avatar_url": "https://avatars.githubusercontent.com/u/9286933?v=4",
+      "profile": "https://keybase.io/CapacitorSet",
+      "contributions": [
+        "infra"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "open-polito",
+  "projectOwner": "open-polito",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "skipCi": true
+}
