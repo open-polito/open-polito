@@ -6,6 +6,7 @@ const IT = {
   open: 'Apri',
   alerts: 'Avvisi',
   oldVideos: 'Video di anni precedenti',
+  noContent: 'Nulla da mostrare...',
 
   // Splash screen
   loading: 'Caricamento...',
