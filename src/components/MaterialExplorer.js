@@ -2,6 +2,7 @@ import React from 'react';
 import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import DirectoryItemRecursive from './DirectoryItemRecursive';
+import NoContent from './NoContent';
 
 export default function MaterialExplorer({course: course_id}) {
   const material =
@@ -68,19 +69,23 @@ export default function MaterialExplorer({course: course_id}) {
 
   return (
     <View style={{marginBottom: 50}}>
-      {firstLevel.map(key => {
-        return (
-          <DirectoryItemRecursive
-            key={
-              materialDict[key].tipo == 'file'
-                ? materialDict[key].code
-                : materialDict[key].nome
-            }
-            item={materialDict[key]}
-            getChildren={getChildren}
-          />
-        );
-      })}
+      {firstLevel.length > 0 ? (
+        firstLevel.map(key => {
+          return (
+            <DirectoryItemRecursive
+              key={
+                materialDict[key].tipo == 'file'
+                  ? materialDict[key].code
+                  : materialDict[key].nome
+              }
+              item={materialDict[key]}
+              getChildren={getChildren}
+            />
+          );
+        })
+      ) : (
+        <NoContent />
+      )}
     </View>
   );
 }

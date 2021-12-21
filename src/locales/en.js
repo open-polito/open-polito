@@ -6,6 +6,7 @@ const EN = {
   open: 'Open',
   alerts: 'Alerts',
   oldVideos: 'Videos from previous years',
+  noContent: 'Nothing to show...',
 
   // Splash screen
   loading: 'Loading...',
