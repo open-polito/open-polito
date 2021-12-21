@@ -1,12 +1,11 @@
 <h1 align="center">Open PoliTo</h1>
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <p align="center">Unofficial, open-source mobile app for Politecnico di Torino students.</p>
 
 <div align="center">
 
-![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=for-the-badge) ![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=for-the-badge)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors-)
+![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=flat)
+![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=flat)
 
 </div>
 
@@ -14,6 +13,7 @@
 
 - [Features](#features)
 - [Running the app](#running-the-app)
+- [Contributors](#contributors)
 - [License](#license)
 
 ## Features
@@ -36,11 +36,7 @@ Start Metro bundler: `npx react-native start`
 
 Open a new terminal. From this new terminal start the Android app: `npx react-native run-android`
 
-## License
-
-Open PoliTo is licensed under the terms of the GNU General Public License v3.0.
-
-## Contributors ✨
+## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -59,3 +55,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+
+## License
+
+Open PoliTo is licensed under the terms of the GNU General Public License v3.0.
