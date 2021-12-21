@@ -46,6 +46,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <table>
   <tr>
     <td align="center"><a href="https://github.com/robertolaru"><img src="https://avatars.githubusercontent.com/u/77898084?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Robert Olaru</b></sub></a><br /><a href="#maintenance-robertolaru" title="Maintenance">🚧</a> <a href="https://github.com/open-polito/open-polito/commits?author=robertolaru" title="Code">💻</a> <a href="#design-robertolaru" title="Design">🎨</a></td>
+    <td align="center"><a href="https://keybase.io/CapacitorSet"><img src="https://avatars.githubusercontent.com/u/9286933?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Giulio Muscarello</b></sub></a><br /><a href="#infra-CapacitorSet" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
   </tr>
 </table>
 
