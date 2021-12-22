@@ -1,17 +1,23 @@
 import {useNavigation} from '@react-navigation/core';
 import moment from 'moment';
-import React from 'react';
+import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Dimensions, FlatList, Image, Pressable, View} from 'react-native';
 import colors from '../colors';
 import {TextN, TextS} from './Text';
 
-export default function CourseVideos({videos, courseData}) {
+export default function CourseVideos({videos: _videos, courseData}) {
   const {t} = useTranslation();
 
   const navigation = useNavigation();
 
   const width = Dimensions.get('window').width;
+
+  const [videos] = useState(
+    [..._videos].sort((a, b) => {
+      return new Date(b.data) - new Date(a.data);
+    }),
+  );
 
   return (
     <View
