@@ -18,9 +18,17 @@
 
 ## Features
 
-(TO ADD...)
+Open PoliTo's core features are currently being developed, but the app is already usable to some extent.
 
 ## Running the app
+
+### Installing the binary
+
+For the latest automated build APKs (updated on every push), see the **Actions** tab.
+
+For the latest stable release, please refer to the **Releases** section.
+
+### Building from source
 
 Make sure you have correctly installed and configured Node, Android Studio and the Android SDK.
 
