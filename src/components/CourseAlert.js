@@ -7,7 +7,7 @@ import colors from '../colors';
 import {TextS} from './Text';
 
 export default function CourseAlert({alert, compact = false}) {
-  const htmlTags = /[</]+[^/>]+[/>]+/g;
+  const htmlTags = /[<][/]?[^/>]+[/]?[>]+/g;
 
   return (
     <View
