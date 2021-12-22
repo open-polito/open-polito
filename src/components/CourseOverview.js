@@ -23,14 +23,17 @@ export default function CourseOverview({courseData, changeTab}) {
         ...styles.withHorizontalPadding,
         paddingBottom: offsetY == 0 ? 32 : 16,
       }}>
-      {courseData.live_lessons.map(liveClass => (
-        <LiveWidget
-          key={liveClass.meeting_id}
-          liveClass={liveClass}
-          courseName={courseData.nome}
-          device={courseData.device}
-        />
-      ))}
+      {courseData.live_lessons.map(
+        liveClass =>
+          liveClass.running && (
+            <LiveWidget
+              key={liveClass.meeting_id}
+              liveClass={liveClass}
+              courseName={courseData.nome}
+              device={courseData.device}
+            />
+          ),
+      )}
       <View
         style={{
           flexDirection: 'row',

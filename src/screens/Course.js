@@ -22,6 +22,7 @@ import {
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import CourseLoader from '../components/CourseLoader';
 import CourseAlerts from '../components/CourseAlerts';
+import moment from 'moment';
 
 export default function Course({navigation, route}) {
   const dispatch = useDispatch();
@@ -231,7 +232,10 @@ export default function Course({navigation, route}) {
               case 'recordings':
                 return (
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
-                    <CourseVideos videos={courseData.vc_recordings.current} />
+                    <CourseVideos
+                      videos={courseData.vc_recordings.current}
+                      courseData={courseData}
+                    />
                   </View>
                 );
             }

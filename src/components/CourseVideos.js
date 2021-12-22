@@ -1,11 +1,15 @@
+import {useNavigation} from '@react-navigation/core';
 import moment from 'moment';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {Dimensions, FlatList, Image, View} from 'react-native';
+import {Dimensions, FlatList, Image, Pressable, View} from 'react-native';
+import colors from '../colors';
 import {TextN, TextS} from './Text';
 
-export default function CourseVideos({videos}) {
+export default function CourseVideos({videos, courseData}) {
   const {t} = useTranslation();
+
+  const navigation = useNavigation();
 
   const width = Dimensions.get('window').width;
 
@@ -23,7 +27,17 @@ export default function CourseVideos({videos}) {
         }
         renderItem={({item}) => {
           return (
-            <View
+            <Pressable
+              onPress={() => {
+                navigation.navigate('VideoPlayer', {
+                  video: {
+                    ...item,
+                    data: moment(item.data).format('lll'),
+                    courseData: courseData,
+                  }, // Directly convert Date to localized date string because react-navigation wants serialized data
+                });
+              }}
+              android_ripple={{color: colors.lightGray}}
               key={item.titolo}
               style={{
                 flexDirection: 'row',
@@ -49,7 +63,7 @@ export default function CourseVideos({videos}) {
                 <TextN text={item.titolo} weight="medium" numberOfLines={2} />
                 <TextS text={moment(item.data).format('lll')} />
               </View>
-            </View>
+            </Pressable>
           );
         }}
       />

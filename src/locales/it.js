@@ -7,6 +7,7 @@ const IT = {
   alerts: 'Avvisi',
   oldVideos: 'Video di anni precedenti',
   noContent: 'Nulla da mostrare...',
+  videoPlayer: 'Player video',
 
   // Splash screen
   loading: 'Caricamento...',

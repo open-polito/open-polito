@@ -35,6 +35,7 @@ import UserProvider from '../context/User';
 import MaterialSearch from '../screens/MaterialSearch';
 import Courses from '../screens/Courses';
 import Course from '../screens/Course';
+import VideoPlayer from '../screens/VideoPlayer';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -219,6 +220,7 @@ export default function Router() {
             <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
             <AppStack.Screen name="Courses" component={Courses} />
             <AppStack.Screen name="Course" component={Course} />
+            <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
           </AppStack.Navigator>
         </UserProvider>
       ) : (
