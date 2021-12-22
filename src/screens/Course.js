@@ -234,7 +234,7 @@ export default function Course({navigation, route}) {
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
                     <CourseVideos
                       videos={courseData.vc_recordings.current}
-                      courseData={courseData}
+                      courseData={{nome: courseData.nome}}
                     />
                   </View>
                 );

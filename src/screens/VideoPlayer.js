@@ -47,6 +47,7 @@ export default function VideoPlayer({route}) {
             poster={video.cover_url}
             controls={true}
             resizeMode="contain"
+            ignoreSilentSwitch="obey"
           />
         </View>
         <View
