@@ -25,6 +25,7 @@ export default function CourseOverview({courseData, changeTab}) {
       }}>
       {courseData.live_lessons.map(liveClass => (
         <LiveWidget
+          key={liveClass.meeting_id}
           liveClass={liveClass}
           courseName={courseData.nome}
           device={courseData.device}

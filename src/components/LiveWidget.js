@@ -27,14 +27,15 @@ export default function LiveWidget({liveClass, courseName, device}) {
 
   useEffect(() => {
     (async () => {
-      setTimeout(() => {
+      interval = setInterval(() => {
         mounted && setTime(calculateTime());
       }, 1000);
     })();
     return () => {
+      clearInterval(interval);
       setMounted(false);
     };
-  }, [time]);
+  }, []);
 
   return (
     <WidgetBase withButton={false} withPadding={false} action={gotoLiveClass}>

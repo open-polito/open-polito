@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -17,9 +17,27 @@ import {TextSubTitle} from '../components/Text';
 import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
+import LiveWidget from '../components/LiveWidget';
+import {UserContext} from '../context/User';
+import {useDispatch, useSelector} from 'react-redux';
+import {setLoadedUser, setLoadingUser} from '../store/userSlice';
+import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
+import {Rect} from 'react-native-svg';
 
 export default function Home({navigation}) {
   const {t} = useTranslation();
+  const dispatch = useDispatch();
+
+  const {user} = useContext(UserContext);
+  const loadingUser = useSelector(state => state.user.loadingUser);
+  const loadedUser = useSelector(state => state.user.loadedUser);
+
+  const [mounted, setMounted] = useState(true);
+
+  const w =
+    Dimensions.get('window').width -
+    2 * styles.withHorizontalPadding.paddingHorizontal;
+
   const [height] = useState(
     Dimensions.get('window').height + StatusBar.currentHeight,
   );
@@ -38,6 +56,28 @@ export default function Home({navigation}) {
       3 * styles.withHorizontalPadding.paddingHorizontal) /
       3,
   );
+
+  useEffect(() => {
+    (async () => {
+      if (!loadingUser) {
+        dispatch(setLoadingUser(true));
+        await user.populate();
+
+        let promises = [];
+
+        user.carico_didattico.corsi.forEach(corso => {
+          promises.push(corso.populate());
+        });
+
+        await Promise.all(promises);
+
+        dispatch(setLoadedUser(true));
+      }
+    })();
+    return () => {
+      setMounted(false);
+    };
+  }, []);
 
   return (
     <LinearGradient
@@ -99,22 +139,35 @@ export default function Home({navigation}) {
                     justifyContent: 'space-between',
                   }}>
                   {/* quick access categories container */}
-                  {sections.quickAccess.map(qaSection => {
-                    return (
-                      <CategoryCard
-                        key={qaSection}
-                        category={t(qaSection)}
-                        size={cardWidth}
-                        onPress={
-                          qaSection == 'courses'
-                            ? () => {
-                                navigation.navigate('Courses');
-                              }
-                            : null
-                        }
+                  {loadedUser ? (
+                    sections.quickAccess.map(qaSection => {
+                      return (
+                        <CategoryCard
+                          key={qaSection}
+                          category={t(qaSection)}
+                          size={cardWidth}
+                          onPress={
+                            qaSection == 'courses'
+                              ? () => {
+                                  navigation.navigate('Courses');
+                                }
+                              : null
+                          }
+                        />
+                      );
+                    })
+                  ) : (
+                    <SvgAnimatedLinearGradient height={cardWidth} width={w}>
+                      <Rect
+                        x={0}
+                        y={0}
+                        rx={8}
+                        ry={8}
+                        width={w}
+                        height={cardWidth}
                       />
-                    );
-                  })}
+                    </SvgAnimatedLinearGradient>
+                  )}
                 </View>
               </View>
             </View>
@@ -129,6 +182,19 @@ export default function Home({navigation}) {
                   paddingTop: 16,
                   height: '100%',
                 }}>
+                {loadedUser &&
+                  user.carico_didattico.corsi.map(corso => {
+                    return corso.live_lessons.map(liveClass => {
+                      return (
+                        <LiveWidget
+                          key={liveClass.meeting_id}
+                          liveClass={liveClass}
+                          courseName={corso.nome}
+                          device={corso.device}
+                        />
+                      );
+                    });
+                  })}
                 <TextSubTitle
                   style={{marginBottom: 16}}
                   text={t('allSections')}
