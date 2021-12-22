@@ -5,6 +5,7 @@ import styles from '../styles';
 import AlertWidget from './AlertWidget';
 import CourseInfo from './CourseInfo';
 import CourseVideos from './CourseVideos';
+import LiveWidget from './LiveWidget';
 import MaterialWidget from './MaterialWidget';
 import TextWidget from './TextWidget';
 
@@ -22,11 +23,17 @@ export default function CourseOverview({courseData, changeTab}) {
         ...styles.withHorizontalPadding,
         paddingBottom: offsetY == 0 ? 32 : 16,
       }}>
+      {courseData.live_lessons.map(liveClass => (
+        <LiveWidget
+          liveClass={liveClass}
+          courseName={courseData.nome}
+          device={courseData.device}
+        />
+      ))}
       <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginBottom: styles.withHorizontalPadding.paddingHorizontal / 2,
         }}>
         <MaterialWidget
           courseCode={courseData.codice + courseData.nome}
