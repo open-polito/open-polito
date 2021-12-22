@@ -3,7 +3,7 @@
 
 <div align="center">
 
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat)](#contributors-)
+[![Github All Contributors](https://img.shields.io/github/all-contributors/open-polito/open-polito)](#contributors)
 ![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=flat)
 ![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=flat)
 
@@ -20,13 +20,15 @@
 
 Open PoliTo's core features are currently being developed, but the app is already usable to some extent.
 
+Check out the [Milestones](https://github.com/open-polito/open-polito/milestones) page to track the progress and features of the next release.
+
 ## Running the app
 
 ### Installing the binary
 
-For the latest automated build APKs (updated on every push), see the **Actions** tab.
+For the latest automated build APKs (updated on every push), see the [Actions](https://github.com/open-polito/open-polito/actions) tab.
 
-For the latest stable release, please refer to the **Releases** section.
+For the latest stable release, please refer to the [Releases](https://github.com/open-polito/open-polito/releases) section.
 
 ### Building from source
 
