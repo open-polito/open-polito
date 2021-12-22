@@ -7,6 +7,7 @@ const EN = {
   alerts: 'Alerts',
   oldVideos: 'Videos from previous years',
   noContent: 'Nothing to show...',
+  videoPlayer: 'Video player',
 
   // Splash screen
   loading: 'Loading...',

@@ -16,6 +16,8 @@ target 'OpenPoliTo' do
 
   pod 'RNSVG', :path => '../node_modules/react-native-svg'
 
+  pod 'react-native-video', :path => '../node_modules/react-native-video'
+
   target 'OpenPoliToTests' do
     inherit! :complete
     # Pods for testing

@@ -185,14 +185,16 @@ export default function Home({navigation}) {
                 {loadedUser &&
                   user.carico_didattico.corsi.map(corso => {
                     return corso.live_lessons.map(liveClass => {
-                      return (
-                        <LiveWidget
-                          key={liveClass.meeting_id}
-                          liveClass={liveClass}
-                          courseName={corso.nome}
-                          device={corso.device}
-                        />
-                      );
+                      if (liveClass.running) {
+                        return (
+                          <LiveWidget
+                            key={liveClass.meeting_id}
+                            liveClass={liveClass}
+                            courseName={corso.nome}
+                            device={corso.device}
+                          />
+                        );
+                      }
                     });
                   })}
                 <TextSubTitle
