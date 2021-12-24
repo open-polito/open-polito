@@ -11,7 +11,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import {useContext} from 'react';
 import {UserContext} from '../context/User';
-import CourseSelector from '../components/CourseSelector';
 import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
@@ -24,6 +23,7 @@ import {
 } from '../store/materialSlice';
 import MaterialExplorer from '../components/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';
+import DropdownSelector from '../components/DropdownSelector';
 
 export default function Material({navigation}) {
   const {t} = useTranslation();
@@ -41,12 +41,23 @@ export default function Material({navigation}) {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [mounted, setMounted] = useState(true);
 
+  const [dropdownItems, setDropdownItems] = useState([]);
+
   useEffect(() => {
     if (carico == null) {
       (async () => {
         await user.populate();
         dispatch(setCarico(JSON.stringify(user.carico_didattico)));
         loadMaterialIfNull();
+
+        let items = [];
+        user.carico_didattico.corsi.forEach(course => {
+          items.push({
+            label: course.nome,
+            value: course.codice + course.nome,
+          });
+        });
+        setDropdownItems(items);
       })();
     } else {
       loadMaterialIfNull();
@@ -71,10 +82,6 @@ export default function Material({navigation}) {
         }
       });
     }
-  }
-
-  function selectCourse(course_code) {
-    setSelectedCourse(course_code);
   }
 
   return (
@@ -117,12 +124,25 @@ export default function Material({navigation}) {
         <View style={styles.withHorizontalPadding}>
           {allLoaded ? <RecentItems relative_date /> : <RecentItemsLoader />}
         </View>
-        <View style={styles.withHorizontalPadding}>
-          <TextSubTitle text={t('byCourse')} />
-        </View>
-        <View>
+        <View
+          style={{
+            ...styles.withHorizontalPadding,
+            marginTop: 16,
+            flex: 1,
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}>
+          <TextSubTitle style={{flex: 1}} text={t('byCourse')} />
           {allLoaded ? (
-            <CourseSelector courses={carico.corsi} selector={selectCourse} />
+            // <CourseSelector courses={carico.corsi} selector={selectCourse} />
+            <DropdownSelector
+              items={dropdownItems}
+              placeholder={{label: t('selectCourseDropdown'), value: null}}
+              onValueChange={value => {
+                setSelectedCourse(value ? value : null);
+              }}
+            />
           ) : (
             <SvgAnimatedLinearGradient height={32} width={400}>
               <Rect x="0" y="0" rx="4" ry="4" width="75" height="24" />
@@ -139,7 +159,7 @@ export default function Material({navigation}) {
               alignItems: 'center',
               ...styles.withHorizontalPadding,
             }}>
-            <TextN text={t('selectCourse')} />
+            <TextN style={{marginTop: 16}} text={t('selectCourse')} />
           </View>
         ) : (
           <View style={styles.withHorizontalPadding}>

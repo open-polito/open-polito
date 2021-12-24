@@ -55,6 +55,7 @@ const IT = {
   searchMaterial: 'Cerca materiale...',
   recentMaterial: 'Materiali recenti',
   byCourse: 'Per corso',
+  selectCourseDropdown: 'Seleziona corso...',
   selectCourse: 'Seleziona un corso per vederne i file',
 
   // Course screen

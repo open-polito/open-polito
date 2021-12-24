@@ -84,7 +84,9 @@ export default function MaterialExplorer({course: course_id}) {
           );
         })
       ) : (
-        <NoContent />
+        <View style={{marginTop: 16}}>
+          <NoContent />
+        </View>
       )}
     </View>
   );
