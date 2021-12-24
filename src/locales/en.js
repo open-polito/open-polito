@@ -55,6 +55,7 @@ const EN = {
   searchMaterial: 'Search material...',
   recentMaterial: 'Recent material',
   byCourse: 'By course',
+  selectCourseDropdown: 'Select course...',
   selectCourse: 'Select a course to view its files',
 
   // Course screen
