@@ -31,7 +31,7 @@ const IT = {
   exams: 'Esami',
   schedule: 'Orario',
   material: 'Materiale',
-  courses: 'Carico didattico',
+  courses: 'Corsi',
 
   // Email screen
   email: 'E-mail',
