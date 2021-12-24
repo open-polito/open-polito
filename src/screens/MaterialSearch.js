@@ -129,7 +129,12 @@ export default function MaterialSearch({navigation}) {
             justifyContent: 'flex-start',
             alignItems: 'center',
           }}>
-          <Icon name="filter-list" size={24} style={{marginRight: 8}} />
+          <Icon
+            name="filter-list"
+            size={24}
+            style={{marginRight: 8}}
+            color={colors.black}
+          />
           <TextSubTitle text={t('byCourse')} />
         </View>
         <View

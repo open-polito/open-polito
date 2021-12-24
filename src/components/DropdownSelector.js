@@ -33,7 +33,7 @@ export default function DropdownSelector({placeholder, items, onValueChange}) {
             internalSelectedLabel ? internalSelectedLabel : placeholder.label
           }
         />
-        <Icon name="menu-down" size={24} />
+        <Icon name="menu-down" size={24} color={colors.black} />
       </View>
     </RNPickerSelect>
   );
