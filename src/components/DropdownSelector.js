@@ -30,6 +30,7 @@ export default function DropdownSelector({placeholder, items, onValueChange}) {
           borderRadius: 32,
         }}>
         <TextS
+          numberOfLines={1}
           text={
             internalSelectedLabel ? internalSelectedLabel : placeholder.label
           }

@@ -43,25 +43,29 @@ export default function Material({navigation}) {
 
   const [dropdownItems, setDropdownItems] = useState([]);
 
+  const initDropdown = () => {
+    let items = [];
+    user.carico_didattico.corsi.forEach(course => {
+      items.push({
+        label: course.nome,
+        value: course.codice + course.nome,
+      });
+    });
+    setDropdownItems(items);
+  };
+
   useEffect(() => {
     if (carico == null) {
       (async () => {
         await user.populate();
         dispatch(setCarico(JSON.stringify(user.carico_didattico)));
         loadMaterialIfNull();
-
-        let items = [];
-        user.carico_didattico.corsi.forEach(course => {
-          items.push({
-            label: course.nome,
-            value: course.codice + course.nome,
-          });
-        });
-        setDropdownItems(items);
+        initDropdown();
       })();
     } else {
       loadMaterialIfNull();
       setAllLoaded(true);
+      initDropdown();
     }
     return () => {
       setMounted(false);
@@ -136,13 +140,20 @@ export default function Material({navigation}) {
           <TextSubTitle style={{flex: 1}} text={t('byCourse')} />
           {allLoaded ? (
             // <CourseSelector courses={carico.corsi} selector={selectCourse} />
-            <DropdownSelector
-              items={dropdownItems}
-              placeholder={{label: t('selectCourseDropdown'), value: null}}
-              onValueChange={value => {
-                setSelectedCourse(value ? value : null);
-              }}
-            />
+            <View
+              style={{
+                flex: 2,
+                flexDirection: 'row',
+                justifyContent: 'flex-end',
+              }}>
+              <DropdownSelector
+                items={dropdownItems}
+                placeholder={{label: t('selectCourseDropdown'), value: null}}
+                onValueChange={value => {
+                  setSelectedCourse(value ? value : null);
+                }}
+              />
+            </View>
           ) : (
             <SvgAnimatedLinearGradient height={32} width={400}>
               <Rect x="0" y="0" rx="4" ry="4" width="75" height="24" />
