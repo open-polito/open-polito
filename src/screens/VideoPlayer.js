@@ -1,13 +1,12 @@
 import {useNavigation} from '@react-navigation/core';
-import React from 'react';
-import {Dimensions, View} from 'react-native';
-import ArrowHeader from '../components/ArrowHeader';
+import React, {useState} from 'react';
+import {Dimensions, Pressable, View} from 'react-native';
 import ScreenContainer from '../components/ScreenContainer';
 import styles from '../styles';
-import Video from 'react-native-video';
 import colors from '../colors';
-import {TextL, TextN} from '../components/Text';
+import {TextL, TextN, TextS} from '../components/Text';
 import {useTranslation} from 'react-i18next';
+import RNVideoPlayer from 'react-native-video-controls';
 
 export default function VideoPlayer({route}) {
   const {t} = useTranslation();
@@ -19,42 +18,51 @@ export default function VideoPlayer({route}) {
 
   const w = Dimensions.get('window').width;
 
+  const [selectedTab, setSelectedTab] = useState('sameCourse');
+
+  // TODO enable in next release
+  // const tabs = [
+  //   {
+  //     id: 'sameCourse',
+  //     name: 'Ultimi in ' + courseData.nome,
+  //   },
+  //   {
+  //     id: 'latest',
+  //     name: 'Ultimi video',
+  //   },
+  // ];
+
+  const tabs = [];
+
   return (
-    <ScreenContainer style={{paddingHorizontal: 0}}>
-      <View style={styles.withHorizontalPadding}>
+    <ScreenContainer style={{paddingHorizontal: 0}} barStyle="dark-content">
+      {/* <View style={styles.withHorizontalPadding}>
         <ArrowHeader backFunc={navigation.goBack} text={t('videoPlayer')} />
-      </View>
+      </View> */}
       <View
         style={{
-          ...styles.paddingFromHeader,
+          // ...styles.paddingFromHeader,
           flex: 1,
           flexDirection: 'column',
           justifyContent: 'flex-start',
         }}>
         <View
           style={{
-            flex: 2,
+            flex: 1,
             flexDirection: 'row',
             justifyContent: 'center',
           }}>
-          <Video
+          <RNVideoPlayer
             source={{uri: video.url}}
-            style={{
-              width: w,
-              ...styles.elevatedSmooth,
-              backgroundColor: colors.black,
-            }}
-            poster={video.cover_url}
-            controls={true}
-            resizeMode="contain"
-            ignoreSilentSwitch="obey"
+            navigator={navigation}
+            seekColor={colors.gradient1}
           />
         </View>
         <View
           style={{
             marginTop: 16,
             ...styles.withHorizontalPadding,
-            flex: 3,
+            flex: 2,
             flexDirection: 'column',
           }}>
           <TextL
@@ -65,6 +73,38 @@ export default function VideoPlayer({route}) {
           />
           <TextN text={video.data} />
           <TextN text={courseData.nome} />
+          <View
+            style={{
+              marginTop: 16,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              backgroundColor: colors.lightGray,
+              borderRadius: 16,
+            }}>
+            {tabs.map(tab => (
+              <Pressable
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  backgroundColor:
+                    selectedTab == tab.id ? colors.gradient1 : colors.lightGray,
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  borderRadius: 16,
+                }}
+                android_ripple={{color: colors.lightGray}}
+                onPress={() => {
+                  setSelectedTab(tab.id);
+                }}>
+                <TextS
+                  key={tab.id}
+                  text={tab.name}
+                  color={selectedTab == tab.id ? colors.white : colors.black}
+                />
+              </Pressable>
+            ))}
+          </View>
         </View>
       </View>
     </ScreenContainer>
