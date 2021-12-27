@@ -46,6 +46,8 @@ Start Metro bundler: `npx react-native start`
 
 Open a new terminal. From this new terminal start the Android app: `npx react-native run-android`
 
+Open a new terminal. From this new terminal start the iOS app:  `cd ios` `pod install` `npx react-native run-ios`
+
 ## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
