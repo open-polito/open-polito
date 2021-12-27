@@ -12,6 +12,7 @@ import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import HorizontalSelector from './HorizontalSelector';
 import moment from 'moment';
+import * as RNLocalize from 'react-native-localize';
 
 export default function ExamSessions({navigation}) {
   const {t} = useTranslation();
@@ -19,17 +20,48 @@ export default function ExamSessions({navigation}) {
   const {user} = useContext(UserContext);
 
   const [examSessions, setExamSessions] = useState([]);
+  const [filteredSessions, setFilteredSessions] = useState([]);
+
   const [offsetY, setOffsetY] = useState(0);
 
   const [tab, setTab] = useState('all');
 
+  const [errorMsgLanguage, setErrorMsgLanguage] = useState('en');
+
+  // Initial fetch
   useEffect(() => {
     (async () => {
       const data = await getExamSessions(user.device);
       data.sort((a, b) => a.date - b.date);
       setExamSessions(data);
+
+      // Set language for error messages
+      switch (RNLocalize.getLocales()[0].languageCode) {
+        case 'en':
+          setErrorMsgLanguage('en');
+          break;
+        case 'it':
+          setErrorMsgLanguage('it');
+          break;
+        default:
+          setErrorMsgLanguage('en');
+          break;
+      }
     })();
   }, []);
+
+  // If tab or examSessions change, re-filter the exam sessions based on the active tab
+  useEffect(() => {
+    if (tab == 'all') {
+      setFilteredSessions(examSessions);
+    } else if (tab == 'available') {
+      setFilteredSessions(
+        examSessions.filter(
+          session => !session.user_is_signed_up && session.error.id == 0,
+        ),
+      );
+    }
+  }, [tab, examSessions]);
 
   const tabs = [
     {
@@ -54,7 +86,10 @@ export default function ExamSessions({navigation}) {
         icon: 'text',
       },
       {
-        value: item.room.trim() != '' ? item.room.trim() : 'unknown',
+        value:
+          JSON.stringify(item.rooms) != JSON.stringify([' ']) // API returns [" "] when there are no rooms listed
+            ? item.rooms.join('\n')
+            : 'unknown',
         icon: 'place',
       },
     ];
@@ -78,14 +113,14 @@ export default function ExamSessions({navigation}) {
             name={
               examSession.user_is_signed_up
                 ? 'check-circle'
-                : examSession.error_msg
+                : examSession.error.id != 0
                 ? 'close-circle'
                 : 'circle-outline'
             }
             color={
               examSession.user_is_signed_up
                 ? colors.green
-                : examSession.error_msg
+                : examSession.error.id != 0
                 ? colors.red
                 : colors.gradient1
             }
@@ -143,16 +178,20 @@ export default function ExamSessions({navigation}) {
               padding: 4,
             }}
           />
-          {examSession.error_msg ? (
+          {!examSession.user_is_signed_up && examSession.error.id != 0 && (
             <TextXS
               style={{
                 marginTop: 8,
               }}
               weight="bold"
               color={colors.red}
-              text={examSession.error_msg}
+              text={
+                errorMsgLanguage == 'it'
+                  ? examSession.error.ita
+                  : examSession.error.eng
+              }
             />
-          ) : null}
+          )}
         </View>
       </View>
     );
@@ -181,7 +220,7 @@ export default function ExamSessions({navigation}) {
             paddingBottom: offsetY == 0 ? 32 : 16,
             ...styles.withHorizontalPadding,
           }}>
-          {examSessions.map(examSession =>
+          {filteredSessions.map(examSession =>
             tab == 'available'
               ? !examSession.user_is_signed_up &&
                 !examSession.error_msg &&
