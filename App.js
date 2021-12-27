@@ -45,8 +45,10 @@ export default function App() {
   const setNewLocale = () => {
     if (RNLocalize.getLocales()[0].languageCode === 'it') {
       i18n.changeLanguage('it');
+      moment.locale('it');
     } else {
       i18n.changeLanguage('en');
+      moment.locale('en');
     }
   };
 
