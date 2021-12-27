@@ -146,13 +146,18 @@ export default function Home({navigation}) {
                           key={qaSection}
                           category={t(qaSection)}
                           size={cardWidth}
-                          onPress={
-                            qaSection == 'courses'
-                              ? () => {
-                                  navigation.navigate('Courses');
-                                }
-                              : null
-                          }
+                          onPress={() => {
+                            let screen = '';
+                            switch (qaSection) {
+                              case 'courses':
+                                screen = 'Courses';
+                                break;
+                              case 'examSessions':
+                                screen = 'ExamSessions';
+                                break;
+                            }
+                            screen && navigation.navigate(screen);
+                          }}
                         />
                       );
                     })
