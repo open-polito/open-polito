@@ -1,10 +1,31 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
 import colors from '../colors';
 import {TextS} from './Text';
 
-export default function CourseSelector({courses, selector}) {
-  const [selected, setSelected] = useState(null);
+export default function HorizontalSelector({items, onValueChange}) {
+  /**
+   * items: [
+   *   {
+   *     label: "Visible label",
+   *     value: "itemValue"
+   *   },
+   *   ...
+   * ]
+   *
+   */
+
+  const [value, setValue] = useState(null);
+
+  // Set initial value to first item
+  useEffect(() => {
+    !value && setValue(items[0].value);
+  }, []);
+
+  // Call onValueChange each time value is changed
+  useEffect(() => {
+    value && onValueChange(value);
+  }, [value]);
 
   return (
     <ScrollView
@@ -17,14 +38,11 @@ export default function CourseSelector({courses, selector}) {
         paddingVertical: 8,
       }}>
       <View style={{paddingLeft: 24}} />
-      {courses.map(course => {
-        const color =
-          selected == course.codice + course.nome
-            ? colors.gradient1
-            : colors.white;
+      {items.map(item => {
+        const color = value == item.value ? colors.gradient1 : colors.white;
         return (
           <Pressable
-            key={course.codice + course.nome}
+            key={item.value}
             android_ripple={{color: '#fff'}}
             style={{
               elevation: 4,
@@ -36,14 +54,12 @@ export default function CourseSelector({courses, selector}) {
               maxHeight: 24,
             }}
             onPress={() => {
-              // set selected local state
-              // then use parent component's change function
-              setSelected(course.codice + course.nome);
-              selector(course.codice + course.nome);
+              // Set selected item, which will call onValueChange
+              setValue(item.value);
             }}>
             <View style={{height: '100%'}}>
               <TextS
-                text={course.nome}
+                text={item.label}
                 color={color == colors.gradient1 ? colors.white : colors.black}
               />
             </View>
