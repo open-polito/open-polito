@@ -1,17 +1,29 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import DirectoryItemRecursive from './DirectoryItemRecursive';
 import NoContent from './NoContent';
 
 export default function MaterialExplorer({course: course_id}) {
-  const material =
-    course_id && useSelector(state => state.material)
-      ? useSelector(state => state.material.material[course_id])
-      : [];
+  const [material, setMaterial] = useState([]);
 
-  const materialDict = getMaterialDictionary();
-  const firstLevel = getFirstLevel();
+  const [materialDict, setMaterialDict] = useState({});
+  const [firstLevel, setFirstLevel] = useState([]);
+
+  const materialState = useSelector(state => state.material);
+
+  // Initial setup. Get course material on course_id change
+  useEffect(() => {
+    setMaterial(
+      course_id && materialState ? materialState.material[course_id] : [],
+    );
+  }, [course_id]);
+
+  // On course material change & on first render
+  useEffect(() => {
+    setMaterialDict(getMaterialDictionary());
+    setFirstLevel(getFirstLevel());
+  }, [material]);
 
   // generate a dict of items from the tree.
   // item_id : {item_type, name, children_ids}
