@@ -8,6 +8,7 @@ const EN = {
   oldVideos: 'Videos from previous years',
   noContent: 'Nothing to show...',
   videoPlayer: 'Video player',
+  deadline: 'Deadline',
 
   // Splash screen
   loading: 'Loading...',
@@ -28,7 +29,7 @@ const EN = {
   allSections: 'All sections',
 
   // Sections
-  exams: 'Exams',
+  examSessions: 'Exam sessions',
   schedule: 'Schedule',
   material: 'Material',
   courses: 'Courses',
@@ -65,6 +66,10 @@ const EN = {
   recordings: 'Recordings',
   videos: 'Videos',
   noVideos: 'No videos',
+
+  // Exam sessions screen
+  allExams: 'All exams',
+  availableToBook: 'Available to book',
 
   // Flash messages
   logoutFlashMessage: 'Logging out...',

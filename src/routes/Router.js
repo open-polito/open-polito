@@ -36,6 +36,7 @@ import MaterialSearch from '../screens/MaterialSearch';
 import Courses from '../screens/Courses';
 import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
+import ExamSessions from '../components/ExamSessions';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
@@ -221,6 +222,7 @@ export default function Router() {
             <AppStack.Screen name="Courses" component={Courses} />
             <AppStack.Screen name="Course" component={Course} />
             <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
+            <AppStack.Screen name="ExamSessions" component={ExamSessions} />
           </AppStack.Navigator>
         </UserProvider>
       ) : (
