@@ -29,12 +29,14 @@ export default function DirectoryItemRecursive({item, getChildren}) {
           code={item.code}
         />
       ) : (
-        <Pressable
-          android_ripple={{color: '#ccc'}}
-          onPress={() => {
-            setOpened(!opened);
-          }}>
-          <DirectoryItem tipo={item.tipo} key={item.nome} nome={item.nome}>
+        <View>
+          <DirectoryItem
+            tipo={item.tipo}
+            key={item.nome}
+            nome={item.nome}
+            onPress={() => {
+              setOpened(!opened);
+            }}>
             {children.length > 0 && opened
               ? children.map(item => {
                   const key = item.tipo == 'file' ? item.code : item.nome;
@@ -48,7 +50,7 @@ export default function DirectoryItemRecursive({item, getChildren}) {
                 })
               : null}
           </DirectoryItem>
-        </Pressable>
+        </View>
       )}
     </View>
   );
