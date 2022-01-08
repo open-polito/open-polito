@@ -20,6 +20,7 @@ export default function DirectoryItem({
   data_inserimento = null,
   corso = null,
   children,
+  onPress = () => {},
 }) {
   let size_label =
     size_kb > 999 ? (size_kb / 1000).toFixed(2) + ' MB' : size_kb + ' kB';
@@ -29,14 +30,20 @@ export default function DirectoryItem({
   const {user} = useContext(UserContext);
   const [textWidth, setTextWidth] = useState(null);
 
+  const downloadFile = () => {
+    getDownloadUrl(user, code).then(url => Linking.openURL(url));
+  };
+
   return (
     <View style={{flexDirection: 'column'}}>
-      <View
+      <Pressable
+        android_ripple={{color: colors.lightGray}}
+        onPress={tipo == 'file' ? downloadFile : onPress} // download file if file, otherwise use onPress prop
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginVertical: 8,
+          paddingVertical: 8,
         }}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           {tipo == 'file' ? (
@@ -105,16 +112,14 @@ export default function DirectoryItem({
 
             {tipo == 'file' ? (
               <Pressable
-                android_ripple={{color: '#ccc'}}
-                onPress={() => {
-                  getDownloadUrl(user, code).then(url => Linking.openURL(url));
-                }}>
+                android_ripple={{color: colors.lightGray}}
+                onPress={downloadFile}>
                 <Icon name="file-download" size={24} color={colors.gradient1} />
               </Pressable>
             ) : null}
           </View>
         )}
-      </View>
+      </Pressable>
       <View style={{marginLeft: 16}}>{children}</View>
     </View>
   );
