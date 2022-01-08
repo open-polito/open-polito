@@ -12,6 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTranslation} from 'react-i18next';
+import RNFS from 'react-native-fs';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {
@@ -41,6 +42,17 @@ import ExamSessions from '../components/ExamSessions';
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
 
+// Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
+// DocumentDirectoryPath on iOS
+const logs_path = (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) + '/request_log.txt';
+console.log(`Request log path: ${logs_path}`);
+function log_request(entry) {
+  // console.log(entry);
+  if (entry.endpoint.includes("login"))
+    return;
+  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err => console.log(error));
+}
+
 export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
@@ -66,12 +78,12 @@ export default function Router() {
   function handleLogin(username, password) {
     showMessage(loginPendingFlashMessage(t));
     (async () => {
-      const device = new Device();
-      device.uuid = await UUIDv4();
+      // todo: disable logging in release mode
+      const device = new Device(UUIDv4(), log_request);
       // console.log(device.uuid);
       const deviceData = {
         platform: Platform.OS,
-        version: Platform.Version,
+        version: Platform.Version + "",
         model: 'Generic',
         manufacturer: 'Unknown',
       };
@@ -124,19 +136,12 @@ export default function Router() {
             dispatch(setToken(token));
             dispatch(setUuid(uuid));
 
-            /**
-             * open-polito-api 1.0.8 introduced a change, moving the returned
-             * token to device.token. loginWithToken() returns the same input
-             * token, rendering access impossible.
-             * Solved: https://github.com/open-polito/open-polito/issues/4
-             */
-            const dev = new Device(uuid);
-            const {user} = await dev.loginWithToken(
+            // todo: disable logging in release mode
+            const dev = new Device(uuid, log_request);
+            const {user, token: newToken} = await dev.loginWithToken(
               credentials.username,
               token,
             );
-
-            const newToken = dev.token;
 
             const sessionUsername = 'S' + user.anagrafica.matricola;
 
