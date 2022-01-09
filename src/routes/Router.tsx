@@ -37,7 +37,7 @@ import MaterialSearch from '../screens/MaterialSearch';
 import Courses from '../screens/Courses';
 import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
-import ExamSessions from '../components/ExamSessions';
+import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig from '../defaultConfig';
 import moment from 'moment';
@@ -45,17 +45,22 @@ import moment from 'moment';
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
 
-const logFilename = 'request_log-' + moment().format("YYYY-MM-DD-THHmmssSSS") + ".txt";
-const logs_path = (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) + "/" + logFilename;
+const logFilename =
+  'request_log-' + moment().format('YYYY-MM-DD-THHmmssSSS') + '.txt';
+const logs_path =
+  (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) +
+  '/' +
+  logFilename;
 
 // console.log(`Request log path: ${logs_path}`);
 function log_request(entry) {
   // Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
   // DocumentDirectoryPath on iOS
   // console.log(entry);
-  if (entry.endpoint.includes("login"))
-    return;
-  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err => console.log(err));
+  if (entry.endpoint.includes('login')) return;
+  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
+    console.log(err),
+  );
 }
 
 export default function Router() {
@@ -109,7 +114,7 @@ export default function Router() {
       // console.log(device.uuid);
       const deviceData = {
         platform: Platform.OS,
-        version: Platform.Version + "",
+        version: Platform.Version + '',
         model: 'Generic',
         manufacturer: 'Unknown',
       };
