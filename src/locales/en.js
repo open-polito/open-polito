@@ -43,6 +43,7 @@ const EN = {
 
   // Settings screen
   settings: 'Settings',
+  debugSettings: 'Debug settings',
   logout: 'Logout',
   notifications: 'Notifications',
   notificationsDesc: 'Manage your notification preferences',
@@ -50,6 +51,8 @@ const EN = {
   themeDesc: 'Choose dark mode, customize colors',
   about: 'About',
   aboutDesc: 'About Open PoliTo',
+  enableLogging: 'Enable logging',
+  enableLoggingDesc: 'Save logs to device',
 
   // Material screen
   material: 'Material',
@@ -80,6 +83,7 @@ const EN = {
   loginSuccessFlashMessage: 'Log in successful!',
   notImplementedFlashMessage: 'Feature coming soon!',
   notImplementedFlashMessageDesc: 'Feature will be available in a next release',
+  restartFlashMessage: 'Restart the app',
 
   // Additional screens...
 };

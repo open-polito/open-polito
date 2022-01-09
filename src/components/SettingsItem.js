@@ -9,16 +9,24 @@ export default function SettingsItem({
   text,
   description,
   settingsFunction = () => {},
+  children,
 }) {
   return (
-    <View>
+    <View style={{flex: 1}}>
       <Pressable android_ripple={{color: '#ccc'}} onPress={settingsFunction}>
-        <View style={_styles.settingsItemContainer}>
-          <Icon name={iconName} size={32} color={colors.black} />
-          <View style={_styles.settingsItemTextContainer}>
-            <TextN text={text} weight="medium" />
-            <TextS text={description} />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}>
+          <View style={{..._styles.settingsItemContainer, flex: 1}}>
+            <Icon name={iconName} size={32} color={colors.black} />
+            <View style={_styles.settingsItemTextContainer}>
+              <TextN text={text} weight="medium" />
+              <TextS text={description} />
+            </View>
           </View>
+          {children}
         </View>
       </Pressable>
     </View>
