@@ -1,5 +1,5 @@
-import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, StatusBar, Switch, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
@@ -11,16 +11,52 @@ import {useDispatch} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
 import {setAccess, setToken, setUsername, setUuid} from '../store/sessionSlice';
 import {showMessage} from 'react-native-flash-message';
-import {logoutFlashMessage} from '../components/CustomFlashMessages';
+import {
+  logoutFlashMessage,
+  warnFlashMessage,
+} from '../components/CustomFlashMessages';
 import {useTranslation} from 'react-i18next';
 import notImplemented from '../utils/not_implemented';
+import {TextS} from '../components/Text';
+import ScreenContainer from '../components/ScreenContainer';
+import ArrowHeader from '../components/ArrowHeader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Settings() {
   const {t} = useTranslation();
   const {windowHeight} = useSelector(state => state.ui);
   const anagrafica = useSelector(state => state.session.anagrafica);
 
+  const [mounted, setMounted] = useState(true);
+
   const dispatch = useDispatch();
+
+  // Settings state to persist
+  const [config, setConfig] = useState({
+    logging: false,
+  });
+
+  // Load config from AsyncStorage
+  useEffect(() => {
+    (async () => {
+      try {
+        const _config = await AsyncStorage.getItem('@config');
+        mounted && setConfig(JSON.parse(_config));
+      } catch (e) {}
+    })();
+    return () => setMounted(false);
+  }, []);
+
+  // Save config to AsyncStorage on config change
+  useEffect(() => {
+    (async () => {
+      try {
+        await AsyncStorage.setItem('@config', JSON.stringify(config));
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  }, [config]);
 
   function showLogoutMessage() {
     showMessage(logoutFlashMessage(t));
@@ -41,63 +77,74 @@ export default function Settings() {
     }, 1000);
   }
 
-  return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-      }}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
-      />
-      <View
-        style={{
-          ...styles.container,
-          ...styles.safePaddingTop,
-          backgroundColor: colors.white,
-          height: windowHeight,
-        }}>
-        <View style={styles.withHorizontalPadding}>
-          <Header text={t('settings')} noMarginBottom={true} />
-        </View>
+  const toggleLogging = () => {
+    showMessage(warnFlashMessage(t, 'restartFlashMessage'));
+  };
 
-        <ScrollView>
-          <View style={styles.paddingFromHeader}>
-            <AccountBox
-              name={anagrafica.nome + ' ' + anagrafica.cognome}
-              degree={anagrafica.nome_corso_laurea}
-              logoutFunction={handleLogout}
-            />
-          </View>
-          <View style={{marginTop: 24, ...styles.withHorizontalPadding}}>
-            <SettingsItem
-              iconName="bell-alert-outline"
-              text={t('notifications')}
-              description={t('notificationsDesc')}
-              settingsFunction={() => {
-                notImplemented(t);
-              }}
-            />
-            <SettingsItem
-              iconName="drawing"
-              text={t('theme')}
-              description={t('themeDesc')}
-              settingsFunction={() => {
-                notImplemented(t);
-              }}
-            />
-            <SettingsItem
-              iconName="information-outline"
-              text={t('about')}
-              description={t('aboutDesc')}
-              settingsFunction={() => {
-                notImplemented(t);
-              }}
-            />
-          </View>
-        </ScrollView>
+  return (
+    <ScreenContainer style={{paddingHorizontal: 0}}>
+      <View style={styles.withHorizontalPadding}>
+        <Header text={t('settings')} padd />
       </View>
-    </SafeAreaView>
+      <ScrollView
+        contentContainerStyle={{
+          ...styles.withHorizontalPadding,
+          ...styles.paddingFromHeader,
+        }}>
+        <View>
+          <AccountBox
+            name={anagrafica.nome + ' ' + anagrafica.cognome}
+            degree={anagrafica.nome_corso_laurea}
+            logoutFunction={handleLogout}
+          />
+        </View>
+        <View style={{marginTop: 24}}>
+          <SettingsItem
+            iconName="bell-alert-outline"
+            text={t('notifications')}
+            description={t('notificationsDesc')}
+            settingsFunction={() => {
+              notImplemented(t);
+            }}
+          />
+          <SettingsItem
+            iconName="drawing"
+            text={t('theme')}
+            description={t('themeDesc')}
+            settingsFunction={() => {
+              notImplemented(t);
+            }}
+          />
+          <SettingsItem
+            iconName="information-outline"
+            text={t('about')}
+            description={t('aboutDesc')}
+            settingsFunction={() => {
+              notImplemented(t);
+            }}
+          />
+          {/* Debug options */}
+          <View style={{height: 4, backgroundColor: colors.lightGray}}></View>
+          <TextS style={{marginTop: 8}} text={t('debugSettings')} />
+          <SettingsItem
+            iconName="bug-outline"
+            text={t('enableLogging')}
+            description={t('enableLoggingDesc')}
+            settingsFunction={() => {
+              const _value = config.logging;
+              setConfig({...config, logging: !_value});
+              toggleLogging();
+            }}>
+            <Switch
+              value={config.logging}
+              onValueChange={value => {
+                setConfig({...config, logging: value});
+                toggleLogging();
+              }}
+            />
+          </SettingsItem>
+        </View>
+      </ScrollView>
+    </ScreenContainer>
   );
 }

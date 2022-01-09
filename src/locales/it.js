@@ -43,6 +43,7 @@ const IT = {
 
   // Settings screen
   settings: 'Impostazioni',
+  debugSettings: 'Impostazioni di debug',
   logout: 'Esci',
   notifications: 'Notifiche',
   notificationsDesc: 'Gestisci le tue preferenze di notifica',
@@ -50,6 +51,8 @@ const IT = {
   themeDesc: 'Scegli la dark mode, personalizza i colori',
   about: 'Informazioni',
   aboutDesc: 'Informazioni su Open PoliTo',
+  enableLogging: 'Abilita logging',
+  enableLoggingDesc: 'Salva i log nel dispositivo',
 
   // Material screen
   material: 'Materiale',
@@ -81,6 +84,8 @@ const IT = {
   notImplementedFlashMessage: 'Funzionalità in arrivo!',
   notImplementedFlashMessageDesc:
     'Questa funzionalità sarà disponibile in una prossima versione',
+  restartFlashMessage: "Riavvia l'app",
+
   // Additional screens...
 };
 

@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {Dimensions, Platform, StatusBar, View} from 'react-native';
-import {TextXL} from '../components/Text';
+import {TextS, TextXL} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api';
@@ -38,19 +38,24 @@ import Courses from '../screens/Courses';
 import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
 import ExamSessions from '../components/ExamSessions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import defaultConfig from '../defaultConfig';
+import moment from 'moment';
 
 const AuthStack = createNativeStackNavigator();
 const AppStack = createNativeStackNavigator();
 
-// Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
-// DocumentDirectoryPath on iOS
-const logs_path = (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) + '/request_log.txt';
-console.log(`Request log path: ${logs_path}`);
+const logFilename = 'request_log-' + moment().format("YYYY-MM-DD-THHmmssSSS") + ".txt";
+const logs_path = (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) + "/" + logFilename;
+
+// console.log(`Request log path: ${logs_path}`);
 function log_request(entry) {
+  // Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
+  // DocumentDirectoryPath on iOS
   // console.log(entry);
   if (entry.endpoint.includes("login"))
     return;
-  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err => console.log(error));
+  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err => console.log(err));
 }
 
 export default function Router() {
@@ -58,6 +63,10 @@ export default function Router() {
   const dispatch = useDispatch();
 
   const [_user, _setUser] = useState();
+  const [logging, setLogging] = useState(false);
+  const [message, setMessage] = useState(null);
+
+  const {access, loadedToken} = useSelector(state => state.session);
 
   const [height, setHeight] = useState(() => {
     h = Dimensions.get('window').height + StatusBar.currentHeight;
@@ -65,15 +74,32 @@ export default function Router() {
     return h;
   });
 
+  // Initial setup
   useEffect(() => {
     const sub = Dimensions.addEventListener('change', ({window}) => {
       dispatch(setWindowHeight(window + StatusBar.currentHeight));
     });
-    return () => sub.remove();
-  });
 
-  const {access, loadedToken} = useSelector(state => state.session);
-  // const {unreadEmailCount} = useSelector(state => state.email);
+    return () => {
+      sub.remove();
+    };
+  }, []);
+
+  // Returns message component
+  const buildMessage = ({text = '', type = 'warn'}) => {
+    return (
+      <View
+        style={{
+          backgroundColor: type == 'warn' ? colors.orange : colors.black,
+          paddingVertical: 4,
+          paddingTop: StatusBar.currentHeight,
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+        <TextS weight="medium" text={text} color={colors.white} />
+      </View>
+    );
+  };
 
   function handleLogin(username, password) {
     showMessage(loginPendingFlashMessage(t));
@@ -121,12 +147,36 @@ export default function Router() {
     })();
   }
 
+  // Get logging configuration
+  const getLoggingConfig = async () => {
+    let _logging = false;
+    try {
+      _logging = await AsyncStorage.getItem('@config');
+      if (_logging == null) {
+        await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
+        _logging = defaultConfig.logging;
+      } else {
+        _logging = JSON.parse(_logging).logging;
+      }
+    } catch (e) {
+    } finally {
+      setLogging(_logging);
+    }
+
+    // Determine whether to show top message
+    _logging &&
+      setMessage(buildMessage({text: t('Logging enabled'), type: 'warn'}));
+
+    return _logging;
+  };
+
   // Get access token from keychain
   useEffect(() => {
     if (!access) {
       showMessage(loginPendingFlashMessage(t));
       // only log in again if not logged in yet (with token) (to prevent unnecessary token changes during development)
       setTimeout(async () => {
+        const _logging = await getLoggingConfig();
         try {
           // console.log('Accessing token...');
           const credentials = await Keychain.getGenericPassword();
@@ -137,7 +187,7 @@ export default function Router() {
             dispatch(setUuid(uuid));
 
             // todo: disable logging in release mode
-            const dev = new Device(uuid, log_request);
+            const dev = new Device(uuid, _logging ? log_request : () => {});
             const {user, token: newToken} = await dev.loginWithToken(
               credentials.username,
               token,
@@ -216,6 +266,7 @@ export default function Router() {
 
   return (
     <NavigationContainer>
+      <View>{message}</View>
       {access ? (
         <UserProvider user={_user}>
           <AppStack.Navigator
