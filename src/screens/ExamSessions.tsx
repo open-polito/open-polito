@@ -3,14 +3,14 @@ import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';
 import {UserContext} from '../context/User';
 import styles from '../styles';
-import ArrowHeader from './ArrowHeader';
-import ScreenContainer from './ScreenContainer';
+import ArrowHeader from '../components/ArrowHeader';
+import ScreenContainer from '../components/ScreenContainer';
 import {ExamSession, getExamSessions} from 'open-polito-api/exam_sessions';
-import {TextN, TextS, TextXS} from './Text';
+import {TextN, TextS, TextXS} from '../components/Text';
 import colors from '../colors';
 import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import HorizontalSelector from './HorizontalSelector';
+import HorizontalSelector from '../components/HorizontalSelector';
 import moment from 'moment';
 import * as RNLocalize from 'react-native-localize';
 
@@ -54,6 +54,7 @@ export default function ExamSessions({navigation}) {
   useEffect(() => {
     if (tab == 'all') {
       setFilteredSessions(examSessions);
+    } else if (tab == 'booked') {
     } else if (tab == 'available') {
       setFilteredSessions(
         examSessions.filter(
@@ -65,10 +66,17 @@ export default function ExamSessions({navigation}) {
 
   const tabs = [
     {
+      icon: '',
       label: t('allExams'),
       value: 'all',
     },
     {
+      icon: 'check-circle',
+      label: t('booked'),
+      value: 'booked',
+    },
+    {
+      icon: 'circle-outline',
       label: t('availableToBook'),
       value: 'available',
     },
@@ -96,104 +104,100 @@ export default function ExamSessions({navigation}) {
   };
 
   const examSessionCard = (examSession: ExamSession) => (
-      <View
-        key={examSession.session_id}
-        style={{
-          ...styles.elevatedSmooth,
-          backgroundColor: colors.white,
-          paddingVertical: 16,
-          paddingHorizontal: 16,
-          marginBottom: 16,
-          borderRadius: 8,
-          flexDirection: 'row',
-        }}>
-        <View style={{marginRight: 8, flexShrink: 0}}>
-          <IconC
-            name={
-              examSession.user_is_signed_up
-                ? 'check-circle'
-                : examSession.error.id != 0
-                ? 'close-circle'
-                : 'circle-outline'
-            }
-            color={
-              examSession.user_is_signed_up
-                ? colors.green
-                : examSession.error.id != 0
-                ? colors.red
-                : colors.gradient1
-            }
-            size={32}
-          />
-        </View>
-        <View
-          style={{
-            flexGrow: 1,
-            flexShrink: 1,
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-          }}>
-          <TextN
-            numberOfLines={1}
-            weight="medium"
-            text={examSession.exam_name}
-          />
-
-          <TextN
-            text={examSession.course_id}
-            color={colors.gray}
-            weight="medium"
-          />
-          <View style={{marginBottom: 8}}></View>
-          {buildFields(examSession).map(field => (
-            <View key={field.icon} style={{flexDirection: 'row', flex: 1}}>
-              {['place'].includes(field.icon) ? (
-                <Icon
-                  style={{marginRight: 4}}
-                  name={field.icon}
-                  size={16}
-                  color={colors.gray}
-                />
-              ) : (
-                <IconC
-                  style={{marginRight: 4}}
-                  name={field.icon}
-                  size={16}
-                  color={colors.gray}
-                />
-              )}
-              <TextS text={field.value} />
-            </View>
-          ))}
-          <View style={{marginBottom: 8}}></View>
-          <TextS
-            text={
-              t('deadline') +
-              ': ' +
-              moment(examSession.signup_deadline).format('lll')
-            }
-            style={{
-              borderRadius: 4,
-              padding: 4,
-            }}
-          />
-          {!examSession.user_is_signed_up && examSession.error.id != 0 && (
-            <TextXS
-              style={{
-                marginTop: 8,
-              }}
-              weight="bold"
-              color={colors.red}
-              text={
-                errorMsgLanguage == 'it'
-                  ? examSession.error.ita
-                  : examSession.error.eng
-              }
-            />
-          )}
-        </View>
+    <View
+      key={examSession.session_id}
+      style={{
+        ...styles.elevatedSmooth,
+        backgroundColor: colors.white,
+        paddingVertical: 16,
+        paddingHorizontal: 16,
+        marginBottom: 16,
+        borderRadius: 8,
+        flexDirection: 'row',
+      }}>
+      <View style={{marginRight: 8, flexShrink: 0}}>
+        <IconC
+          name={
+            examSession.user_is_signed_up
+              ? 'check-circle'
+              : examSession.error.id != 0
+              ? 'close-circle'
+              : 'circle-outline'
+          }
+          color={
+            examSession.user_is_signed_up
+              ? colors.green
+              : examSession.error.id != 0
+              ? colors.red
+              : colors.gradient1
+          }
+          size={32}
+        />
       </View>
-    );
+      <View
+        style={{
+          flexGrow: 1,
+          flexShrink: 1,
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+        }}>
+        <TextN numberOfLines={1} weight="medium" text={examSession.exam_name} />
+
+        <TextN
+          text={examSession.course_id}
+          color={colors.gray}
+          weight="medium"
+        />
+        <View style={{marginBottom: 8}}></View>
+        {buildFields(examSession).map(field => (
+          <View key={field.icon} style={{flexDirection: 'row', flex: 1}}>
+            {['place'].includes(field.icon) ? (
+              <Icon
+                style={{marginRight: 4}}
+                name={field.icon}
+                size={16}
+                color={colors.gray}
+              />
+            ) : (
+              <IconC
+                style={{marginRight: 4}}
+                name={field.icon}
+                size={16}
+                color={colors.gray}
+              />
+            )}
+            <TextS text={field.value} />
+          </View>
+        ))}
+        <View style={{marginBottom: 8}}></View>
+        <TextS
+          text={
+            t('deadline') +
+            ': ' +
+            moment(examSession.signup_deadline).format('lll')
+          }
+          style={{
+            borderRadius: 4,
+            padding: 4,
+          }}
+        />
+        {!examSession.user_is_signed_up && examSession.error.id != 0 && (
+          <TextXS
+            style={{
+              marginTop: 8,
+            }}
+            weight="bold"
+            color={colors.red}
+            text={
+              errorMsgLanguage == 'it'
+                ? examSession.error.ita
+                : examSession.error.eng
+            }
+          />
+        )}
+      </View>
+    </View>
+  );
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>
