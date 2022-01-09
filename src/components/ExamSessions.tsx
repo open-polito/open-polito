@@ -5,7 +5,7 @@ import {UserContext} from '../context/User';
 import styles from '../styles';
 import ArrowHeader from './ArrowHeader';
 import ScreenContainer from './ScreenContainer';
-import {getExamSessions} from 'open-polito-api/exam_sessions';
+import {ExamSession, getExamSessions} from 'open-polito-api/exam_sessions';
 import {TextN, TextS, TextXS} from './Text';
 import colors from '../colors';
 import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -74,7 +74,7 @@ export default function ExamSessions({navigation}) {
     },
   ];
 
-  const buildFields = item => {
+  const buildFields = (item: ExamSession) => {
     return [
       {
         value:
@@ -95,10 +95,9 @@ export default function ExamSessions({navigation}) {
     ];
   };
 
-  const examSessionCard = examSession => {
-    return (
+  const examSessionCard = (examSession: ExamSession) => (
       <View
-        key={examSession.exam_id + examSession.exam_name + examSession.date}
+        key={examSession.session_id}
         style={{
           ...styles.elevatedSmooth,
           backgroundColor: colors.white,
@@ -141,7 +140,7 @@ export default function ExamSessions({navigation}) {
           />
 
           <TextN
-            text={examSession.exam_id}
+            text={examSession.course_id}
             color={colors.gray}
             weight="medium"
           />
@@ -195,7 +194,6 @@ export default function ExamSessions({navigation}) {
         </View>
       </View>
     );
-  };
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>
