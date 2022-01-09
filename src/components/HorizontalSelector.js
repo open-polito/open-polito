@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView, View} from 'react-native';
 import colors from '../colors';
 import {TextS} from './Text';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function HorizontalSelector({items, onValueChange}) {
   /**
@@ -39,16 +40,19 @@ export default function HorizontalSelector({items, onValueChange}) {
       }}>
       <View style={{paddingLeft: 24}} />
       {items.map(item => {
-        const color = value == item.value ? colors.gradient1 : colors.white;
+        const backgroundColor =
+          value == item.value ? colors.gradient1 : colors.white;
+        const color =
+          backgroundColor == colors.gradient1 ? colors.white : colors.black;
         return (
           <Pressable
             key={item.value}
             android_ripple={{color: '#fff'}}
             style={{
               elevation: 4,
-              backgroundColor: color,
+              backgroundColor: backgroundColor,
               borderRadius: 16,
-              paddingHorizontal: 16,
+              paddingHorizontal: 8,
               paddingVertical: 4,
               marginRight: 8,
               maxHeight: 24,
@@ -57,11 +61,22 @@ export default function HorizontalSelector({items, onValueChange}) {
               // Set selected item, which will call onValueChange
               setValue(item.value);
             }}>
-            <View style={{height: '100%'}}>
-              <TextS
-                text={item.label}
-                color={color == colors.gradient1 ? colors.white : colors.black}
-              />
+            <View
+              style={{
+                height: '100%',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              {item.icon ? (
+                <Icon
+                  name={item.icon}
+                  color={color}
+                  style={{marginRight: 4}}
+                  size={16}
+                />
+              ) : null}
+              <TextS text={item.label} color={color} />
             </View>
           </Pressable>
         );

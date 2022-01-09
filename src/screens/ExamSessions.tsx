@@ -55,6 +55,9 @@ export default function ExamSessions({navigation}) {
     if (tab == 'all') {
       setFilteredSessions(examSessions);
     } else if (tab == 'booked') {
+      setFilteredSessions(
+        examSessions.filter(session => session.user_is_signed_up),
+      );
     } else if (tab == 'available') {
       setFilteredSessions(
         examSessions.filter(
