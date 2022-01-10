@@ -33,6 +33,7 @@ export default function MaterialExplorer({course: course_id}) {
       dict[key] = item;
     }
     recurseGetMaterialList(material, addToDict);
+
     return dict;
   }
 
@@ -48,10 +49,10 @@ export default function MaterialExplorer({course: course_id}) {
           if (child.tipo == 'file') {
             children.push(child.code);
           } else if (child.tipo == 'cartella') {
-            children.push(child.nome);
+            children.push(child.code);
           }
         });
-        addToDict(item.nome, {...item, file: children});
+        addToDict(item.code, {...item, file: children});
         recurseGetMaterialList(item.file, addToDict);
       }
     });
@@ -64,7 +65,7 @@ export default function MaterialExplorer({course: course_id}) {
       if (item.tipo == 'file') {
         firstLevel.push(item.code);
       } else if (item.tipo == 'cartella') {
-        firstLevel.push(item.nome);
+        firstLevel.push(item.code);
       }
     });
     return firstLevel;
@@ -85,11 +86,7 @@ export default function MaterialExplorer({course: course_id}) {
         firstLevel.map(key => {
           return (
             <DirectoryItemRecursive
-              key={
-                materialDict[key].tipo == 'file'
-                  ? materialDict[key].code
-                  : materialDict[key].nome
-              }
+              key={materialDict[key].code}
               item={materialDict[key]}
               getChildren={getChildren}
             />
