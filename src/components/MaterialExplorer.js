@@ -46,11 +46,7 @@ export default function MaterialExplorer({course: course_id}) {
       } else if (item.tipo == 'cartella') {
         let children = [];
         item.file.forEach(child => {
-          if (child.tipo == 'file') {
-            children.push(child.code);
-          } else if (child.tipo == 'cartella') {
-            children.push(child.code);
-          }
+          children.push(child.code);
         });
         addToDict(item.code, {...item, file: children});
         recurseGetMaterialList(item.file, addToDict);
