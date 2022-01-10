@@ -5,7 +5,7 @@ import DirectoryItem from './DirectoryItem';
 export default function DirectoryItemRecursive({item, getChildren}) {
   let children = [];
   if (item.tipo == 'cartella') {
-    children = getChildren(item.nome);
+    children = getChildren(item.code);
   }
   const [opened, setOpened] = useState(false);
 
@@ -32,17 +32,16 @@ export default function DirectoryItemRecursive({item, getChildren}) {
         <View>
           <DirectoryItem
             tipo={item.tipo}
-            key={item.nome}
+            key={item.code}
             nome={item.nome}
             onPress={() => {
               setOpened(!opened);
             }}>
             {children.length > 0 && opened
               ? children.map(item => {
-                  const key = item.tipo == 'file' ? item.code : item.nome;
                   return (
                     <DirectoryItemRecursive
-                      key={key}
+                      key={item.code}
                       item={item}
                       getChildren={getChildren}
                     />
