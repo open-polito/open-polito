@@ -72,6 +72,7 @@ const EN = {
 
   // Exam sessions screen
   allExams: 'All exams',
+  booked: 'Booked',
   availableToBook: 'Available to book',
 
   // Flash messages

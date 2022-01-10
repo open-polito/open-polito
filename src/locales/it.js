@@ -72,6 +72,7 @@ const IT = {
 
   // Exam sessions screen
   allExams: 'Tutti gli esami',
+  booked: 'Prenotati',
   availableToBook: 'Prenotabili',
 
   // Flash messages
