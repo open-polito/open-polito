@@ -5,7 +5,7 @@ import sessionSlice from './sessionSlice';
 import uiSlice from './uiSlice';
 import userSlice from './userSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     session: sessionSlice,
     ui: uiSlice,
@@ -14,3 +14,7 @@ export const store = configureStore({
     material: materialSlice,
   },
 });
+
+export type RootState = ReturnType<typeof store.getState>;
+
+export default store;

@@ -11,7 +11,7 @@ import * as RNLocalize from 'react-native-localize';
 
 import 'moment/locale/it';
 
-import {store} from './src/store/store';
+import store from './src/store/store';
 import moment from 'moment';
 
 let lng = '';
