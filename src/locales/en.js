@@ -62,6 +62,9 @@ const EN = {
   selectCourseDropdown: 'Select course...',
   selectCourse: 'Select a course to view its files',
 
+  // Courses screen
+  otherCourses: 'Other courses',
+
   // Course screen
   overview: 'Overview',
   info: 'Info',

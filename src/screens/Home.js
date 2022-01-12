@@ -65,7 +65,10 @@ export default function Home({navigation}) {
 
         let promises = [];
 
-        user.carico_didattico.corsi.forEach(corso => {
+        [
+          ...user.carico_didattico.corsi,
+          ...user.carico_didattico.extra_courses,
+        ].forEach(corso => {
           promises.push(corso.populate());
         });
 
@@ -188,7 +191,10 @@ export default function Home({navigation}) {
                   height: '100%',
                 }}>
                 {loadedUser &&
-                  user.carico_didattico.corsi.map(corso => {
+                  [
+                    ...user.carico_didattico.corsi,
+                    ...user.carico_didattico.extra_courses,
+                  ].map(corso => {
                     return corso.live_lessons.map(liveClass => {
                       return (
                         <LiveWidget

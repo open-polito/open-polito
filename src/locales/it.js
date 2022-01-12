@@ -62,6 +62,9 @@ const IT = {
   selectCourseDropdown: 'Seleziona corso...',
   selectCourse: 'Seleziona un corso per vederne i file',
 
+  // Courses screen
+  otherCourses: 'Altri corsi',
+
   // Course screen
   overview: 'Riepilogo',
   info: 'Info',

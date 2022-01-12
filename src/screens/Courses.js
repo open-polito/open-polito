@@ -18,6 +18,7 @@ export default function Courses({navigation}) {
 
   const courses_json = useSelector(state => state.user.carico_didattico);
   const [courses, setCourses] = useState(null);
+  const [extraCourses, setExtraCourses] = useState(null);
 
   const [offsetY, setOffsetY] = useState(0);
 
@@ -27,11 +28,53 @@ export default function Courses({navigation}) {
         await user.populate();
         dispatch(setCarico(JSON.stringify(user.carico_didattico)));
         setCourses(user.carico_didattico.corsi);
+        setExtraCourses(user.carico_didattico.extra_courses);
       })();
     } else {
       setCourses(JSON.parse(courses_json).corsi);
+      setExtraCourses(JSON.parse(courses_json).extra_courses);
     }
   }, []);
+
+  const buildCourseButton = course => {
+    return (
+      <View key={course.codice + course.nome}>
+        <Pressable
+          onPress={() => {
+            navigation.navigate('Course', {
+              courseCode: course.codice + course.nome,
+            });
+          }}
+          android_ripple={{color: colors.lightGray}}
+          style={{
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+            marginBottom: 16,
+            backgroundColor: colors.white,
+            borderRadius: 4,
+            ...styles.elevatedSmooth,
+          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <View style={{flexDirection: 'column', width: '90%'}}>
+              <TextN text={course.nome} numberOfLines={1} weight="regular" />
+              <TextS text={course.cfu + ' CFU'} />
+            </View>
+            <Icon
+              name="chevron-right"
+              color={colors.mediumGray}
+              size={24}
+              style={{position: 'absolute', right: 0}}
+            />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>
@@ -48,48 +91,17 @@ export default function Courses({navigation}) {
             paddingBottom: offsetY == 0 ? 32 : 16,
             ...styles.paddingFromHeader,
           }}>
-          {courses != null &&
-            courses.map(course => (
-              <View key={course.codice + course.nome}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate('Course', {
-                      courseCode: course.codice + course.nome,
-                    });
-                  }}
-                  android_ripple={{color: colors.lightGray}}
-                  style={{
-                    paddingVertical: 12,
-                    paddingHorizontal: 16,
-                    marginBottom: 16,
-                    backgroundColor: colors.white,
-                    borderRadius: 4,
-                    ...styles.elevatedSmooth,
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <View style={{flexDirection: 'column', width: '90%'}}>
-                      <TextN
-                        text={course.nome}
-                        numberOfLines={1}
-                        weight="regular"
-                      />
-                      <TextS text={course.cfu + ' CFU'} />
-                    </View>
-                    <Icon
-                      name="chevron-right"
-                      color={colors.mediumGray}
-                      size={24}
-                      style={{position: 'absolute', right: 0}}
-                    />
-                  </View>
-                </Pressable>
-              </View>
-            ))}
+          {courses != null && courses.map(course => buildCourseButton(course))}
+          {extraCourses != null && (
+            <View>
+              <TextN
+                text={t('otherCourses')}
+                weight="medium"
+                style={{marginBottom: 8}}
+              />
+              {extraCourses.map(course => buildCourseButton(course))}
+            </View>
+          )}
         </ScrollView>
       </View>
     </ScreenContainer>

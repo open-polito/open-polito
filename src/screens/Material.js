@@ -45,7 +45,10 @@ export default function Material({navigation}) {
 
   const initDropdown = () => {
     let items = [];
-    user.carico_didattico.corsi.forEach(course => {
+    [
+      ...user.carico_didattico.corsi,
+      ...user.carico_didattico.extra_courses,
+    ].forEach(course => {
       items.push({
         label: course.nome,
         value: course.codice + course.nome,
@@ -139,7 +142,6 @@ export default function Material({navigation}) {
           }}>
           <TextSubTitle style={{flex: 1}} text={t('byCourse')} />
           {allLoaded ? (
-            // <CourseSelector courses={carico.corsi} selector={selectCourse} />
             <View
               style={{
                 flex: 2,

@@ -76,9 +76,11 @@ export default function MaterialSearch({navigation}) {
 
   const initDropdown = () => {
     let items = [];
-    carico_didattico.corsi.forEach(course => {
-      items.push({label: course.nome, value: course.codice + course.nome});
-    });
+    [...carico_didattico.corsi, ...carico_didattico.extra_courses].forEach(
+      course => {
+        items.push({label: course.nome, value: course.codice + course.nome});
+      },
+    );
     setItems(items);
   };
 
