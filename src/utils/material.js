@@ -33,7 +33,9 @@ export function getMaterialList(carico, materialTree) {
     findMaterialRecursively(
       val,
       addMaterial,
-      carico != null ? getCourseNameFromCode(carico.corsi, key) : null,
+      carico != null
+        ? getCourseNameFromCode([...carico.corsi, ...carico.extra_courses], key)
+        : null,
     );
   }
   material.sort((a, b) => {
@@ -55,7 +57,10 @@ export function getRecentCourseMaterial(materialTree) {
 export async function getMaterialTree(user) {
   let materialTree = {};
   await Promise.all(
-    user.carico_didattico.corsi.map(async corso => {
+    [
+      ...user.carico_didattico.corsi,
+      ...user.carico_didattico.extra_courses,
+    ].map(async corso => {
       const currentCourse = corso.codice + corso.nome;
       if (corso.materiale == undefined) {
         await corso.populate();

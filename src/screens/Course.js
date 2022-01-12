@@ -81,7 +81,10 @@ export default function Course({navigation, route}) {
       user.populate();
     }
     (async () => {
-      user.carico_didattico.corsi.forEach(corso => {
+      [
+        ...user.carico_didattico.corsi,
+        ...user.carico_didattico.extra_courses,
+      ].forEach(corso => {
         if (corso.codice + corso.nome == code) {
           const _course = corso;
           _course.populate().then(() => {
