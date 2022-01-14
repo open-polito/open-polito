@@ -43,11 +43,15 @@ export default function MaterialExplorer({course: course_id}) {
 
   // recurse through the tree to generate an array of files
   function recurseGetMaterialList(material: MaterialItem[]): MaterialItem[] {
-    return material.flatMap(item => [item].concat((item as Cartella).file || []));
+    return material.flatMap(item => (item.tipo == "file")
+      ? [item]
+      : [item as MaterialItem]
+        .concat(recurseGetMaterialList(item.file))
+    );
   }
 
   // return array of folder contents (whole objects, 1 level depth)
-  function getChildren(id: string) {
+  function getChildren(id: string): MaterialItem[] {
     return (materialDict[id] as Cartella).file.map(child => materialDict[child.code]);
   }
 
