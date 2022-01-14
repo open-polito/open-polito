@@ -18,7 +18,7 @@ export default function Courses({navigation}) {
 
   const courses_json = useSelector(state => state.user.carico_didattico);
   const [courses, setCourses] = useState(null);
-  const [extraCourses, setExtraCourses] = useState(null);
+  const [extraCourses, setExtraCourses] = useState([]);
 
   const [offsetY, setOffsetY] = useState(0);
 
@@ -92,7 +92,7 @@ export default function Courses({navigation}) {
             ...styles.paddingFromHeader,
           }}>
           {courses != null && courses.map(course => buildCourseButton(course))}
-          {extraCourses != null && (
+          {extraCourses.length != 0 && (
             <View>
               <TextN
                 text={t('otherCourses')}
