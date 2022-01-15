@@ -55,6 +55,7 @@
     "@babel/core": "^7.12.9",
     "@babel/preset-typescript": "^7.16.0",
     "@babel/runtime": "^7.12.5",
+    "@faker-js/faker": "^6.0.0-alpha.2",
     "@react-native-community/eslint-config": "^2.0.0",
     "@types/jest": "^27.0.2",
     "@types/react": "^17.0.34",
