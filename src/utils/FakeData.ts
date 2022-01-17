@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker';
-import Corso, {Cartella, File} from 'open-polito-api/corso';
+import {Cartella, File} from 'open-polito-api/corso';
 
 type DirectoryItem = File | Cartella;
 
