@@ -1,5 +1,5 @@
 import faker from '@faker-js/faker';
-import {Cartella, File} from 'open-polito-api/corso';
+import Corso, {Cartella, File} from 'open-polito-api/corso';
 
 type DirectoryItem = File | Cartella;
 
@@ -61,22 +61,5 @@ export default class FakeData {
       levelItems.push(this.file());
     }
     return levelItems;
-  }
-
-  /**
-   * Returns a list of lists containing files and directories
-   */
-  static material(
-    numberOfCourses: number,
-    depthLevel: number,
-    dirsPerLevel: number,
-    filesPerDir: number,
-  ): any {
-    let material = [];
-    for (let i = 0; i < numberOfCourses; i++) {
-      let courseMaterial: DirectoryItem[] = [];
-
-      material.push(courseMaterial);
-    }
   }
 }
