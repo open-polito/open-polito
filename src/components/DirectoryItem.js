@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {UserContext} from '../context/User';
 import styles from '../styles';
-import getFileIcon from '../utils/get_file_icon';
+import getFileIcon from '../utils/getFileIcon';
 import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
 

@@ -16,7 +16,7 @@ import {
   warnFlashMessage,
 } from '../components/CustomFlashMessages';
 import {useTranslation} from 'react-i18next';
-import notImplemented from '../utils/not_implemented';
+import notImplemented from '../utils/notImplemented';
 import {TextS} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import ArrowHeader from '../components/ArrowHeader';

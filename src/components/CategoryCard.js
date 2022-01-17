@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Pressable, StyleSheet} from 'react-native';
 import colors from '../colors';
-import notImplemented from '../utils/not_implemented';
+import notImplemented from '../utils/notImplemented';
 import {TextS} from './Text';
 import {useTranslation} from 'react-i18next';
 

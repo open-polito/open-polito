@@ -1,4 +1,12 @@
+/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
+
+const {defaults: tsjPreset} = require('ts-jest/presets');
+
 module.exports = {
+  ...tsjPreset,
   preset: 'react-native',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testEnvironment: 'node',
+  transform: {
+    ...tsjPreset.transform,
+  },
 };
