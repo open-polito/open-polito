@@ -3,9 +3,15 @@
   "version": "0.4.0",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android:debug": "METRO_VARIANT=debug react-native run-android --variant debugFlavorDebug",
+    "android:dev": "METRO_VARIANT=dev react-native run-android --variant devFlavorRelease",
+    "android:beta": "METRO_VARIANT=beta react-native run-android --variant betaFlavorRelease",
+    "android:release": "METRO_VARIANT=release react-native run-android --variant releaseFlavorRelease",
     "ios": "react-native run-ios",
-    "start": "react-native start",
+    "start": "METRO_VARIANT=debug react-native start",
+    "start:dev": "METRO_VARIANT=dev react-native start",
+    "start:beta": "METRO_VARIANT=beta react-native start",
+    "start:release": "METRO_VARIANT=release react-native start",
     "test": "jest",
     "lint": "eslint ."
   },
