@@ -1,5 +1,8 @@
+import config from '@config';
+
 const IT = {
   // General
+  appName: (config.variant == "release") ? "Open PoliTo" : `Open PoliTo [${config.variant}]`,
   search: 'Cerca',
   searchResults: '{{count}} risultati trovati',
   noResults: 'Nessun risultato',
@@ -55,7 +58,7 @@ const IT = {
   enableLoggingDesc: 'Salva i log nel dispositivo',
 
   // Material screen
-  material: 'Materiale',
+  // material: 'Materiale',
   searchMaterial: 'Cerca materiale...',
   recentMaterial: 'Materiali recenti',
   byCourse: 'Per corso',

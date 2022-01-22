@@ -261,7 +261,7 @@ export default function Router() {
                 width: '100%',
                 height: '95%',
               }}>
-              <TextXL text="Open PoliTo" color="white" weight="bold" />
+              <TextXL text={t("appName")} color="white" weight="bold" />
             </View>
           </SafeAreaView>
         </LinearGradient>

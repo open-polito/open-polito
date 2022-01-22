@@ -38,7 +38,7 @@ export default function LoginScreen(props) {
               style={{...styles.container, flex: 1, flexDirection: 'column'}}>
               <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
                 <TextTitleLarge
-                  text="Open PoliTo"
+                  text={t("appName")}
                   color="white"
                   weight="bold"
                 />
