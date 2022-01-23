@@ -143,17 +143,17 @@ android {
 
     productFlavors {
         releaseFlavor {
-            resValue "string", "app_name", "Open Polito"
+            resValue "string", "app_name", "Open PoliTo"
         }
         betaFlavor {
-            resValue "string", "app_name", "Open Polito [beta]"
+            resValue "string", "app_name", "Open PoliTo [beta]"
         }
         devFlavor {
-            resValue "string", "app_name", "Open Polito [dev]"
+            resValue "string", "app_name", "Open PoliTo [dev]"
             applicationIdSuffix ".dev"
         }
         debugFlavor {
-            resValue "string", "app_name", "Open Polito [debug]"
+            resValue "string", "app_name", "Open PoliTo [debug]"
             applicationIdSuffix ".debug"
         }
     }
