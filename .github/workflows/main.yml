@@ -39,7 +39,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
       - name: Build release variant
-        run: cd android && ./gradlew assembleDevFlavorRelease --no-daemon
+        run: npm run android:dev || true
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
