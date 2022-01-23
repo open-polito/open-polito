@@ -142,17 +142,17 @@ android {
     flavorDimensions "default"
 
     productFlavors {
-        releaseFlavor {
+        release {
             resValue "string", "app_name", "Open PoliTo"
         }
-        betaFlavor {
+        beta {
             resValue "string", "app_name", "Open PoliTo [beta]"
         }
-        devFlavor {
+        dev {
             resValue "string", "app_name", "Open PoliTo [dev]"
             applicationIdSuffix ".dev"
         }
-        debugFlavor {
+        debug {
             resValue "string", "app_name", "Open PoliTo [debug]"
             applicationIdSuffix ".debug"
         }
