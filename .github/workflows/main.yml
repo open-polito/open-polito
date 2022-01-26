@@ -41,7 +41,7 @@ jobs:
       - name: Get keystore file
         run: echo ${{ secrets.DEV_KEYSTORE }} | base64 -d > $GITHUB_WORKSPACE/dev-key-store.jks
       - name: Build dev release variant
-        run: ./gradlew assembleDevFlavorRelease \
+        run: cd android/ && ./gradlew assembleDevFlavorRelease \
           -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/dev-key-store.jks \
           -Pandroid.injected.signing.store.password="${{ secrets.DEV_KEYSTORE_PASSWD }}" \
           -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}" \
