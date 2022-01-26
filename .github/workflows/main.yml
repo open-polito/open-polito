@@ -47,6 +47,7 @@ jobs:
           -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}"
           -Pandroid.injected.signing.key.password="${{ secrets.DEV_KEY_PASSWD }}"
       - name: Delete keystore file
+        if: always()
         run: shred -vz $GITHUB_WORKSPACE/dev-key-store.jks ; rm -f $GITHUB_WORKSPACE/dev-key-store.jks
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
