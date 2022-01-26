@@ -43,9 +43,9 @@ jobs:
       - name: Build dev release variant
         run: ./gradlew assembleDevFlavorRelease \
           -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/dev-key-store.jks \
-          -Pandroid.injected.signing.store.password=${{ secrets.DEV_KEYSTORE_PASSWD }} \
-          -Pandroid.injected.signing.key.alias=${{ secrets.DEV_KEYSTORE_ALIAS }} \
-          -Pandroid.injected.signing.key.password=${{ secrets.DEV_KEY_PASSWD }}
+          -Pandroid.injected.signing.store.password="${{ secrets.DEV_KEYSTORE_PASSWD }}" \
+          -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}" \
+          -Pandroid.injected.signing.key.password="${{ secrets.DEV_KEY_PASSWD }}"
       - name: Delete keystore file
         run: shred -vz $GITHUB_WORKSPACE/dev-key-store.jks ; rm -f $GITHUB_WORKSPACE/dev-key-store.jks
       - name: Upload ARM64 binary
