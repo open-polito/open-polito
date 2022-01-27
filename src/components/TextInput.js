@@ -8,6 +8,7 @@ export default function TextInput({
   spaced = false,
   placeholder,
   textContentType = 'none',
+  autoComplete = 'off',
   icon = null,
   secureTextEntry = false,
   onChangeText = () => {},
@@ -31,6 +32,7 @@ export default function TextInput({
       <RNTextInput
         placeholder={placeholder}
         textContentType={textContentType}
+        autoComplete={autoComplete}
         secureTextEntry={secureTextEntry}
         style={_styles.textInputText}
         placeholderTextColor={colors.gray}

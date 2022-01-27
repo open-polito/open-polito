@@ -63,7 +63,8 @@ export default function LoginScreen(props) {
                   />
                   <TextInput
                     spaced
-                    textContentType="emailAddress"
+                    textContentType="username"
+                    autoComplete="username"
                     placeholder={t('userPlaceholder')}
                     icon="account-circle"
                     onChangeText={txt => {
@@ -73,6 +74,7 @@ export default function LoginScreen(props) {
                   <TextInput
                     spaced
                     textContentType="password"
+                    autoComplete="password"
                     placeholder={t('passwordPlaceholder')}
                     icon="lock-outline"
                     secureTextEntry={true}
