@@ -34,11 +34,11 @@ For the latest stable releases and beta builds, please refer to the [Releases](h
 
 #### 1. Setup
 
-Make sure you have correctly installed and configured Node.
-Running on Android requires Android Studio and the Android SDK.
+Make sure you have correctly installed and configured Node.  
+Running on Android requires Android Studio and the Android SDK.  
 Running on iOS requires XCode.
 
-To run in the emulator (Android): setup an emulator in the AVD manager.
+To run in the emulator (Android): setup an emulator in the AVD manager.  
 To run on a real device (Android): connect the device to your development machine with USB debugging on.
 
 More info on the environment setup is available at the [React Native website](https://reactnative.dev/docs/environment-setup) (under the "React Native CLI" section).
@@ -52,15 +52,16 @@ For iOS, install dependencies: `cd ios && pod install`
 Start Metro bundler: `npx react-native start` or `npm start`
 
 Open a new terminal, from which you can:
+
 - start the Android app: `npm run android:debug`
-- start the iOS app:  `npm run ios`
+- start the iOS app: `npm run ios`
 
 #### 3. Run in release mode
 
-Alternatively, you can directly run the app in release mode.
+Alternatively, you can directly run the app in release mode:
 
-Android: `npm run android:release` (replace `release` with `beta` or `dev` to run the beta or dev release, respectively).
-iOS: (coming soon).
+- Android: `npm run android:release` (replace `release` with `beta` or `dev` to run the beta or dev release, respectively).
+- iOS: (coming soon).
 
 ## Contributors
 
