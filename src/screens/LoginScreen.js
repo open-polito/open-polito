@@ -10,7 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colors from '../colors';
 import Button from '../components/Button';
-import {Text, TextSubTitle, TextTitleLarge, TextXL} from '../components/Text';
+import {Text, TextSubTitle, TextTitle, TextXL} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -37,11 +37,7 @@ export default function LoginScreen(props) {
             <View
               style={{...styles.container, flex: 1, flexDirection: 'column'}}>
               <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
-                <TextTitleLarge
-                  text={t("appName")}
-                  color="white"
-                  weight="bold"
-                />
+                <TextTitle text={t('appName')} color="white" weight="bold" />
                 <TextSubTitle
                   text={t('caption')}
                   color="white"
