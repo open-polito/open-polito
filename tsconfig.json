@@ -10,10 +10,7 @@
     "noEmit": true,
     "strict": true,
     "target": "esnext",
-    "typeRoots": [
-      "node_modules/@types",
-      "src/buildConfig"
-    ]
+    "typeRoots": ["node_modules/@types"]
   },
   "exclude": [
     "node_modules",
