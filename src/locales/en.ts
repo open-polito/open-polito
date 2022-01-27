@@ -1,8 +1,11 @@
-import config from '@config';
+import Config from 'react-native-config';
 
 const EN = {
   // General
-  appName: (config.variant == "release") ? "Open PoliTo" : `Open PoliTo [${config.variant}]`,
+  appName:
+    Config.VARIANT == 'release'
+      ? 'Open PoliTo'
+      : `Open PoliTo [${Config.VARIANT}]`,
   search: 'Search',
   searchResults: '{{count}} results found',
   noResults: 'No results',
