@@ -28,25 +28,39 @@ Check out the [Milestones](https://github.com/open-polito/open-polito/milestones
 
 For the latest automated build APKs (updated on every push), see the [Actions](https://github.com/open-polito/open-polito/actions) tab.
 
-For the latest stable release, please refer to the [Releases](https://github.com/open-polito/open-polito/releases) section.
+For the latest stable releases and beta builds, please refer to the [Releases](https://github.com/open-polito/open-polito/releases) section.
 
 ### Building from source
 
-Make sure you have correctly installed and configured Node, Android Studio and the Android SDK.
+#### 1. Setup
 
-To run in the emulator: setup an emulator in the AVD manager.
+Make sure you have correctly installed and configured Node.
+Running on Android requires Android Studio and the Android SDK.
+Running on iOS requires XCode.
 
-To run on a real device: connect the device to your development machine with USB debugging on.
+To run in the emulator (Android): setup an emulator in the AVD manager.
+To run on a real device (Android): connect the device to your development machine with USB debugging on.
 
 More info on the environment setup is available at the [React Native website](https://reactnative.dev/docs/environment-setup) (under the "React Native CLI" section).
 
 Install all dependencies: `npm install`
 
-Start Metro bundler: `npx react-native start`
+For iOS, install dependencies: `cd ios && pod install`
 
-Open a new terminal. From this new terminal start the Android app: `npx react-native run-android`
+#### 2. Run in debug mode
 
-Open a new terminal. From this new terminal start the iOS app:  `cd ios` `pod install` `npx react-native run-ios`
+Start Metro bundler: `npx react-native start` or `npm start`
+
+Open a new terminal, from which you can:
+- start the Android app: `npm run android:debug`
+- start the iOS app:  `npm run ios`
+
+#### 3. Run in release mode
+
+Alternatively, you can directly run the app in release mode.
+
+Android: `npm run android:release` (replace `release` with `beta` or `dev` to run the beta or dev release, respectively).
+iOS: (coming soon).
 
 ## Contributors
 
