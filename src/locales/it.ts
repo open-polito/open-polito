@@ -35,7 +35,7 @@ const IT = {
   allSections: 'Tutte le sezioni',
 
   // Sections
-  examSessions: "Sessioni d'esame",
+  examSessions: 'Sessioni',
   schedule: 'Orario',
   material: 'Materiale',
   courses: 'Corsi',
