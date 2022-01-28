@@ -3,6 +3,7 @@ const colors = {
   gradient2: '#0010A4',
   black: '#000',
   white: '#fff',
+  background: '#FDFDFD',
   gray: '#777',
   mediumGray: '#aaa',
   lightGray: '#eee',
