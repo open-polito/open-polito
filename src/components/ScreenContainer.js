@@ -21,7 +21,7 @@ export default function ScreenContainer({
           ...styles.container,
           ...styles.safePaddingTop,
           ...styles.withHorizontalPadding,
-          backgroundColor: colors.white,
+          backgroundColor: colors.background,
           ..._style,
         }}>
         {children}

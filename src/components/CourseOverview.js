@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';
+import {useSelector} from 'react-redux';
 import styles from '../styles';
+import {getRecentCourseMaterial} from '../utils/material';
 import AlertWidget from './AlertWidget';
 import CourseInfo from './CourseInfo';
 import CourseVideos from './CourseVideos';
@@ -13,6 +15,29 @@ export default function CourseOverview({courseData, changeTab}) {
   const {t} = useTranslation();
 
   const [offsetY, setOffsetY] = useState(0);
+
+  const materialTree = useSelector(state => state.material.material);
+
+  const [recentMaterialLength, setRecentMaterialLength] = useState(3);
+
+  // Set length of recent material once tree is loaded
+  useEffect(() => {
+    materialTree &&
+      setRecentMaterialLength(
+        getRecentCourseMaterial(
+          materialTree[courseData.codice + courseData.nome],
+        ).length,
+      );
+  }, [materialTree]);
+
+  const [shouldAlignHeights, setShouldAlignHeights] = useState(false);
+
+  // Once recent material length is computed, set whether to align widget heights
+  useEffect(() => {
+    setShouldAlignHeights(
+      courseData.avvisi.slice(0, 3).length == recentMaterialLength,
+    );
+  }, [recentMaterialLength]);
 
   return (
     <ScrollView
@@ -35,14 +60,17 @@ export default function CourseOverview({courseData, changeTab}) {
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
+          alignItems: 'flex-start',
         }}>
         <MaterialWidget
+          fullHeight={shouldAlignHeights}
           courseCode={courseData.codice + courseData.nome}
           action={() => {
             changeTab('material');
           }}
         />
         <AlertWidget
+          fullHeight={shouldAlignHeights}
           alerts={courseData.avvisi.slice(0, 3)}
           action={() => {
             changeTab('alerts');

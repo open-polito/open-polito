@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Pressable, View} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
@@ -12,6 +12,7 @@ export default function WidgetBase({
   compact = false,
   withButton = true,
   withPadding = true,
+  fullHeight = false,
 }) {
   const {t} = useTranslation();
 
@@ -28,6 +29,7 @@ export default function WidgetBase({
         style={{
           paddingHorizontal: withPadding ? 12 : 0,
           paddingVertical: withPadding ? 8 : 0,
+          flex: fullHeight ? 1 : 0,
         }}
         android_ripple={{color: colors.lightGray}}
         onPress={action}>
@@ -36,6 +38,7 @@ export default function WidgetBase({
             flexDirection: 'column',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
+            flex: 1,
           }}>
           {name && <TextN text={name} weight="medium" />}
           {children}

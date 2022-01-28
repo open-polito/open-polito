@@ -5,11 +5,11 @@ import CourseAlert from './CourseAlert';
 import {TextS} from './Text';
 import WidgetBase from './WidgetBase';
 
-export default function AlertWidget({action, alerts}) {
+export default function AlertWidget({action, alerts, ...props}) {
   const {t} = useTranslation();
 
   return (
-    <WidgetBase name={t('alerts')} action={action} compact>
+    <WidgetBase name={t('alerts')} action={action} compact {...props}>
       {alerts ? (
         <View style={{flexDirection: 'column', marginTop: 8}}>
           {alerts.map(alert => (

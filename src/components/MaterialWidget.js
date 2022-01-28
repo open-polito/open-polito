@@ -5,13 +5,13 @@ import RecentItems from './RecentItems';
 import {TextS} from './Text';
 import WidgetBase from './WidgetBase';
 
-export default function MaterialWidget({action, courseCode}) {
+export default function MaterialWidget({action, courseCode, ...props}) {
   const {t} = useTranslation();
 
   const material = useSelector(state => state.material.material);
 
   return (
-    <WidgetBase name={t('material')} action={action} compact>
+    <WidgetBase name={t('material')} action={action} compact {...props}>
       {material ? (
         <RecentItems compact relative_date course={courseCode} />
       ) : (
