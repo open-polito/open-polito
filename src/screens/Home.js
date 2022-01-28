@@ -1,19 +1,20 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
+  Image,
   ImageBackground,
+  Pressable,
   ScrollView,
   StatusBar,
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Octicons';
 import colors from '../colors';
 import TextInput from '../components/TextInput';
 import sections from '../sections';
-import CategoryCard from '../components/CategoryCard';
 import styles from '../styles';
-import {TextSubTitle} from '../components/Text';
+import {TextS, TextSubTitle} from '../components/Text';
 import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
@@ -48,14 +49,18 @@ export default function Home({navigation}) {
    * so empty space is 3 * padding.
    * Card width is then 1/3 remaining space.
    */
-  const [cardMargin] = useState(
-    styles.withHorizontalPadding.paddingHorizontal / 2,
-  );
   const [cardWidth] = useState(
     (Dimensions.get('window').width -
       3 * styles.withHorizontalPadding.paddingHorizontal) /
       3,
   );
+
+  // Redirect to section on button press
+  const redirect = sectionName => {
+    // Section names are equal to their locale string, with 1st char uppercase
+    screen = sectionName[0].toUpperCase() + sectionName.slice(1);
+    screen && navigation.navigate(screen);
+  };
 
   useEffect(() => {
     (async () => {
@@ -83,113 +88,98 @@ export default function Home({navigation}) {
   }, []);
 
   return (
-    <LinearGradient
-      colors={[colors.gradient1, colors.gradient2]}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      height={height}>
-      <ImageBackground source={require('../../assets/images/background.png')}>
-        <ScreenContainer
-          barStyle="light-content"
-          style={{backgroundColor: 'rgba(0, 0, 0, 0)', paddingHorizontal: 0}}>
-          <ScrollView>
-            {/* blue section / white section container */}
+    <View style={{flex: 1}}>
+      <LinearGradient
+        colors={[colors.gradient1, colors.gradient2]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        height={height}>
+        <ImageBackground source={require('../../assets/images/background.png')}>
+          <ScreenContainer
+            style={{paddingHorizontal: 0, backgroundColor: null}}
+            barStyle="light-content">
+            <View style={styles.withHorizontalPadding}>
+              <Header text={t('home')} color={colors.white} />
+            </View>
             <View
               style={{
+                marginBottom: 16,
+                ...styles.paddingFromHeader,
                 ...styles.withHorizontalPadding,
-                marginBottom: 20,
-                borderRadius: 16,
               }}>
-              {/* blue section */}
-              <Header color={colors.white} text={t('home')} />
-              <View style={{marginBottom: 16, ...styles.paddingFromHeader}}>
-                {/* quick search container */}
-                <TextInput
-                  icon="search"
-                  placeholder={t('quickSearch')}
-                  borderColor="none"
-                  borderWidth={0}
-                  iconColor={colors.gray}
-                />
-              </View>
-              <View>
-                {/* quick access section */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: 16,
-                  }}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}>
-                    <Icon name="bookmark" size={24} color={colors.white} />
-                    <TextSubTitle
-                      text={t('quickAccess')}
-                      color={colors.white}
-                    />
-                  </View>
-                  <View>
-                    <TextSubTitle text={t('edit')} color={colors.white} />
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  {/* quick access categories container */}
-                  {loadedUser ? (
-                    sections.quickAccess.map(qaSection => {
-                      return (
-                        <CategoryCard
-                          key={qaSection}
-                          category={t(qaSection)}
-                          size={cardWidth}
-                          onPress={() => {
-                            let screen = '';
-                            switch (qaSection) {
-                              case 'courses':
-                                screen = 'Courses';
-                                break;
-                              case 'examSessions':
-                                screen = 'ExamSessions';
-                                break;
-                            }
-                            screen && navigation.navigate(screen);
-                          }}
-                        />
-                      );
-                    })
+              {/* quick search container */}
+              <TextInput
+                icon="search"
+                placeholder={t('quickSearch')}
+                borderColor="none"
+                borderWidth={0}
+                iconColor={colors.gray}
+              />
+            </View>
+            <View style={styles.withHorizontalPadding}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  marginBottom: 16,
+                }}>
+                {sections.map(section => {
+                  const item = loadedUser ? (
+                    <Pressable
+                      key={section.name}
+                      onPress={() => {
+                        redirect(section.name);
+                      }}>
+                      <View
+                        style={{
+                          ...styles.elevatedSmooth,
+                          borderRadius: 8,
+                          width: cardWidth,
+                          height: cardWidth / 2,
+                          backgroundColor: colors.white,
+                          flexDirection: 'row',
+                          justifyContent: 'space-evenly',
+                          alignItems: 'center',
+                          padding: 8,
+                        }}>
+                        <View style={{flex: 1}}>
+                          <Icon
+                            name={section.icon}
+                            size={cardWidth / 4}
+                            color={colors.gradient1}
+                          />
+                        </View>
+                        <View style={{flex: 2}}>
+                          <TextS text={t(section.name)} numberOfLines={2} />
+                        </View>
+                      </View>
+                    </Pressable>
                   ) : (
-                    <SvgAnimatedLinearGradient height={cardWidth} width={w}>
+                    <SvgAnimatedLinearGradient
+                      height={cardWidth / 2}
+                      width={cardWidth}>
                       <Rect
                         x={0}
                         y={0}
                         rx={8}
                         ry={8}
-                        width={w}
-                        height={cardWidth}
+                        width={cardWidth}
+                        height={cardWidth / 2}
                       />
                     </SvgAnimatedLinearGradient>
-                  )}
-                </View>
+                  );
+                  return item;
+                })}
               </View>
             </View>
-            <View
+            <ScrollView
               style={{
-                backgroundColor: colors.white,
+                backgroundColor: colors.background,
+                flex: 1,
+                paddingTop: 16,
               }}>
-              {/* white section container */}
-              <View
-                style={{
-                  ...styles.withHorizontalPadding,
-                  paddingTop: 16,
-                  height: '100%',
-                }}>
+              <View style={styles.withHorizontalPadding}>
                 {loadedUser &&
                   [
                     ...user.carico_didattico.corsi,
@@ -206,37 +196,189 @@ export default function Home({navigation}) {
                       );
                     });
                   })}
-                <TextSubTitle
-                  style={{marginBottom: 16}}
-                  text={t('allSections')}
-                  color={colors.black}
-                />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    flexWrap: 'wrap',
-                    gap: 250,
-                  }}>
-                  {/* quick access categories container */}
-                  {sections.other.map(qaSection => {
-                    return (
-                      <CategoryCard
-                        key={qaSection}
-                        category={qaSection}
-                        size={cardWidth}
-                        style={{marginBottom: cardMargin}}
-                      />
-                    );
-                  })}
+                {/* <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                  <Image
+                    style={{width: '100%', height: 70, borderRadius: 16}}
+                    resizeMode="cover"
+                    source={require('../../assets/images/update.png')}
+                  />
+                </View> */}
+                <View>
+                  {!loadedUser && (
+                    <View>
+                      <SvgAnimatedLinearGradient
+                        height={cardWidth / 1.5}
+                        width={w}>
+                        <Rect
+                          x={0}
+                          y={0}
+                          rx={8}
+                          ry={8}
+                          width={w}
+                          height={cardWidth / 1.5}
+                        />
+                      </SvgAnimatedLinearGradient>
+                      <SvgAnimatedLinearGradient
+                        style={{marginTop: 16}}
+                        height={cardWidth / 1.5}
+                        width={w}>
+                        <Rect
+                          x={0}
+                          y={0}
+                          rx={8}
+                          ry={8}
+                          width={w}
+                          height={cardWidth / 1.5}
+                        />
+                      </SvgAnimatedLinearGradient>
+                    </View>
+                  )}
                 </View>
-                <View style={{height: 50}}></View>
               </View>
-            </View>
-          </ScrollView>
-        </ScreenContainer>
-      </ImageBackground>
-    </LinearGradient>
+            </ScrollView>
+          </ScreenContainer>
+        </ImageBackground>
+      </LinearGradient>
+    </View>
   );
+
+  // Old home screen UI code
+  // TODO delete it when new home screen finished
+  // return (
+  //   <LinearGradient
+  //     colors={[colors.gradient1, colors.gradient2]}
+  //     start={{x: 0, y: 0}}
+  //     end={{x: 1, y: 1}}
+  //     height={height}>
+  //     <ImageBackground source={require('../../assets/images/background.png')}>
+  //       <ScreenContainer
+  //         barStyle="light-content"
+  //         style={{backgroundColor: 'rgba(0, 0, 0, 0)', paddingHorizontal: 0}}>
+  //         <ScrollView>
+  //           {/* blue section / white section container */}
+  //           <View
+  //             style={{
+  //               ...styles.withHorizontalPadding,
+  //               marginBottom: 20,
+  //               borderRadius: 16,
+  //             }}>
+  //             {/* blue section */}
+  //             <Header color={colors.white} text={t('home')} />
+  //             <View style={{marginBottom: 16, ...styles.paddingFromHeader}}>
+  //               {/* quick search container */}
+  //               <TextInput
+  //                 icon="search"
+  //                 placeholder={t('quickSearch')}
+  //                 borderColor="none"
+  //                 borderWidth={0}
+  //                 iconColor={colors.gray}
+  //               />
+  //             </View>
+  //             <View>
+  //               {/* quick access section */}
+  //               <View
+  //                 style={{
+  //                   flexDirection: 'row',
+  //                   justifyContent: 'space-between',
+  //                   alignItems: 'center',
+  //                   marginBottom: 16,
+  //                 }}>
+  //                 <View
+  //                   style={{
+  //                     flexDirection: 'row',
+  //                     alignItems: 'center',
+  //                   }}>
+  //                   <Icon name="bookmark" size={24} color={colors.white} />
+  //                   <TextSubTitle
+  //                     text={t('quickAccess')}
+  //                     color={colors.white}
+  //                   />
+  //                 </View>
+  //                 <View>
+  //                   <TextSubTitle text={t('edit')} color={colors.white} />
+  //                 </View>
+  //               </View>
+  //               <View
+  //                 style={{
+  //                   flexDirection: 'row',
+  //                   justifyContent: 'space-between',
+  //                 }}>
+  //                 {/* quick access categories container */}
+  //                 {loadedUser ? (
+  //                   sections.quickAccess.map(qaSection => {
+  //                     return (
+  //                       <CategoryCard
+  //                         key={qaSection}
+  //                         category={t(qaSection)}
+  //                         size={cardWidth}
+  //                         onPress={() => {
+  //                           let screen = '';
+  //                           switch (qaSection) {
+  //                             case 'courses':
+  //                               screen = 'Courses';
+  //                               break;
+  //                             case 'examSessions':
+  //                               screen = 'ExamSessions';
+  //                               break;
+  //                           }
+  //                           screen && navigation.navigate(screen);
+  //                         }}
+  //                       />
+  //                     );
+  //                   })
+  //                 ) : (
+  //                   <SvgAnimatedLinearGradient height={cardWidth} width={w}>
+  //                     <Rect
+  //                       x={0}
+  //                       y={0}
+  //                       rx={8}
+  //                       ry={8}
+  //                       width={w}
+  //                       height={cardWidth}
+  //                     />
+  //                   </SvgAnimatedLinearGradient>
+  //                 )}
+  //               </View>
+  //             </View>
+  //           </View>
+  //           <View
+  //             style={{
+  //               backgroundColor: colors.white,
+  //             }}>
+  //             {/* white section container */}
+  //             <View
+  //               style={{
+  //                 ...styles.withHorizontalPadding,
+  //                 paddingTop: 16,
+  //                 height: '100%',
+  //               }}>
+  //               {loadedUser &&
+  //                 [
+  //                   ...user.carico_didattico.corsi,
+  //                   ...user.carico_didattico.extra_courses,
+  //                 ].map(corso => {
+  //                   return corso.live_lessons.map(liveClass => {
+  //                     return (
+  //                       <LiveWidget
+  //                         key={liveClass.meeting_id}
+  //                         liveClass={liveClass}
+  //                         courseName={corso.nome}
+  //                         device={corso.device}
+  //                       />
+  //                     );
+  //                   });
+  //                 })}
+  //               <TextSubTitle
+  //                 style={{marginBottom: 16}}
+  //                 text={t('allSections')}
+  //                 color={colors.black}
+  //               />
+  //               <View style={{height: 50}}></View>
+  //             </View>
+  //           </View>
+  //         </ScrollView>
+  //       </ScreenContainer>
+  //     </ImageBackground>
+  //   </LinearGradient>
+  // );
 }

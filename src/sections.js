@@ -1,16 +1,16 @@
-const sections = {
-  quickAccess: ['examSessions', 'courses', 'material'],
-  other: [
-    'section1',
-    'section2',
-    'section3',
-    'section4',
-    'section5',
-    'section6',
-    'section7',
-    'section8',
-    'section9',
-  ],
-};
+const sections = [
+  {
+    name: 'examSessions',
+    icon: 'mortar-board',
+  },
+  {
+    name: 'courses',
+    icon: 'repo',
+  },
+  {
+    name: 'material',
+    icon: 'file-submodule',
+  },
+];
 
 export default sections;
