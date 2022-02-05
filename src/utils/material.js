@@ -1,3 +1,5 @@
+import Corso from 'open-polito-api/corso';
+
 function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
   if (parentItem != undefined) {
     parentItem.map(item => {
@@ -44,11 +46,6 @@ export function getMaterialList(carico, materialTree) {
   return material;
 }
 
-export function getRecentMaterial(carico, materialTree) {
-  let material = getMaterialList(carico, materialTree);
-  return material.slice(0, 3);
-}
-
 export function getRecentCourseMaterial(materialTree) {
   let material = getMaterialList(null, {code: materialTree});
   return material.slice(0, 3);
@@ -71,9 +68,9 @@ export async function getMaterialTree(user) {
   return materialTree;
 }
 
-export async function getDownloadUrl(user, code) {
+export async function getDownloadUrl(device, code) {
   // incorrect use of the api library but it works
   // TODO fix
-  const url = await user.carico_didattico.corsi[0].download(code);
+  const url = await new Corso(device).download(code);
   return url;
 }

@@ -3,7 +3,7 @@ import React, {useContext, useState} from 'react';
 import {Dimensions, Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
-import {UserContext} from '../context/User';
+import {DeviceContext} from '../context/Device';
 import styles from '../styles';
 import getFileIcon from '../utils/getFileIcon';
 import {getDownloadUrl} from '../utils/material';
@@ -19,7 +19,7 @@ export default function DirectoryItem({
   size_kb = null,
   data_inserimento = null,
   corso = null,
-  children,
+  children = null,
   onPress = () => {},
 }) {
   let size_label =
@@ -27,11 +27,13 @@ export default function DirectoryItem({
   if (size_kb == null) {
     size_label = null;
   }
-  const {user} = useContext(UserContext);
+  const deviceContext = useContext(DeviceContext);
   const [textWidth, setTextWidth] = useState(null);
 
   const downloadFile = () => {
-    getDownloadUrl(user, code).then(url => Linking.openURL(url));
+    getDownloadUrl(deviceContext.device, code).then(url =>
+      Linking.openURL(url),
+    );
   };
 
   return (

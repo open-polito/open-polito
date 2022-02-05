@@ -10,86 +10,114 @@ import {TextN, TextSubTitle} from '../components/Text';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import {useContext} from 'react';
-import {UserContext} from '../context/User';
 import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
-import {setCarico} from '../store/userSlice';
-import {getMaterialTree, getRecentMaterial} from '../utils/material';
-import {
-  setLoadingMaterial,
-  setMaterial,
-  setRecentMaterial,
-} from '../store/materialSlice';
 import MaterialExplorer from '../components/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';
+import {DeviceContext} from '../context/Device';
+import {RootState} from '../store/store';
+import {
+  CourseState,
+  getRecentMaterial,
+  loadCourse,
+} from '../store/coursesSlice';
+import {Status, STATUS} from '../store/status';
+import {useNavigation} from '@react-navigation/core';
+import {DropdownItem} from '../types';
 
-export default function Material({navigation}) {
+export default function Material() {
   const {t} = useTranslation();
-  const {carico_didattico} = useSelector(state => state.user);
-  const material = useSelector(state => state.material.material);
-  const loadingMaterial = useSelector(state => state.material.loadingMaterial);
-  const carico =
-    carico_didattico == null ? carico_didattico : JSON.parse(carico_didattico);
-
   const dispatch = useDispatch();
 
-  const {user} = useContext(UserContext);
+  const navigation = useNavigation();
 
-  const [allLoaded, setAllLoaded] = useState(false);
+  const courses = useSelector<RootState, CourseState[]>(
+    state => state.courses.courses,
+  );
+
+  const getRecentMaterialStatus = useSelector<RootState, Status>(
+    state => state.courses.getRecentMaterialStatus,
+  );
+
+  const deviceContext = useContext(DeviceContext);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [mounted, setMounted] = useState(true);
 
-  const [dropdownItems, setDropdownItems] = useState([]);
+  const [materialLoaded, setMaterialLoaded] = useState(false);
+  const [allLoaded, setAllLoaded] = useState(false);
 
+  const [dropdownItems, setDropdownItems] = useState<DropdownItem[]>([]);
+
+  /**
+   * Initialize dropdown list
+   */
   const initDropdown = () => {
-    let items = [];
-    [
-      ...user.carico_didattico.corsi,
-      ...user.carico_didattico.extra_courses,
-    ].forEach(course => {
-      items.push({
-        label: course.nome,
-        value: course.codice + course.nome,
-      });
+    const items: DropdownItem[] = courses.map(course => {
+      return {
+        label: course.name,
+        value: course.code + course.name,
+      };
     });
     setDropdownItems(items);
   };
 
+  /**
+   * Initial setup.
+   * Load all course data if not already loaded, set {@link materialLoaded} to true if already loaded.
+   */
   useEffect(() => {
-    if (carico == null) {
-      (async () => {
-        await user.populate();
-        dispatch(setCarico(JSON.stringify(user.carico_didattico)));
-        loadMaterialIfNull();
-        initDropdown();
-      })();
-    } else {
-      loadMaterialIfNull();
-      setAllLoaded(true);
-      initDropdown();
-    }
-    return () => {
-      setMounted(false);
-    };
+    let _materialLoaded = true;
+    courses.forEach(course => {
+      if (course.loadCourseStatus.code != STATUS.SUCCESS) {
+        _materialLoaded = false;
+        dispatch(
+          loadCourse({courseData: course, device: deviceContext.device}),
+        );
+      }
+    });
+    _materialLoaded && setMaterialLoaded(true);
   }, []);
 
-  // TODO extract function
-  function loadMaterialIfNull() {
-    if (material == null && !loadingMaterial) {
-      dispatch(setLoadingMaterial(true));
-      getMaterialTree(user).then(data => {
-        dispatch(setMaterial(data));
-        dispatch(
-          setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
-        );
-        if (mounted) {
-          setAllLoaded(true);
+  /**
+   * Called each time {@link courses} changes.
+   * Check if data is loaded, then set {@link materialLoaded} to true if so.
+   */
+  useEffect(() => {
+    if (!materialLoaded) {
+      let _materialLoaded = true;
+      courses.forEach(course => {
+        if (course.loadCourseStatus.code != STATUS.SUCCESS) {
+          _materialLoaded = false;
         }
       });
+      _materialLoaded && setMaterialLoaded(true);
     }
-  }
+  }, [courses]);
+
+  /**
+   * When {@link materialLoaded}, get recent material only if not already set.
+   */
+  useEffect(() => {
+    if (
+      materialLoaded &&
+      getRecentMaterialStatus.code != STATUS.SUCCESS &&
+      getRecentMaterialStatus.code != STATUS.PENDING
+    ) {
+      dispatch(getRecentMaterial());
+    }
+  }, [materialLoaded]);
+
+  /**
+   * Finally, when recent material has been loaded, initialize dropdown menu
+   * and set {@link allLoaded} to true.
+   */
+  useEffect(() => {
+    if (getRecentMaterialStatus.code == STATUS.SUCCESS) {
+      initDropdown();
+      setAllLoaded(true);
+    }
+  }, [getRecentMaterialStatus]);
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>

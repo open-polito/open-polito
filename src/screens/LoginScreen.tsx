@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import 'react-native-get-random-values';
+import React, {useContext, useState} from 'react';
 import {
   View,
   StatusBar,
@@ -14,23 +15,58 @@ import {Text, TextSubTitle, TextTitle, TextXL} from '../components/Text';
 import TextInput from '../components/TextInput';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
+import {login, LoginData} from '../store/sessionSlice';
+import {v4 as UUIDv4} from 'uuid';
+import {useDispatch} from 'react-redux';
+import {DeviceContext} from '../context/Device';
+import {getLoggingConfig, requestLogger} from '../routes/Router';
+import {Device} from 'open-polito-api';
 
-export default function LoginScreen(props) {
+export default function LoginScreen() {
   const {t} = useTranslation();
-  const [height, setHeight] = useState(
-    Dimensions.get('window').height + StatusBar.currentHeight,
-  );
+  const dispatch = useDispatch();
+
+  const deviceContext = useContext(DeviceContext);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  /**
+   * Login with password
+   *
+   * @param loginData {@link LoginData} object
+   */
+  const loginWithPassword = async (loginData: LoginData) => {
+    const uuid = UUIDv4();
+
+    const loggingEnabled = await getLoggingConfig();
+
+    const device = new Device(
+      uuid,
+      10000,
+      loggingEnabled ? requestLogger : () => {},
+    );
+
+    // Set device instance
+    deviceContext.setDevice(device);
+
+    await dispatch(
+      login({
+        method: 'password',
+        username: loginData.user,
+        token: loginData.token,
+        device: device,
+      }),
+    );
+  };
+
   return (
-    <View>
+    <View style={{flex: 1}}>
       <LinearGradient
         colors={[colors.gradient1, colors.gradient2]}
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
-        height={height}>
+        style={{flex: 1}}>
         <ImageBackground source={require('../../assets/images/background.png')}>
           <SafeAreaView style={_styles.splash}>
             <StatusBar translucent backgroundColor="transparent" />
@@ -85,7 +121,7 @@ export default function LoginScreen(props) {
                   <Button
                     text={t('login')}
                     onPress={() => {
-                      props.loginFunction(username, password);
+                      loginWithPassword({user: username, token: password});
                     }}
                   />
                 </View>

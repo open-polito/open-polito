@@ -1,28 +1,39 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../colors';
 import {TextN, TextS} from './Text';
 
-export default function SettingsItem({
-  iconName,
-  text,
+export type SettingsItemProps = {
+  icon: string;
+  name: string;
+  description: string;
+  settingsFunction: Function;
+};
+
+const SettingsItem: FC<SettingsItemProps> = ({
+  icon,
+  name,
   description,
   settingsFunction = () => {},
   children,
-}) {
+}) => {
   return (
     <View style={{flex: 1}}>
-      <Pressable android_ripple={{color: '#ccc'}} onPress={settingsFunction}>
+      <Pressable
+        android_ripple={{color: '#ccc'}}
+        onPress={() => {
+          settingsFunction();
+        }}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
           }}>
           <View style={{..._styles.settingsItemContainer, flex: 1}}>
-            <Icon name={iconName} size={32} color={colors.black} />
+            <Icon name={icon} size={32} color={colors.black} />
             <View style={_styles.settingsItemTextContainer}>
-              <TextN text={text} weight="medium" />
+              <TextN text={name} weight="medium" />
               <TextS text={description} />
             </View>
           </View>
@@ -31,7 +42,7 @@ export default function SettingsItem({
       </Pressable>
     </View>
   );
-}
+};
 
 const _styles = StyleSheet.create({
   settingsItemContainer: {
@@ -49,3 +60,5 @@ const _styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
 });
+
+export default SettingsItem;

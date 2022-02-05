@@ -9,12 +9,22 @@ import {useSelector} from 'react-redux';
 import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
 import Material from '../screens/Material';
+import {RootState} from '../store/store';
+
+export type TabNavigatorParamList = {
+  Home: undefined;
+  Material: undefined;
+  'E-mail': undefined;
+  Settings: undefined;
+};
 
 export default function HomeRouter() {
   const {t} = useTranslation();
-  const {unreadEmailCount} = useSelector(state => state.email);
+  const unreadEmailCount = useSelector<RootState, number>(
+    state => state.user.unreadEmailCount,
+  );
 
-  const Tab = createBottomTabNavigator();
+  const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
   return (
     <Tab.Navigator

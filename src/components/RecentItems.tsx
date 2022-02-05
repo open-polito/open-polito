@@ -1,24 +1,45 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import DirectoryItem from './DirectoryItem';
 import DirectoryItemLoader from './DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 import {getRecentCourseMaterial} from '../utils/material';
+import {RootState} from '../store/store';
+import {Cartella, File} from 'open-polito-api/corso';
 
 export default function RecentItems({
-  course = null,
+  courseID = null,
   compact = false,
   relative_date = false,
 }) {
-  const materialTree = useSelector(state => state.material.material);
-  const recentMaterial = course
-    ? getRecentCourseMaterial(materialTree[course])
-    : useSelector(state => state.material.recentMaterial);
+  const [recent, setRecent] = useState<(File | Cartella)[]>([]);
+
+  const recentMaterial =
+    !courseID &&
+    useSelector<RootState, (File | Cartella)[]>(
+      state => state.courses.recentMaterial,
+    );
+  const material =
+    courseID &&
+    useSelector<RootState, (File | Cartella)[] | undefined>(
+      state =>
+        state.courses.courses.find(
+          course => courseID == course.code + course.name,
+        )?.material,
+    );
+
+  useEffect(() => {
+    if (courseID) {
+      setRecent(getRecentCourseMaterial(material));
+    } else {
+      setRecent(recentMaterial);
+    }
+  }, []);
 
   return (
     <View style={{flexDirection: 'column'}}>
-      {recentMaterial != null ? (
-        recentMaterial.map(item => (
+      {recent ? (
+        recent.map(item => (
           <DirectoryItem
             compact={compact}
             relative_date={relative_date}

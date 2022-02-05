@@ -13,6 +13,8 @@ import 'moment/locale/it';
 
 import store from './src/store/store';
 import moment from 'moment';
+import {Device} from 'open-polito-api';
+import DeviceProvider from './src/context/Device';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -33,6 +35,9 @@ i18n.use(initReactI18next).init({
 });
 
 moment.locale(lng);
+
+// Device instance to pass to Context API for global use
+const defaultDevice = new Device('', 10000, () => {});
 
 export default function App() {
   useEffect(() => {
@@ -55,7 +60,9 @@ export default function App() {
   return (
     <Suspense fallback="Loading...">
       <Provider store={store}>
-        <Router />
+        <DeviceProvider device={defaultDevice}>
+          <Router />
+        </DeviceProvider>
         <FlashMessage position="top" />
       </Provider>
     </Suspense>

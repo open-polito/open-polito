@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {SafeAreaView, StatusBar, Switch, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
 import AccountBox from '../components/AccountBox';
 import Header from '../components/Header';
-import SettingsItem from '../components/SettingsItem';
+import SettingsItem, {SettingsItemProps} from '../components/SettingsItem';
 import styles from '../styles';
 import {useDispatch} from 'react-redux';
 import * as Keychain from 'react-native-keychain';
-import {setAccess, setToken, setUsername, setUuid} from '../store/sessionSlice';
 import {showMessage} from 'react-native-flash-message';
 import {
   logoutFlashMessage,
@@ -21,11 +20,22 @@ import {TextS} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import ArrowHeader from '../components/ArrowHeader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RootState} from '../store/store';
+import {Anagrafica} from 'open-polito-api/user';
+import {logout} from '../store/sessionSlice';
+import {DeviceContext} from '../context/Device';
+import {createDevice} from '../utils/api-utils';
+import {Device} from 'open-polito-api';
+import {getLoggingConfig, requestLogger} from '../routes/Router';
 
 export default function Settings() {
   const {t} = useTranslation();
-  const {windowHeight} = useSelector(state => state.ui);
-  const anagrafica = useSelector(state => state.session.anagrafica);
+
+  const deviceContext = useContext(DeviceContext);
+
+  const userInfo = useSelector<RootState, Anagrafica | null>(
+    state => state.user.userInfo,
+  );
 
   const [mounted, setMounted] = useState(true);
 
@@ -40,7 +50,7 @@ export default function Settings() {
   useEffect(() => {
     (async () => {
       try {
-        const _config = await AsyncStorage.getItem('@config');
+        const _config = (await AsyncStorage.getItem('@config')) || '';
         mounted && setConfig(JSON.parse(_config));
       } catch (e) {}
     })();
@@ -63,28 +73,67 @@ export default function Settings() {
   }
 
   function handleLogout() {
-    showLogoutMessage();
-    logout();
-  }
-
-  function logout() {
-    setTimeout(async () => {
-      await Keychain.resetGenericPassword();
-      dispatch(setUuid(null));
-      dispatch(setToken(null));
-      dispatch(setUsername(null));
-      dispatch(setAccess(false));
-    }, 1000);
+    (async () => {
+      showLogoutMessage();
+      try {
+        await AsyncStorage.multiRemove(['@config']);
+      } catch (e) {}
+      // We create another Device because we need to reset current device from context
+      dispatch(
+        logout(
+          new Device(
+            deviceContext.device.uuid,
+            10000,
+            (await getLoggingConfig()) ? requestLogger : () => {},
+          ),
+        ),
+      );
+      // Reset context device
+      deviceContext.setDevice(new Device(''));
+    })();
   }
 
   const toggleLogging = () => {
     showMessage(warnFlashMessage(t, 'restartFlashMessage'));
   };
 
+  const settingsItems: SettingsItemProps[] = [
+    {
+      icon: 'bell-alert-outline',
+      name: t('notifications'),
+      description: t('notificationsDesc'),
+      settingsFunction: () => notImplemented(t),
+    },
+    {
+      icon: 'drawing',
+      name: t('theme'),
+      description: t('themeDesc'),
+      settingsFunction: () => notImplemented(t),
+    },
+    {
+      icon: 'information-outline',
+      name: t('about'),
+      description: t('aboutDesc'),
+      settingsFunction: () => notImplemented(t),
+    },
+  ];
+
+  const buildSettingsItem = (item: SettingsItemProps) => {
+    return (
+      <SettingsItem
+        key={item.name}
+        icon={item.icon}
+        name={item.name}
+        description={item.description}
+        settingsFunction={item.settingsFunction}
+      />
+    );
+  };
+
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>
       <View style={styles.withHorizontalPadding}>
-        <Header text={t('settings')} padd />
+        <Header text={t('settings')} />
       </View>
       <ScrollView
         contentContainerStyle={{
@@ -93,42 +142,19 @@ export default function Settings() {
         }}>
         <View>
           <AccountBox
-            name={anagrafica.nome + ' ' + anagrafica.cognome}
-            degree={anagrafica.nome_corso_laurea}
+            name={userInfo?.nome + ' ' + userInfo?.cognome}
+            degree={userInfo?.nome_corso_laurea}
             logoutFunction={handleLogout}
           />
         </View>
         <View style={{marginTop: 24}}>
-          <SettingsItem
-            iconName="bell-alert-outline"
-            text={t('notifications')}
-            description={t('notificationsDesc')}
-            settingsFunction={() => {
-              notImplemented(t);
-            }}
-          />
-          <SettingsItem
-            iconName="drawing"
-            text={t('theme')}
-            description={t('themeDesc')}
-            settingsFunction={() => {
-              notImplemented(t);
-            }}
-          />
-          <SettingsItem
-            iconName="information-outline"
-            text={t('about')}
-            description={t('aboutDesc')}
-            settingsFunction={() => {
-              notImplemented(t);
-            }}
-          />
+          {settingsItems.map(item => buildSettingsItem(item))}
           {/* Debug options */}
           <View style={{height: 4, backgroundColor: colors.lightGray}}></View>
           <TextS style={{marginTop: 8}} text={t('debugSettings')} />
           <SettingsItem
-            iconName="bug-outline"
-            text={t('enableLogging')}
+            icon="bug-outline"
+            name={t('enableLogging')}
             description={t('enableLoggingDesc')}
             settingsFunction={() => {
               const _value = config.logging;

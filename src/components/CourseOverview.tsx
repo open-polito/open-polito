@@ -1,7 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {FC, useContext, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';
 import {useSelector} from 'react-redux';
+import {DeviceContext} from '../context/Device';
+import {CourseData} from '../store/coursesSlice';
+import {RootState} from '../store/store';
 import styles from '../styles';
 import {getRecentCourseMaterial} from '../utils/material';
 import AlertWidget from './AlertWidget';
@@ -10,24 +13,32 @@ import CourseVideos from './CourseVideos';
 import LiveWidget from './LiveWidget';
 import MaterialWidget from './MaterialWidget';
 import TextWidget from './TextWidget';
+import {Cartella, File} from 'open-polito-api/corso';
 
-export default function CourseOverview({courseData, changeTab}) {
+const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
+  courseData,
+  changeTab,
+}) => {
   const {t} = useTranslation();
+
+  const deviceContext = useContext(DeviceContext);
 
   const [offsetY, setOffsetY] = useState(0);
 
-  const materialTree = useSelector(state => state.material.material);
+  const materialTree = useSelector<RootState, (File | Cartella)[] | undefined>(
+    state =>
+      state.courses.courses.find(
+        course =>
+          courseData.code + courseData.name == course.code + course.name,
+      )?.material,
+  );
 
   const [recentMaterialLength, setRecentMaterialLength] = useState(3);
 
   // Set length of recent material once tree is loaded
   useEffect(() => {
     materialTree &&
-      setRecentMaterialLength(
-        getRecentCourseMaterial(
-          materialTree[courseData.codice + courseData.nome],
-        ).length,
-      );
+      setRecentMaterialLength(getRecentCourseMaterial(materialTree).length);
   }, [materialTree]);
 
   const [shouldAlignHeights, setShouldAlignHeights] = useState(false);
@@ -35,7 +46,7 @@ export default function CourseOverview({courseData, changeTab}) {
   // Once recent material length is computed, set whether to align widget heights
   useEffect(() => {
     setShouldAlignHeights(
-      courseData.avvisi.slice(0, 3).length == recentMaterialLength,
+      (courseData.alerts?.slice(0, 3).length || 0) == recentMaterialLength,
     );
   }, [recentMaterialLength]);
 
@@ -48,14 +59,14 @@ export default function CourseOverview({courseData, changeTab}) {
         ...styles.withHorizontalPadding,
         paddingBottom: offsetY == 0 ? 32 : 16,
       }}>
-      {courseData.live_lessons.map(liveClass => (
+      {courseData.liveClasses?.map(liveClass => (
         <LiveWidget
-          key={liveClass.meeting_id}
+          key={liveClass.meetingID}
           liveClass={liveClass}
-          courseName={courseData.nome}
-          device={courseData.device}
+          courseName={courseData.name}
+          device={deviceContext.device}
         />
-      ))}
+      )) || null}
       <View
         style={{
           flexDirection: 'row',
@@ -64,25 +75,27 @@ export default function CourseOverview({courseData, changeTab}) {
         }}>
         <MaterialWidget
           fullHeight={shouldAlignHeights}
-          courseCode={courseData.codice + courseData.nome}
+          courseID={courseData.code + courseData.name}
           action={() => {
             changeTab('material');
           }}
         />
         <AlertWidget
           fullHeight={shouldAlignHeights}
-          alerts={courseData.avvisi.slice(0, 3)}
+          alerts={courseData.alerts?.slice(0, 3) || []}
           action={() => {
             changeTab('alerts');
           }}
         />
       </View>
       <TextWidget icon="information-outline" name={t('courseInfo')} expandable>
-        <CourseInfo data={courseData.info} />
+        <CourseInfo data={courseData.info || []} />
       </TextWidget>
       {/* <TextWidget name={t('oldVideos')} expandable>
         <CourseVideos videos={courseData.videolezioni} />
       </TextWidget> */}
     </ScrollView>
   );
-}
+};
+
+export default CourseOverview;
