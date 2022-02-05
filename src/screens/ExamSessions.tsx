@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';
-import {UserContext} from '../context/User';
 import styles from '../styles';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
@@ -13,14 +12,20 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import HorizontalSelector from '../components/HorizontalSelector';
 import moment from 'moment';
 import * as RNLocalize from 'react-native-localize';
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../store/store';
+import {ExamsState, getExams} from '../store/examsSlice';
+import {STATUS} from '../store/status';
+import {DeviceContext} from '../context/Device';
 
 export default function ExamSessions({navigation}) {
   const {t} = useTranslation();
+  const dispatch = useDispatch();
 
-  const {user} = useContext(UserContext);
+  const deviceContext = useContext(DeviceContext);
 
-  const [examSessions, setExamSessions] = useState([]);
-  const [filteredSessions, setFilteredSessions] = useState([]);
+  const examsState = useSelector<RootState, ExamsState>(state => state.exams);
+  const [filteredSessions, setFilteredSessions] = useState<ExamSession[]>([]);
 
   const [offsetY, setOffsetY] = useState(0);
 
@@ -28,13 +33,12 @@ export default function ExamSessions({navigation}) {
 
   const [errorMsgLanguage, setErrorMsgLanguage] = useState('en');
 
-  // Initial fetch
+  // Initial setup
   useEffect(() => {
+    if (examsState.getExamsStatus.code != STATUS.PENDING) {
+      dispatch(getExams(deviceContext.device));
+    }
     (async () => {
-      const data = await getExamSessions(user.device);
-      data.sort((a, b) => a.date - b.date);
-      setExamSessions(data);
-
       // Set language for error messages
       switch (RNLocalize.getLocales()[0].languageCode) {
         case 'en':
@@ -50,22 +54,22 @@ export default function ExamSessions({navigation}) {
     })();
   }, []);
 
-  // If tab or examSessions change, re-filter the exam sessions based on the active tab
+  // If tab or exams change, re-filter the exam sessions based on the active tab
   useEffect(() => {
     if (tab == 'all') {
-      setFilteredSessions(examSessions);
+      setFilteredSessions(examsState.exams);
     } else if (tab == 'booked') {
       setFilteredSessions(
-        examSessions.filter(session => session.user_is_signed_up),
+        examsState.exams.filter(session => session.user_is_signed_up),
       );
     } else if (tab == 'available') {
       setFilteredSessions(
-        examSessions.filter(
+        examsState.exams.filter(
           session => !session.user_is_signed_up && session.error.id == 0,
         ),
       );
     }
-  }, [tab, examSessions]);
+  }, [tab, examsState.exams]);
 
   const tabs = [
     {

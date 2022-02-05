@@ -4,7 +4,6 @@ import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
 import {TextL, TextS, TextXL} from '../components/Text';
-import {UserContext} from '../context/User';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
 import CourseVideos from '../components/CourseVideos';
@@ -13,49 +12,33 @@ import {useTranslation} from 'react-i18next';
 import CourseOverview from '../components/CourseOverview';
 import MaterialExplorer from '../components/MaterialExplorer';
 import {useDispatch, useSelector} from 'react-redux';
-import {getMaterialTree, getRecentMaterial} from '../utils/material';
-import {
-  setLoadingMaterial,
-  setMaterial,
-  setRecentMaterial,
-} from '../store/materialSlice';
 import RecentItemsLoader from '../components/RecentItemsLoader';
 import CourseLoader from '../components/CourseLoader';
 import CourseAlerts from '../components/CourseAlerts';
-import moment from 'moment';
+import {DeviceContext} from '../context/Device';
+import {RootState} from '../store/store';
+import {
+  CourseData,
+  CoursesState,
+  CourseState,
+  loadCourse,
+} from '../store/coursesSlice';
+import {STATUS} from '../store/status';
 
 export default function Course({navigation, route}) {
   const dispatch = useDispatch();
 
   const {t} = useTranslation();
 
-  const {user} = useContext(UserContext);
-  const [courseData, setCourseData] = useState(null);
-  const [mounted, setMounted] = useState(true);
+  const deviceContext = useContext(DeviceContext);
+
   const code = route.params.courseCode;
 
-  const [currentTab, setCurrentTab] = useState('overview');
-  const [materialLoaded, setMaterialLoaded] = useState(false);
-  const material = useSelector(state => state.material.material);
-  const loadingMaterial = useSelector(state => state.material.loadingMaterial);
+  const courseData = useSelector<RootState, CourseState | undefined>(state =>
+    state.courses.courses.find(course => course.code + course.name == code),
+  );
 
-  // TODO extract function
-  function loadMaterialIfNull() {
-    if (material == null && !loadingMaterial) {
-      dispatch(setLoadingMaterial(true));
-      getMaterialTree(user).then(data => {
-        dispatch(setMaterial(data));
-        dispatch(
-          setRecentMaterial(getRecentMaterial(user.carico_didattico, data)),
-        );
-        if (mounted) {
-          setMaterialLoaded(true);
-        }
-      });
-    } else {
-      setMaterialLoaded(true);
-    }
-  }
+  const [currentTab, setCurrentTab] = useState('overview');
 
   const tabs = [
     {
@@ -76,27 +59,15 @@ export default function Course({navigation, route}) {
     },
   ];
 
+  // Populate course data if empty
   useEffect(() => {
-    if (!user.carico_didattico) {
-      user.populate();
+    if (
+      courseData &&
+      courseData?.loadCourseStatus.code != STATUS.PENDING &&
+      courseData?.loadCourseStatus.code != STATUS.SUCCESS
+    ) {
+      dispatch(loadCourse({courseData, device: deviceContext.device}));
     }
-    (async () => {
-      [
-        ...user.carico_didattico.corsi,
-        ...user.carico_didattico.extra_courses,
-      ].forEach(corso => {
-        if (corso.codice + corso.nome == code) {
-          const _course = corso;
-          _course.populate().then(() => {
-            mounted && setCourseData(_course);
-          });
-        }
-      });
-    })();
-    loadMaterialIfNull();
-    return () => {
-      setMounted(false);
-    };
   }, []);
 
   return (
@@ -104,11 +75,12 @@ export default function Course({navigation, route}) {
       <View style={styles.withHorizontalPadding}>
         <ArrowHeader backFunc={navigation.goBack} />
       </View>
-      {courseData ? (
+      {courseData?.loadCourseStatus.code == STATUS.SUCCESS &&
+      courseData.academicYear ? (
         <View style={{flex: 1}}>
           <View style={styles.withHorizontalPadding}>
             <TextXL
-              text={courseData.nome}
+              text={courseData.name}
               numberOfLines={2}
               weight="medium"
               color={colors.black}
@@ -119,7 +91,7 @@ export default function Course({navigation, route}) {
               ...styles.withHorizontalPadding,
               flexDirection: 'column',
             }}>
-            <TextL text={courseData.codice} color={colors.mediumGray} />
+            <TextL text={courseData.code} color={colors.mediumGray} />
             <View style={{flexDirection: 'column', marginTop: 16}}>
               <View
                 style={{
@@ -130,7 +102,11 @@ export default function Course({navigation, route}) {
                 <Icon name="person-outline" color={colors.gray} size={16} />
                 <TextS
                   style={{marginLeft: 4}}
-                  text={courseData.cognome_prof + ' ' + courseData.nome_prof}
+                  text={
+                    courseData.professor?.surname +
+                    ' ' +
+                    courseData.professor?.name
+                  }
                 />
               </View>
               <View
@@ -155,7 +131,7 @@ export default function Course({navigation, route}) {
                 <IconC name="calendar" color={colors.gray} size={16} />
                 <TextS
                   style={{marginLeft: 4}}
-                  text={'A.A. ' + courseData.anno_accademico}
+                  text={'A.A. ' + courseData.academicYear}
                 />
               </View>
             </View>
@@ -216,11 +192,11 @@ export default function Course({navigation, route}) {
                   />
                 );
               case 'material':
-                return materialLoaded ? (
+                return courseData.loadCourseStatus.code == STATUS.SUCCESS ? (
                   <ScrollView
                     contentContainerStyle={styles.withHorizontalPadding}>
                     <MaterialExplorer
-                      course={courseData.codice + courseData.nome}
+                      course={courseData.code + courseData.name}
                     />
                   </ScrollView>
                 ) : (
@@ -229,15 +205,15 @@ export default function Course({navigation, route}) {
               case 'alerts':
                 return (
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
-                    <CourseAlerts alerts={courseData.avvisi} />
+                    <CourseAlerts alerts={courseData.alerts} />
                   </View>
                 );
               case 'recordings':
                 return (
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
                     <CourseVideos
-                      videos={courseData.vc_recordings.current}
-                      courseData={{nome: courseData.nome}}
+                      videos={courseData.recordings?.current}
+                      courseData={{nome: courseData.name}}
                     />
                   </View>
                 );

@@ -1,13 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Dimensions, Platform, StatusBar, View} from 'react-native';
+import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {TextS, TextXL} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api';
 import * as Keychain from 'react-native-keychain';
-import 'react-native-get-random-values';
-import {v4 as UUIDv4} from 'uuid';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -16,23 +14,15 @@ import RNFS from 'react-native-fs';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {
-  setUsername,
-  setToken,
-  setUuid,
-  setUser,
-  setAccess,
-  setLoadedToken,
+  DeviceInfo,
+  login,
+  LoginData,
+  setAuthStatus,
 } from '../store/sessionSlice';
 import {setWindowHeight} from '../store/uiSlice';
-import {setUnreadEmailCount} from '../store/emailSlice';
 import HomeRouter from './HomeRouter';
 import {showMessage} from 'react-native-flash-message';
-import {
-  loginErrorFlashMessage,
-  loginPendingFlashMessage,
-  loginSuccessFlashMessage,
-} from '../components/CustomFlashMessages';
-import UserProvider from '../context/User';
+import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
 import MaterialSearch from '../screens/MaterialSearch';
 import Courses from '../screens/Courses';
 import Course from '../screens/Course';
@@ -41,10 +31,36 @@ import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig from '../defaultConfig';
 import moment from 'moment';
+import {Entry} from 'open-polito-api/device';
+import {AuthStatus, AUTH_STATUS} from '../store/status';
+import {RootState} from '../store/store';
+import {DeviceContext} from '../context/Device';
 
-const AuthStack = createNativeStackNavigator();
-const AppStack = createNativeStackNavigator();
+/**
+ * Types for React Navigation
+ */
+export type AuthStackParamList = {
+  Login: undefined;
+};
 
+export type AppStackParamList = {
+  HomeRouter: undefined;
+  MaterialSearch: undefined;
+  ExamSessions: undefined;
+  Courses: undefined;
+  Course: undefined;
+  VideoPlayer: undefined;
+};
+
+/**
+ * Stack navigators
+ */
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
+const AppStack = createNativeStackNavigator<AppStackParamList>();
+
+/**
+ * Generate filename and compute log file path
+ */
 const logFilename =
   'request_log-' + moment().format('YYYY-MM-DD-THHmmssSSS') + '.txt';
 const logs_path =
@@ -52,43 +68,104 @@ const logs_path =
   '/' +
   logFilename;
 
-// console.log(`Request log path: ${logs_path}`);
-function log_request(entry) {
-  // Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
-  // DocumentDirectoryPath on iOS
-  // console.log(entry);
+/**
+ * Log requests to log file.
+ * @param entry The log entry
+ *
+ * @remarks
+ * Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
+ * DocumentDirectoryPath on iOS
+ */
+export const requestLogger = (entry: Entry) => {
   if (entry.endpoint.includes('login')) return;
   RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
     console.log(err),
   );
-}
+};
 
+// Get logging configuration
+export const getLoggingConfig = async () => {
+  let loggingEnabled = false;
+  try {
+    const loggingConfig = await AsyncStorage.getItem('@config');
+    if (loggingConfig == null) {
+      await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
+      loggingEnabled = defaultConfig.logging;
+    } else {
+      loggingEnabled = JSON.parse(loggingConfig).logging;
+    }
+  } catch (e) {
+  } finally {
+    return loggingEnabled;
+  }
+};
+
+/**
+ * Main routing component. Manages login and access to {@link AuthStack} and {@link AppStack}.
+ */
 export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
 
-  const [_user, _setUser] = useState();
-  const [logging, setLogging] = useState(false);
-  const [message, setMessage] = useState(null);
+  const authStatus = useSelector<RootState, AuthStatus>(
+    state => state.session.authStatus,
+  );
 
-  const {access, loadedToken} = useSelector(state => state.session);
+  const deviceContext = useContext(DeviceContext);
 
-  const [height, setHeight] = useState(() => {
-    h = Dimensions.get('window').height + StatusBar.currentHeight;
-    dispatch(setWindowHeight(h));
-    return h;
-  });
+  // Logging-related stuff
+  const [loggingEnabled, setLoggingEnabled] = useState(false);
+  const [message, setMessage] = useState(<View></View>);
 
   // Initial setup
   useEffect(() => {
-    const sub = Dimensions.addEventListener('change', ({window}) => {
-      dispatch(setWindowHeight(window + StatusBar.currentHeight));
-    });
+    (async () => {
+      // Get logging configuration
+      setLoggingEnabled(await getLoggingConfig());
+
+      // Try to access with Keychain credentials, if present
+      const keychainCredentials = await Keychain.getGenericPassword();
+
+      if (keychainCredentials) {
+        const {username, password} = keychainCredentials;
+        const {uuid, token} = JSON.parse(password);
+
+        // Up to this point the global Device is just a placeholder, therefore
+        // we create the actual instance, set it globally, and use it to login
+        const device = new Device(
+          uuid,
+          10000,
+          loggingEnabled ? requestLogger : () => {},
+        );
+
+        // Set device instance
+        deviceContext.setDevice(device);
+
+        dispatch(
+          login({
+            method: 'token',
+            username: keychainCredentials.username,
+            token: token,
+            device: device,
+          }),
+        );
+      } else {
+        // Will be redirected to login screen
+        dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
+      }
+    })();
 
     return () => {
-      sub.remove();
+      // Cleanup
     };
   }, []);
+
+  // If loggingEnabled changes, set whether to show top message
+  useEffect(() => {
+    loggingEnabled
+      ? setMessage(buildMessage({text: t('Logging enabled'), type: 'warn'}))
+      : setMessage(<View></View>);
+  }, [loggingEnabled]);
 
   // Returns message component
   const buildMessage = ({text = '', type = 'warn'}) => {
@@ -106,196 +183,74 @@ export default function Router() {
     );
   };
 
-  function handleLogin(username, password) {
-    showMessage(loginPendingFlashMessage(t));
-    (async () => {
-      // todo: disable logging in release mode
-      const device = new Device(UUIDv4(), log_request);
-      // console.log(device.uuid);
-      const deviceData = {
-        platform: Platform.OS,
-        version: Platform.Version + '',
-        model: 'Generic',
-        manufacturer: 'Unknown',
-      };
-      try {
-        await device.register(deviceData);
-        const {user, token} = await device.loginWithCredentials(
-          username,
-          password,
-        );
-
-        const sessionUsername = 'S' + user.anagrafica.matricola;
-
-        const item = JSON.stringify({uuid: device.uuid, token: token});
-
-        await Keychain.setGenericPassword(sessionUsername, item);
-
-        dispatch(setUuid(device.uuid));
-        dispatch(setUsername(sessionUsername));
-        dispatch(setToken(token));
-        dispatch(setUser(user.anagrafica));
-
-        _setUser(user);
-
-        const {unread} = await user.unreadMail();
-        dispatch(setUnreadEmailCount(unread));
-
-        dispatch(setAccess(true));
-        showMessage(loginSuccessFlashMessage(t));
-      } catch (error) {
-        // TODO custom alert component
-        // TODO better error handling
-        // console.log(error);
-        showMessage(loginErrorFlashMessage(t));
-      }
-    })();
-  }
-
-  // Get logging configuration
-  const getLoggingConfig = async () => {
-    let _logging = false;
-    try {
-      _logging = await AsyncStorage.getItem('@config');
-      if (_logging == null) {
-        await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
-        _logging = defaultConfig.logging;
-      } else {
-        _logging = JSON.parse(_logging).logging;
-      }
-    } catch (e) {
-    } finally {
-      setLogging(_logging);
-    }
-
-    // Determine whether to show top message
-    _logging &&
-      setMessage(buildMessage({text: t('Logging enabled'), type: 'warn'}));
-
-    return _logging;
-  };
-
-  // Get access token from keychain
-  useEffect(() => {
-    if (!access) {
-      showMessage(loginPendingFlashMessage(t));
-      // only log in again if not logged in yet (with token) (to prevent unnecessary token changes during development)
-      setTimeout(async () => {
-        const _logging = await getLoggingConfig();
-        try {
-          // console.log('Accessing token...');
-          const credentials = await Keychain.getGenericPassword();
-          if (credentials) {
-            dispatch(setUsername(credentials.username));
-            const {uuid, token} = JSON.parse(credentials.password);
-            dispatch(setToken(token));
-            dispatch(setUuid(uuid));
-
-            // todo: disable logging in release mode
-            const dev = new Device(uuid, _logging ? log_request : () => {});
-            const {user, token: newToken} = await dev.loginWithToken(
-              credentials.username,
-              token,
-            );
-
-            const sessionUsername = 'S' + user.anagrafica.matricola;
-
-            const item = JSON.stringify({uuid: dev.uuid, token: newToken});
-
-            await Keychain.setGenericPassword(sessionUsername, item);
-
-            dispatch(setToken(newToken));
-            dispatch(setUser(user.anagrafica));
-
-            _setUser(user);
-
-            dispatch(setLoadedToken(true));
-            dispatch(setAccess(true));
-
-            showMessage(loginSuccessFlashMessage(t));
-
-            const {unread} = await user.unreadMail();
-            dispatch(setUnreadEmailCount(unread));
-
-            // REMOVE IN PRODUCTION!
-            // console.log(uuid, token);
-          } else {
-            // console.log('No credentials found!');
-            dispatch(setLoadedToken(true));
-            dispatch(setAccess(false));
-          }
-        } catch (error) {
-          dispatch(setLoadedToken(false));
-          dispatch(setAccess(false));
-          showMessage(loginErrorFlashMessage(t));
-        }
-      }, 500);
-    }
-  }, []);
-
   /**
    * Quick splash screen.
-   * Active until it has been determined whether access token exists
-   * or if it is valid or not.
+   * Shown if authStatus is PENDING
    */
   // TODO better design
-  if (!loadedToken) {
-    return (
-      <View style={{flex: 1}}>
-        <LinearGradient
-          colors={[colors.gradient1, colors.gradient2]}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 1}}
-          height={height}>
-          <SafeAreaView>
-            <StatusBar
-              translucent
-              backgroundColor="transparent"
-              barStyle="light-content"
-            />
+  return authStatus == AUTH_STATUS.PENDING ||
+    authStatus == AUTH_STATUS.OFFLINE ? (
+    <View style={{flex: 1}}>
+      <LinearGradient
+        colors={[colors.gradient1, colors.gradient2]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1}}>
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle="light-content"
+          />
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flex: 1,
+              position: 'relative',
+            }}>
             <View
               style={{
-                flexDirection: 'row',
+                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: '100%',
-                height: '95%',
+                paddingBottom: 64,
               }}>
-              <TextXL text={t("appName")} color="white" weight="bold" />
+              <TextXL text={t('appName')} color="white" weight="bold" />
+              <View style={{position: 'absolute', bottom: 0}}>
+                {authStatus == AUTH_STATUS.PENDING && (
+                  <ActivityIndicator size={48} color={colors.white} />
+                )}
+              </View>
             </View>
-          </SafeAreaView>
-        </LinearGradient>
-      </View>
-    );
-  }
-
-  return (
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
+  ) : (
     <NavigationContainer>
       <View>{message}</View>
-      {access ? (
-        <UserProvider user={_user}>
-          <AppStack.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <AppStack.Screen name="HomeRouter" component={HomeRouter} />
-            <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
-            <AppStack.Screen name="Courses" component={Courses} />
-            <AppStack.Screen name="Course" component={Course} />
-            <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
-            <AppStack.Screen name="ExamSessions" component={ExamSessions} />
-          </AppStack.Navigator>
-        </UserProvider>
-      ) : (
+      {authStatus == AUTH_STATUS.VALID ? (
+        <AppStack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}>
+          <AppStack.Screen name="HomeRouter" component={HomeRouter} />
+          <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
+          <AppStack.Screen name="Courses" component={Courses} />
+          <AppStack.Screen name="Course" component={Course} />
+          <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
+          <AppStack.Screen name="ExamSessions" component={ExamSessions} />
+        </AppStack.Navigator>
+      ) : authStatus == AUTH_STATUS.NOT_VALID ? (
         <AuthStack.Navigator
           screenOptions={{
             headerShown: false,
           }}>
-          <AuthStack.Screen name="Login">
-            {props => <LoginScreen {...props} loginFunction={handleLogin} />}
-          </AuthStack.Screen>
+          <AuthStack.Screen name="Login" component={LoginScreen} />
         </AuthStack.Navigator>
-      )}
+      ) : null}
     </NavigationContainer>
   );
 }

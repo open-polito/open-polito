@@ -1,26 +1,27 @@
-import {StatusBar} from 'react-native';
-import colors from '../colors';
+import { TFunction } from 'react-i18next';
+import { StatusBar } from 'react-native';
+import { MessageOptions, MessageType } from 'react-native-flash-message';
+import colors, { Color } from '../colors';
 import styles from '../styles';
 
-function getPaddingTop() {
+const getPaddingTop = () => {
   return StatusBar.currentHeight;
-}
+};
 
 /**
  * Base object used by all custom flash messages.
  *
  * Objects are to be passed to showMessage() (from react-native-flash-message)
  */
-
-function flashMessageBase(
-  t,
-  message,
-  description = '',
-  type,
-  backgroundColor,
-  color,
-  duration,
-) {
+const flashMessageBase = (
+  t: TFunction,
+  message: string,
+  description: string = '',
+  type: MessageType,
+  backgroundColor: Color,
+  color: Color,
+  duration: number,
+): MessageOptions => {
   StatusBar.setBarStyle('light-content');
   return {
     message: t(message),
@@ -34,7 +35,7 @@ function flashMessageBase(
     titleStyle: styles.textRegular,
     textStyle: styles.textRegular,
   };
-}
+};
 
 /**
  * Custom components by type:
@@ -44,7 +45,11 @@ function flashMessageBase(
  * - success
  */
 
-export function infoFlashMessage(t, message, description = '') {
+export const infoFlashMessage = (
+  t: TFunction,
+  message: string,
+  description: string = '',
+) => {
   return flashMessageBase(
     t,
     message,
@@ -56,7 +61,11 @@ export function infoFlashMessage(t, message, description = '') {
   );
 }
 
-export function warnFlashMessage(t, message, description = '') {
+export const warnFlashMessage = (
+  t: TFunction,
+  message: string,
+  description: string = '',
+) => {
   return flashMessageBase(
     t,
     message,
@@ -68,7 +77,11 @@ export function warnFlashMessage(t, message, description = '') {
   );
 }
 
-export function errorFlashMessage(t, message, description = '') {
+export const errorFlashMessage = (
+  t: TFunction,
+  message: string,
+  description: string = '',
+) => {
   return flashMessageBase(
     t,
     message,
@@ -80,7 +93,11 @@ export function errorFlashMessage(t, message, description = '') {
   );
 }
 
-export function successFlashMessage(t, message, description = '') {
+export const successFlashMessage = (
+  t: TFunction,
+  message: string,
+  description: string = '',
+) => {
   return flashMessageBase(
     t,
     message,
@@ -96,23 +113,23 @@ export function successFlashMessage(t, message, description = '') {
  * Custom flash messages
  */
 
-export function logoutFlashMessage(t) {
+export const logoutFlashMessage = (t: TFunction) => {
   return infoFlashMessage(t, 'logoutFlashMessage');
 }
 
-export function loginPendingFlashMessage(t) {
+export const loginPendingFlashMessage = (t: TFunction) => {
   return infoFlashMessage(t, 'loginPendingFlashMessage');
 }
 
-export function loginErrorFlashMessage(t) {
+export const loginErrorFlashMessage = (t: TFunction) => {
   return errorFlashMessage(t, 'loginErrorFlashMessage', 'loginErrorFlashDesc');
 }
 
-export function loginSuccessFlashMessage(t) {
+export const loginSuccessFlashMessage = (t: TFunction) => {
   return successFlashMessage(t, 'loginSuccessFlashMessage');
 }
 
-export function notImplementedFlashMessage(t) {
+export const notImplementedFlashMessage = (t: TFunction) => {
   return warnFlashMessage(
     t,
     'notImplementedFlashMessage',

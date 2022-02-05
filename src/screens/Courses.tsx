@@ -6,43 +6,30 @@ import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
 import {TextN, TextS} from '../components/Text';
-import {UserContext} from '../context/User';
-import {setCarico} from '../store/userSlice';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles';
+import {DeviceContext} from '../context/Device';
+import {CourseData} from '../store/coursesSlice';
+import {RootState} from '../store/store';
 
 export default function Courses({navigation}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
-  const {user} = useContext(UserContext);
+  const deviceContext = useContext(DeviceContext);
 
-  const courses_json = useSelector(state => state.user.carico_didattico);
-  const [courses, setCourses] = useState(null);
-  const [extraCourses, setExtraCourses] = useState([]);
+  const courses = useSelector<RootState, CourseData[]>(
+    state => state.courses.courses,
+  );
 
   const [offsetY, setOffsetY] = useState(0);
 
-  useEffect(() => {
-    if (courses_json == null) {
-      (async () => {
-        await user.populate();
-        dispatch(setCarico(JSON.stringify(user.carico_didattico)));
-        setCourses(user.carico_didattico.corsi);
-        setExtraCourses(user.carico_didattico.extra_courses);
-      })();
-    } else {
-      setCourses(JSON.parse(courses_json).corsi);
-      setExtraCourses(JSON.parse(courses_json).extra_courses);
-    }
-  }, []);
-
-  const buildCourseButton = course => {
+  const buildCourseButton = (course: CourseData) => {
     return (
-      <View key={course.codice + course.nome}>
+      <View key={course.code + course.name}>
         <Pressable
           onPress={() => {
             navigation.navigate('Course', {
-              courseCode: course.codice + course.nome,
+              courseCode: course.code + course.name,
             });
           }}
           android_ripple={{color: colors.lightGray}}
@@ -61,7 +48,7 @@ export default function Courses({navigation}) {
               alignItems: 'center',
             }}>
             <View style={{flexDirection: 'column', width: '90%'}}>
-              <TextN text={course.nome} numberOfLines={1} weight="regular" />
+              <TextN text={course.name} numberOfLines={1} weight="regular" />
               <TextS text={course.cfu + ' CFU'} />
             </View>
             <Icon
@@ -88,18 +75,23 @@ export default function Courses({navigation}) {
           }}
           contentContainerStyle={{
             ...styles.withHorizontalPadding,
-            paddingBottom: offsetY == 0 ? 32 : 16,
+            paddingBottom: offsetY < 16 ? 32 : 16,
             ...styles.paddingFromHeader,
           }}>
-          {courses != null && courses.map(course => buildCourseButton(course))}
-          {extraCourses.length != 0 && (
+          {courses != null &&
+            courses
+              .filter(course => course.isMain)
+              .map(mainCourse => buildCourseButton(mainCourse))}
+          {courses.filter(course => !course.isMain).length > 0 && (
             <View>
               <TextN
                 text={t('otherCourses')}
                 weight="medium"
                 style={{marginBottom: 8}}
               />
-              {extraCourses.map(course => buildCourseButton(course))}
+              {courses
+                .filter(course => !course.isMain)
+                .map(extraCourse => buildCourseButton(extraCourse))}
             </View>
           )}
         </ScrollView>

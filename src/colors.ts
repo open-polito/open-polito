@@ -1,3 +1,5 @@
+export type Color = string;
+
 const colors = {
   gradient1: '#0029FF',
   gradient2: '#0010A4',

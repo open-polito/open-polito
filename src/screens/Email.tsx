@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Linking, Pressable, StatusBar, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
@@ -8,24 +8,31 @@ import styles from '../styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
-import {UserContext} from '../context/User';
+import {DeviceContext} from '../context/Device';
+import {createUser} from '../utils/api-utils';
+import {RootState} from '../store/store';
+import {Anagrafica} from 'open-polito-api/user';
 
 export default function Email() {
   const {t} = useTranslation();
 
-  const {user} = useContext(UserContext);
+  const deviceContext = useContext(DeviceContext);
+
+  const userInfo = useSelector<RootState, Anagrafica | null>(
+    state => state.user.userInfo,
+  );
+  const unreadEmailCount = useSelector<RootState, number>(
+    state => state.user.unreadEmailCount,
+  );
 
   const openWebMail = async () => {
-    const url = await user.emailUrl();
+    const url = await createUser(deviceContext.device, userInfo!).emailUrl();
     Linking.openURL(url);
   };
 
   useEffect(() => {
     StatusBar.setBarStyle('dark-content');
   });
-
-  const {unreadEmailCount} = useSelector(state => state.email);
-
   return (
     <ScreenContainer>
       <Header text={t('email')} noMarginBottom={true} />

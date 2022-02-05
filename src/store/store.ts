@@ -1,17 +1,15 @@
-import {configureStore} from '@reduxjs/toolkit';
-import emailSlice from './emailSlice';
-import materialSlice from './materialSlice';
+import {configureStore, createReducer} from '@reduxjs/toolkit';
+import coursesSlice from './coursesSlice';
+import examsSlice from './examsSlice';
 import sessionSlice from './sessionSlice';
-import uiSlice from './uiSlice';
 import userSlice from './userSlice';
 
 const store = configureStore({
   reducer: {
     session: sessionSlice,
-    ui: uiSlice,
-    email: emailSlice,
     user: userSlice,
-    material: materialSlice,
+    courses: coursesSlice,
+    exams: examsSlice,
   },
 });
 

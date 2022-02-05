@@ -5,7 +5,7 @@ const EN = {
   appName:
     Config.VARIANT == 'release'
       ? 'Open PoliTo'
-      : `Open PoliTo [${Config.VARIANT}]`,
+      : `Open PoliTo\n[${Config.VARIANT}]`,
   search: 'Search',
   searchResults: '{{count}} results found',
   noResults: 'No results',

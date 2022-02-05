@@ -11,33 +11,35 @@ import styles from '../styles';
 import {useTranslation} from 'react-i18next';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
-import {getMaterialList} from '../utils/material';
 import DirectoryItem from '../components/DirectoryItem';
 import {TextS, TextSubTitle} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';
+import {RootState} from '../store/store';
+import {CourseState} from '../store/coursesSlice';
+import {Cartella, File} from 'open-polito-api/corso';
+import {DropdownItem} from '../types';
 
 export default function MaterialSearch({navigation}) {
   const {t} = useTranslation();
-  const [query, setQuery] = useState(null);
-  const [materialList, setMaterialList] = useState([]);
-  const [results, setResults] = useState([]);
-  const carico_didattico = JSON.parse(
-    useSelector(state => state.user.carico_didattico),
+
+  const courses = useSelector<RootState, CourseState[]>(
+    state => state.courses.courses,
   );
-  const material = useSelector(state => state.material.material);
+
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<File[]>([]);
 
   const inputRef = useRef(null);
 
   const [selectedCourse, setSelectedCourse] = useState(null);
 
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<DropdownItem[]>([]);
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     inputRef.current.focus();
-    setMaterialList(getMaterialList(carico_didattico, material));
     initDropdown();
   }, []);
 
@@ -45,43 +47,77 @@ export default function MaterialSearch({navigation}) {
     searchMaterial();
   }, [selectedCourse]);
 
-  async function searchMaterial() {
-    await setTimeout(() => {
-      setLoading(true);
-    });
-
-    await setTimeout(() => {
-      let res = [];
-      if (query == '') {
-        return;
-      }
-      materialList.forEach(item => {
-        if ((item.nome + item.filename).toLowerCase().includes(query)) {
-          if (selectedCourse) {
-            if (selectedCourse.includes(item.corso)) {
-              res.push(item);
-            }
-          } else {
-            res.push(item);
-          }
-        }
-      });
-      setResults(res);
-    });
-
-    await setTimeout(() => {
-      setLoading(false);
-    });
-  }
-
   const initDropdown = () => {
-    let items = [];
-    [...carico_didattico.corsi, ...carico_didattico.extra_courses].forEach(
-      course => {
-        items.push({label: course.nome, value: course.codice + course.nome});
-      },
-    );
+    let items: {label: string; value: string}[] = [];
+    courses.forEach(course => {
+      items.push({label: course.name, value: course.code + course.name});
+    });
     setItems(items);
+  };
+
+  /**
+   * Recursively finds files that match query, given directory.
+   *
+   * @param dir The directory to search
+   */
+  const findFiles = (dir: Cartella) => {
+    let results: File[] = [];
+    dir.file.forEach(item => {
+      if (item.tipo == 'file') {
+        if ((item.nome + item.filename).toLowerCase().includes(query)) {
+          results.push(item);
+        }
+      } else if (item.tipo == 'cartella') {
+        results.push(...findFiles(item));
+      }
+    });
+    return results;
+  };
+
+  /**
+   * Searches files matching specific query and course, and updates state.
+   */
+  const searchMaterial = () => {
+    // Using setTimeout is a bit hacky, but it works.
+    (async () => {
+      setTimeout(() => {
+        setLoading(true);
+      }, 0);
+
+      setTimeout(() => {
+        let res: File[] = [];
+        if (query == '') {
+          setLoading(false);
+          return;
+        }
+
+        let rootDir: Cartella = {
+          tipo: 'cartella',
+          code: '',
+          nome: '',
+          file: [],
+        };
+
+        if (selectedCourse) {
+          rootDir.file =
+            courses.find(course => selectedCourse == course.code + course.name)
+              ?.material || [];
+        } else {
+          courses.forEach(course => {
+            course.material && rootDir.file.push(...course.material);
+          });
+        }
+
+        res = findFiles(rootDir).sort(
+          (a, b) => b.data_inserimento.getTime() - a.data_inserimento.getTime(),
+        );
+
+        setResults(res);
+      }, 0);
+      setTimeout(() => {
+        setLoading(false);
+      }, 0);
+    })();
   };
 
   return (
@@ -113,7 +149,6 @@ export default function MaterialSearch({navigation}) {
             setQuery(txt.toLowerCase().trim());
           }}
           onSubmitEditing={() => {
-            setLoading(true);
             searchMaterial();
           }}
         />
@@ -149,7 +184,6 @@ export default function MaterialSearch({navigation}) {
             items={items}
             placeholder={{label: t('selectCourseDropdown'), value: null}}
             onValueChange={value => {
-              setLoading(true);
               setSelectedCourse(value ? value : null);
             }}
           />
