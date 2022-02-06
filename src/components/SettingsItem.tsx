@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Pressable, StyleSheet, Switch, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../colors';
 import {TextN, TextS} from './Text';
@@ -9,6 +9,8 @@ export type SettingsItemProps = {
   name: string;
   description: string;
   settingsFunction: Function;
+  toggle?: boolean; // whether to show toggle
+  toggleValue?: boolean; // value of toggle
 };
 
 const SettingsItem: FC<SettingsItemProps> = ({
@@ -16,6 +18,8 @@ const SettingsItem: FC<SettingsItemProps> = ({
   name,
   description,
   settingsFunction = () => {},
+  toggle = false,
+  toggleValue,
   children,
 }) => {
   return (
@@ -29,14 +33,25 @@ const SettingsItem: FC<SettingsItemProps> = ({
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
+            alignItems: 'center',
           }}>
           <View style={{..._styles.settingsItemContainer, flex: 1}}>
             <Icon name={icon} size={32} color={colors.black} />
             <View style={_styles.settingsItemTextContainer}>
-              <TextN text={name} weight="medium" />
-              <TextS text={description} />
+              <TextN text={name} numberOfLines={1} weight="medium" />
+              <TextS text={description} numberOfLines={1} />
             </View>
           </View>
+          {toggle && (
+            <View>
+              <Switch
+                value={toggleValue}
+                onValueChange={() => {
+                  settingsFunction();
+                }}
+              />
+            </View>
+          )}
           {children}
         </View>
       </Pressable>

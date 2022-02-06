@@ -27,6 +27,7 @@ import {DeviceContext} from '../context/Device';
 import {createDevice} from '../utils/api-utils';
 import {Device} from 'open-polito-api';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
+import defaultConfig, {Config} from '../defaultConfig';
 
 export default function Settings() {
   const {t} = useTranslation();
@@ -42,16 +43,19 @@ export default function Settings() {
   const dispatch = useDispatch();
 
   // Settings state to persist
-  const [config, setConfig] = useState({
-    logging: false,
-  });
+  const [config, setConfig] = useState<Config>(defaultConfig);
+
+  const [loadedConfig, setLoadedConfig] = useState(false);
 
   // Load config from AsyncStorage
   useEffect(() => {
     (async () => {
       try {
-        const _config = (await AsyncStorage.getItem('@config')) || '';
-        mounted && setConfig(JSON.parse(_config));
+        const _config: Config = JSON.parse(
+          (await AsyncStorage.getItem('@config')) || '',
+        );
+        mounted && setConfig(_config);
+        mounted && setLoadedConfig(true);
       } catch (e) {}
     })();
     return () => setMounted(false);
@@ -59,6 +63,7 @@ export default function Settings() {
 
   // Save config to AsyncStorage on config change
   useEffect(() => {
+    if (!loadedConfig) return;
     (async () => {
       try {
         await AsyncStorage.setItem('@config', JSON.stringify(config));
@@ -93,7 +98,7 @@ export default function Settings() {
     })();
   }
 
-  const toggleLogging = () => {
+  const showRestartAppNeeded = () => {
     showMessage(warnFlashMessage(t, 'restartFlashMessage'));
   };
 
@@ -118,16 +123,35 @@ export default function Settings() {
     },
   ];
 
+  const debugSettingsItems: SettingsItemProps[] = [
+    {
+      icon: 'bug-outline',
+      name: t('debugEnableLogging'),
+      description: t('debugEnableLoggingDesc'),
+      settingsFunction: () => {
+        setConfig({...config, logging: !config.logging});
+        showRestartAppNeeded();
+      },
+      toggle: true,
+      toggleValue: config.logging,
+    },
+  ];
+
+  const experimentalSettingsItems: SettingsItemProps[] = [
+    {
+      icon: 'email-outline',
+      name: t('experimentalEmailWebView'),
+      description: t('experimentalEmailWebViewDesc'),
+      settingsFunction: () => {
+        setConfig({...config, emailWebView: !config.emailWebView});
+      },
+      toggle: true,
+      toggleValue: config.emailWebView,
+    },
+  ];
+
   const buildSettingsItem = (item: SettingsItemProps) => {
-    return (
-      <SettingsItem
-        key={item.name}
-        icon={item.icon}
-        name={item.name}
-        description={item.description}
-        settingsFunction={item.settingsFunction}
-      />
-    );
+    return <SettingsItem {...item} />;
   };
 
   return (
@@ -150,25 +174,23 @@ export default function Settings() {
         <View style={{marginTop: 24}}>
           {settingsItems.map(item => buildSettingsItem(item))}
           {/* Debug options */}
-          <View style={{height: 4, backgroundColor: colors.lightGray}}></View>
+          <View
+            style={{
+              height: 4,
+              backgroundColor: colors.lightGray,
+              borderRadius: 4,
+            }}></View>
           <TextS style={{marginTop: 8}} text={t('debugSettings')} />
-          <SettingsItem
-            icon="bug-outline"
-            name={t('enableLogging')}
-            description={t('enableLoggingDesc')}
-            settingsFunction={() => {
-              const _value = config.logging;
-              setConfig({...config, logging: !_value});
-              toggleLogging();
-            }}>
-            <Switch
-              value={config.logging}
-              onValueChange={value => {
-                setConfig({...config, logging: value});
-                toggleLogging();
-              }}
-            />
-          </SettingsItem>
+          {debugSettingsItems.map(item => buildSettingsItem(item))}
+          {/* Experimental options */}
+          <View
+            style={{
+              height: 4,
+              backgroundColor: colors.lightGray,
+              borderRadius: 4,
+            }}></View>
+          <TextS style={{marginTop: 8}} text={t('experimentalSettings')} />
+          {experimentalSettingsItems.map(item => buildSettingsItem(item))}
         </View>
       </ScrollView>
     </ScreenContainer>

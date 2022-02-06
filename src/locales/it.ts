@@ -50,6 +50,7 @@ const IT = {
   // Settings screen
   settings: 'Impostazioni',
   debugSettings: 'Impostazioni di debug',
+  experimentalSettings: "Impostazioni sperimentali",
   logout: 'Esci',
   notifications: 'Notifiche',
   notificationsDesc: 'Gestisci le tue preferenze di notifica',
@@ -57,8 +58,12 @@ const IT = {
   themeDesc: 'Scegli la dark mode, personalizza i colori',
   about: 'Informazioni',
   aboutDesc: 'Informazioni su Open PoliTo',
-  enableLogging: 'Abilita logging',
-  enableLoggingDesc: 'Salva i log nel dispositivo',
+  // Debug settings
+  debugEnableLogging: 'Abilita logging',
+  debugEnableLoggingDesc: 'Salva i log nel dispositivo',
+  // Experimental settings
+  experimentalEmailWebView: "Apri e-mail in app",
+  experimentalEmailWebViewDesc: "Apri la schemata e-mail in una WebView",
 
   // Material screen
   // material: 'Materiale',
