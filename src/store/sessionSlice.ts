@@ -19,6 +19,7 @@ import * as Keychain from 'react-native-keychain';
 import { Device } from 'open-polito-api';
 import defaultConfig, { Config } from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ping } from 'open-polito-api/utils';
 
 export type DeviceInfo = {
   uuid: string;
@@ -75,6 +76,7 @@ export const registerDevice = createAsyncThunk<
  *
  * @remarks
  * When given "password" as login method, dispatches {@link registerDevice}.
+ * Always pings PoliTo servers before logging in, to detect offline mode.
  *
  * On login success, sets Keychain credentials and dispatches {@link loadUser}.
  */
@@ -87,7 +89,13 @@ export const login = createAsyncThunk<
     device: Device;
   },
   { state: RootState }
->('session/login', async (args, { dispatch }) => {
+>('session/login', async (args, { dispatch, rejectWithValue }) => {
+  try {
+    await ping();
+  } catch (e) {
+    dispatch(setAuthStatus(AUTH_STATUS.OFFLINE));
+    return rejectWithValue("offline");
+  }
   let response = null;
   if (args.method === 'token') {
     response = await args.device.loginWithToken(args.username, args.token);
@@ -169,7 +177,7 @@ export const sessionSlice = createSlice({
         };
       })
       .addCase(login.rejected, (state, action) => {
-        state.authStatus = AUTH_STATUS.NOT_VALID;
+        state.authStatus = action.payload == "offline" ? AUTH_STATUS.OFFLINE : AUTH_STATUS.NOT_VALID;
         state.loginStatus = errorStatus(action.error);
       });
   },

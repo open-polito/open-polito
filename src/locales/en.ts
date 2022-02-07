@@ -18,6 +18,9 @@ const EN = {
 
   // Splash screen
   loading: 'Loading...',
+  retry: "Retry",
+  networkError: "Network error",
+  networkErrorDesc: "You are either offline or PoliTo servers are not available at the moment",
 
   // Login screen
   caption: 'The unofficial, open-source\nmobile app',
