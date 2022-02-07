@@ -63,7 +63,7 @@ const IT = {
   debugEnableLoggingDesc: 'Salva i log nel dispositivo',
   // Experimental settings
   experimentalEmailWebView: "Apri e-mail in app",
-  experimentalEmailWebViewDesc: "Apri la schemata e-mail in una WebView",
+  experimentalEmailWebViewDesc: "Apri la schermata e-mail in una WebView",
 
   // Material screen
   // material: 'Materiale',

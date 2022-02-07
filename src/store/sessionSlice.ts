@@ -17,6 +17,8 @@ import { RootState } from './store';
 import { loadUser } from './userSlice';
 import * as Keychain from 'react-native-keychain';
 import { Device } from 'open-polito-api';
+import defaultConfig, { Config } from '../defaultConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type DeviceInfo = {
   uuid: string;
@@ -36,6 +38,8 @@ type SessionState = {
   loginData: LoginData | null;
 
   logoutStatus: Status;
+
+  config: Config;
 };
 
 const initialState: SessionState = {
@@ -47,6 +51,8 @@ const initialState: SessionState = {
   loginData: null,
 
   logoutStatus: initialStatus,
+
+  config: defaultConfig,
 };
 
 /**
@@ -105,7 +111,7 @@ export const login = createAsyncThunk<
  * Clears keychain, logs out and sets auth status as NOT_VALID.
  * Ignores whether or not the logout has been correctly sent to the server.
  */
-export const logout = createAsyncThunk<void, Device, { state: Device }>(
+export const logout = createAsyncThunk<void, Device, { state: RootState }>(
   'session/logout',
   async (device, { dispatch }) => {
     await Keychain.resetGenericPassword();
@@ -118,6 +124,15 @@ export const logout = createAsyncThunk<void, Device, { state: Device }>(
   },
 );
 
+/**
+ * Updates configuration in AsyncStorage and in store.
+ * Returns void.
+ */
+export const setConfig = createAsyncThunk<void, Config, { state: RootState }>("session/setConfig", async (config, { dispatch }) => {
+  await AsyncStorage.setItem("@config", JSON.stringify(config));
+  dispatch(setConfigState(config));
+});
+
 export const sessionSlice = createSlice({
   name: 'session',
   initialState,
@@ -125,6 +140,9 @@ export const sessionSlice = createSlice({
     setAuthStatus: (state, action: PayloadAction<AuthStatus>) => {
       state.authStatus = action.payload;
     },
+    setConfigState: (state, action: PayloadAction<Config>) => {
+      state.config = action.payload;
+    }
   },
   extraReducers: builder => {
     builder
@@ -157,6 +175,6 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const { setAuthStatus } = sessionSlice.actions;
+export const { setAuthStatus, setConfigState } = sessionSlice.actions;
 
 export default sessionSlice.reducer;

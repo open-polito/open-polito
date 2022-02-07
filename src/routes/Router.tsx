@@ -18,8 +18,8 @@ import {
   login,
   LoginData,
   setAuthStatus,
+  setConfigState,
 } from '../store/sessionSlice';
-import {setWindowHeight} from '../store/uiSlice';
 import HomeRouter from './HomeRouter';
 import {showMessage} from 'react-native-flash-message';
 import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
@@ -29,7 +29,7 @@ import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
 import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultConfig from '../defaultConfig';
+import defaultConfig, {Config} from '../defaultConfig';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
 import {AuthStatus, AUTH_STATUS} from '../store/status';
@@ -120,6 +120,14 @@ export default function Router() {
   // Initial setup
   useEffect(() => {
     (async () => {
+      // Set config in store
+      dispatch(
+        setConfigState(
+          (JSON.parse((await AsyncStorage.getItem('@config')) || '') ||
+            defaultConfig) as Config,
+        ),
+      );
+
       // Get logging configuration
       setLoggingEnabled(await getLoggingConfig());
 

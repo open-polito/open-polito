@@ -19,10 +19,13 @@ import notImplemented from '../utils/notImplemented';
 import {TextS} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import ArrowHeader from '../components/ArrowHeader';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RootState} from '../store/store';
 import {Anagrafica} from 'open-polito-api/user';
-import {logout} from '../store/sessionSlice';
+import {
+  logout,
+  setConfig,
+  setConfig as _setConfig,
+} from '../store/sessionSlice';
 import {DeviceContext} from '../context/Device';
 import {createDevice} from '../utils/api-utils';
 import {Device} from 'open-polito-api';
@@ -37,47 +40,19 @@ export default function Settings() {
   const userInfo = useSelector<RootState, Anagrafica | null>(
     state => state.user.userInfo,
   );
-
-  const [mounted, setMounted] = useState(true);
+  const config = useSelector<RootState, Config>(state => state.session.config);
 
   const dispatch = useDispatch();
 
-  // Settings state to persist
-  const [config, setConfig] = useState<Config>(defaultConfig);
+  const _setConfig = (config: Config) => {
+    dispatch(setConfig(config));
+  };
 
-  const [loadedConfig, setLoadedConfig] = useState(false);
-
-  // Load config from AsyncStorage
-  useEffect(() => {
-    (async () => {
-      try {
-        const _config: Config = JSON.parse(
-          (await AsyncStorage.getItem('@config')) || '',
-        );
-        mounted && setConfig(_config);
-        mounted && setLoadedConfig(true);
-      } catch (e) {}
-    })();
-    return () => setMounted(false);
-  }, []);
-
-  // Save config to AsyncStorage on config change
-  useEffect(() => {
-    if (!loadedConfig) return;
-    (async () => {
-      try {
-        await AsyncStorage.setItem('@config', JSON.stringify(config));
-      } catch (e) {
-        console.error(e);
-      }
-    })();
-  }, [config]);
-
-  function showLogoutMessage() {
+  const showLogoutMessage = () => {
     showMessage(logoutFlashMessage(t));
-  }
+  };
 
-  function handleLogout() {
+  const handleLogout = () => {
     (async () => {
       showLogoutMessage();
       try {
@@ -96,7 +71,7 @@ export default function Settings() {
       // Reset context device
       deviceContext.setDevice(new Device(''));
     })();
-  }
+  };
 
   const showRestartAppNeeded = () => {
     showMessage(warnFlashMessage(t, 'restartFlashMessage'));
@@ -129,7 +104,7 @@ export default function Settings() {
       name: t('debugEnableLogging'),
       description: t('debugEnableLoggingDesc'),
       settingsFunction: () => {
-        setConfig({...config, logging: !config.logging});
+        _setConfig({...config, logging: !config.logging});
         showRestartAppNeeded();
       },
       toggle: true,
@@ -143,7 +118,7 @@ export default function Settings() {
       name: t('experimentalEmailWebView'),
       description: t('experimentalEmailWebViewDesc'),
       settingsFunction: () => {
-        setConfig({...config, emailWebView: !config.emailWebView});
+        _setConfig({...config, emailWebView: !config.emailWebView});
       },
       toggle: true,
       toggleValue: config.emailWebView,
@@ -151,7 +126,7 @@ export default function Settings() {
   ];
 
   const buildSettingsItem = (item: SettingsItemProps) => {
-    return <SettingsItem {...item} />;
+    return <SettingsItem key={item.name} {...item} />;
   };
 
   return (

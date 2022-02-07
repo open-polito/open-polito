@@ -20,6 +20,8 @@ target 'OpenPoliTo' do
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
+  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+
   target 'OpenPoliToTests' do
     inherit! :complete
     # Pods for testing
