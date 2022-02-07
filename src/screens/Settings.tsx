@@ -30,7 +30,9 @@ import {DeviceContext} from '../context/Device';
 import {createDevice} from '../utils/api-utils';
 import {Device} from 'open-polito-api';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
-import defaultConfig, {Config} from '../defaultConfig';
+import defaultConfig, {Configuration} from '../defaultConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Config from 'react-native-config';
 
 export default function Settings() {
   const {t} = useTranslation();
@@ -40,11 +42,13 @@ export default function Settings() {
   const userInfo = useSelector<RootState, Anagrafica | null>(
     state => state.user.userInfo,
   );
-  const config = useSelector<RootState, Config>(state => state.session.config);
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
+  );
 
   const dispatch = useDispatch();
 
-  const _setConfig = (config: Config) => {
+  const _setConfig = (config: Configuration) => {
     dispatch(setConfig(config));
   };
 
@@ -149,23 +153,31 @@ export default function Settings() {
         <View style={{marginTop: 24}}>
           {settingsItems.map(item => buildSettingsItem(item))}
           {/* Debug options */}
-          <View
-            style={{
-              height: 4,
-              backgroundColor: colors.lightGray,
-              borderRadius: 4,
-            }}></View>
-          <TextS style={{marginTop: 8}} text={t('debugSettings')} />
-          {debugSettingsItems.map(item => buildSettingsItem(item))}
+          {parseInt(Config.ENABLE_DEBUG_OPTIONS) ? (
+            <View>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: colors.lightGray,
+                  borderRadius: 4,
+                }}></View>
+              <TextS style={{marginTop: 8}} text={t('debugSettings')} />
+              {debugSettingsItems.map(item => buildSettingsItem(item))}
+            </View>
+          ) : null}
           {/* Experimental options */}
-          <View
-            style={{
-              height: 4,
-              backgroundColor: colors.lightGray,
-              borderRadius: 4,
-            }}></View>
-          <TextS style={{marginTop: 8}} text={t('experimentalSettings')} />
-          {experimentalSettingsItems.map(item => buildSettingsItem(item))}
+          {parseInt(Config.ENABLE_EXPERIMENTAL_OPTIONS) ? (
+            <View>
+              <View
+                style={{
+                  height: 4,
+                  backgroundColor: colors.lightGray,
+                  borderRadius: 4,
+                }}></View>
+              <TextS style={{marginTop: 8}} text={t('experimentalSettings')} />
+              {experimentalSettingsItems.map(item => buildSettingsItem(item))}
+            </View>
+          ) : null}
         </View>
       </ScrollView>
     </ScreenContainer>
