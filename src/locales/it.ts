@@ -18,6 +18,9 @@ const IT = {
 
   // Splash screen
   loading: 'Caricamento...',
+  retry: "Riprova",
+  networkError: "Errore di rete",
+  networkErrorDesc: "Sei offline o i server PoliTo non sono attualmente disponibili",
 
   // Login screen
   caption: "L'app open-source\nnon ufficiale",

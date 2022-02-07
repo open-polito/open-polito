@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {ActivityIndicator, StatusBar, View} from 'react-native';
-import {TextS, TextXL} from '../components/Text';
+import {TextL, TextS, TextXL} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api';
@@ -35,6 +35,9 @@ import {Entry} from 'open-polito-api/device';
 import {AuthStatus, AUTH_STATUS} from '../store/status';
 import {RootState} from '../store/store';
 import {DeviceContext} from '../context/Device';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Button from '../components/Button';
+import {ping} from 'open-polito-api/utils';
 
 /**
  * Types for React Navigation
@@ -158,8 +161,17 @@ export default function Router() {
           }),
         );
       } else {
-        // Will be redirected to login screen
-        dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
+        /**
+         * If keychain credentials not present:
+         * - if network error, set offline
+         * - otherwise, redirect to login screen
+         */
+        try {
+          await ping();
+          dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
+        } catch (e) {
+          dispatch(setAuthStatus(AUTH_STATUS.OFFLINE));
+        }
       }
     })();
 
@@ -218,20 +230,49 @@ export default function Router() {
               flex: 1,
               position: 'relative',
             }}>
-            <View
-              style={{
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                paddingBottom: 64,
-              }}>
-              <TextXL text={t('appName')} color="white" weight="bold" />
-              <View style={{position: 'absolute', bottom: 0}}>
-                {authStatus == AUTH_STATUS.PENDING && (
-                  <ActivityIndicator size={48} color={colors.white} />
-                )}
+            {authStatus == AUTH_STATUS.PENDING ? (
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingBottom: 64,
+                }}>
+                <TextXL text={t('appName')} color="white" weight="bold" />
+                <View style={{position: 'absolute', bottom: 0}}>
+                  {authStatus == AUTH_STATUS.PENDING && (
+                    <ActivityIndicator size={48} color={colors.white} />
+                  )}
+                </View>
               </View>
-            </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  paddingBottom: 64,
+                  marginHorizontal: 64,
+                }}>
+                <Icon name="wifi-off" color={colors.white} size={64} />
+                <TextL text={t('networkError')} color="white" weight="bold" />
+                <TextS
+                  text={t('networkErrorDesc')}
+                  color="white"
+                  style={{textAlign: 'center'}}
+                />
+                {/* <Button
+                  icon="reload"
+                  text={t('retry')}
+                  onPress={() => {
+                    dispatch(setAuthStatus(AUTH_STATUS.PENDING));
+                  }}
+                  backgroundColor={colors.white}
+                  color={colors.gradient1}
+                  style={{flex: 0, marginTop: 16}}
+                /> */}
+              </View>
+            )}
           </View>
         </SafeAreaView>
       </LinearGradient>
