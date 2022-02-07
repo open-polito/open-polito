@@ -123,7 +123,7 @@ export default function Email() {
                   alignItems: 'center',
                 }}>
                 <TextN
-                  text="Loading..."
+                  text={t('loading')}
                   weight="medium"
                   style={{marginRight: 8}}
                 />
