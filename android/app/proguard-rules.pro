@@ -12,3 +12,4 @@
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.jni.** { *; }
 -keep class org.openpolito.app.BuildConfig { *; }
+-keep class com.facebook.react.turbomodule.** { *; }
