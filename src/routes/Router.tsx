@@ -29,7 +29,7 @@ import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
 import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultConfig, {Config} from '../defaultConfig';
+import defaultConfig, {Configuration} from '../defaultConfig';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
 import {AuthStatus, AUTH_STATUS} from '../store/status';
@@ -38,6 +38,7 @@ import {DeviceContext} from '../context/Device';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from '../components/Button';
 import {ping} from 'open-polito-api/utils';
+import Config from 'react-native-config';
 
 /**
  * Types for React Navigation
@@ -81,6 +82,7 @@ const logs_path =
  */
 export const requestLogger = (entry: Entry) => {
   if (entry.endpoint.includes('login')) return;
+  if (!parseInt(Config.ENABLE_DEBUG_OPTIONS)) return;
   RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
     console.log(err),
   );
@@ -126,8 +128,8 @@ export default function Router() {
       // Set config in store
       dispatch(
         setConfigState(
-          (JSON.parse((await AsyncStorage.getItem('@config')) || '') ||
-            defaultConfig) as Config,
+          (JSON.parse((await AsyncStorage.getItem('@config')) || '{}') ||
+            defaultConfig) as Configuration,
         ),
       );
 

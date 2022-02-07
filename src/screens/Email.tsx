@@ -20,7 +20,7 @@ import {RootState} from '../store/store';
 import {Anagrafica} from 'open-polito-api/user';
 import WebView, {WebViewNavigation} from 'react-native-webview';
 import {getUnreadEmailCount} from '../store/userSlice';
-import {Config} from '../defaultConfig';
+import {Configuration} from '../defaultConfig';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -40,7 +40,9 @@ export default function Email() {
   const unreadEmailCount = useSelector<RootState, number>(
     state => state.user.unreadEmailCount,
   );
-  const config = useSelector<RootState, Config>(state => state.session.config);
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
+  );
 
   const [mounted, setMounted] = useState(true);
   const [loaded, setLoaded] = useState(false);

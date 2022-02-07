@@ -1,9 +1,9 @@
-export type Config = {
+export type Configuration = {
   logging: boolean,
   emailWebView: boolean,
 }
 
-const defaultConfig: Config = {
+const defaultConfig: Configuration = {
   logging: false,
   emailWebView: false,
 };

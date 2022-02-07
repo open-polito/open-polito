@@ -17,7 +17,7 @@ import { RootState } from './store';
 import { loadUser } from './userSlice';
 import * as Keychain from 'react-native-keychain';
 import { Device } from 'open-polito-api';
-import defaultConfig, { Config } from '../defaultConfig';
+import defaultConfig, { Configuration } from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ping } from 'open-polito-api/utils';
 
@@ -40,7 +40,7 @@ type SessionState = {
 
   logoutStatus: Status;
 
-  config: Config;
+  config: Configuration;
 };
 
 const initialState: SessionState = {
@@ -136,7 +136,7 @@ export const logout = createAsyncThunk<void, Device, { state: RootState }>(
  * Updates configuration in AsyncStorage and in store.
  * Returns void.
  */
-export const setConfig = createAsyncThunk<void, Config, { state: RootState }>("session/setConfig", async (config, { dispatch }) => {
+export const setConfig = createAsyncThunk<void, Configuration, { state: RootState }>("session/setConfig", async (config, { dispatch }) => {
   await AsyncStorage.setItem("@config", JSON.stringify(config));
   dispatch(setConfigState(config));
 });
@@ -148,7 +148,7 @@ export const sessionSlice = createSlice({
     setAuthStatus: (state, action: PayloadAction<AuthStatus>) => {
       state.authStatus = action.payload;
     },
-    setConfigState: (state, action: PayloadAction<Config>) => {
+    setConfigState: (state, action: PayloadAction<Configuration>) => {
       state.config = action.payload;
     }
   },
