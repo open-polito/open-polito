@@ -42,6 +42,7 @@ export default function Email() {
   );
   const config = useSelector<RootState, Config>(state => state.session.config);
 
+  const [mounted, setMounted] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [webViewRef, setWebViewRef] = useState<WebView | null>(null);
   const [webMailUrl, setWebMailUrl] = useState('');
@@ -58,8 +59,11 @@ export default function Email() {
       dispatch(
         getUnreadEmailCount(createUser(deviceContext.device, userInfo!)),
       );
-      !webMailUrl && setWebMailUrl(await getWebMailUrl());
+      !webMailUrl && mounted && setWebMailUrl(await getWebMailUrl());
     })();
+    return () => {
+      setMounted(false);
+    };
   }, []);
 
   const getWebMailUrl = async () => {
@@ -68,6 +72,7 @@ export default function Email() {
   };
 
   const openWebMail = async () => {
+    if (!mounted) return;
     let url = webMailUrl;
     !url && (url = await getWebMailUrl());
     setWebMailUrl(url);
@@ -81,11 +86,13 @@ export default function Email() {
   const handleNavigationStateChange = (state: WebViewNavigation) => {
     if (!state.loading && !loaded) {
       setTimeout(() => {
-        setLoaded(true);
-        offset.value = withTiming(1, {
-          duration: 500,
-          easing: Easing.out(Easing.exp),
-        });
+        if (mounted) {
+          setLoaded(true);
+          offset.value = withTiming(1, {
+            duration: 500,
+            easing: Easing.out(Easing.exp),
+          });
+        }
       }, 1500);
     }
   };
