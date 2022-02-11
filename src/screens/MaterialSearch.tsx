@@ -121,7 +121,7 @@ export default function MaterialSearch({navigation}) {
   };
 
   return (
-    <ScreenContainer>
+    <ScreenContainer style={{...styles.withHorizontalPadding}}>
       <View
         style={{
           flexDirection: 'row',

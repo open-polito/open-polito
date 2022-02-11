@@ -1,14 +1,18 @@
-import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import React, {FC} from 'react';
+import {SafeAreaView, StatusBar, View, ViewStyle} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
 
-export default function ScreenContainer({
+export type ScreenContainerProps = {
+  style: ViewStyle;
+  barStyle: 'light-content' | 'dark-content';
+};
+
+const ScreenContainer: FC<ScreenContainerProps> = ({
   children,
-  style,
+  style = {},
   barStyle = 'dark-content',
-}) {
-  const _style = style != undefined && style;
+}) => {
   return (
     <SafeAreaView style={{height: '100%'}}>
       <StatusBar
@@ -20,12 +24,13 @@ export default function ScreenContainer({
         style={{
           ...styles.container,
           ...styles.safePaddingTop,
-          ...styles.withHorizontalPadding,
           backgroundColor: colors.background,
-          ..._style,
+          ...style,
         }}>
         {children}
       </View>
     </SafeAreaView>
   );
-}
+};
+
+export default ScreenContainer;
