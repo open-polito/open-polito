@@ -104,7 +104,6 @@ export default function Email() {
       <View style={styles.withHorizontalPadding}>
         <Header text={t('email')} noMarginBottom={true} />
       </View>
-
       {config.emailWebView ? (
         <View
           style={{

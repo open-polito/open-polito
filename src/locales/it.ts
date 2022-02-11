@@ -104,6 +104,10 @@ const IT = {
     'Questa funzionalità sarà disponibile in una prossima versione',
   restartFlashMessage: "Riavvia l'app",
 
+  // Info widgets
+  wipInfoWidgetTitle: "Lavori in corso",
+  wipInfoWidgetDesc: "Questa sezione è ancora in fase di costruzione.\nPotrebbe avere feature incomplete o un design non ultimato",
+
   // Additional screens...
 };
 

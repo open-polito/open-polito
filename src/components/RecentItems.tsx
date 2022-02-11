@@ -8,7 +8,7 @@ import {RootState} from '../store/store';
 import {Cartella, File} from 'open-polito-api/corso';
 
 export default function RecentItems({
-  courseID = null,
+  courseID = '',
   compact = false,
   relative_date = false,
 }) {

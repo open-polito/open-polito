@@ -1,16 +1,25 @@
 import moment from 'moment';
-import React, {useEffect, useState} from 'react';
+import {Device} from 'open-polito-api';
+import React, {FC, useEffect, useRef, useState} from 'react';
 import {Linking, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import colors from '../colors';
-import styles from '../styles';
-import AnimatedLiveCircle from './AnimatedLiveCircle';
-import {TextN, TextS, TextXS} from './Text';
+import {LiveClass} from '../../store/coursesSlice';
+import colors from '../../colors';
+import styles from '../../styles';
+import AnimatedLiveCircle from './../AnimatedLiveCircle';
+import {TextN, TextS, TextXS} from './../Text';
 import WidgetBase from './WidgetBase';
 
-export default function LiveWidget({liveClass, courseName, device}) {
-  const [mounted, setMounted] = useState(true);
-  const [time, setTime] = useState(0);
+export type LiveWidgetProps = {
+  liveClass: LiveClass;
+  courseName: string;
+  device: Device;
+};
+
+const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
+  const [mounted, setMounted] = useState<boolean>(true);
+  const [time, setTime] = useState<number | string>(0);
+  let intervalID = useRef<any>();
 
   const calculateTime = () => {
     return moment
@@ -20,19 +29,19 @@ export default function LiveWidget({liveClass, courseName, device}) {
 
   const gotoLiveClass = () => {
     (async () => {
-      await liveClass.populate(device);
-      await Linking.openURL(liveClass.url);
+      // TODO update to new API version to make this work again
+      await Linking.openURL(liveClass.url || '');
     })();
   };
 
   useEffect(() => {
     (async () => {
-      interval = setInterval(() => {
+      intervalID.current = setInterval(() => {
         mounted && setTime(calculateTime());
       }, 1000);
     })();
     return () => {
-      clearInterval(interval);
+      clearInterval(intervalID.current);
       setMounted(false);
     };
   }, []);
@@ -98,4 +107,6 @@ export default function LiveWidget({liveClass, courseName, device}) {
       </LinearGradient>
     </WidgetBase>
   );
-}
+};
+
+export default LiveWidget;

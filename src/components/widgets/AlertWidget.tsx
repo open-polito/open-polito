@@ -1,11 +1,17 @@
-import React from 'react';
+import {Avviso} from 'open-polito-api/corso';
+import React, {FC} from 'react';
 import {useTranslation} from 'react-i18next';
 import {View} from 'react-native';
-import CourseAlert from './CourseAlert';
-import {TextS} from './Text';
-import WidgetBase from './WidgetBase';
+import CourseAlert from './../CourseAlert';
+import {TextS} from './../Text';
+import WidgetBase from './../widgets/WidgetBase';
 
-export default function AlertWidget({action, alerts, ...props}) {
+export type AlertWidgetProps = {
+  action: Function;
+  alerts: Avviso[];
+};
+
+const AlertWidget: FC<AlertWidgetProps> = ({action, alerts, ...props}) => {
   const {t} = useTranslation();
 
   return (
@@ -25,4 +31,6 @@ export default function AlertWidget({action, alerts, ...props}) {
       )}
     </WidgetBase>
   );
-}
+};
+
+export default AlertWidget;

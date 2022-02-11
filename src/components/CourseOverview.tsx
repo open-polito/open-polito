@@ -7,11 +7,11 @@ import {CourseData} from '../store/coursesSlice';
 import {RootState} from '../store/store';
 import styles from '../styles';
 import {getRecentCourseMaterial} from '../utils/material';
-import AlertWidget from './AlertWidget';
+import AlertWidget from './widgets/AlertWidget';
 import CourseInfo from './CourseInfo';
 import CourseVideos from './CourseVideos';
-import LiveWidget from './LiveWidget';
-import MaterialWidget from './MaterialWidget';
+import LiveWidget from './widgets/LiveWidget';
+import MaterialWidget from './widgets/MaterialWidget';
 import TextWidget from './TextWidget';
 import {Cartella, File} from 'open-polito-api/corso';
 
