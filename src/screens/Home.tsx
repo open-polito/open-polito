@@ -18,13 +18,14 @@ import {TextS, TextSubTitle} from '../components/Text';
 import Header from '../components/Header';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
-import LiveWidget from '../components/LiveWidget';
+import LiveWidget from '../components/widgets/LiveWidget';
 import {useDispatch, useSelector} from 'react-redux';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import {Rect} from 'react-native-svg';
 import {RootState} from '../store/store';
 import {NavigationProp, useNavigation} from '@react-navigation/core';
 import {Status, STATUS} from '../store/status';
+import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
 
 export default function Home({navigation}: {navigation: NavigationProp}) {
   const {t} = useTranslation();
@@ -150,7 +151,12 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                 flex: 1,
                 paddingTop: 16,
               }}>
-              <View style={styles.withHorizontalPadding}>
+              <View style={{...styles.withHorizontalPadding}}>
+                <View style={{paddingBottom: 4}}>
+                  <WIPInfoWidget />
+                </View>
+                {/* View component to allow shadows to gently fade */}
+                <View style={{paddingTop: 24}} />
                 {/* {loadedUser &&
                   [
                     ...user.carico_didattico.corsi,
@@ -167,13 +173,19 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                       );
                     });
                   })} */}
-                {/* <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    flex: 1,
+                  }}>
+                  {/* 
                   <Image
                     style={{width: '100%', height: 70, borderRadius: 16}}
                     resizeMode="cover"
                     source={require('../../assets/images/update.png')}
-                  />
-                </View> */}
+                  /> */}
+                </View>
                 <View>
                   {loadUserStatus.code != STATUS.SUCCESS && (
                     <View>

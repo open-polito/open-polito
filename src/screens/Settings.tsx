@@ -33,6 +33,7 @@ import {getLoggingConfig, requestLogger} from '../routes/Router';
 import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
+import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
 
 export default function Settings() {
   const {t} = useTranslation();
@@ -143,6 +144,9 @@ export default function Settings() {
           ...styles.withHorizontalPadding,
           ...styles.paddingFromHeader,
         }}>
+        <View style={{marginBottom: 4}}>
+          <WIPInfoWidget />
+        </View>
         <View>
           <AccountBox
             name={userInfo?.nome + ' ' + userInfo?.cognome}
