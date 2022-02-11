@@ -1,10 +1,9 @@
 import moment from 'moment';
-import React, {useContext, useState} from 'react';
-import {Dimensions, Linking, Pressable, View} from 'react-native';
+import React, {useContext} from 'react';
+import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
-import styles from '../styles';
 import getFileIcon from '../utils/getFileIcon';
 import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
@@ -28,7 +27,6 @@ export default function DirectoryItem({
     size_label = null;
   }
   const deviceContext = useContext(DeviceContext);
-  const [textWidth, setTextWidth] = useState(null);
 
   const downloadFile = () => {
     getDownloadUrl(deviceContext.device, code).then(url =>
@@ -37,7 +35,11 @@ export default function DirectoryItem({
   };
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View
+      style={{
+        flexDirection: 'column',
+        flex: 1,
+      }}>
       <Pressable
         android_ripple={{color: colors.lightGray}}
         onPress={tipo == 'file' ? downloadFile : onPress} // download file if file, otherwise use onPress prop
@@ -47,7 +49,12 @@ export default function DirectoryItem({
           alignItems: 'center',
           paddingVertical: 8,
         }}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            flex: 1,
+          }}>
           {tipo == 'file' ? (
             getFileIcon(filename)
           ) : (
@@ -57,26 +64,14 @@ export default function DirectoryItem({
             style={{
               flexDirection: 'column',
               justifyContent: 'flex-start',
-              overflow: 'hidden',
               marginLeft: 8,
-              width: compact
-                ? Dimensions.get('window').width -
-                  2 * styles.withHorizontalPadding.paddingHorizontal -
-                  240
-                : textWidth == null
-                ? '100%'
-                : tipo == 'file'
-                ? corso == null
-                  ? textWidth - 175
-                  : textWidth - 250
-                : textWidth,
-            }}
-            onLayout={event => {
-              textWidth == null && setTextWidth(event.nativeEvent.layout.width);
+              flex: 1,
             }}>
-            <TextS text={nome} numberOfLines={1} weight="bold" />
+            <View style={{marginRight: 16}}>
+              <TextS text={nome} numberOfLines={1} weight="bold" />
+            </View>
             {tipo == 'file' && (
-              <View flexDirection="column">
+              <View style={{flexDirection: 'column', flex: 1}}>
                 <TextS
                   numberOfLines={1}
                   text={
@@ -92,16 +87,20 @@ export default function DirectoryItem({
           </View>
         </View>
         {!compact && (
-          <View flexDirection="row" alignItems="center">
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}>
             <View
-              flexDirection="column"
               style={{
+                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'flex-end',
                 marginRight: 8,
               }}>
               <TextS text={size_label} />
-              {corso != null ? (
+              {corso ? (
                 <TextS
                   text={
                     relative_date
@@ -111,7 +110,6 @@ export default function DirectoryItem({
                 />
               ) : null}
             </View>
-
             {tipo == 'file' ? (
               <Pressable
                 android_ripple={{color: colors.lightGray}}
