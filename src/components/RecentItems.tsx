@@ -37,7 +37,11 @@ export default function RecentItems({
   }, []);
 
   return (
-    <View style={{flexDirection: 'column'}}>
+    <View
+      style={{
+        flexDirection: 'column',
+        flex: 1,
+      }}>
       {recent ? (
         recent.map(item => (
           <DirectoryItem

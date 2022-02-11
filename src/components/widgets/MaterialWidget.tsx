@@ -1,5 +1,6 @@
 import React, {FC} from 'react';
 import {useTranslation} from 'react-i18next';
+import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {STATUS, Status} from '../../store/status';
 import {RootState} from '../../store/store';
@@ -28,11 +29,13 @@ const MaterialWidget: FC<MaterialWidgetProps> = ({
 
   return (
     <WidgetBase name={t('material')} action={action} compact {...props}>
-      {loadCourseStatus?.code == STATUS.SUCCESS ? (
-        <RecentItems compact relative_date courseID={courseID} />
-      ) : (
-        <TextS text={t('loading')} />
-      )}
+      <View style={{flex: 1, width: '100%'}}>
+        {loadCourseStatus?.code == STATUS.SUCCESS ? (
+          <RecentItems compact relative_date courseID={courseID} />
+        ) : (
+          <TextS text={t('loading')} />
+        )}
+      </View>
     </WidgetBase>
   );
 };
