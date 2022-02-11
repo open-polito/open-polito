@@ -103,6 +103,10 @@ const EN = {
   notImplementedFlashMessageDesc: 'Feature will be available in a next release',
   restartFlashMessage: 'Restart the app',
 
+  // Info widgets
+  wipInfoWidgetTitle: "Work in progress",
+  wipInfoWidgetDesc: "This section is still a work in progress.\nIt might have incomplete features or an unfinished design",
+
   // Additional screens...
 };
 

@@ -1,19 +1,28 @@
-import React, {useEffect} from 'react';
+import React, {FC} from 'react';
 import {Pressable, View} from 'react-native';
-import colors from '../colors';
-import styles from '../styles';
-import {TextN, TextS} from './Text';
+import colors from '../../colors';
+import styles from '../../styles';
+import {TextN, TextS} from '../Text';
 import {useTranslation} from 'react-i18next';
 
-export default function WidgetBase({
-  name,
+export type WidgetBaseProps = {
+  name?: string;
+  action?: Function;
+  compact?: boolean;
+  withButton?: boolean;
+  withPadding?: boolean;
+  fullHeight?: boolean;
+};
+
+const WidgetBase: FC<WidgetBaseProps> = ({
+  name = '',
   action = () => {},
-  children,
   compact = false,
   withButton = true,
   withPadding = true,
   fullHeight = false,
-}) {
+  children,
+}) => {
   const {t} = useTranslation();
 
   return (
@@ -23,6 +32,7 @@ export default function WidgetBase({
         backgroundColor: colors.white,
         borderRadius: 16,
         width: compact ? '48%' : '100%',
+        flex: 0,
         marginBottom: styles.withHorizontalPadding.paddingHorizontal / 2,
       }}>
       <Pressable
@@ -32,7 +42,9 @@ export default function WidgetBase({
           flex: fullHeight ? 1 : 0,
         }}
         android_ripple={{color: colors.lightGray}}
-        onPress={action}>
+        onPress={() => {
+          action();
+        }}>
         <View
           style={{
             flexDirection: 'column',
@@ -40,7 +52,7 @@ export default function WidgetBase({
             justifyContent: 'space-between',
             flex: 1,
           }}>
-          {name && <TextN text={name} weight="medium" />}
+          {name ? <TextN text={name} weight="medium" /> : null}
           {children}
 
           {withButton && (
@@ -61,4 +73,6 @@ export default function WidgetBase({
       </Pressable>
     </View>
   );
-}
+};
+
+export default WidgetBase;

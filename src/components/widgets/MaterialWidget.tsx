@@ -1,13 +1,22 @@
-import React from 'react';
+import React, {FC} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useSelector} from 'react-redux';
-import {STATUS, Status} from '../store/status';
-import {RootState} from '../store/store';
-import RecentItems from './RecentItems';
-import {TextS} from './Text';
+import {STATUS, Status} from '../../store/status';
+import {RootState} from '../../store/store';
+import RecentItems from './../RecentItems';
+import {TextS} from './../Text';
 import WidgetBase from './WidgetBase';
 
-export default function MaterialWidget({action, courseID, ...props}) {
+export type MaterialWidgetProps = {
+  action: Function;
+  courseID: string;
+};
+
+const MaterialWidget: FC<MaterialWidgetProps> = ({
+  action,
+  courseID,
+  ...props
+}) => {
   const {t} = useTranslation();
 
   const loadCourseStatus = useSelector<RootState, Status | undefined>(
@@ -26,4 +35,6 @@ export default function MaterialWidget({action, courseID, ...props}) {
       )}
     </WidgetBase>
   );
-}
+};
+
+export default MaterialWidget;
