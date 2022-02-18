@@ -49,7 +49,6 @@ const WidgetBase: FC<WidgetBaseProps> = ({
             flexDirection: 'column',
             alignItems: 'flex-start',
             justifyContent: 'space-between',
-            backgroundColor: colors.white,
             flex: 1,
           }}>
           {name ? <TextN text={name} weight="medium" /> : null}
