@@ -1,11 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  TextInput,
-  View,
-} from 'react-native';
+import {FlatList, Pressable, TextInput, View} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -27,7 +21,6 @@ export default function MaterialSearch({navigation}) {
     state => state.courses.courses,
   );
 
-  const [query, setQuery] = useState('');
   const [results, setResults] = useState<File[]>([]);
 
   const inputRef = useRef(null);
@@ -36,16 +29,18 @@ export default function MaterialSearch({navigation}) {
 
   const [items, setItems] = useState<DropdownItem[]>([]);
 
-  const [loading, setLoading] = useState(false);
+  const [quickLoad, setQuickLoad] = useState(true);
+
+  // Timer controlling when to search again
+  const [searchTimer, setSearchTimer] = useState<any>(null);
+
+  // Timer controlling when to show full list
+  const [loadTimer, setLoadTimer] = useState<any>(null);
 
   useEffect(() => {
     inputRef.current.focus();
     initDropdown();
   }, []);
-
-  useEffect(() => {
-    searchMaterial();
-  }, [selectedCourse]);
 
   const initDropdown = () => {
     let items: {label: string; value: string}[] = [];
@@ -60,7 +55,7 @@ export default function MaterialSearch({navigation}) {
    *
    * @param dir The directory to search
    */
-  const findFiles = (dir: Cartella) => {
+  const findFiles = (query: string, dir: Cartella) => {
     let results: File[] = [];
     dir.file.forEach(item => {
       if (item.tipo == 'file') {
@@ -68,7 +63,7 @@ export default function MaterialSearch({navigation}) {
           results.push(item);
         }
       } else if (item.tipo == 'cartella') {
-        results.push(...findFiles(item));
+        results.push(...findFiles(query, item));
       }
     });
     return results;
@@ -77,17 +72,13 @@ export default function MaterialSearch({navigation}) {
   /**
    * Searches files matching specific query and course, and updates state.
    */
-  const searchMaterial = () => {
+  const searchMaterial = (query: string) => {
     // Using setTimeout is a bit hacky, but it works.
     (async () => {
       setTimeout(() => {
-        setLoading(true);
-      }, 0);
-
-      setTimeout(() => {
         let res: File[] = [];
         if (query == '') {
-          setLoading(false);
+          setResults([]);
           return;
         }
 
@@ -108,14 +99,11 @@ export default function MaterialSearch({navigation}) {
           });
         }
 
-        res = findFiles(rootDir).sort(
+        res = findFiles(query, rootDir).sort(
           (a, b) => b.data_inserimento.getTime() - a.data_inserimento.getTime(),
         );
 
         setResults(res);
-      }, 0);
-      setTimeout(() => {
-        setLoading(false);
       }, 0);
     })();
   };
@@ -146,10 +134,24 @@ export default function MaterialSearch({navigation}) {
             color: colors.black,
           }}
           onChangeText={txt => {
-            setQuery(txt.toLowerCase().trim());
-          }}
-          onSubmitEditing={() => {
-            searchMaterial();
+            const query = txt.toLowerCase().trim();
+            if (searchTimer) {
+              clearTimeout(searchTimer);
+            }
+            if (loadTimer) {
+              clearTimeout(loadTimer);
+            }
+            setQuickLoad(true);
+            setSearchTimer(
+              setTimeout(() => {
+                searchMaterial(query);
+                setLoadTimer(
+                  setTimeout(() => {
+                    setQuickLoad(false);
+                  }, 500),
+                );
+              }, 50),
+            );
           }}
         />
       </View>
@@ -201,7 +203,10 @@ export default function MaterialSearch({navigation}) {
         }}>
         {results && (
           <FlatList
-            data={results}
+            data={quickLoad ? results.slice(0, 10) : results}
+            keyExtractor={item => item.code}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
             renderItem={({item}) => {
               return (
                 <View key={item.code}>
@@ -232,11 +237,6 @@ export default function MaterialSearch({navigation}) {
                   color={colors.gray}
                 />
               </View>
-            }
-            ListHeaderComponent={
-              loading && (
-                <ActivityIndicator size="large" color={colors.gradient1} />
-              )
             }
             ListFooterComponent={<View style={{marginBottom: 16}}></View>}
           />
