@@ -5,7 +5,7 @@ import styles from '../styles';
 import NotificationButton from './NotificationButton';
 import {TextTitle} from './Text';
 
-export default function Header({text = '', color = colors.black}) {
+const Header = ({text = '', color = colors.black}) => {
   return (
     <View style={styles.titleBar}>
       {/* Title and notification container */}
@@ -13,4 +13,6 @@ export default function Header({text = '', color = colors.black}) {
       <NotificationButton color={color} />
     </View>
   );
-}
+};
+
+export default Header;

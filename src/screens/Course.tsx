@@ -138,7 +138,8 @@ export default function Course({navigation, route}) {
           </View>
           <View
             style={{
-              marginVertical: 16,
+              marginTop: 16,
+              marginBottom: 8,
               flexDirection: 'row',
               justifyContent: 'space-around',
               backgroundColor: colors.white,
@@ -204,7 +205,12 @@ export default function Course({navigation, route}) {
                 );
               case 'alerts':
                 return (
-                  <View style={{...styles.withHorizontalPadding, flex: 1}}>
+                  <View
+                    style={{
+                      ...styles.withHorizontalPadding,
+                      flex: 1,
+                      paddingTop: 8,
+                    }}>
                     <CourseAlerts alerts={courseData.alerts} />
                   </View>
                 );

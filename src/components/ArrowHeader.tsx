@@ -5,11 +5,11 @@ import styles from '../styles';
 import {TextTitle} from './Text';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function ArrowHeader({
+const ArrowHeader = ({
   text = '',
   backFunc = () => {},
   color = colors.black,
-}) {
+}) => {
   return (
     <View style={{...styles.titleBar, justifyContent: 'flex-start'}}>
       <Pressable onPress={backFunc} style={{marginRight: 16}}>
@@ -18,4 +18,6 @@ export default function ArrowHeader({
       <TextTitle color={color} text={text} />
     </View>
   );
-}
+};
+
+export default ArrowHeader;

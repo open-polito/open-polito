@@ -33,7 +33,6 @@ const WidgetBase: FC<WidgetBaseProps> = ({
         borderRadius: 16,
         width: compact ? '48%' : '100%',
         flex: 0,
-        marginBottom: styles.withHorizontalPadding.paddingHorizontal / 2,
       }}>
       <Pressable
         style={{
