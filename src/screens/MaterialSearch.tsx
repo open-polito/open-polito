@@ -21,6 +21,7 @@ export default function MaterialSearch({navigation}) {
     state => state.courses.courses,
   );
 
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<File[]>([]);
 
   const inputRef = useRef(null);
@@ -42,12 +43,41 @@ export default function MaterialSearch({navigation}) {
     initDropdown();
   }, []);
 
+  useEffect(() => {
+    handleNewSearch(query);
+  }, [selectedCourse]);
+
   const initDropdown = () => {
     let items: {label: string; value: string}[] = [];
     courses.forEach(course => {
       items.push({label: course.name, value: course.code + course.name});
     });
     setItems(items);
+  };
+
+  /**
+   * Handles a new search
+   * @param txt The query
+   */
+  const handleNewSearch = (txt: string) => {
+    const _query = txt.toLowerCase().trim();
+    if (searchTimer) {
+      clearTimeout(searchTimer);
+    }
+    if (loadTimer) {
+      clearTimeout(loadTimer);
+    }
+    setQuickLoad(true);
+    setSearchTimer(
+      setTimeout(() => {
+        searchMaterial(_query);
+        setLoadTimer(
+          setTimeout(() => {
+            setQuickLoad(false);
+          }, 500),
+        );
+      }, 50),
+    );
   };
 
   /**
@@ -134,24 +164,9 @@ export default function MaterialSearch({navigation}) {
             color: colors.black,
           }}
           onChangeText={txt => {
-            const query = txt.toLowerCase().trim();
-            if (searchTimer) {
-              clearTimeout(searchTimer);
-            }
-            if (loadTimer) {
-              clearTimeout(loadTimer);
-            }
-            setQuickLoad(true);
-            setSearchTimer(
-              setTimeout(() => {
-                searchMaterial(query);
-                setLoadTimer(
-                  setTimeout(() => {
-                    setQuickLoad(false);
-                  }, 500),
-                );
-              }, 50),
-            );
+            const _query = txt.toLowerCase().trim();
+            setQuery(_query);
+            handleNewSearch(_query);
           }}
         />
       </View>
