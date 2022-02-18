@@ -5,7 +5,7 @@ import styles from '../styles';
 
 export type ScreenContainerProps = {
   style: ViewStyle;
-  barStyle: 'light-content' | 'dark-content';
+  barStyle?: 'light-content' | 'dark-content';
 };
 
 const ScreenContainer: FC<ScreenContainerProps> = ({

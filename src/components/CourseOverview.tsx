@@ -14,6 +14,7 @@ import LiveWidget from './widgets/LiveWidget';
 import MaterialWidget from './widgets/MaterialWidget';
 import TextWidget from './TextWidget';
 import {Cartella, File} from 'open-polito-api/corso';
+import colors from '../colors';
 
 const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
   courseData,
@@ -58,6 +59,7 @@ const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
       contentContainerStyle={{
         ...styles.withHorizontalPadding,
         paddingBottom: offsetY == 0 ? 32 : 16,
+        paddingTop: 8,
       }}>
       {courseData.liveClasses?.map(liveClass => (
         <LiveWidget
@@ -72,6 +74,7 @@ const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'flex-start',
+          paddingBottom: 16,
         }}>
         <MaterialWidget
           fullHeight={shouldAlignHeights}

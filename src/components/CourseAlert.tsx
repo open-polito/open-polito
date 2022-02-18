@@ -1,12 +1,18 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
+import {Avviso} from 'open-polito-api/corso';
 import React from 'react';
 import {View} from 'react-native';
 import RenderHTML from 'react-native-render-html';
 import colors from '../colors';
-import {TextS} from './Text';
+import {TextS, TextXS} from './Text';
 
-export default function CourseAlert({alert, compact = false}) {
+export type CourseAlertProps = {
+  alert: Avviso;
+  compact?: boolean;
+};
+
+const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
   const htmlTags = /[<][/]?[^/>]+[/]?[>]+/g;
 
   return (
@@ -17,7 +23,7 @@ export default function CourseAlert({alert, compact = false}) {
         justifyContent: 'space-between',
         alignItems: compact ? 'center' : 'flex-start',
         width: '100%',
-        borderBottomWidth: compact ? 0 : 4,
+        borderBottomWidth: compact ? 0 : 2,
         borderBottomColor: colors.lightGray,
       }}>
       <View
@@ -25,18 +31,19 @@ export default function CourseAlert({alert, compact = false}) {
           flex: 1,
           backgroundColor: colors.gradient1,
           flexDirection: 'column',
-          padding: 2,
+          paddingVertical: 4,
+          paddingHorizontal: 6,
           borderRadius: 4,
           justifyContent: 'center',
           alignItems: 'center',
           marginRight: compact ? 4 : 8,
         }}>
-        <TextS text={moment(alert.data).format('MMM')} color={colors.white} />
-        <TextS text={moment(alert.data).format('DD')} color={colors.white} />
+        <TextXS text={moment(alert.data).format('MMM')} color={colors.white} />
+        <TextXS text={moment(alert.data).format('DD')} color={colors.white} />
       </View>
       <View
         style={{
-          flex: compact ? 4 : 9,
+          flex: compact ? 5 : 11,
         }}>
         {compact ? (
           <TextS
@@ -59,4 +66,6 @@ export default function CourseAlert({alert, compact = false}) {
       </View>
     </View>
   );
-}
+};
+
+export default CourseAlert;
