@@ -14,13 +14,13 @@ const styles = StyleSheet.create({
   },
   // Text font weights
   textRegular: {
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: 'Inter-Regular',
   },
   textMedium: {
-    fontFamily: 'Montserrat-Medium',
+    fontFamily: 'Inter-Medium',
   },
   textBold: {
-    fontFamily: 'Montserrat-Bold',
+    fontFamily: 'Inter-Bold',
   },
   // Text sizes
   textExtraSmall: {
