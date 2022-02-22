@@ -157,7 +157,7 @@ export default function MaterialSearch({navigation}) {
           placeholder={t('search')}
           placeholderTextColor={colors.mediumGray}
           style={{
-            fontFamily: 'Montserrat-Bold',
+            ...styles.textBold,
             ...styles.textExtraLarge,
             ...styles.withHorizontalPadding,
             width: '100%',

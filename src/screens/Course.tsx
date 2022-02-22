@@ -82,7 +82,7 @@ export default function Course({navigation, route}) {
             <TextXL
               text={courseData.name}
               numberOfLines={2}
-              weight="medium"
+              weight="bold"
               color={colors.black}
             />
           </View>
