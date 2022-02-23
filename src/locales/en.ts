@@ -42,6 +42,8 @@ const EN = {
   schedule: 'Schedule',
   material: 'Material',
   courses: 'Courses',
+  bookings: "Bookings",
+  exams: "Exams",
 
   // Email screen
   email: 'E-mail',
@@ -105,7 +107,7 @@ const EN = {
 
   // Info widgets
   wipInfoWidgetTitle: "Work in progress",
-  wipInfoWidgetDesc: "This section is still a work in progress.\nIt might have incomplete features or an unfinished design",
+  wipInfoWidgetDesc: "This section is still a work in progress",
 
   // Additional screens...
 };

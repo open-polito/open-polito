@@ -42,6 +42,8 @@ const IT = {
   schedule: 'Orario',
   material: 'Materiale',
   courses: 'Corsi',
+  bookings: "Prenotazioni",
+  exams: "Libretto",
 
   // Email screen
   email: 'E-mail',
@@ -106,7 +108,7 @@ const IT = {
 
   // Info widgets
   wipInfoWidgetTitle: "Lavori in corso",
-  wipInfoWidgetDesc: "Questa sezione è ancora in fase di costruzione.\nPotrebbe avere feature incomplete o un design non ultimato",
+  wipInfoWidgetDesc: "Questa sezione è ancora in costruzione",
 
   // Additional screens...
 };
