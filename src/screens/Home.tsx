@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {ReactNode, useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
@@ -26,10 +26,33 @@ import {RootState} from '../store/store';
 import {NavigationProp, useNavigation} from '@react-navigation/core';
 import {Status, STATUS} from '../store/status';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 export default function Home({navigation}: {navigation: NavigationProp}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
+
+  const [fillers, setFillers] = useState<ReactNode[] | null>(null);
+
+  useEffect(() => {
+    // Invisible elements to fill last row in section grid
+    let _fillers = [];
+    for (let i = 0; i < 3 - (sections.length % 3); i++) {
+      _fillers.push(
+        <View
+          style={{
+            width: cardWidth,
+          }}
+        />,
+      );
+    }
+    setFillers(_fillers);
+  }, []);
 
   const loadUserStatus = useSelector<RootState, Status>(
     state => state.user.loadUserStatus,
@@ -66,7 +89,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
         end={{x: 1, y: 1}}
         style={{flex: 1}}>
         <ScreenContainer
-          style={{paddingHorizontal: 0, backgroundColor: null}}
+          style={{paddingHorizontal: 0, backgroundColor: undefined}}
           barStyle="light-content">
           <View style={styles.withHorizontalPadding}>
             <Header text={t('home')} color={colors.white} />
@@ -86,13 +109,15 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
               iconColor={colors.gray}
             />
           </View>
-          <View style={styles.withHorizontalPadding}>
+          <View>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
+                flexWrap: 'wrap',
                 marginBottom: 16,
+                ...styles.withHorizontalPadding,
               }}>
               {sections.map(section => {
                 const item =
@@ -113,6 +138,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                           justifyContent: 'space-evenly',
                           alignItems: 'center',
                           padding: 8,
+                          marginVertical: 8,
                         }}>
                         <View style={{flex: 1}}>
                           <Icon
@@ -122,7 +148,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                           />
                         </View>
                         <View style={{flex: 2}}>
-                          <TextS text={t(section.name)} numberOfLines={2} />
+                          <TextS text={t(section.name)} numberOfLines={1} />
                         </View>
                       </View>
                     </Pressable>
@@ -142,6 +168,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                   );
                 return item;
               })}
+              {fillers}
             </View>
           </View>
           <ScrollView
