@@ -67,80 +67,77 @@ export default function LoginScreen() {
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
         style={{flex: 1}}>
-        <ImageBackground source={require('../../assets/images/background.png')}>
-          <SafeAreaView style={_styles.splash}>
-            <StatusBar translucent backgroundColor="transparent" />
+        <SafeAreaView style={_styles.splash}>
+          <StatusBar translucent backgroundColor="transparent" />
+          <View style={{...styles.container, flex: 1, flexDirection: 'column'}}>
+            <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
+              <TextTitle text={t('appName')} color="white" weight="bold" />
+              <TextSubTitle
+                text={t('caption')}
+                color="white"
+                style={{marginTop: 20}}
+              />
+            </View>
             <View
-              style={{...styles.container, flex: 1, flexDirection: 'column'}}>
-              <View style={{...styles.withHorizontalPadding, ..._styles.intro}}>
-                <TextTitle text={t('appName')} color="white" weight="bold" />
-                <TextSubTitle
-                  text={t('caption')}
-                  color="white"
-                  style={{marginTop: 20}}
-                />
-              </View>
+              style={{
+                ...styles.withHorizontalPadding,
+                ..._styles.loginCard,
+              }}>
               <View
                 style={{
-                  ...styles.withHorizontalPadding,
-                  ..._styles.loginCard,
+                  flex: 1,
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
                 }}>
-                <View
+                <TextXL
+                  style={{marginVertical: 32}}
+                  text={t('loginCall')}
+                  weight="bold"
+                />
+                <TextInput
+                  spaced
+                  textContentType="username"
+                  autoComplete="username"
+                  placeholder={t('userPlaceholder')}
+                  icon="account-circle"
+                  onChangeText={txt => {
+                    setUsername(txt);
+                  }}
+                />
+                <TextInput
+                  spaced
+                  textContentType="password"
+                  autoComplete="password"
+                  placeholder={t('passwordPlaceholder')}
+                  icon="lock-outline"
+                  secureTextEntry={true}
+                  onChangeText={txt => {
+                    setPassword(txt);
+                  }}
+                />
+                <Button
+                  text={t('login')}
+                  onPress={() => {
+                    loginWithPassword({user: username, token: password});
+                  }}
+                />
+              </View>
+              <View style={_styles.versionView}>
+                <Text
+                  text={`${t('version')} 0.4.0`}
                   style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
-                  }}>
-                  <TextXL
-                    style={{marginVertical: 32}}
-                    text={t('loginCall')}
-                    weight="bold"
-                  />
-                  <TextInput
-                    spaced
-                    textContentType="username"
-                    autoComplete="username"
-                    placeholder={t('userPlaceholder')}
-                    icon="account-circle"
-                    onChangeText={txt => {
-                      setUsername(txt);
-                    }}
-                  />
-                  <TextInput
-                    spaced
-                    textContentType="password"
-                    autoComplete="password"
-                    placeholder={t('passwordPlaceholder')}
-                    icon="lock-outline"
-                    secureTextEntry={true}
-                    onChangeText={txt => {
-                      setPassword(txt);
-                    }}
-                  />
-                  <Button
-                    text={t('login')}
-                    onPress={() => {
-                      loginWithPassword({user: username, token: password});
-                    }}
-                  />
-                </View>
-                <View style={_styles.versionView}>
-                  <Text
-                    text={`${t('version')} 0.4.0`}
-                    style={{
-                      marginHorizontal: 'auto',
-                      position: 'absolute',
-                      textAlign: 'center',
-                      width: '100%',
-                      bottom: 24,
-                    }}
-                  />
-                </View>
+                    marginHorizontal: 'auto',
+                    position: 'absolute',
+                    textAlign: 'center',
+                    width: '100%',
+                    bottom: 24,
+                  }}
+                />
               </View>
             </View>
-          </SafeAreaView>
-        </ImageBackground>
+          </View>
+        </SafeAreaView>
       </LinearGradient>
     </View>
   );

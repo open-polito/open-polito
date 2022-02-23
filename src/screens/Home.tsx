@@ -65,99 +65,98 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
         start={{x: 0, y: 0}}
         end={{x: 1, y: 1}}
         style={{flex: 1}}>
-        <ImageBackground source={require('../../assets/images/background.png')}>
-          <ScreenContainer
-            style={{paddingHorizontal: 0, backgroundColor: null}}
-            barStyle="light-content">
-            <View style={styles.withHorizontalPadding}>
-              <Header text={t('home')} color={colors.white} />
-            </View>
+        <ScreenContainer
+          style={{paddingHorizontal: 0, backgroundColor: null}}
+          barStyle="light-content">
+          <View style={styles.withHorizontalPadding}>
+            <Header text={t('home')} color={colors.white} />
+          </View>
+          <View
+            style={{
+              marginBottom: 16,
+              ...styles.paddingFromHeader,
+              ...styles.withHorizontalPadding,
+            }}>
+            {/* quick search container */}
+            <TextInput
+              icon="search"
+              placeholder={t('quickSearch')}
+              borderColor="none"
+              borderWidth={0}
+              iconColor={colors.gray}
+            />
+          </View>
+          <View style={styles.withHorizontalPadding}>
             <View
               style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
                 marginBottom: 16,
-                ...styles.paddingFromHeader,
-                ...styles.withHorizontalPadding,
               }}>
-              {/* quick search container */}
-              <TextInput
-                icon="search"
-                placeholder={t('quickSearch')}
-                borderColor="none"
-                borderWidth={0}
-                iconColor={colors.gray}
-              />
-            </View>
-            <View style={styles.withHorizontalPadding}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  marginBottom: 16,
-                }}>
-                {sections.map(section => {
-                  const item =
-                    loadUserStatus.code == STATUS.SUCCESS ? (
-                      <Pressable
-                        key={section.name}
-                        onPress={() => {
-                          redirect(section.name);
+              {sections.map(section => {
+                const item =
+                  loadUserStatus.code == STATUS.SUCCESS ? (
+                    <Pressable
+                      key={section.name}
+                      onPress={() => {
+                        redirect(section.name);
+                      }}>
+                      <View
+                        style={{
+                          ...styles.elevatedSmooth,
+                          borderRadius: 8,
+                          width: cardWidth,
+                          height: cardWidth / 2,
+                          backgroundColor: colors.white,
+                          flexDirection: 'row',
+                          justifyContent: 'space-evenly',
+                          alignItems: 'center',
+                          padding: 8,
                         }}>
-                        <View
-                          style={{
-                            ...styles.elevatedSmooth,
-                            borderRadius: 8,
-                            width: cardWidth,
-                            height: cardWidth / 2,
-                            backgroundColor: colors.white,
-                            flexDirection: 'row',
-                            justifyContent: 'space-evenly',
-                            alignItems: 'center',
-                            padding: 8,
-                          }}>
-                          <View style={{flex: 1}}>
-                            <Icon
-                              name={section.icon}
-                              size={cardWidth / 4}
-                              color={colors.gradient1}
-                            />
-                          </View>
-                          <View style={{flex: 2}}>
-                            <TextS text={t(section.name)} numberOfLines={2} />
-                          </View>
+                        <View style={{flex: 1}}>
+                          <Icon
+                            name={section.icon}
+                            size={cardWidth / 4}
+                            color={colors.gradient1}
+                          />
                         </View>
-                      </Pressable>
-                    ) : (
-                      <SvgAnimatedLinearGradient
+                        <View style={{flex: 2}}>
+                          <TextS text={t(section.name)} numberOfLines={2} />
+                        </View>
+                      </View>
+                    </Pressable>
+                  ) : (
+                    <SvgAnimatedLinearGradient
+                      height={cardWidth / 2}
+                      width={cardWidth}>
+                      <Rect
+                        x={0}
+                        y={0}
+                        rx={8}
+                        ry={8}
+                        width={cardWidth}
                         height={cardWidth / 2}
-                        width={cardWidth}>
-                        <Rect
-                          x={0}
-                          y={0}
-                          rx={8}
-                          ry={8}
-                          width={cardWidth}
-                          height={cardWidth / 2}
-                        />
-                      </SvgAnimatedLinearGradient>
-                    );
-                  return item;
-                })}
-              </View>
+                      />
+                    </SvgAnimatedLinearGradient>
+                  );
+                return item;
+              })}
             </View>
-            <ScrollView
-              style={{
-                backgroundColor: colors.background,
-                flex: 1,
-                paddingTop: 16,
-              }}>
-              <View style={{...styles.withHorizontalPadding}}>
-                <View style={{paddingBottom: 4}}>
-                  <WIPInfoWidget />
-                </View>
-                {/* View component to allow shadows to gently fade */}
-                <View style={{paddingTop: 24}} />
-                {/* {loadedUser &&
+          </View>
+          <ScrollView
+            style={{
+              backgroundColor: colors.background,
+              flex: 1,
+              paddingTop: 16,
+            }}>
+            <View style={{...styles.withHorizontalPadding}}>
+              <View style={{paddingBottom: 4}}>
+                <WIPInfoWidget />
+              </View>
+              {/* View component to allow shadows to gently fade */}
+              <View style={{paddingTop: 24}} />
+              {/* {loadedUser &&
                   [
                     ...user.carico_didattico.corsi,
                     ...user.carico_didattico.extra_courses,
@@ -173,54 +172,53 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                       );
                     });
                   })} */}
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    flex: 1,
-                  }}>
-                  {/* 
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  flex: 1,
+                }}>
+                {/* 
                   <Image
                     style={{width: '100%', height: 70, borderRadius: 16}}
                     resizeMode="cover"
                     source={require('../../assets/images/update.png')}
                   /> */}
-                </View>
-                <View>
-                  {loadUserStatus.code != STATUS.SUCCESS && (
-                    <View>
-                      <SvgAnimatedLinearGradient
-                        height={cardWidth / 1.5}
-                        width={w}>
-                        <Rect
-                          x={0}
-                          y={0}
-                          rx={8}
-                          ry={8}
-                          width={w}
-                          height={cardWidth / 1.5}
-                        />
-                      </SvgAnimatedLinearGradient>
-                      <SvgAnimatedLinearGradient
-                        style={{marginTop: 16}}
-                        height={cardWidth / 1.5}
-                        width={w}>
-                        <Rect
-                          x={0}
-                          y={0}
-                          rx={8}
-                          ry={8}
-                          width={w}
-                          height={cardWidth / 1.5}
-                        />
-                      </SvgAnimatedLinearGradient>
-                    </View>
-                  )}
-                </View>
               </View>
-            </ScrollView>
-          </ScreenContainer>
-        </ImageBackground>
+              <View>
+                {loadUserStatus.code != STATUS.SUCCESS && (
+                  <View>
+                    <SvgAnimatedLinearGradient
+                      height={cardWidth / 1.5}
+                      width={w}>
+                      <Rect
+                        x={0}
+                        y={0}
+                        rx={8}
+                        ry={8}
+                        width={w}
+                        height={cardWidth / 1.5}
+                      />
+                    </SvgAnimatedLinearGradient>
+                    <SvgAnimatedLinearGradient
+                      style={{marginTop: 16}}
+                      height={cardWidth / 1.5}
+                      width={w}>
+                      <Rect
+                        x={0}
+                        y={0}
+                        rx={8}
+                        ry={8}
+                        width={w}
+                        height={cardWidth / 1.5}
+                      />
+                    </SvgAnimatedLinearGradient>
+                  </View>
+                )}
+              </View>
+            </View>
+          </ScrollView>
+        </ScreenContainer>
       </LinearGradient>
     </View>
   );
