@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Pressable, View} from 'react-native';
+import {Pressable, View, ViewStyle} from 'react-native';
 import colors from '../../colors';
 import styles from '../../styles';
 import {TextN, TextS} from '../Text';
@@ -12,6 +12,7 @@ export type WidgetBaseProps = {
   withButton?: boolean;
   withPadding?: boolean;
   fullHeight?: boolean;
+  style?: ViewStyle;
 };
 
 const WidgetBase: FC<WidgetBaseProps> = ({
@@ -22,6 +23,7 @@ const WidgetBase: FC<WidgetBaseProps> = ({
   withPadding = true,
   fullHeight = false,
   children,
+  style,
 }) => {
   const {t} = useTranslation();
 
@@ -29,10 +31,11 @@ const WidgetBase: FC<WidgetBaseProps> = ({
     <View
       style={{
         ...styles.elevatedSmooth,
+        ...styles.border,
         backgroundColor: colors.white,
-        borderRadius: 16,
         width: compact ? '48%' : '100%',
         flex: 0,
+        ...style,
       }}>
       <Pressable
         style={{

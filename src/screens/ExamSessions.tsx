@@ -17,6 +17,7 @@ import {RootState} from '../store/store';
 import {ExamsState, getExams} from '../store/examsSlice';
 import {STATUS} from '../store/status';
 import {DeviceContext} from '../context/Device';
+import NoContent from '../components/NoContent';
 
 export default function ExamSessions({navigation}) {
   const {t} = useTranslation();
@@ -115,14 +116,16 @@ export default function ExamSessions({navigation}) {
       key={examSession.session_id}
       style={{
         ...styles.elevatedSmooth,
+        ...styles.border,
         backgroundColor: colors.white,
         paddingVertical: 16,
         paddingHorizontal: 16,
         marginBottom: 16,
-        borderRadius: 8,
         flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
       }}>
-      <View style={{marginRight: 8, flexShrink: 0}}>
+      <View style={{marginRight: 8}}>
         <IconC
           name={
             examSession.user_is_signed_up
@@ -147,6 +150,7 @@ export default function ExamSessions({navigation}) {
           flexShrink: 1,
           flexDirection: 'column',
           alignItems: 'flex-start',
+          justifyContent: 'flex-start',
         }}>
         <TextN numberOfLines={1} weight="medium" text={examSession.exam_name} />
 
@@ -185,7 +189,7 @@ export default function ExamSessions({navigation}) {
           }
           style={{
             borderRadius: 4,
-            padding: 4,
+            paddingVertical: 4,
           }}
         />
         {!examSession.user_is_signed_up && examSession.error.id != 0 && (
@@ -229,12 +233,16 @@ export default function ExamSessions({navigation}) {
             paddingBottom: offsetY == 0 ? 32 : 16,
             ...styles.withHorizontalPadding,
           }}>
-          {filteredSessions.map(examSession =>
-            tab == 'available'
-              ? !examSession.user_is_signed_up &&
-                !examSession.error_msg &&
-                examSessionCard(examSession)
-              : examSessionCard(examSession),
+          {filteredSessions.length > 0 ? (
+            filteredSessions.map(examSession =>
+              tab == 'available'
+                ? !examSession.user_is_signed_up &&
+                  !examSession.error_msg &&
+                  examSessionCard(examSession)
+                : examSessionCard(examSession),
+            )
+          ) : (
+            <NoContent />
           )}
         </ScrollView>
       </View>
