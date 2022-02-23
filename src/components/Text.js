@@ -1,5 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text as RNText} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import colors from '../colors';
 import styles from '../styles';
 
@@ -182,8 +187,29 @@ export function Text({text, color = colors.black, style = {}, ...props}) {
 }
 
 export function TextTitle({text, color = colors.black, style = {}, ...props}) {
+  const offset = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateY: -offset.value * 8}],
+      opacity: 1 - offset.value,
+    };
+  });
+
+  useEffect(() => {
+    offset.value = withSpring(0);
+  }, []);
+
   return (
-    <TextXL text={text} color={color} weight="bold" style={style} {...props} />
+    <Animated.View style={[animStyle]}>
+      <TextXL
+        text={text}
+        color={color}
+        weight="bold"
+        style={style}
+        {...props}
+      />
+    </Animated.View>
   );
 }
 

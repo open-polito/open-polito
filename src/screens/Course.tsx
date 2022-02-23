@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, RefreshControl, ScrollView, View} from 'react-native';
 import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
@@ -37,6 +37,23 @@ export default function Course({navigation, route}) {
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
     state.courses.courses.find(course => course.code + course.name == code),
   );
+
+  const [refreshing, setRefreshing] = useState(true);
+
+  const refresh = () => {
+    dispatch(
+      loadCourse({courseData: courseData!, device: deviceContext.device}),
+    );
+  };
+
+  const fields = [
+    {
+      name: courseData?.professor?.surname + ' ' + courseData?.professor?.name,
+      icon: 'person-outline',
+    },
+    {name: courseData?.cfu + ' CFU', icon: 'star-four-points-outline'},
+    {name: 'A.A. ' + courseData?.academicYear ?? '', icon: 'calendar'},
+  ];
 
   const [currentTab, setCurrentTab] = useState('overview');
 
@@ -92,49 +109,22 @@ export default function Course({navigation, route}) {
               flexDirection: 'column',
             }}>
             <TextL text={courseData.code} color={colors.mediumGray} />
-            <View style={{flexDirection: 'column', marginTop: 16}}>
+            {fields.map(field => (
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'flex-start',
+                  paddingVertical: 2,
                 }}>
-                <Icon name="person-outline" color={colors.gray} size={16} />
-                <TextS
-                  style={{marginLeft: 4}}
-                  text={
-                    courseData.professor?.surname +
-                    ' ' +
-                    courseData.professor?.name
-                  }
-                />
+                {field.icon == 'person-outline' ? (
+                  <Icon name={field.icon} size={16} color={colors.gray} />
+                ) : (
+                  <IconC name={field.icon} size={16} color={colors.gray} />
+                )}
+                <TextS style={{marginLeft: 4}} text={field.name} />
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                }}>
-                <IconC
-                  name="star-four-points-outline"
-                  color={colors.gray}
-                  size={16}
-                />
-                <TextS style={{marginLeft: 4}} text={courseData.cfu + ' CFU'} />
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
-                }}>
-                <IconC name="calendar" color={colors.gray} size={16} />
-                <TextS
-                  style={{marginLeft: 4}}
-                  text={'A.A. ' + courseData.academicYear}
-                />
-              </View>
-            </View>
+            ))}
           </View>
           <View
             style={{
@@ -143,8 +133,8 @@ export default function Course({navigation, route}) {
               flexDirection: 'row',
               justifyContent: 'space-around',
               backgroundColor: colors.white,
-              borderRadius: 16,
               ...styles.elevatedSmooth,
+              ...styles.border,
               marginHorizontal: styles.withHorizontalPadding.paddingHorizontal,
             }}>
             {tabs.map(tab => (
@@ -190,11 +180,17 @@ export default function Course({navigation, route}) {
                   <CourseOverview
                     courseData={courseData}
                     changeTab={setCurrentTab}
+                    refresh={() => {
+                      refresh();
+                    }}
                   />
                 );
               case 'material':
                 return courseData.loadCourseStatus.code == STATUS.SUCCESS ? (
                   <ScrollView
+                    refreshControl={
+                      <RefreshControl refreshing={false} onRefresh={refresh} />
+                    }
                     contentContainerStyle={styles.withHorizontalPadding}>
                     <MaterialExplorer
                       course={courseData.code + courseData.name}
@@ -211,7 +207,10 @@ export default function Course({navigation, route}) {
                       flex: 1,
                       paddingTop: 8,
                     }}>
-                    <CourseAlerts alerts={courseData.alerts} />
+                    <CourseAlerts
+                      alerts={courseData.alerts}
+                      refresh={refresh}
+                    />
                   </View>
                 );
               case 'recordings':
@@ -220,6 +219,7 @@ export default function Course({navigation, route}) {
                     <CourseVideos
                       videos={courseData.recordings?.current}
                       courseData={{nome: courseData.name}}
+                      refresh={refresh}
                     />
                   </View>
                 );

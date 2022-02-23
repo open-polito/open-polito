@@ -29,7 +29,11 @@ const sideColors = {
 const InfoWidget: FC<InfoWidgetProps> = ({title, description, icon, color}) => {
   return (
     <View style={{paddingBottom: 16}}>
-      <WidgetBase withButton={false} withPadding={false} fullHeight={true}>
+      <WidgetBase
+        withButton={false}
+        withPadding={false}
+        fullHeight={true}
+        style={{backgroundColor: 'rgba(0,0,0,0)', borderWidth: 0}}>
         <LinearGradient
           start={{x: 0.2, y: 0.1}}
           end={{x: 0.7, y: 0.9}}

@@ -20,8 +20,8 @@ export default function TextWidget({
     <View
       style={{
         ...styles.elevatedSmooth,
+        ...styles.border,
         backgroundColor: colors.white,
-        borderRadius: 16,
         marginBottom: 16,
       }}>
       <Pressable

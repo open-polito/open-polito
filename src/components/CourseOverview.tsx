@@ -1,6 +1,6 @@
 import React, {FC, useContext, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {ScrollView, View} from 'react-native';
+import {RefreshControl, ScrollView, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
 import {CourseData} from '../store/coursesSlice';
@@ -9,17 +9,16 @@ import styles from '../styles';
 import {getRecentCourseMaterial} from '../utils/material';
 import AlertWidget from './widgets/AlertWidget';
 import CourseInfo from './CourseInfo';
-import CourseVideos from './CourseVideos';
 import LiveWidget from './widgets/LiveWidget';
 import MaterialWidget from './widgets/MaterialWidget';
 import TextWidget from './TextWidget';
 import {Cartella, File} from 'open-polito-api/corso';
-import colors from '../colors';
 
-const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
-  courseData,
-  changeTab,
-}) => {
+const CourseOverview: FC<{
+  courseData: CourseData;
+  changeTab: Function;
+  refresh: Function;
+}> = ({courseData, changeTab, refresh = () => {}}) => {
   const {t} = useTranslation();
 
   const deviceContext = useContext(DeviceContext);
@@ -53,6 +52,14 @@ const CourseOverview: FC<{courseData: CourseData; changeTab: Function}> = ({
 
   return (
     <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={() => {
+            refresh();
+          }}
+        />
+      }
       onScroll={e => {
         setOffsetY(e.nativeEvent.contentOffset.y);
       }}

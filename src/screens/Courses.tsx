@@ -38,8 +38,8 @@ export default function Courses({navigation}) {
             paddingHorizontal: 16,
             marginBottom: 16,
             backgroundColor: colors.white,
-            borderRadius: 4,
             ...styles.elevatedSmooth,
+            ...styles.border,
           }}>
           <View
             style={{

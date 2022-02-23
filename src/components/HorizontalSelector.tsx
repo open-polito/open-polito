@@ -4,19 +4,14 @@ import colors from '../colors';
 import {TextS} from './Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function HorizontalSelector({items, onValueChange}) {
-  /**
-   * items: [
-   *   {
-   *     label: "Visible label",
-   *     value: "itemValue"
-   *   },
-   *   ...
-   * ]
-   *
-   */
-
-  const [value, setValue] = useState(null);
+const HorizontalSelector = ({
+  items,
+  onValueChange,
+}: {
+  items: [{label: string; value: string; icon?: string}];
+  onValueChange: Function;
+}) => {
+  const [value, setValue] = useState('');
 
   // Set initial value to first item
   useEffect(() => {
@@ -35,7 +30,8 @@ export default function HorizontalSelector({items, onValueChange}) {
       contentContainerStyle={{
         flexDirection: 'row',
         flexWrap: 'nowrap',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
+        alignItems: 'center',
         paddingVertical: 8,
       }}>
       <View style={{paddingLeft: 24}} />
@@ -49,6 +45,9 @@ export default function HorizontalSelector({items, onValueChange}) {
             key={item.value}
             android_ripple={{color: '#fff'}}
             style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
               elevation: 4,
               backgroundColor: backgroundColor,
               borderRadius: 16,
@@ -63,7 +62,6 @@ export default function HorizontalSelector({items, onValueChange}) {
             }}>
             <View
               style={{
-                height: '100%',
                 flexDirection: 'row',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -84,4 +82,6 @@ export default function HorizontalSelector({items, onValueChange}) {
       <View style={{paddingRight: 16}} />
     </ScrollView>
   );
-}
+};
+
+export default HorizontalSelector;

@@ -2,11 +2,18 @@ import {useNavigation} from '@react-navigation/core';
 import moment from 'moment';
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Dimensions, FlatList, Image, Pressable, View} from 'react-native';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  RefreshControl,
+  View,
+} from 'react-native';
 import colors from '../colors';
 import {TextN, TextS} from './Text';
 
-export default function CourseVideos({videos: _videos, courseData}) {
+export default function CourseVideos({videos: _videos, courseData, refresh}) {
   const {t} = useTranslation();
 
   const navigation = useNavigation();
@@ -25,6 +32,14 @@ export default function CourseVideos({videos: _videos, courseData}) {
         flex: 1,
       }}>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              refresh();
+            }}
+          />
+        }
         data={videos}
         ListEmptyComponent={
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>

@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   elevatedSmooth: {
-    shadowColor: '#aaa',
+    shadowColor: '#bbb',
     shadowOffset: {
       width: 0,
       height: 12,
@@ -96,6 +96,11 @@ const styles = StyleSheet.create({
     shadowRadius: 16.0,
 
     elevation: 24,
+  },
+  border: {
+    borderRadius: 8,
+    borderColor: colors.lightGray,
+    borderWidth: 0.5,
   },
 });
 

@@ -1,12 +1,20 @@
 import React from 'react';
-import {ScrollView, View} from 'react-native';
+import {RefreshControl, ScrollView, View} from 'react-native';
 import CourseAlert from './CourseAlert';
 import NoContent from './NoContent';
 
-export default function CourseAlerts({alerts}) {
+export default function CourseAlerts({alerts, refresh}) {
   return (
     <View style={{flexDirection: 'column', flex: 1}}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={() => {
+              refresh();
+            }}
+          />
+        }>
         {alerts.length > 0 ? (
           alerts.map(alert => {
             return (
