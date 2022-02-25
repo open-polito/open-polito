@@ -1,7 +1,7 @@
 export type Configuration = {
-  logging: boolean,
-  emailWebView: boolean,
-}
+  logging: boolean;
+  emailWebView: boolean;
+};
 
 const defaultConfig: Configuration = {
   logging: false,

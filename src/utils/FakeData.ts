@@ -1,7 +1,5 @@
 import faker from '@faker-js/faker';
-import {Cartella, File} from 'open-polito-api/corso';
-
-type DirectoryItem = File | Cartella;
+import {Directory, File, MaterialItem} from 'open-polito-api/material';
 
 export default class FakeData {
   /**
@@ -10,26 +8,26 @@ export default class FakeData {
   static file(): File {
     const name = faker.random.words(10);
     return {
-      tipo: 'file',
+      type: 'file',
       code: faker.datatype.number(999999).toString(),
       filename: name,
-      nome: name,
+      name: name,
       mime_type: '',
-      size_kb: faker.datatype.number(100000),
-      data_inserimento: faker.date.past(),
+      size: faker.datatype.number(100000),
+      creation_date: faker.date.past().getTime(),
     };
   }
 
   /**
    * Returns an empty directory (Cartella) with random fields
    */
-  static directory(): Cartella {
+  static directory(): Directory {
     const name = faker.random.words(10);
     return {
-      tipo: 'cartella',
+      type: 'dir',
       code: faker.datatype.number(999999).toString(),
-      nome: name,
-      file: [],
+      name: name,
+      children: [],
     };
   }
 
@@ -44,14 +42,14 @@ export default class FakeData {
     dirCount: number,
     fileCount: number,
     levelCount: number,
-  ): DirectoryItem[] {
-    const levelItems: DirectoryItem[] = [];
+  ): MaterialItem[] {
+    const levelItems: MaterialItem[] = [];
 
     // If more levels needed, add nested directories by recursion, then add files
     if (levelCount > 1) {
       for (let i = 0; i < dirCount; i++) {
         let dir = this.directory();
-        dir.file = this.dirTree(dirCount, fileCount, levelCount - 1);
+        dir.children = this.dirTree(dirCount, fileCount, levelCount - 1);
         levelItems.push(dir);
       }
     }

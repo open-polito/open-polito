@@ -2,9 +2,9 @@
  * @file Manages actions and state related to exam sessions and exam bookings
  */
 
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { Device } from 'open-polito-api';
-import { ExamSession, getExamSessions } from 'open-polito-api/exam_sessions';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {Device} from 'open-polito-api/device';
+import {ExamSession, getExamSessions} from 'open-polito-api/exam_sessions';
 import {
   errorStatus,
   initialStatus,
@@ -12,7 +12,7 @@ import {
   Status,
   successStatus,
 } from './status';
-import { RootState } from './store';
+import {RootState} from './store';
 
 export type ExamsState = {
   exams: ExamSession[];
@@ -30,11 +30,16 @@ const initialState: ExamsState = {
 export const getExams = createAsyncThunk<
   ExamSession[],
   Device,
-  { state: RootState }
->('exams/getExams', async (device, { dispatch, getState }) => {
+  {state: RootState}
+>('exams/getExams', async (device, {dispatch, getState}) => {
   const exams = await getExamSessions(device);
   return exams;
 });
+
+/**
+ * TODO bookExam
+ * TODO cancelExam
+ */
 
 export const examsSlice = createSlice({
   name: 'exams',
@@ -45,16 +50,16 @@ export const examsSlice = createSlice({
       .addCase(getExams.pending, state => {
         state.getExamsStatus = pendingStatus();
       })
-      .addCase(getExams.fulfilled, (state, { payload }) => {
+      .addCase(getExams.fulfilled, (state, {payload}) => {
         state.exams = payload;
         state.getExamsStatus = successStatus();
       })
-      .addCase(getExams.rejected, (state, { error }) => {
+      .addCase(getExams.rejected, (state, {error}) => {
         state.getExamsStatus = errorStatus(error);
       });
   },
 });
 
-export const { } = examsSlice.actions;
+export const {} = examsSlice.actions;
 
 export default examsSlice.reducer;

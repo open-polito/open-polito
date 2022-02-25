@@ -1,6 +1,7 @@
 import {useNavigation} from '@react-navigation/core';
 import moment from 'moment';
-import React, {useState} from 'react';
+import {BasicCourseInfo, Recording} from 'open-polito-api/course';
+import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {
   Dimensions,
@@ -13,7 +14,15 @@ import {
 import colors from '../colors';
 import {TextN, TextS} from './Text';
 
-export default function CourseVideos({videos: _videos, courseData, refresh}) {
+const CourseVideos = ({
+  videos: _videos,
+  courseData,
+  refresh,
+}: {
+  videos: Recording[];
+  courseData: BasicCourseInfo;
+  refresh: Function;
+}) => {
   const {t} = useTranslation();
 
   const navigation = useNavigation();
@@ -22,7 +31,7 @@ export default function CourseVideos({videos: _videos, courseData, refresh}) {
 
   const [videos] = useState(
     [..._videos].sort((a, b) => {
-      return new Date(b.data) - new Date(a.data);
+      return b.date - a.date;
     }),
   );
 
@@ -53,13 +62,13 @@ export default function CourseVideos({videos: _videos, courseData, refresh}) {
                 navigation.navigate('VideoPlayer', {
                   video: {
                     ...item,
-                    data: moment(item.data).format('lll'),
+                    date: moment(item.date).format('lll'),
                     courseData: courseData,
                   }, // Directly convert Date to localized date string because react-navigation wants serialized data
                 });
               }}
               android_ripple={{color: colors.lightGray}}
-              key={item.titolo}
+              key={item.date + item.title}
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
@@ -81,8 +90,8 @@ export default function CourseVideos({videos: _videos, courseData, refresh}) {
                   justifyContent: 'flex-start',
                   alignItems: 'flex-start',
                 }}>
-                <TextN text={item.titolo} weight="medium" numberOfLines={2} />
-                <TextS text={moment(item.data).format('lll')} />
+                <TextN text={item.title} weight="medium" numberOfLines={2} />
+                <TextS text={moment(item.date).format('lll')} />
               </View>
             </Pressable>
           );
@@ -90,4 +99,6 @@ export default function CourseVideos({videos: _videos, courseData, refresh}) {
       />
     </View>
   );
-}
+};
+
+export default CourseVideos;

@@ -8,7 +8,7 @@ const HorizontalSelector = ({
   items,
   onValueChange,
 }: {
-  items: [{label: string; value: string; icon?: string}];
+  items: {label: string; value: string; icon?: string}[];
   onValueChange: Function;
 }) => {
   const [value, setValue] = useState('');

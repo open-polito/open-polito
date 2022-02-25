@@ -18,9 +18,10 @@ const EN = {
 
   // Splash screen
   loading: 'Loading...',
-  retry: "Retry",
-  networkError: "Network error",
-  networkErrorDesc: "You are either offline or PoliTo servers are not available at the moment",
+  retry: 'Retry',
+  networkError: 'Network error',
+  networkErrorDesc:
+    'You are either offline or PoliTo servers are not available at the moment',
 
   // Login screen
   caption: 'The unofficial, open-source\nmobile app',
@@ -42,8 +43,8 @@ const EN = {
   schedule: 'Schedule',
   material: 'Material',
   courses: 'Courses',
-  bookings: "Bookings",
-  exams: "Exams",
+  bookings: 'Bookings',
+  exams: 'Exams',
 
   // Email screen
   email: 'E-mail',
@@ -55,7 +56,7 @@ const EN = {
   // Settings screen
   settings: 'Settings',
   debugSettings: 'Debug settings',
-  experimentalSettings: "Experimental settings",
+  experimentalSettings: 'Experimental settings',
   logout: 'Logout',
   notifications: 'Notifications',
   notificationsDesc: 'Manage your notification preferences',
@@ -67,8 +68,8 @@ const EN = {
   debugEnableLogging: 'Enable logging',
   debugEnableLoggingDesc: 'Save logs to device',
   // Experimental settings
-  experimentalEmailWebView: "Open e-mail in app",
-  experimentalEmailWebViewDesc: "Open e-mail page in a WebView",
+  experimentalEmailWebView: 'Open e-mail in app',
+  experimentalEmailWebViewDesc: 'Open e-mail page in a WebView',
 
   // Material screen
   // material: 'Material',
@@ -106,8 +107,8 @@ const EN = {
   restartFlashMessage: 'Restart the app',
 
   // Info widgets
-  wipInfoWidgetTitle: "Work in progress",
-  wipInfoWidgetDesc: "This section is still a work in progress",
+  wipInfoWidgetTitle: 'Work in progress',
+  wipInfoWidgetDesc: 'This section is still a work in progress',
 
   // Additional screens...
 };

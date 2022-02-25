@@ -2,10 +2,9 @@
  * @file Functions to simplify interaction with open-polito-api
  */
 
-import { Device } from 'open-polito-api';
-import { DeviceData } from 'open-polito-api/device';
-import User, { Anagrafica } from 'open-polito-api/user';
-import { Platform } from 'react-native';
+import {Device} from 'open-polito-api/device';
+import {DeviceData} from 'open-polito-api/device';
+import {Platform} from 'react-native';
 
 /**
  * Abstracts creation of Device instance
@@ -30,14 +29,4 @@ export function getDeviceData(): DeviceData {
     model: 'Generic',
     manufacturer: 'Unknown',
   };
-}
-
-/**
- * Abstracts creation of User instance
- * @param device Device instance
- * @param anagrafica Anagrafica object
- * @returns User
- */
-export function createUser(device: Device, anagrafica: Anagrafica) {
-  return new User(device, anagrafica);
 }

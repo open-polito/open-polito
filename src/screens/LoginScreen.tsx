@@ -1,12 +1,6 @@
 import 'react-native-get-random-values';
 import React, {useContext, useState} from 'react';
-import {
-  View,
-  StatusBar,
-  StyleSheet,
-  Dimensions,
-  ImageBackground,
-} from 'react-native';
+import {View, StatusBar, StyleSheet} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import colors from '../colors';
@@ -20,7 +14,7 @@ import {v4 as UUIDv4} from 'uuid';
 import {useDispatch} from 'react-redux';
 import {DeviceContext} from '../context/Device';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
-import {Device} from 'open-polito-api';
+import {Device} from 'open-polito-api/device';
 
 export default function LoginScreen() {
   const {t} = useTranslation();

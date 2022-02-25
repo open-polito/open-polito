@@ -1,9 +1,9 @@
 import moment from 'moment';
-import {Device} from 'open-polito-api';
+import {getLessonURL, LiveLesson} from 'open-polito-api/course';
+import {Device} from 'open-polito-api/device';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Linking, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {LiveClass} from '../../store/coursesSlice';
 import colors from '../../colors';
 import styles from '../../styles';
 import AnimatedLiveCircle from './../AnimatedLiveCircle';
@@ -11,7 +11,7 @@ import {TextN, TextS, TextXS} from './../Text';
 import WidgetBase from './WidgetBase';
 
 export type LiveWidgetProps = {
-  liveClass: LiveClass;
+  liveClass: LiveLesson;
   courseName: string;
   device: Device;
 };
@@ -30,7 +30,7 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
   const gotoLiveClass = () => {
     (async () => {
       // TODO update to new API version to make this work again
-      await Linking.openURL(liveClass.url || '');
+      await Linking.openURL((await getLessonURL(device, liveClass)).url || '');
     })();
   };
 

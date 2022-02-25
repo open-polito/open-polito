@@ -23,7 +23,7 @@
     "html-entities": "^2.3.2",
     "i18next": "^21.4.2",
     "moment": "^2.29.1",
-    "open-polito-api": "^1.0.22",
+    "open-polito-api": "^1.1.0",
     "react": "17.0.2",
     "react-i18next": "^11.14.2",
     "react-native": "0.66.2",
@@ -52,6 +52,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
+    "@babel/plugin-proposal-export-namespace-from": "^7.16.7",
     "@babel/preset-env": "^7.16.8",
     "@babel/preset-typescript": "^7.16.7",
     "@babel/runtime": "^7.12.5",

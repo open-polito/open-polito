@@ -1,9 +1,16 @@
+import {Notice} from 'open-polito-api/course';
 import React from 'react';
 import {RefreshControl, ScrollView, View} from 'react-native';
 import CourseAlert from './CourseAlert';
 import NoContent from './NoContent';
 
-export default function CourseAlerts({alerts, refresh}) {
+const CourseAlerts = ({
+  alerts,
+  refresh,
+}: {
+  alerts: Notice[];
+  refresh: Function;
+}) => {
   return (
     <View style={{flexDirection: 'column', flex: 1}}>
       <ScrollView
@@ -20,7 +27,7 @@ export default function CourseAlerts({alerts, refresh}) {
             return (
               <CourseAlert
                 alert={alert}
-                key={alert.data.toString() + alert.info.slice(0, 30)}
+                key={alert.date + alert.text.slice(0, 30)}
               />
             );
           })
@@ -30,4 +37,6 @@ export default function CourseAlerts({alerts, refresh}) {
       </ScrollView>
     </View>
   );
-}
+};
+
+export default CourseAlerts;

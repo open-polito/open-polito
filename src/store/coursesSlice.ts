@@ -2,16 +2,13 @@
  * @file Manages actions and state related courses and their data
  */
 
-import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Device} from 'open-polito-api';
-import Corso, {
-  Avviso,
-  Cartella,
-  CourseInfoParagraph,
-  File,
-  Videolezione,
-  VirtualClassroomRecording,
-} from 'open-polito-api/corso';
+import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {Device} from 'open-polito-api/device';
+import {
+  CourseInfo,
+  BasicCourseInfo,
+  getExtendedCourseInfo,
+} from 'open-polito-api/course';
 import {
   errorStatus,
   initialStatus,
@@ -20,49 +17,25 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
+import {Directory, File} from 'open-polito-api/material';
+import {
+  getCoursesInfo,
+  PermanentMark,
+  ProvisionalMark,
+} from 'open-polito-api/courses';
 
-export type LiveClass = {
-  taskID: number;
-  meetingID: string;
-  title: string;
-  date: number;
-  url?: string;
-  running?: boolean;
-};
-
-/**
- * Serializable Course type to convert into from non-serializable Corso class
- */
-export type CourseData = {
-  name: string;
-  code: string;
-  cfu: number;
-  taskID: number | null;
-  category?: string;
-  overbooking: boolean;
-
-  isMain: boolean; // false for extra courses
-
-  academicYear?: string;
-  courseYear?: number;
-  semester?: number;
-  professor?: {name: string; surname: string};
-  alerts?: Avviso[];
-  material?: (File | Cartella)[];
-  liveClasses?: LiveClass[];
-  videos?: Videolezione[];
-  recordings?: {
-    current: VirtualClassroomRecording[];
-    [year: number]: VirtualClassroomRecording[];
-  };
-  info?: CourseInfoParagraph[];
-};
-
-export type CourseState = CourseData & {
-  loadCourseStatus: Status;
+export type CourseState = {
+  basicInfo: BasicCourseInfo;
+  extendedInfo?: CourseInfo;
+  isMain: boolean; // whether course is standard or extra
+  status: Status;
 };
 
 export type CoursesState = {
+  marks: {
+    permanent: PermanentMark[];
+    provisional: ProvisionalMark[];
+  };
   courses: CourseState[];
   loadCoursesStatus: Status;
 
@@ -71,6 +44,7 @@ export type CoursesState = {
 };
 
 const initialState: CoursesState = {
+  marks: {permanent: [], provisional: []},
   courses: [],
   loadCoursesStatus: initialStatus,
 
@@ -79,53 +53,46 @@ const initialState: CoursesState = {
 };
 
 /**
- * Accepts a {@link CourseData}, then loads all its data and returns
- * loaded CourseData.
+ * Wrapper of {@link getCoursesInfo}.
+ *
+ * @remarks
+ * Calls {@link getCoursesInfo} and re-arranges data for the store's custom type.
+ */
+export const loadCoursesData = createAsyncThunk<
+  {
+    marks: {permanent: PermanentMark[]; provisional: ProvisionalMark[]};
+    courses: CourseState[];
+  },
+  Device
+>('courses/loadCoursesData', async device => {
+  const data = await getCoursesInfo(device);
+  let courses: CourseState[] = [
+    ...data.course_plan.standard.map(course => {
+      return {basicInfo: course, status: initialStatus, isMain: true};
+    }),
+    ...data.course_plan.extra.map(course => {
+      return {basicInfo: course, status: initialStatus, isMain: false};
+    }),
+  ];
+  return {
+    marks: data.marks,
+    courses: courses,
+  };
+});
+
+/**
+ * Wrapper of {@link getExtendedCourseInfo}.
+ *
+ * @remarks
+ * Accepts {@link BasicCourseInfo} and {@link Device}, then loads all its data and returns
+ * loaded {@link CourseInfo}.
  */
 export const loadCourse = createAsyncThunk<
-  CourseData,
-  {courseData: CourseData | CourseState; device: Device},
+  CourseInfo,
+  {basicCourseInfo: BasicCourseInfo; device: Device},
   {state: RootState}
->('courses/loadCourse', async ({courseData, device}, {getState}) => {
-  const _course = new Corso(
-    device,
-    courseData.name,
-    courseData.code,
-    courseData.cfu,
-    courseData.taskID,
-    courseData.category,
-    courseData.overbooking,
-  );
-  await _course.populate();
-  const returnedCourse: CourseData = {
-    name: _course.nome,
-    code: _course.codice,
-    cfu: _course.cfu,
-    taskID: _course.id_incarico,
-    category: _course.categoria,
-    overbooking: _course.overbooking,
-    isMain: courseData.isMain,
-    academicYear: _course.anno_accademico,
-    courseYear: _course.anno_corso,
-    semester: _course.periodo_corso,
-    professor: {name: _course.nome_prof, surname: _course.cognome_prof},
-    alerts: _course.avvisi,
-    material: _course.materiale,
-    liveClasses: _course.live_lessons.map(cl => {
-      return {
-        taskID: cl.id_inc,
-        meetingID: cl.meeting_id,
-        title: cl.title,
-        date: cl.date.getTime(),
-        url: cl.url,
-        running: cl.running,
-      };
-    }),
-    videos: _course.videolezioni,
-    recordings: _course.vc_recordings,
-    info: _course.info,
-  };
-  return returnedCourse;
+>('courses/loadCourse', async ({basicCourseInfo, device}, {getState}) => {
+  return await getExtendedCourseInfo(device, basicCourseInfo);
 });
 
 /**
@@ -137,16 +104,16 @@ export const getRecentMaterial = createAsyncThunk<
   {state: RootState}
 >('courses/getRecentMaterial', async (_, {getState}) => {
   let res: File[] = [];
-  let rootDir: Cartella = {
-    tipo: 'cartella',
+  let rootDir: Directory = {
+    type: 'dir',
     code: '',
-    nome: '',
-    file: [],
+    name: '',
+    children: [],
   };
-  const findFiles = (dir: Cartella) => {
+  const findFiles = (dir: Directory) => {
     const res: File[] = [];
-    dir.file.forEach(item => {
-      if (item.tipo == 'file') {
+    dir.children.forEach(item => {
+      if (item.type == 'file') {
         res.push(item);
       } else {
         res.push(...findFiles(item));
@@ -155,10 +122,11 @@ export const getRecentMaterial = createAsyncThunk<
     return res;
   };
   getState().courses.courses.forEach(course => {
-    course.material && rootDir.file.push(...course.material);
+    course.extendedInfo?.material &&
+      rootDir.children.push(...course.extendedInfo.material);
   });
   res = findFiles(rootDir)
-    .sort((a, b) => b.data_inserimento.getTime() - a.data_inserimento.getTime())
+    .sort((a, b) => b.creation_date - a.creation_date)
     .slice(0, 3);
   return res;
 });
@@ -169,69 +137,111 @@ export const getRecentMaterial = createAsyncThunk<
  * @param courses
  * @returns index (-1 if not found)
  */
-const findCourseIndexByID = (courseID: string, courses: CourseState[]) => {
-  return courses.findIndex(course => courseID == course.code + course.name);
+const findCourseIndexByID = (
+  courseID: string,
+  courses: CourseState[],
+): number => {
+  return courses.findIndex(
+    course => courseID == course.basicInfo.code + course.basicInfo.name,
+  );
 };
 
 /**
- * Replaces old {@link CourseState} with new CoursesState,
- * appends new CoursesState if unable to find existing one.
- * Returns new CourseState[].
- * @param state
- * @param param1
+ * Utility function that returns updated course array
+ * @param courseState The updated course
+ * @param courses All courses
+ * @return courses
  */
-const getUpdatedCourseData = (
+const getUpdatedCourses = (
+  courseState: CourseState,
   courses: CourseState[],
-  updatedCourse: CourseState,
-) => {
-  const courseID = updatedCourse.code + updatedCourse.name;
+): CourseState[] => {
+  const courseID = courseState.basicInfo.code + courseState.basicInfo.name;
   const index = findCourseIndexByID(courseID, courses);
+
+  let mutatedArray = [];
   if (index != -1) {
-    return courses.map((course, _index) => {
+    mutatedArray = courses.map((course, _index) => {
       if (_index != index) {
         return course;
       } else {
-        return updatedCourse;
+        return courseState;
       }
     });
   } else {
     // append if not found
-    let _courses = [...courses];
-    _courses.push(updatedCourse);
-    return _courses;
+    mutatedArray = [...courses];
+    mutatedArray.push(courseState);
   }
+  return mutatedArray;
 };
 
 export const coursesSlice = createSlice({
   name: 'courses',
   initialState,
-  reducers: {
-    setCourseData: (state, action: PayloadAction<CourseState>) => {
-      state.courses = getUpdatedCourseData(state.courses, action.payload);
-    },
-  },
+  reducers: {},
   extraReducers: builder => {
     builder
+      .addCase(loadCoursesData.pending, (state, action) => {
+        state.loadCoursesStatus = pendingStatus();
+      })
+      .addCase(loadCoursesData.fulfilled, (state, action) => {
+        state.marks = action.payload.marks;
+        state.courses = action.payload.courses;
+        state.loadCoursesStatus = successStatus();
+      })
+      .addCase(loadCoursesData.rejected, (state, action) => {
+        state.loadCoursesStatus = errorStatus(action.error);
+      })
+
       .addCase(loadCourse.pending, (state, action) => {
-        state.courses = getUpdatedCourseData(state.courses, {
-          ...action.meta.arg.courseData,
-          loadCourseStatus: pendingStatus(),
-        }); // keep current CourseState, only change status
-        // Invalidate recent material. Items may have changed.
+        state.courses = getUpdatedCourses(
+          {
+            ...state.courses[
+              findCourseIndexByID(
+                action.meta.arg.basicCourseInfo.code +
+                  action.meta.arg.basicCourseInfo.name,
+                state.courses,
+              )
+            ],
+            status: pendingStatus(),
+          },
+          state.courses,
+        );
+
         state.getRecentMaterialStatus = initialStatus;
         state.recentMaterial = [];
       })
       .addCase(loadCourse.fulfilled, (state, action) => {
-        state.courses = getUpdatedCourseData(state.courses, {
-          ...action.payload,
-          loadCourseStatus: successStatus(),
-        });
+        state.courses = getUpdatedCourses(
+          {
+            ...state.courses[
+              findCourseIndexByID(
+                action.meta.arg.basicCourseInfo.code +
+                  action.meta.arg.basicCourseInfo.name,
+                state.courses,
+              )
+            ],
+            extendedInfo: action.payload,
+            status: successStatus(),
+          },
+          state.courses,
+        );
       })
       .addCase(loadCourse.rejected, (state, action) => {
-        state.courses = getUpdatedCourseData(state.courses, {
-          ...action.meta.arg.courseData,
-          loadCourseStatus: errorStatus(action.error),
-        });
+        state.courses = getUpdatedCourses(
+          {
+            ...state.courses[
+              findCourseIndexByID(
+                action.meta.arg.basicCourseInfo.code +
+                  action.meta.arg.basicCourseInfo.name,
+                state.courses,
+              )
+            ],
+            status: errorStatus(action.error),
+          },
+          state.courses,
+        );
       })
 
       .addCase(getRecentMaterial.pending, state => {
@@ -247,6 +257,6 @@ export const coursesSlice = createSlice({
   },
 });
 
-export const {setCourseData} = coursesSlice.actions;
+export const {} = coursesSlice.actions;
 
 export default coursesSlice.reducer;

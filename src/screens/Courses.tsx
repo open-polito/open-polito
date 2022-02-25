@@ -9,27 +9,27 @@ import {TextN, TextS} from '../components/Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles';
 import {DeviceContext} from '../context/Device';
-import {CourseData} from '../store/coursesSlice';
 import {RootState} from '../store/store';
+import {CourseState} from '../store/coursesSlice';
 
 export default function Courses({navigation}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const deviceContext = useContext(DeviceContext);
 
-  const courses = useSelector<RootState, CourseData[]>(
+  const courses = useSelector<RootState, CourseState[]>(
     state => state.courses.courses,
   );
 
   const [offsetY, setOffsetY] = useState(0);
 
-  const buildCourseButton = (course: CourseData) => {
+  const buildCourseButton = (course: CourseState) => {
     return (
-      <View key={course.code + course.name}>
+      <View key={course.basicInfo.code + course.basicInfo.name}>
         <Pressable
           onPress={() => {
             navigation.navigate('Course', {
-              courseCode: course.code + course.name,
+              courseCode: course.basicInfo.code + course.basicInfo.name,
             });
           }}
           android_ripple={{color: colors.lightGray}}
@@ -48,8 +48,12 @@ export default function Courses({navigation}) {
               alignItems: 'center',
             }}>
             <View style={{flexDirection: 'column', width: '90%'}}>
-              <TextN text={course.name} numberOfLines={1} weight="regular" />
-              <TextS text={course.cfu + ' CFU'} />
+              <TextN
+                text={course.basicInfo.name}
+                numberOfLines={1}
+                weight="regular"
+              />
+              <TextS text={course.basicInfo.num_credits + ' CFU'} />
             </View>
             <Icon
               name="chevron-right"
@@ -82,7 +86,10 @@ export default function Courses({navigation}) {
             courses
               .filter(course => course.isMain)
               .map(mainCourse => buildCourseButton(mainCourse))}
-          {courses.filter(course => !course.isMain).length > 0 && (
+          {
+            //TODO re-enable once API fixed
+          }
+          {/* {courses.filter(course => !course.isMain).length > 0 && (
             <View>
               <TextN
                 text={t('otherCourses')}
@@ -93,7 +100,7 @@ export default function Courses({navigation}) {
                 .filter(course => !course.isMain)
                 .map(extraCourse => buildCourseButton(extraCourse))}
             </View>
-          )}
+          )} */}
         </ScrollView>
       </View>
     </ScreenContainer>

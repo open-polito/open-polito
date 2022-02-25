@@ -1,15 +1,15 @@
-import Corso from 'open-polito-api/corso';
+import {getDownloadURL} from 'open-polito-api/material';
 
 function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
   if (parentItem != undefined) {
     parentItem.map(item => {
-      if (item.tipo == 'file') {
+      if (item.type == 'file') {
         pushFunction({...item, corso: currentCourse});
         // console.log(item);
       } else if (item.tipo == 'cartella') {
         // empty folder ?
-        if (item.file.length > 0) {
-          findMaterialRecursively(item.file, pushFunction, currentCourse);
+        if (item.children.length > 0) {
+          findMaterialRecursively(item.children, pushFunction, currentCourse);
         }
       }
     });
@@ -19,8 +19,8 @@ function findMaterialRecursively(parentItem, pushFunction, currentCourse) {
 function getCourseNameFromCode(corsi, code) {
   let _name = null;
   corsi.map(corso => {
-    if (corso.codice + corso.nome == code) {
-      _name = corso.nome;
+    if (corso.code + corso.name == code) {
+      _name = corso.name;
     }
   });
   return _name;
@@ -71,6 +71,6 @@ export async function getMaterialTree(user) {
 export async function getDownloadUrl(device, code) {
   // incorrect use of the api library but it works
   // TODO fix
-  const url = await new Corso(device).download(code);
+  const url = await getDownloadURL(device, code);
   return url;
 }
