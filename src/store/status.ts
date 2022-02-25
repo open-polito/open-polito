@@ -2,7 +2,7 @@
  * @file Functions and types for async thunk status management, and for minimizing Redux boilerplate
  */
 
-import { SerializedError } from '@reduxjs/toolkit';
+import {SerializedError} from '@reduxjs/toolkit';
 
 /**
  * Status codes to be used in store thunks.
@@ -80,7 +80,7 @@ export const errorStatus = (error: SerializedError): Status => {
   return {
     code: STATUS.ERROR,
     lastUpdated: Date.now(),
-    error: { ...error, stack: '' }, // Don't record stack for now
+    error: {...error, stack: ''}, // Don't record stack for now
   };
 };
 

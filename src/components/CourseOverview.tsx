@@ -3,7 +3,6 @@ import {useTranslation} from 'react-i18next';
 import {RefreshControl, ScrollView, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
-import {CourseData} from '../store/coursesSlice';
 import {RootState} from '../store/store';
 import styles from '../styles';
 import {getRecentCourseMaterial} from '../utils/material';
@@ -12,10 +11,11 @@ import CourseInfo from './CourseInfo';
 import LiveWidget from './widgets/LiveWidget';
 import MaterialWidget from './widgets/MaterialWidget';
 import TextWidget from './TextWidget';
-import {Cartella, File} from 'open-polito-api/corso';
+import {CourseState} from '../store/coursesSlice';
+import {MaterialItem} from 'open-polito-api/material';
 
 const CourseOverview: FC<{
-  courseData: CourseData;
+  courseData: CourseState;
   changeTab: Function;
   refresh: Function;
 }> = ({courseData, changeTab, refresh = () => {}}) => {
@@ -25,12 +25,13 @@ const CourseOverview: FC<{
 
   const [offsetY, setOffsetY] = useState(0);
 
-  const materialTree = useSelector<RootState, (File | Cartella)[] | undefined>(
+  const materialTree = useSelector<RootState, MaterialItem[] | undefined>(
     state =>
       state.courses.courses.find(
         course =>
-          courseData.code + courseData.name == course.code + course.name,
-      )?.material,
+          courseData.basicInfo.code + courseData.basicInfo.name ==
+          course.basicInfo.code + course.basicInfo.name,
+      )?.extendedInfo?.material,
   );
 
   const [recentMaterialLength, setRecentMaterialLength] = useState(3);
@@ -46,7 +47,8 @@ const CourseOverview: FC<{
   // Once recent material length is computed, set whether to align widget heights
   useEffect(() => {
     setShouldAlignHeights(
-      (courseData.alerts?.slice(0, 3).length || 0) == recentMaterialLength,
+      (courseData.extendedInfo?.notices.slice(0, 3).length || 0) ==
+        recentMaterialLength,
     );
   }, [recentMaterialLength]);
 
@@ -68,11 +70,11 @@ const CourseOverview: FC<{
         paddingBottom: offsetY == 0 ? 32 : 16,
         paddingTop: 8,
       }}>
-      {courseData.liveClasses?.map(liveClass => (
+      {courseData.extendedInfo?.live_lessons.map(liveClass => (
         <LiveWidget
-          key={liveClass.meetingID}
+          key={liveClass.meeting_id}
           liveClass={liveClass}
-          courseName={courseData.name}
+          courseName={courseData.basicInfo.name}
           device={deviceContext.device}
         />
       )) || null}
@@ -85,21 +87,21 @@ const CourseOverview: FC<{
         }}>
         <MaterialWidget
           fullHeight={shouldAlignHeights}
-          courseID={courseData.code + courseData.name}
+          courseID={courseData.basicInfo.code + courseData.basicInfo.name}
           action={() => {
             changeTab('material');
           }}
         />
         <AlertWidget
           fullHeight={shouldAlignHeights}
-          alerts={courseData.alerts?.slice(0, 3) || []}
+          alerts={courseData.extendedInfo?.notices.slice(0, 3) || []}
           action={() => {
             changeTab('alerts');
           }}
         />
       </View>
       <TextWidget icon="information-outline" name={t('courseInfo')} expandable>
-        <CourseInfo data={courseData.info || []} />
+        <CourseInfo data={courseData.extendedInfo?.info || []} />
       </TextWidget>
       {/* <TextWidget name={t('oldVideos')} expandable>
         <CourseVideos videos={courseData.videolezioni} />

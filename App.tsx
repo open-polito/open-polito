@@ -13,7 +13,7 @@ import 'moment/locale/it';
 
 import store from './src/store/store';
 import moment from 'moment';
-import {Device} from 'open-polito-api';
+import {Device} from 'open-polito-api/device';
 import DeviceProvider from './src/context/Device';
 
 let lng = '';

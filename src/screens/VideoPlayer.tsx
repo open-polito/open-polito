@@ -7,11 +7,12 @@ import colors from '../colors';
 import {TextL, TextN, TextS} from '../components/Text';
 import {useTranslation} from 'react-i18next';
 import RNVideoPlayer from 'react-native-video-controls';
+import {Recording} from 'open-polito-api/course';
 
 export default function VideoPlayer({route}) {
   const {t} = useTranslation();
 
-  const video = route.params.video;
+  const video: Recording = route.params.video;
   const courseData = route.params.video.courseData;
 
   const navigation = useNavigation();
@@ -32,7 +33,7 @@ export default function VideoPlayer({route}) {
   //   },
   // ];
 
-  const tabs = [];
+  // const tabs = [];
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}} barStyle="dark-content">
@@ -68,10 +69,10 @@ export default function VideoPlayer({route}) {
           <TextL
             style={{marginBottom: 8}}
             numberOfLines={3}
-            text={video.titolo}
+            text={video.title}
             weight="bold"
           />
-          <TextN text={video.data} />
+          <TextN text={video.date} />
           <TextN text={courseData.nome} />
           <View
             style={{
@@ -81,7 +82,7 @@ export default function VideoPlayer({route}) {
               backgroundColor: colors.lightGray,
               borderRadius: 16,
             }}>
-            {tabs.map(tab => (
+            {/* {tabs.map(tab => (
               <Pressable
                 style={{
                   flex: 1,
@@ -103,7 +104,7 @@ export default function VideoPlayer({route}) {
                   color={selectedTab == tab.id ? colors.white : colors.black}
                 />
               </Pressable>
-            ))}
+            ))} */}
           </View>
         </View>
       </View>

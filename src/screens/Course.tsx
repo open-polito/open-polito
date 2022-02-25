@@ -17,12 +17,7 @@ import CourseLoader from '../components/CourseLoader';
 import CourseAlerts from '../components/CourseAlerts';
 import {DeviceContext} from '../context/Device';
 import {RootState} from '../store/store';
-import {
-  CourseData,
-  CoursesState,
-  CourseState,
-  loadCourse,
-} from '../store/coursesSlice';
+import {CourseState, loadCourse} from '../store/coursesSlice';
 import {STATUS} from '../store/status';
 
 export default function Course({navigation, route}) {
@@ -35,24 +30,38 @@ export default function Course({navigation, route}) {
   const code = route.params.courseCode;
 
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
-    state.courses.courses.find(course => course.code + course.name == code),
+    state.courses.courses.find(
+      course => course.basicInfo.code + course.basicInfo.name == code,
+    ),
   );
 
   const [refreshing, setRefreshing] = useState(true);
 
   const refresh = () => {
     dispatch(
-      loadCourse({courseData: courseData!, device: deviceContext.device}),
+      loadCourse({
+        basicCourseInfo: courseData!.basicInfo,
+        device: deviceContext.device,
+      }),
     );
   };
 
   const fields = [
     {
-      name: courseData?.professor?.surname + ' ' + courseData?.professor?.name,
+      name:
+        courseData?.extendedInfo?.professor.surname +
+        ' ' +
+        courseData?.extendedInfo?.professor.name,
       icon: 'person-outline',
     },
-    {name: courseData?.cfu + ' CFU', icon: 'star-four-points-outline'},
-    {name: 'A.A. ' + courseData?.academicYear ?? '', icon: 'calendar'},
+    {
+      name: courseData?.basicInfo.num_credits + ' CFU',
+      icon: 'star-four-points-outline',
+    },
+    {
+      name: 'A.A. ' + courseData?.extendedInfo?.calendar_year ?? '',
+      icon: 'calendar',
+    },
   ];
 
   const [currentTab, setCurrentTab] = useState('overview');
@@ -80,10 +89,15 @@ export default function Course({navigation, route}) {
   useEffect(() => {
     if (
       courseData &&
-      courseData?.loadCourseStatus.code != STATUS.PENDING &&
-      courseData?.loadCourseStatus.code != STATUS.SUCCESS
+      courseData?.status.code != STATUS.PENDING &&
+      courseData?.status.code != STATUS.SUCCESS
     ) {
-      dispatch(loadCourse({courseData, device: deviceContext.device}));
+      dispatch(
+        loadCourse({
+          basicCourseInfo: courseData.basicInfo,
+          device: deviceContext.device,
+        }),
+      );
     }
   }, []);
 
@@ -92,12 +106,11 @@ export default function Course({navigation, route}) {
       <View style={styles.withHorizontalPadding}>
         <ArrowHeader backFunc={navigation.goBack} />
       </View>
-      {courseData?.loadCourseStatus.code == STATUS.SUCCESS &&
-      courseData.academicYear ? (
+      {courseData?.status.code == STATUS.SUCCESS && courseData.extendedInfo ? (
         <View style={{flex: 1}}>
           <View style={styles.withHorizontalPadding}>
             <TextXL
-              text={courseData.name}
+              text={courseData.basicInfo.name}
               numberOfLines={2}
               weight="bold"
               color={colors.black}
@@ -108,7 +121,7 @@ export default function Course({navigation, route}) {
               ...styles.withHorizontalPadding,
               flexDirection: 'column',
             }}>
-            <TextL text={courseData.code} color={colors.mediumGray} />
+            <TextL text={courseData.basicInfo.code} color={colors.mediumGray} />
             {fields.map(field => (
               <View
                 style={{
@@ -186,14 +199,16 @@ export default function Course({navigation, route}) {
                   />
                 );
               case 'material':
-                return courseData.loadCourseStatus.code == STATUS.SUCCESS ? (
+                return courseData.status.code == STATUS.SUCCESS ? (
                   <ScrollView
                     refreshControl={
                       <RefreshControl refreshing={false} onRefresh={refresh} />
                     }
                     contentContainerStyle={styles.withHorizontalPadding}>
                     <MaterialExplorer
-                      course={courseData.code + courseData.name}
+                      courseId={
+                        courseData.basicInfo.code + courseData.basicInfo.name
+                      }
                     />
                   </ScrollView>
                 ) : (
@@ -208,7 +223,7 @@ export default function Course({navigation, route}) {
                       paddingTop: 8,
                     }}>
                     <CourseAlerts
-                      alerts={courseData.alerts}
+                      alerts={courseData.extendedInfo.notices}
                       refresh={refresh}
                     />
                   </View>
@@ -217,9 +232,11 @@ export default function Course({navigation, route}) {
                 return (
                   <View style={{...styles.withHorizontalPadding, flex: 1}}>
                     <CourseVideos
-                      videos={courseData.recordings?.current}
-                      courseData={{nome: courseData.name}}
-                      refresh={refresh}
+                      videos={courseData.extendedInfo.vc_recordings?.current}
+                      courseData={courseData.basicInfo}
+                      refresh={() => {
+                        refresh;
+                      }}
                     />
                   </View>
                 );

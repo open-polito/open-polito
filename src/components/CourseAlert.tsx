@@ -1,6 +1,6 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
-import {Avviso} from 'open-polito-api/corso';
+import {Notice} from 'open-polito-api/course';
 import React from 'react';
 import {View} from 'react-native';
 import RenderHTML from 'react-native-render-html';
@@ -8,7 +8,7 @@ import colors from '../colors';
 import {TextS, TextXS} from './Text';
 
 export type CourseAlertProps = {
-  alert: Avviso;
+  alert: Notice;
   compact?: boolean;
 };
 
@@ -38,8 +38,8 @@ const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
           alignItems: 'center',
           marginRight: compact ? 4 : 8,
         }}>
-        <TextXS text={moment(alert.data).format('MMM')} color={colors.white} />
-        <TextXS text={moment(alert.data).format('DD')} color={colors.white} />
+        <TextXS text={moment(alert.date).format('MMM')} color={colors.white} />
+        <TextXS text={moment(alert.date).format('DD')} color={colors.white} />
       </View>
       <View
         style={{
@@ -48,11 +48,11 @@ const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
         {compact ? (
           <TextS
             numberOfLines={2}
-            text={decode(alert.info.replace(htmlTags, '')).trim()}
+            text={decode(alert.text.replace(htmlTags, '')).trim()}
           />
         ) : (
           <RenderHTML
-            source={{html: alert.info}}
+            source={{html: alert.text}}
             tagsStyles={{
               body: {
                 color: colors.black,

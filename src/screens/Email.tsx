@@ -9,15 +9,13 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import colors from '../colors';
 import Header from '../components/Header';
-import {TextL, TextN, TextS} from '../components/Text';
+import {TextN, TextS} from '../components/Text';
 import styles from '../styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
-import {createUser} from '../utils/api-utils';
 import {RootState} from '../store/store';
-import {Anagrafica} from 'open-polito-api/user';
 import WebView, {WebViewNavigation} from 'react-native-webview';
 import {getUnreadEmailCount} from '../store/userSlice';
 import {Configuration} from '../defaultConfig';
@@ -27,6 +25,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {emailUrl, PersonalData} from 'open-polito-api/user';
 
 export default function Email() {
   const {t} = useTranslation();
@@ -34,7 +33,7 @@ export default function Email() {
   const deviceContext = useContext(DeviceContext);
   const dispatch = useDispatch();
 
-  const userInfo = useSelector<RootState, Anagrafica | null>(
+  const userInfo = useSelector<RootState, PersonalData | null>(
     state => state.user.userInfo,
   );
   const unreadEmailCount = useSelector<RootState, number>(
@@ -58,9 +57,7 @@ export default function Email() {
 
   useEffect(() => {
     (async () => {
-      dispatch(
-        getUnreadEmailCount(createUser(deviceContext.device, userInfo!)),
-      );
+      dispatch(getUnreadEmailCount(deviceContext.device));
       !webMailUrl && mounted && setWebMailUrl(await getWebMailUrl());
     })();
     return () => {
@@ -69,7 +66,7 @@ export default function Email() {
   }, []);
 
   const getWebMailUrl = async () => {
-    const url = await createUser(deviceContext.device, userInfo!).emailUrl();
+    const url = await emailUrl(deviceContext.device);
     return url;
   };
 
@@ -102,7 +99,7 @@ export default function Email() {
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>
       <View style={styles.withHorizontalPadding}>
-        <Header text={t('email')} noMarginBottom={true} />
+        <Header text={t('email')} />
       </View>
       {config.emailWebView ? (
         <View

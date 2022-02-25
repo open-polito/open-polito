@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import styles from '../styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Email from '../screens/Email';
 import Settings from '../screens/Settings';
 import colors from '../colors';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
 import Material from '../screens/Material';
 import {RootState} from '../store/store';
+import {loadCoursesData} from '../store/coursesSlice';
+import {DeviceContext} from '../context/Device';
+import {getUnreadEmailCount} from '../store/userSlice';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -20,11 +23,22 @@ export type TabNavigatorParamList = {
 
 export default function HomeRouter() {
   const {t} = useTranslation();
+  const dispatch = useDispatch();
+  const deviceContext = useContext(DeviceContext);
+
   const unreadEmailCount = useSelector<RootState, number>(
     state => state.user.unreadEmailCount,
   );
 
   const Tab = createBottomTabNavigator<TabNavigatorParamList>();
+
+  /**
+   * Load initial data
+   */
+  useEffect(() => {
+    dispatch(loadCoursesData(deviceContext.device));
+    dispatch(getUnreadEmailCount(deviceContext.device));
+  }, []);
 
   return (
     <Tab.Navigator

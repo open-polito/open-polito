@@ -1,5 +1,6 @@
 import moment from 'moment';
-import React, {useContext} from 'react';
+import {MaterialItem} from 'open-polito-api/material';
+import React, {ReactNode, useContext, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
@@ -8,28 +9,35 @@ import getFileIcon from '../utils/getFileIcon';
 import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
 
+export type DirectoryItemProps = {
+  item: MaterialItem;
+  compact?: boolean;
+  relativeDate?: boolean;
+  course?: string;
+  children?: ReactNode[];
+  onPress?: Function;
+};
+
+const computeSizeLabel = (size: number): string => {
+  return size > 999 ? (size / 1000).toFixed(2) + ' MB' : size + ' kB';
+};
+
 export default function DirectoryItem({
+  item,
   compact = false,
-  relative_date = false, // show as "X days/hours ago instead of plain date"
-  tipo, // "file" or "cartella"
-  nome = null,
-  filename = null,
-  code,
-  size_kb = null,
-  data_inserimento = null,
-  corso = null,
-  children = null,
+  relativeDate = false, // show as "X days/hours ago instead of plain date"
+  course = '',
+  children = [],
   onPress = () => {},
-}) {
-  let size_label =
-    size_kb > 999 ? (size_kb / 1000).toFixed(2) + ' MB' : size_kb + ' kB';
-  if (size_kb == null) {
-    size_label = null;
-  }
+}: DirectoryItemProps) {
+  const [sizeLabel, setSizeLabel] = useState(
+    item.type == 'file' ? computeSizeLabel(item.size) : '',
+  );
+
   const deviceContext = useContext(DeviceContext);
 
   const downloadFile = () => {
-    getDownloadUrl(deviceContext.device, code).then(url =>
+    getDownloadUrl(deviceContext.device, item.code).then(url =>
       Linking.openURL(url),
     );
   };
@@ -42,7 +50,9 @@ export default function DirectoryItem({
       }}>
       <Pressable
         android_ripple={{color: colors.lightGray}}
-        onPress={tipo == 'file' ? downloadFile : onPress} // download file if file, otherwise use onPress prop
+        onPress={() => {
+          item.type == 'file' ? downloadFile() : onPress();
+        }} // download file if file, otherwise use onPress prop
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -55,8 +65,8 @@ export default function DirectoryItem({
             alignItems: 'center',
             flex: 1,
           }}>
-          {tipo == 'file' ? (
-            getFileIcon(filename)
+          {item.type == 'file' ? (
+            getFileIcon(item.filename)
           ) : (
             <Icon name="folder-open" color={colors.black} size={28} />
           )}
@@ -68,18 +78,18 @@ export default function DirectoryItem({
               flex: 1,
             }}>
             <View style={{marginRight: 16}}>
-              <TextS text={nome} numberOfLines={1} weight="bold" />
+              <TextS text={item.name} numberOfLines={1} weight="bold" />
             </View>
-            {tipo == 'file' && (
+            {item.type == 'file' && (
               <View style={{flexDirection: 'column', flex: 1}}>
                 <TextS
                   numberOfLines={1}
                   text={
-                    corso != null && !compact
-                      ? corso
-                      : relative_date
-                      ? moment(data_inserimento).fromNow()
-                      : moment(data_inserimento).format('lll')
+                    course && !compact
+                      ? course
+                      : relativeDate
+                      ? moment(item.creation_date).fromNow()
+                      : moment(item.creation_date).format('lll')
                   }
                 />
               </View>
@@ -99,18 +109,21 @@ export default function DirectoryItem({
                 alignItems: 'flex-end',
                 marginRight: 8,
               }}>
-              <TextS text={size_label} />
-              {corso ? (
+              <TextS text={sizeLabel} numberOfLines={1} />
+              {course ? (
                 <TextS
+                  numberOfLines={1}
                   text={
-                    relative_date
-                      ? moment(data_inserimento).fromNow()
-                      : moment(data_inserimento).format('lll')
+                    item.type == 'file'
+                      ? relativeDate
+                        ? moment(item.creation_date).fromNow()
+                        : moment(item.creation_date).format('lll')
+                      : null
                   }
                 />
               ) : null}
             </View>
-            {tipo == 'file' ? (
+            {item.type == 'file' ? (
               <Pressable
                 android_ripple={{color: colors.lightGray}}
                 onPress={downloadFile}>

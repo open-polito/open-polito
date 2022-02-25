@@ -1,17 +1,24 @@
-import React, {useState} from 'react';
+import React, {ReactNode, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {Pressable, View} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
 import {TextN} from './Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-export default function TextWidget({
-  icon = null,
+
+const TextWidget = ({
+  icon = '',
   name,
-  action,
+  action = () => {},
   expandable = false,
   children,
-}) {
+}: {
+  icon?: string;
+  name: string;
+  action?: Function;
+  expandable?: boolean;
+  children?: ReactNode;
+}) => {
   const {t} = useTranslation();
 
   const [expanded, setExpanded] = useState(false);
@@ -27,13 +34,13 @@ export default function TextWidget({
       <Pressable
         style={{paddingHorizontal: 12, paddingVertical: 8}}
         android_ripple={{color: colors.lightGray}}
-        onPress={
+        onPress={() => {
           expandable
             ? () => {
                 setExpanded(!expanded);
               }
-            : action
-        }>
+            : action;
+        }}>
         <View
           style={{
             flexDirection: 'row',
@@ -65,4 +72,6 @@ export default function TextWidget({
       ) : null}
     </View>
   );
-}
+};
+
+export default TextWidget;

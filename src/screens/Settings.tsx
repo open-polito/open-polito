@@ -20,7 +20,6 @@ import {TextS} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import ArrowHeader from '../components/ArrowHeader';
 import {RootState} from '../store/store';
-import {Anagrafica} from 'open-polito-api/user';
 import {
   logout,
   setConfig,
@@ -28,19 +27,20 @@ import {
 } from '../store/sessionSlice';
 import {DeviceContext} from '../context/Device';
 import {createDevice} from '../utils/api-utils';
-import {Device} from 'open-polito-api';
+import {Device} from 'open-polito-api/device';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
 import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
+import {PersonalData} from 'open-polito-api/user';
 
 export default function Settings() {
   const {t} = useTranslation();
 
   const deviceContext = useContext(DeviceContext);
 
-  const userInfo = useSelector<RootState, Anagrafica | null>(
+  const userInfo = useSelector<RootState, PersonalData | null>(
     state => state.user.userInfo,
   );
   const config = useSelector<RootState, Configuration>(
@@ -149,8 +149,8 @@ export default function Settings() {
         </View>
         <View>
           <AccountBox
-            name={userInfo?.nome + ' ' + userInfo?.cognome}
-            degree={userInfo?.nome_corso_laurea}
+            name={userInfo?.name + ' ' + userInfo?.surname}
+            degree={userInfo?.degree_name}
             logoutFunction={handleLogout}
           />
         </View>

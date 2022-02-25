@@ -2,8 +2,8 @@
  * @file Manages actions and state related to login, logout and device registration
  */
 
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createDevice, getDeviceData } from '../utils/api-utils';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {getDeviceData} from '../utils/api-utils';
 import {
   AuthStatus,
   AUTH_STATUS,
@@ -13,13 +13,13 @@ import {
   Status,
   successStatus,
 } from './status';
-import { RootState } from './store';
-import { loadUser } from './userSlice';
+import {RootState} from './store';
 import * as Keychain from 'react-native-keychain';
-import { Device } from 'open-polito-api';
-import defaultConfig, { Configuration } from '../defaultConfig';
+import {Device} from 'open-polito-api/device';
+import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ping } from 'open-polito-api/utils';
+import {ping} from 'open-polito-api/utils';
+import {setUserInfo} from './userSlice';
 
 export type DeviceInfo = {
   uuid: string;
@@ -65,8 +65,8 @@ const initialState: SessionState = {
 export const registerDevice = createAsyncThunk<
   void,
   Device,
-  { state: RootState }
->('session/registerDevice', async (device, { dispatch }) => {
+  {state: RootState}
+>('session/registerDevice', async (device, {dispatch}) => {
   const deviceData = getDeviceData();
   await device.register(deviceData);
 });
@@ -78,7 +78,7 @@ export const registerDevice = createAsyncThunk<
  * When given "password" as login method, dispatches {@link registerDevice}.
  * Always pings PoliTo servers before logging in, to detect offline mode.
  *
- * On login success, sets Keychain credentials and dispatches {@link loadUser}.
+ * On login success, sets Keychain credentials and dispatches {@link setUserInfo}.
  */
 export const login = createAsyncThunk<
   LoginData,
@@ -88,13 +88,13 @@ export const login = createAsyncThunk<
     token: string;
     device: Device;
   },
-  { state: RootState }
->('session/login', async (args, { dispatch, rejectWithValue }) => {
+  {state: RootState}
+>('session/login', async (args, {dispatch, rejectWithValue}) => {
   try {
     await ping();
   } catch (e) {
     dispatch(setAuthStatus(AUTH_STATUS.OFFLINE));
-    return rejectWithValue("offline");
+    return rejectWithValue('offline');
   }
   let response = null;
   if (args.method === 'token') {
@@ -106,29 +106,28 @@ export const login = createAsyncThunk<
       args.token,
     );
   }
-  const username = 'S' + response.user.anagrafica.matricola;
+  const username = 'S' + response.data.current_id;
+  dispatch(setUserInfo(response.data));
   await Keychain.setGenericPassword(
     username,
-    JSON.stringify({ uuid: args.device.uuid, token: response.token }),
+    JSON.stringify({uuid: args.device.uuid, token: response.token}),
   );
-  dispatch(loadUser(response.user));
-  return { user: username, token: response.token };
+  return {user: username, token: response.token};
 });
 
 /**
  * Clears keychain, logs out and sets auth status as NOT_VALID.
  * Ignores whether or not the logout has been correctly sent to the server.
  */
-export const logout = createAsyncThunk<void, Device, { state: RootState }>(
+export const logout = createAsyncThunk<void, Device, {state: RootState}>(
   'session/logout',
-  async (device, { dispatch }) => {
+  async (device, {dispatch}) => {
     await Keychain.resetGenericPassword();
     try {
       await device.logout();
     } finally {
       dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
     }
-
   },
 );
 
@@ -136,8 +135,12 @@ export const logout = createAsyncThunk<void, Device, { state: RootState }>(
  * Updates configuration in AsyncStorage and in store.
  * Returns void.
  */
-export const setConfig = createAsyncThunk<void, Configuration, { state: RootState }>("session/setConfig", async (config, { dispatch }) => {
-  await AsyncStorage.setItem("@config", JSON.stringify(config));
+export const setConfig = createAsyncThunk<
+  void,
+  Configuration,
+  {state: RootState}
+>('session/setConfig', async (config, {dispatch}) => {
+  await AsyncStorage.setItem('@config', JSON.stringify(config));
   dispatch(setConfigState(config));
 });
 
@@ -150,7 +153,7 @@ export const sessionSlice = createSlice({
     },
     setConfigState: (state, action: PayloadAction<Configuration>) => {
       state.config = action.payload;
-    }
+    },
   },
   extraReducers: builder => {
     builder
@@ -177,12 +180,15 @@ export const sessionSlice = createSlice({
         };
       })
       .addCase(login.rejected, (state, action) => {
-        state.authStatus = action.payload == "offline" ? AUTH_STATUS.OFFLINE : AUTH_STATUS.NOT_VALID;
+        state.authStatus =
+          action.payload == 'offline'
+            ? AUTH_STATUS.OFFLINE
+            : AUTH_STATUS.NOT_VALID;
         state.loginStatus = errorStatus(action.error);
       });
   },
 });
 
-export const { setAuthStatus, setConfigState } = sessionSlice.actions;
+export const {setAuthStatus, setConfigState} = sessionSlice.actions;
 
 export default sessionSlice.reducer;

@@ -4,7 +4,7 @@ import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {TextL, TextS, TextXL} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Device} from 'open-polito-api';
+import {Device} from 'open-polito-api/device';
 import * as Keychain from 'react-native-keychain';
 import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';

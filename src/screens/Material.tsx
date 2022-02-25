@@ -33,8 +33,9 @@ export default function Material() {
 
   const navigation = useNavigation();
 
-  const courses = useSelector<RootState, CourseState[]>(
-    state => state.courses.courses,
+  //TODO re-enable extra courses once API fixed
+  const courses = useSelector<RootState, CourseState[]>(state =>
+    state.courses.courses.filter(course => course.isMain),
   );
 
   const getRecentMaterialStatus = useSelector<RootState, Status>(
@@ -55,8 +56,8 @@ export default function Material() {
   const initDropdown = () => {
     const items: DropdownItem[] = courses.map(course => {
       return {
-        label: course.name,
-        value: course.code + course.name,
+        label: course.basicInfo.name,
+        value: course.basicInfo.code + course.basicInfo.name,
       };
     });
     setDropdownItems(items);
@@ -69,10 +70,13 @@ export default function Material() {
   useEffect(() => {
     let _materialLoaded = true;
     courses.forEach(course => {
-      if (course.loadCourseStatus.code != STATUS.SUCCESS) {
+      if (course.status.code != STATUS.SUCCESS) {
         _materialLoaded = false;
         dispatch(
-          loadCourse({courseData: course, device: deviceContext.device}),
+          loadCourse({
+            basicCourseInfo: course.basicInfo,
+            device: deviceContext.device,
+          }),
         );
       }
     });
@@ -87,7 +91,7 @@ export default function Material() {
     if (!materialLoaded) {
       let _materialLoaded = true;
       courses.forEach(course => {
-        if (course.loadCourseStatus.code != STATUS.SUCCESS) {
+        if (course.status.code != STATUS.SUCCESS) {
           _materialLoaded = false;
         }
       });
@@ -157,7 +161,7 @@ export default function Material() {
           />
         </View>
         <View style={styles.withHorizontalPadding}>
-          {allLoaded ? <RecentItems relative_date /> : <RecentItemsLoader />}
+          {allLoaded ? <RecentItems relativeDate /> : <RecentItemsLoader />}
         </View>
         <View
           style={{
@@ -204,7 +208,7 @@ export default function Material() {
           </View>
         ) : (
           <View style={styles.withHorizontalPadding}>
-            <MaterialExplorer course={selectedCourse} />
+            <MaterialExplorer courseId={selectedCourse} />
           </View>
         )}
       </ScrollView>

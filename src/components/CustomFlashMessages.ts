@@ -1,7 +1,7 @@
-import { TFunction } from 'react-i18next';
-import { StatusBar } from 'react-native';
-import { MessageOptions, MessageType } from 'react-native-flash-message';
-import colors, { Color } from '../colors';
+import {TFunction} from 'react-i18next';
+import {StatusBar} from 'react-native';
+import {MessageOptions, MessageType} from 'react-native-flash-message';
+import colors, {Color} from '../colors';
 import styles from '../styles';
 
 const getPaddingTop = () => {
@@ -59,7 +59,7 @@ export const infoFlashMessage = (
     colors.white,
     3000,
   );
-}
+};
 
 export const warnFlashMessage = (
   t: TFunction,
@@ -75,7 +75,7 @@ export const warnFlashMessage = (
     colors.white,
     3000,
   );
-}
+};
 
 export const errorFlashMessage = (
   t: TFunction,
@@ -91,7 +91,7 @@ export const errorFlashMessage = (
     colors.white,
     3000,
   );
-}
+};
 
 export const successFlashMessage = (
   t: TFunction,
@@ -107,7 +107,7 @@ export const successFlashMessage = (
     colors.white,
     3000,
   );
-}
+};
 
 /**
  * Custom flash messages
@@ -115,19 +115,19 @@ export const successFlashMessage = (
 
 export const logoutFlashMessage = (t: TFunction) => {
   return infoFlashMessage(t, 'logoutFlashMessage');
-}
+};
 
 export const loginPendingFlashMessage = (t: TFunction) => {
   return infoFlashMessage(t, 'loginPendingFlashMessage');
-}
+};
 
 export const loginErrorFlashMessage = (t: TFunction) => {
   return errorFlashMessage(t, 'loginErrorFlashMessage', 'loginErrorFlashDesc');
-}
+};
 
 export const loginSuccessFlashMessage = (t: TFunction) => {
   return successFlashMessage(t, 'loginSuccessFlashMessage');
-}
+};
 
 export const notImplementedFlashMessage = (t: TFunction) => {
   return warnFlashMessage(
@@ -135,4 +135,4 @@ export const notImplementedFlashMessage = (t: TFunction) => {
     'notImplementedFlashMessage',
     'notImplementedFlashMessageDesc',
   );
-}
+};

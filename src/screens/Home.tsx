@@ -1,13 +1,5 @@
-import React, {ReactNode, useContext, useEffect, useState} from 'react';
-import {
-  Dimensions,
-  Image,
-  ImageBackground,
-  Pressable,
-  ScrollView,
-  StatusBar,
-  View,
-} from 'react-native';
+import React, {ReactNode, useEffect, useState} from 'react';
+import {Dimensions, Pressable, ScrollView, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Octicons';
 import colors from '../colors';
@@ -23,15 +15,9 @@ import {useDispatch, useSelector} from 'react-redux';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import {Rect} from 'react-native-svg';
 import {RootState} from '../store/store';
-import {NavigationProp, useNavigation} from '@react-navigation/core';
+import {NavigationProp} from '@react-navigation/core';
 import {Status, STATUS} from '../store/status';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
 
 export default function Home({navigation}: {navigation: NavigationProp}) {
   const {t} = useTranslation();
@@ -54,8 +40,8 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
     setFillers(_fillers);
   }, []);
 
-  const loadUserStatus = useSelector<RootState, Status>(
-    state => state.user.loadUserStatus,
+  const loadCoursesStatus = useSelector<RootState, Status>(
+    state => state.courses.loadCoursesStatus,
   );
 
   const w =
@@ -121,7 +107,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
               }}>
               {sections.map(section => {
                 const item =
-                  loadUserStatus.code == STATUS.SUCCESS ? (
+                  loadCoursesStatus.code == STATUS.SUCCESS ? (
                     <Pressable
                       key={section.name}
                       onPress={() => {
@@ -213,7 +199,7 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
                   /> */}
               </View>
               <View>
-                {loadUserStatus.code != STATUS.SUCCESS && (
+                {loadCoursesStatus.code != STATUS.SUCCESS && (
                   <View>
                     <SvgAnimatedLinearGradient
                       height={cardWidth / 1.5}

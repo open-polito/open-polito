@@ -11,8 +11,8 @@ import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
-import {Cartella, File} from 'open-polito-api/corso';
 import {DropdownItem} from '../types';
+import {Directory, File} from 'open-polito-api/material';
 
 export default function MaterialSearch({navigation}) {
   const {t} = useTranslation();
@@ -50,7 +50,10 @@ export default function MaterialSearch({navigation}) {
   const initDropdown = () => {
     let items: {label: string; value: string}[] = [];
     courses.forEach(course => {
-      items.push({label: course.name, value: course.code + course.name});
+      items.push({
+        label: course.basicInfo.name,
+        value: course.basicInfo.code + course.basicInfo.name,
+      });
     });
     setItems(items);
   };
@@ -85,14 +88,14 @@ export default function MaterialSearch({navigation}) {
    *
    * @param dir The directory to search
    */
-  const findFiles = (query: string, dir: Cartella) => {
+  const findFiles = (query: string, dir: Directory) => {
     let results: File[] = [];
-    dir.file.forEach(item => {
-      if (item.tipo == 'file') {
-        if ((item.nome + item.filename).toLowerCase().includes(query)) {
+    dir.children.forEach(item => {
+      if (item.type == 'file') {
+        if ((item.name + item.filename).toLowerCase().includes(query)) {
           results.push(item);
         }
-      } else if (item.tipo == 'cartella') {
+      } else if (item.type == 'dir') {
         results.push(...findFiles(query, item));
       }
     });
@@ -112,25 +115,28 @@ export default function MaterialSearch({navigation}) {
           return;
         }
 
-        let rootDir: Cartella = {
-          tipo: 'cartella',
+        let rootDir: Directory = {
+          type: 'dir',
           code: '',
-          nome: '',
-          file: [],
+          name: '',
+          children: [],
         };
 
         if (selectedCourse) {
-          rootDir.file =
-            courses.find(course => selectedCourse == course.code + course.name)
-              ?.material || [];
+          rootDir.children =
+            courses.find(
+              course =>
+                selectedCourse == course.basicInfo.code + course.basicInfo.name,
+            )?.extendedInfo?.material || [];
         } else {
           courses.forEach(course => {
-            course.material && rootDir.file.push(...course.material);
+            course.extendedInfo?.material &&
+              rootDir.children.push(...course.extendedInfo.material);
           });
         }
 
         res = findFiles(query, rootDir).sort(
-          (a, b) => b.data_inserimento.getTime() - a.data_inserimento.getTime(),
+          (a, b) => b.creation_date - a.creation_date,
         );
 
         setResults(res);
@@ -225,15 +231,7 @@ export default function MaterialSearch({navigation}) {
             renderItem={({item}) => {
               return (
                 <View key={item.code}>
-                  <DirectoryItem
-                    tipo="file"
-                    nome={item.nome}
-                    filename={item.filename}
-                    data_inserimento={item.data_inserimento}
-                    size_kb={item.size_kb}
-                    code={item.code}
-                    corso={item.corso}
-                  />
+                  <DirectoryItem item={item} />
                 </View>
               );
             }}
