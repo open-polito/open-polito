@@ -14,19 +14,17 @@ import {
 } from './status';
 import {RootState} from './store';
 
-type UserData = {
+type UserState = {
   userInfo: PersonalData | null;
-  unreadEmailCount: number;
-};
 
-type UserState = UserData & {
+  unreadEmailCount: number;
   getUnreadEmailCountStatus: Status;
 };
 
 const initialState: UserState = {
   userInfo: null,
-  unreadEmailCount: 0,
 
+  unreadEmailCount: 0,
   getUnreadEmailCountStatus: initialStatus,
 };
 
