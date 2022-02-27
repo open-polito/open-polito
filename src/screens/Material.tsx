@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import {useContext} from 'react';
 import RecentItems from '../components/RecentItems';
-import RecentItemsLoader from '../components/RecentItemsLoader';
+import RecentItemsLoader from '../components/loaders/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
 import MaterialExplorer from '../components/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';

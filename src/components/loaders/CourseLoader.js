@@ -2,7 +2,7 @@ import React from 'react';
 import {Dimensions, View} from 'react-native';
 import {Rect} from 'react-native-svg';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
-import styles from '../styles';
+import styles from '../../styles';
 
 export default function CourseLoader() {
   const w =
