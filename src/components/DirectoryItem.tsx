@@ -1,12 +1,11 @@
 import moment from 'moment';
-import {MaterialItem} from 'open-polito-api/material';
+import {File, getDownloadURL, MaterialItem} from 'open-polito-api/material';
 import React, {ReactNode, useContext, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import getFileIcon from '../utils/getFileIcon';
-import {getDownloadUrl} from '../utils/material';
 import {TextS} from './Text';
 
 export type DirectoryItemProps = {
@@ -37,7 +36,7 @@ export default function DirectoryItem({
   const deviceContext = useContext(DeviceContext);
 
   const downloadFile = () => {
-    getDownloadUrl(deviceContext.device, item.code).then(url =>
+    getDownloadURL(deviceContext.device, item as File).then(url =>
       Linking.openURL(url),
     );
   };

@@ -29,7 +29,6 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
 
   const gotoLiveClass = () => {
     (async () => {
-      // TODO update to new API version to make this work again
       await Linking.openURL((await getLessonURL(device, liveClass)).url || '');
     })();
   };
