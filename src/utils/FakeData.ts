@@ -1,5 +1,7 @@
 import faker from '@faker-js/faker';
+import moment, {Moment} from 'moment';
 import {Directory, File, MaterialItem} from 'open-polito-api/material';
+import {TimetableSlot} from 'open-polito-api/timetable';
 
 export default class FakeData {
   /**
@@ -59,5 +61,30 @@ export default class FakeData {
       levelItems.push(this.file());
     }
     return levelItems;
+  }
+
+  static timetableSlots(date: Date = new Date()): TimetableSlot[] {
+    const weekStartDate: Date = moment(date).startOf('week').toDate();
+    const nSlots = Math.ceil(Math.random() * 10);
+    const dates: Date[] = faker.date.betweens(
+      weekStartDate.toISOString(),
+      moment(weekStartDate).add(4, 'd').toISOString(),
+      nSlots,
+    );
+    const slots: TimetableSlot[] = dates.map<TimetableSlot>(date => {
+      return {
+        start_time: date.getTime(),
+        end_time: moment(date).add(1.5, 'h').toDate().getTime(),
+        type: 'Fake lesson',
+        course_name: faker.random.words(2),
+        professor: {
+          name: faker.name.firstName(),
+          surname: faker.name.lastName(),
+        },
+        room: faker.word.adjective() + ' room',
+        room_url: '',
+      };
+    });
+    return slots;
   }
 }
