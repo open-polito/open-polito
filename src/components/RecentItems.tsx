@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import DirectoryItem from './DirectoryItem';
-import DirectoryItemLoader from './DirectoryItemLoader';
+import DirectoryItemLoader from './loaders/DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 import {getRecentCourseMaterial} from '../utils/material';
 import {RootState} from '../store/store';
