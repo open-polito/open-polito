@@ -20,7 +20,7 @@ const sections = [
     icon: 'calendar',
   },
   {
-    name: 'schedule',
+    name: 'timetable',
     icon: 'clock',
   },
 ];

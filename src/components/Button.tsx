@@ -32,7 +32,7 @@ const Button: FC<{
           text={text}
           weight="medium"
           color="white"
-          style={{color, marginLeft: 4}}
+          style={{color, marginLeft: 12}}
         />
       </Pressable>
     </View>

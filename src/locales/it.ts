@@ -40,7 +40,7 @@ const IT = {
 
   // Sections
   examSessions: 'Sessioni',
-  schedule: 'Orario',
+  timetable: 'Orario',
   material: 'Materiale',
   courses: 'Corsi',
   bookings: 'Prenotazioni',
