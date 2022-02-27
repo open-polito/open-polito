@@ -67,10 +67,3 @@ export async function getMaterialTree(user) {
   );
   return materialTree;
 }
-
-export async function getDownloadUrl(device, code) {
-  // incorrect use of the api library but it works
-  // TODO fix
-  const url = await getDownloadURL(device, code);
-  return url;
-}

@@ -86,10 +86,7 @@ export default function Courses({navigation}) {
             courses
               .filter(course => course.isMain)
               .map(mainCourse => buildCourseButton(mainCourse))}
-          {
-            //TODO re-enable once API fixed
-          }
-          {/* {courses.filter(course => !course.isMain).length > 0 && (
+          {courses.filter(course => !course.isMain).length > 0 && (
             <View>
               <TextN
                 text={t('otherCourses')}
@@ -100,7 +97,7 @@ export default function Courses({navigation}) {
                 .filter(course => !course.isMain)
                 .map(extraCourse => buildCourseButton(extraCourse))}
             </View>
-          )} */}
+          )}
         </ScrollView>
       </View>
     </ScreenContainer>

@@ -33,9 +33,8 @@ export default function Material() {
 
   const navigation = useNavigation();
 
-  //TODO re-enable extra courses once API fixed
-  const courses = useSelector<RootState, CourseState[]>(state =>
-    state.courses.courses.filter(course => course.isMain),
+  const courses = useSelector<RootState, CourseState[]>(
+    state => state.courses.courses,
   );
 
   const getRecentMaterialStatus = useSelector<RootState, Status>(
