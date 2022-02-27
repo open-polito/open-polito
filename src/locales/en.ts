@@ -40,7 +40,7 @@ const EN = {
 
   // Sections
   examSessions: 'Exam sessions',
-  schedule: 'Schedule',
+  timetable: 'Timetable',
   material: 'Material',
   courses: 'Courses',
   bookings: 'Bookings',
