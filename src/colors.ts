@@ -14,4 +14,7 @@ const colors = {
   green: '#32cd32',
 };
 
+const courseColors = ['#0E13B0', '#C2272C', '#E09326', '#6903AD', '#1E91D6'];
+
 export default colors;
+export {courseColors};
