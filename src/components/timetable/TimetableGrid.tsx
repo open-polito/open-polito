@@ -1,11 +1,32 @@
 import moment from 'moment';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dimensions, View} from 'react-native';
 import colors from '../../colors';
 import {TextXS} from '../Text';
 
 const TimetableGrid = () => {
   const [h, setH] = useState(Dimensions.get('window').height / 15);
+
+  // Used to update red line position
+  const [currentTime, setCurrentTime] = useState(moment());
+  const [mounted, setMounted] = useState(true);
+  const [updateTimeout, setUpdateTimeout] = useState<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (updateTimeout) clearTimeout(updateTimeout);
+      setMounted(false);
+    };
+  }, []);
+
+  /**
+   * Update time every 10 seconds, which will ensure red line is always in correct position
+   */
+  useEffect(() => {
+    setTimeout(() => {
+      mounted && setCurrentTime(moment());
+    }, 10000);
+  }, [currentTime]);
 
   return (
     <View
@@ -34,7 +55,7 @@ const TimetableGrid = () => {
                 h +
                 (moment
                   .duration(
-                    moment().diff(
+                    currentTime.diff(
                       moment().set({
                         h: 8,
                         m: 0,
@@ -43,7 +64,8 @@ const TimetableGrid = () => {
                   )
                   .as('ms') /
                   (3600 * 1000)) *
-                  h,
+                  h -
+                h / 2,
             },
           ],
         }}>
