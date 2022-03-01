@@ -43,6 +43,7 @@ export default function RecentItems({
       {recent.length > 0 ? (
         recent.map(item => (
           <DirectoryItem
+            key={item.code}
             item={item}
             compact={compact}
             relativeDate={relativeDate}
