@@ -39,7 +39,7 @@ const Timetable = () => {
       } catch (e) {
       } finally {
         if (!weekStartDate) {
-          const date = moment(slots[0].start_time).startOf('week').toDate();
+          const date = moment(slots[0].start_time).startOf('isoWeek').toDate();
           mounted && setWeekStartDate(date);
         }
         setSlots(slots);
