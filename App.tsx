@@ -15,6 +15,7 @@ import store from './src/store/store';
 import moment from 'moment';
 import {Device} from 'open-polito-api/device';
 import DeviceProvider from './src/context/Device';
+import Dialog from './src/components/dialogs/Dialog';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -64,6 +65,7 @@ export default function App() {
           <Router />
         </DeviceProvider>
         <FlashMessage position="top" />
+        <Dialog />
       </Provider>
     </Suspense>
   );

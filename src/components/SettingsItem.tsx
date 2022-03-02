@@ -5,9 +5,9 @@ import colors from '../colors';
 import {TextN, TextS} from './Text';
 
 export type SettingsItemProps = {
-  icon: string;
+  icon?: string;
   name: string;
-  description: string;
+  description?: string;
   settingsFunction: Function;
   toggle?: boolean; // whether to show toggle
   toggleValue?: boolean; // value of toggle
@@ -36,14 +36,14 @@ const SettingsItem: FC<SettingsItemProps> = ({
             alignItems: 'center',
           }}>
           <View style={{..._styles.settingsItemContainer, flex: 1}}>
-            <Icon name={icon} size={32} color={colors.black} />
+            {icon ? <Icon name={icon} size={28} color={colors.black} /> : null}
             <View style={_styles.settingsItemTextContainer}>
               <TextN text={name} numberOfLines={1} weight="medium" />
-              <TextS text={description} numberOfLines={1} />
+              {description ? <TextS text={description} /> : null}
             </View>
           </View>
           {toggle && (
-            <View>
+            <View style={{paddingLeft: 32}}>
               <Switch
                 value={toggleValue}
                 onValueChange={() => {
