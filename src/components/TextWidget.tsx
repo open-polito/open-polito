@@ -35,11 +35,7 @@ const TextWidget = ({
         style={{paddingHorizontal: 12, paddingVertical: 8}}
         android_ripple={{color: colors.lightGray}}
         onPress={() => {
-          expandable
-            ? () => {
-                setExpanded(!expanded);
-              }
-            : action;
+          expandable ? setExpanded(!expanded) : action;
         }}>
         <View
           style={{
