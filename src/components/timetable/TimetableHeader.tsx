@@ -7,6 +7,7 @@ import colors from '../../colors';
 import {TextN, TextS} from '../Text';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
+import {useTranslation} from 'react-i18next';
 
 const TimetableHeader = ({
   timetableDays,
@@ -15,6 +16,8 @@ const TimetableHeader = ({
   timetableDays: TimetableSlot[][];
   weekStartDate: Date | null;
 }) => {
+  const {t} = useTranslation();
+
   return (
     <View style={{borderBottomWidth: 1, borderBottomColor: colors.lightGray}}>
       <View
@@ -37,7 +40,7 @@ const TimetableHeader = ({
           }}>
           <MaterialIcons name="double-arrow" size={16} color={colors.white} />
           <TextS
-            text="Jump to date"
+            text={t('jumpToDate')}
             style={{marginLeft: 8}}
             color={colors.white}
           />
@@ -92,7 +95,7 @@ const TimetableHeader = ({
           size={24}
           color={colors.gray}
         />
-        <TextN text="Questa settimana" weight="medium" />
+        <TextN text={t('thisWeek')} weight="medium" />
         <MaterialCommunityIcons
           name="arrow-right"
           size={24}

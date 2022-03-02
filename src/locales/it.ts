@@ -97,6 +97,16 @@ const IT = {
   booked: 'Prenotati',
   availableToBook: 'Prenotabili',
 
+  // Timetable screen
+  jumpToDate: 'Vai a data',
+  thisWeek: 'Questa settimana',
+  timetableOptions: 'Opzioni orario',
+  timetableOverlap: 'Mostra sovrapposti',
+  timetableOverlapDesc: 'Mostra tutti gli eventi, anche se sovrapposti',
+  timetablePriority: 'Mostra per priorità',
+  timetablePriorityDesc:
+    'Gli eventi con priorità più alta verranno mostrati per primi',
+
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
   loginPendingFlashMessage: 'Accesso...',
