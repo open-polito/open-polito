@@ -22,6 +22,7 @@ import ArrowHeader from '../components/ArrowHeader';
 import {RootState} from '../store/store';
 import {
   logout,
+  resetConfig,
   setConfig,
   setConfig as _setConfig,
 } from '../store/sessionSlice';
@@ -34,6 +35,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
 import {PersonalData} from 'open-polito-api/user';
+
+/**
+ * Creates Settings item component from data
+ * @param item Settings item data
+ * @returns Settings item component
+ */
+export const buildSettingsItem = (item: SettingsItemProps) => {
+  return <SettingsItem key={item.name} {...item} />;
+};
 
 export default function Settings() {
   const {t} = useTranslation();
@@ -115,6 +125,14 @@ export default function Settings() {
       toggle: true,
       toggleValue: config.logging,
     },
+    {
+      icon: 'restore',
+      name: t('debugResetConfig'),
+      description: t('debugResetConfigDesc'),
+      settingsFunction: () => {
+        dispatch(resetConfig());
+      },
+    },
   ];
 
   const experimentalSettingsItems: SettingsItemProps[] = [
@@ -129,10 +147,6 @@ export default function Settings() {
       toggleValue: config.emailWebView,
     },
   ];
-
-  const buildSettingsItem = (item: SettingsItemProps) => {
-    return <SettingsItem key={item.name} {...item} />;
-  };
 
   return (
     <ScreenContainer style={{paddingHorizontal: 0}}>

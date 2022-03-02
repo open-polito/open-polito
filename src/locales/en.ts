@@ -67,6 +67,8 @@ const EN = {
   // Debug settings
   debugEnableLogging: 'Enable logging',
   debugEnableLoggingDesc: 'Save logs to device',
+  debugResetConfig: 'Reset configuration',
+  debugResetConfigDesc: 'Restore to default settings',
   // Experimental settings
   experimentalEmailWebView: 'Open e-mail in app',
   experimentalEmailWebViewDesc: 'Open e-mail page in a WebView',
