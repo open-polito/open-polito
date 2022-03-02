@@ -11,11 +11,22 @@ import {useNavigation} from '@react-navigation/native';
 import TimetableSlots from '../components/timetable/TimetableSlots';
 import TimetableGrid from '../components/timetable/TimetableGrid';
 import TimetableHeader from '../components/timetable/TimetableHeader';
+import {useDispatch, useSelector} from 'react-redux';
+import {setDialog} from '../store/sessionSlice';
+import {DIALOG_TYPE} from '../types';
+import {RootState} from '../store/store';
+import {Configuration} from '../defaultConfig';
 
 const Timetable = () => {
   const {t} = useTranslation();
   const deviceContext = useContext(DeviceContext);
   const navigation = useNavigation();
+
+  const dispatch = useDispatch();
+
+  const timetableConfig = useSelector<RootState, Configuration['timetable']>(
+    state => state.session.config.timetable,
+  );
 
   const [loaded, setLoaded] = useState(false);
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);
@@ -64,7 +75,18 @@ const Timetable = () => {
   return (
     <ScreenContainer>
       <View style={styles.withHorizontalPadding}>
-        <ArrowHeader text={t('timetable')} backFunc={navigation.goBack} />
+        <ArrowHeader
+          text={t('timetable')}
+          backFunc={navigation.goBack}
+          optionsFunction={() => {
+            dispatch(
+              setDialog({
+                visible: true,
+                params: {type: DIALOG_TYPE.TIMETABLE_OPTIONS},
+              }),
+            );
+          }}
+        />
       </View>
       <View
         style={{
@@ -79,7 +101,10 @@ const Timetable = () => {
         <ScrollView>
           <View style={{flex: 1, paddingBottom: 32}}>
             <TimetableGrid />
-            <TimetableSlots timetableDays={timetableDays} />
+            <TimetableSlots
+              config={timetableConfig}
+              timetableDays={timetableDays}
+            />
           </View>
         </ScrollView>
       </View>

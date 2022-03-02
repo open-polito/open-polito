@@ -20,6 +20,7 @@ import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ping} from 'open-polito-api/utils';
 import {setUserInfo} from './userSlice';
+import {DialogParams, DIALOG_TYPE} from '../types';
 
 export type DeviceInfo = {
   uuid: string;
@@ -41,6 +42,11 @@ type SessionState = {
   logoutStatus: Status;
 
   config: Configuration;
+
+  dialog: {
+    visible: boolean;
+    params: DialogParams | null;
+  };
 };
 
 const initialState: SessionState = {
@@ -54,6 +60,11 @@ const initialState: SessionState = {
   logoutStatus: initialStatus,
 
   config: defaultConfig,
+
+  dialog: {
+    visible: false,
+    params: null,
+  },
 };
 
 /**
@@ -144,6 +155,16 @@ export const setConfig = createAsyncThunk<
   dispatch(setConfigState(config));
 });
 
+/**
+ * Resets configuration to default
+ */
+export const resetConfig = createAsyncThunk<void, void, {state: RootState}>(
+  'session/resetConfig',
+  async (_, {dispatch}) => {
+    await dispatch(setConfig(defaultConfig));
+  },
+);
+
 export const sessionSlice = createSlice({
   name: 'session',
   initialState,
@@ -153,6 +174,15 @@ export const sessionSlice = createSlice({
     },
     setConfigState: (state, action: PayloadAction<Configuration>) => {
       state.config = action.payload;
+    },
+    setDialog: (
+      state,
+      action: PayloadAction<{
+        visible: boolean;
+        params: DialogParams | null;
+      }>,
+    ) => {
+      state.dialog = action.payload;
     },
   },
   extraReducers: builder => {
@@ -189,6 +219,6 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const {setAuthStatus, setConfigState} = sessionSlice.actions;
+export const {setAuthStatus, setConfigState, setDialog} = sessionSlice.actions;
 
 export default sessionSlice.reducer;
