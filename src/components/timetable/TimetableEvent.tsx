@@ -85,7 +85,13 @@ const TimetableEvent = ({
         },
         animStyle,
       ]}>
-      <TextXS text={slot.course_name} color={colors.white} numberOfLines={2} />
+      {overlapGroup.length < 3 ? (
+        <TextXS
+          text={slot.course_name}
+          color={colors.white}
+          numberOfLines={2}
+        />
+      ) : null}
       {overlapGroup.length == 0 ? (
         <>
           <View

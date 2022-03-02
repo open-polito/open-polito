@@ -41,7 +41,6 @@ const Dialog = () => {
           />
         );
       case DIALOG_TYPE.TIMETABLE_OPTIONS:
-        console.log('h');
         setTitle(t('timetableOptions'));
         return (
           <TimetableOptionsDialog
