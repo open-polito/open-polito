@@ -10,9 +10,11 @@ import TimetableDay from './TimetableDay';
 import {Configuration} from '../../defaultConfig';
 
 const TimetableSlots = ({
+  loaded,
   timetableDays,
   config,
 }: {
+  loaded: boolean;
   timetableDays: TimetableSlot[][];
   config: Configuration['timetable'];
 }) => {
@@ -49,6 +51,7 @@ const TimetableSlots = ({
       }}>
       {timetableDays.slice(1, 6).map((day, index) => (
         <TimetableDay
+          fake={!loaded}
           config={config}
           key={index}
           {...{day, h, index, courseNames}}

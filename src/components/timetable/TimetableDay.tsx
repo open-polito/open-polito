@@ -4,15 +4,18 @@ import React, {useMemo, useState} from 'react';
 import {View} from 'react-native';
 import colors from '../../colors';
 import {Configuration} from '../../defaultConfig';
+import TimetableDayLoader from '../loaders/TimetableDayLoader';
 import TimetableEvent from './TimetableEvent';
 
 const TimetableDay = ({
+  fake,
   index,
   day,
   h,
   courseNames,
   config,
 }: {
+  fake: boolean;
   index: number;
   day: TimetableSlot[];
   h: number;
@@ -90,13 +93,20 @@ const TimetableDay = ({
         borderLeftWidth: index > 0 ? 1 : 0,
         borderColor: colors.lightGray,
       }}>
-      {day.map(slot => {
-        const overlapGroup = findOverlapGroup(slot);
-        const index = overlapGroup.findIndex(_slot => slot == _slot);
-        return (
-          <TimetableEvent {...{overlapGroup, slot, w, h, courseNames, index}} />
-        );
-      })}
+      {fake ? (
+        <TimetableDayLoader w={w} h={h} />
+      ) : (
+        day.map((slot, i) => {
+          const overlapGroup = findOverlapGroup(slot);
+          const index = overlapGroup.findIndex(_slot => slot == _slot);
+          return (
+            <TimetableEvent
+              key={i}
+              {...{overlapGroup, slot, w, h, courseNames, index}}
+            />
+          );
+        })
+      )}
     </View>
   );
 };

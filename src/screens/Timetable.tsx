@@ -102,6 +102,7 @@ const Timetable = () => {
           <View style={{flex: 1, paddingBottom: 32}}>
             <TimetableGrid />
             <TimetableSlots
+              loaded={loaded}
               config={timetableConfig}
               timetableDays={timetableDays}
             />
