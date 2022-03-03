@@ -79,6 +79,7 @@ const TimetableGrid = () => {
       </View>
       {Array.from({length: 14}).map((_, index) => (
         <View
+          key={index}
           style={{
             zIndex: 100,
             width: '100%',
