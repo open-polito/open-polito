@@ -84,6 +84,7 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -139,6 +140,7 @@ android {
         versionCode 5
         versionName "0.4.0"
         resValue "string", "build_config_package", "org.openpolito.app"
+        resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
     }
 
     flavorDimensions "default"
@@ -146,17 +148,21 @@ android {
     productFlavors {
         releaseFlavor {
             resValue "string", "app_name", "Open PoliTo"
+            resValue "string", "CodePushDeploymentKey", '""'
         }
         betaFlavor {
             resValue "string", "app_name", "Open PoliTo [beta]"
+            resValue "string", "CodePushDeploymentKey", '""'
         }
         devFlavor {
             resValue "string", "app_name", "Open PoliTo [dev]"
             applicationIdSuffix ".dev"
+            resValue "string", "CodePushDeploymentKey", deploymentKeyDev
         }
         debugFlavor {
             resValue "string", "app_name", "Open PoliTo [debug]"
             applicationIdSuffix ".debug"
+            resValue "string", "CodePushDeploymentKey", '""'
         }
     }
 
@@ -242,6 +248,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation project(':react-native-code-push')
 }
 
 // Run this once to be able to run the application with BUCK

@@ -1,4 +1,6 @@
 export type Configuration = {
+  beta: boolean;
+
   logging: boolean;
   emailWebView: boolean;
 
@@ -8,6 +10,8 @@ export type Configuration = {
 };
 
 const defaultConfig: Configuration = {
+  beta: false,
+
   logging: false,
   emailWebView: false,
 

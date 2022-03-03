@@ -40,6 +40,10 @@ jobs:
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
+      - name: Run dev build script
+        env:
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+        run: './scripts/dev_build.sh'
       - name: Get keystore file
         run: echo ${{ secrets.DEV_KEYSTORE }} | base64 -d > $GITHUB_WORKSPACE/dev-key-store.jks
       - name: Build dev release variant
@@ -50,6 +54,7 @@ jobs:
           -Pandroid.injected.signing.store.password="${{ secrets.DEV_KEYSTORE_PASSWD }}"
           -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}"
           -Pandroid.injected.signing.key.password="${{ secrets.DEV_KEY_PASSWD }}"
+          -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_DEV }}"
       - name: Delete keystore file
         if: always()
         run: shred -vz $GITHUB_WORKSPACE/dev-key-store.jks ; rm -f $GITHUB_WORKSPACE/dev-key-store.jks
