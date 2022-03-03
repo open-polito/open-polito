@@ -30,16 +30,6 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
 
   const timetableOptionsItems: SettingsItemProps[] = [
     {
-      name: t('timetableOverlap'),
-      description: t('timetableOverlapDesc'),
-      icon: 'layers-outline',
-      toggle: true,
-      toggleValue: config.timetable.overlap == 'split',
-      settingsFunction: () => {
-        toggleOverlapMode();
-      },
-    },
-    {
       name: t('timetablePriority'),
       description: t('timetablePriorityDesc'),
       icon: 'priority-high',

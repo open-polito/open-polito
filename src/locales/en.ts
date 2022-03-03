@@ -101,8 +101,6 @@ const EN = {
   jumpToDate: 'Jump to date',
   thisWeek: 'This week',
   timetableOptions: 'Timetable options',
-  timetableOverlap: 'Show overlapping',
-  timetableOverlapDesc: 'Show all events, even if overlapping',
   timetablePriority: 'Show by priority',
   timetablePriorityDesc: 'Events with higher priority will show first',
 
