@@ -8,19 +8,19 @@ import TimetableDayLoader from '../loaders/TimetableDayLoader';
 import TimetableEvent from './TimetableEvent';
 
 const TimetableDay = ({
-  fake,
-  index,
+  fake = false,
   day,
   h,
   courseNames,
   config,
+  index = 0,
 }: {
-  fake: boolean;
-  index: number;
+  fake?: boolean;
   day: TimetableSlot[];
   h: number;
   courseNames: string[];
   config: Configuration['timetable'];
+  index?: number;
 }) => {
   const [w, setW] = useState(0);
 
@@ -98,11 +98,11 @@ const TimetableDay = ({
       ) : (
         day.map((slot, i) => {
           const overlapGroup = findOverlapGroup(slot);
-          const index = overlapGroup.findIndex(_slot => slot == _slot);
+          const _index = overlapGroup.findIndex(_slot => slot == _slot);
           return (
             <TimetableEvent
               key={i}
-              {...{overlapGroup, slot, w, h, courseNames, index}}
+              {...{overlapGroup, slot, w, h, courseNames, index: _index}}
             />
           );
         })
