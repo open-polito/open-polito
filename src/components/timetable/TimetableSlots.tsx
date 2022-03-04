@@ -22,6 +22,11 @@ const TimetableSlots = ({
 
   const [courseNames, setCourseNames] = useState<string[]>(['', '', '']);
 
+  const days = useMemo<TimetableSlot[][]>(() => {
+    if (timetableDays.length == 1) return timetableDays;
+    return timetableDays.slice(1, 6);
+  }, [timetableDays]);
+
   const getCourseNames = (): string[] => {
     let _courseNames: string[] = [];
     timetableDays.forEach(day => {
@@ -49,7 +54,7 @@ const TimetableSlots = ({
         alignItems: 'flex-start',
         justifyContent: 'center',
       }}>
-      {timetableDays.slice(1, 6).map((day, index) => (
+      {days.map((day, index) => (
         <TimetableDay
           fake={!loaded}
           config={config}

@@ -2,7 +2,7 @@ import moment from 'moment';
 import {getTimetable, TimetableSlot} from 'open-polito-api/timetable';
 import React, {useContext, useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {ScrollView, View} from 'react-native';
+import {Dimensions, ScrollView, View} from 'react-native';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
@@ -36,7 +36,11 @@ const Timetable = () => {
     Array.from({length: 7}, () => []),
   );
 
+  const [layout, setLayout] = useState<'day' | 'week'>('day');
+
   const [mounted, setMounted] = useState(true);
+
+  const [selectedDay, setSelectedDay] = useState(1); // Today's day index. TODO display first day of week when week is not current
 
   /**
    * Get slots and set {@link weekStartDate}
@@ -95,16 +99,26 @@ const Timetable = () => {
           flex: 1,
         }}>
         <TimetableHeader
+          selectedDay={layout == 'week' ? null : selectedDay}
+          onDayChanged={(value: number) => {
+            setSelectedDay(value);
+          }}
+          onLayoutChanged={(value: 'day' | 'week') => {
+            setLayout(value);
+          }}
           weekStartDate={weekStartDate}
           timetableDays={timetableDays}
         />
         <ScrollView>
           <View style={{flex: 1, paddingBottom: 32}}>
             <TimetableGrid />
+
             <TimetableSlots
               loaded={loaded}
               config={timetableConfig}
-              timetableDays={timetableDays}
+              timetableDays={
+                layout == 'week' ? timetableDays : [timetableDays[selectedDay]]
+              }
             />
           </View>
         </ScrollView>

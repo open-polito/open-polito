@@ -8,15 +8,30 @@ import {TextN, TextS} from '../Text';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
+import HorizontalIconSelector from '../HorizontalIconSelector';
 
 const TimetableHeader = ({
+  selectedDay = null,
   timetableDays,
   weekStartDate,
+  onLayoutChanged,
+  onDayChanged,
 }: {
+  selectedDay: number | null;
   timetableDays: TimetableSlot[][];
   weekStartDate: Date | null;
+  onLayoutChanged: Function;
+  onDayChanged: Function;
 }) => {
   const {t} = useTranslation();
+
+  const _onLayoutChanged = (value: string) => {
+    onLayoutChanged(value);
+  };
+
+  const _onDayChanged = (value: number) => {
+    onDayChanged(value);
+  };
 
   return (
     <View style={{borderBottomWidth: 1, borderBottomColor: colors.lightGray}}>
@@ -45,42 +60,17 @@ const TimetableHeader = ({
             color={colors.white}
           />
         </Pressable>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <TextS text="Layout:" />
-          <View
-            style={{
-              marginLeft: 8,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              ...styles.border,
-              ...styles.elevated,
-              backgroundColor: colors.white,
-            }}>
-            <MaterialCommunityIcons
-              name="view-day-outline"
-              size={24}
-              style={{paddingLeft: 4}}
-              color={colors.mediumGray}
-            />
-            <Pressable
-              style={{
-                marginLeft: 4,
-                ...styles.border,
-                backgroundColor: colors.gradient1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: 4,
-              }}>
-              <MaterialCommunityIcons
-                name="view-week-outline"
-                size={24}
-                color={colors.white}
-              />
-            </Pressable>
-          </View>
-        </View>
+        <HorizontalIconSelector
+          defaultValue="week"
+          onValueChange={(value: string) => {
+            _onLayoutChanged(value);
+          }}
+          label="Layout:"
+          items={[
+            {icon: 'view-day-outline', value: 'day'},
+            {icon: 'view-week-outline', value: 'week'},
+          ]}
+        />
       </View>
       <View
         style={{
@@ -112,12 +102,20 @@ const TimetableHeader = ({
           paddingBottom: 12,
         }}>
         {timetableDays.slice(1, 6).map((day, index) => (
-          <View
+          <Pressable
+            onPress={() => {
+              _onDayChanged(index + 1);
+            }}
             key={index}
             style={{
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
+              paddingHorizontal: 12,
+              paddingVertical: 4,
+              borderRadius: 4,
+              backgroundColor:
+                selectedDay == index + 1 ? colors.gradient1 : colors.white,
             }}>
             <TextS
               text={
@@ -125,6 +123,7 @@ const TimetableHeader = ({
                   ? moment(weekStartDate).add(index, 'd').format('ddd')
                   : ''
               }
+              color={selectedDay == index + 1 ? colors.white : colors.black}
             />
             <TextS
               key={index}
@@ -133,8 +132,9 @@ const TimetableHeader = ({
                   ? moment(weekStartDate).add(index, 'd').date()
                   : ''
               }
+              color={selectedDay == index + 1 ? colors.white : colors.black}
             />
-          </View>
+          </Pressable>
         ))}
       </View>
     </View>
