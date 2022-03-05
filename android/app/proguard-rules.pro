@@ -13,3 +13,4 @@
 -keep class com.facebook.jni.** { *; }
 -keep class org.openpolito.app.BuildConfig { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
+-dontwarn com.google.firebase.analytics.connector.AnalyticsConnector
