@@ -13,6 +13,16 @@ import {RootState} from '../store/store';
 import {loadCoursesData} from '../store/coursesSlice';
 import {DeviceContext} from '../context/Device';
 import {getUnreadEmailCount} from '../store/userSlice';
+import {
+  parsePushNotification,
+  registerPushNotifications,
+} from 'open-polito-api/notifications';
+
+import messaging from '@react-native-firebase/messaging';
+import {Platform} from 'react-native';
+import {showMessage} from 'react-native-flash-message';
+import {infoFlashMessage} from '../components/CustomFlashMessages';
+import Config from 'react-native-config';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -38,6 +48,35 @@ export default function HomeRouter() {
   useEffect(() => {
     dispatch(loadCoursesData(deviceContext.device));
     dispatch(getUnreadEmailCount(deviceContext.device));
+
+    /**
+     * After user successfully logged in, register FCM notifications
+     * with current messaging token.
+     * TODO iOS support.
+     */
+    (async () => {
+      if (Platform.OS == 'android' && Config.VARIANT != 'debug') {
+        const FCMToken = await messaging().getToken();
+        await registerPushNotifications(deviceContext.device, FCMToken);
+      }
+    })();
+
+    /**
+     * Setup FCM handler for notifications received while in app.
+     * Show flash message.
+     * TODO add iOS support.
+     */
+    const unsubscribe =
+      Platform.OS == 'android' && Config.VARIANT != 'debug'
+        ? messaging().onMessage(async remoteMessage => {
+            const msg = parsePushNotification(remoteMessage.data);
+            showMessage(
+              infoFlashMessage(msg.topic + ': ' + msg.title, msg.text),
+            );
+          })
+        : () => {};
+
+    return unsubscribe;
   }, []);
 
   return (
