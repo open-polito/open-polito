@@ -89,7 +89,7 @@ export default function Settings() {
   };
 
   const showRestartAppNeeded = () => {
-    showMessage(warnFlashMessage(t, 'restartFlashMessage'));
+    showMessage(warnFlashMessage(t('restartFlashMessage')));
   };
 
   const settingsItems: SettingsItemProps[] = [

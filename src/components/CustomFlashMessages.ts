@@ -14,7 +14,6 @@ const getPaddingTop = () => {
  * Objects are to be passed to showMessage() (from react-native-flash-message)
  */
 const flashMessageBase = (
-  t: TFunction,
   message: string,
   description: string = '',
   type: MessageType,
@@ -24,8 +23,8 @@ const flashMessageBase = (
 ): MessageOptions => {
   StatusBar.setBarStyle('light-content');
   return {
-    message: t(message),
-    description: t(description),
+    message: message,
+    description: description,
     type,
     backgroundColor,
     color,
@@ -45,13 +44,8 @@ const flashMessageBase = (
  * - success
  */
 
-export const infoFlashMessage = (
-  t: TFunction,
-  message: string,
-  description: string = '',
-) => {
+export const infoFlashMessage = (message: string, description: string = '') => {
   return flashMessageBase(
-    t,
     message,
     description,
     'info',
@@ -61,13 +55,8 @@ export const infoFlashMessage = (
   );
 };
 
-export const warnFlashMessage = (
-  t: TFunction,
-  message: string,
-  description: string = '',
-) => {
+export const warnFlashMessage = (message: string, description: string = '') => {
   return flashMessageBase(
-    t,
     message,
     description,
     'warning',
@@ -78,12 +67,10 @@ export const warnFlashMessage = (
 };
 
 export const errorFlashMessage = (
-  t: TFunction,
   message: string,
   description: string = '',
 ) => {
   return flashMessageBase(
-    t,
     message,
     description,
     'danger',
@@ -94,12 +81,10 @@ export const errorFlashMessage = (
 };
 
 export const successFlashMessage = (
-  t: TFunction,
   message: string,
   description: string = '',
 ) => {
   return flashMessageBase(
-    t,
     message,
     description,
     'success',
@@ -114,25 +99,27 @@ export const successFlashMessage = (
  */
 
 export const logoutFlashMessage = (t: TFunction) => {
-  return infoFlashMessage(t, 'logoutFlashMessage');
+  return infoFlashMessage(t('logoutFlashMessage'));
 };
 
 export const loginPendingFlashMessage = (t: TFunction) => {
-  return infoFlashMessage(t, 'loginPendingFlashMessage');
+  return infoFlashMessage(t('loginPendingFlashMessage'));
 };
 
 export const loginErrorFlashMessage = (t: TFunction) => {
-  return errorFlashMessage(t, 'loginErrorFlashMessage', 'loginErrorFlashDesc');
+  return errorFlashMessage(
+    t('loginErrorFlashMessage'),
+    t('loginErrorFlashDesc'),
+  );
 };
 
 export const loginSuccessFlashMessage = (t: TFunction) => {
-  return successFlashMessage(t, 'loginSuccessFlashMessage');
+  return successFlashMessage(t('loginSuccessFlashMessage'));
 };
 
 export const notImplementedFlashMessage = (t: TFunction) => {
   return warnFlashMessage(
-    t,
-    'notImplementedFlashMessage',
-    'notImplementedFlashMessageDesc',
+    t('notImplementedFlashMessage'),
+    t('notImplementedFlashMessageDesc'),
   );
 };
