@@ -119,7 +119,7 @@ export default function LoginScreen() {
               </View>
               <View style={_styles.versionView}>
                 <Text
-                  text={`${t('version')} 0.4.0`}
+                  text={`${t('version')} 0.5.0-alpha.1`}
                   style={{
                     marginHorizontal: 'auto',
                     position: 'absolute',
