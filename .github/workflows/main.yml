@@ -40,12 +40,12 @@ jobs:
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
-      - name: Run dev build script
+      - name: Run  pre-build script
         env:
+          DEV_KEYSTORE: ${{ secrets.DEV_KEYSTORE }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
-        run: './scripts/dev_build.sh'
-      - name: Get keystore file
-        run: echo ${{ secrets.DEV_KEYSTORE }} | base64 -d > $GITHUB_WORKSPACE/dev-key-store.jks
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: ./scripts/pre_build_dev.sh
       - name: Build dev release variant
         env:
           ENVFILE: .env.dev
@@ -55,9 +55,9 @@ jobs:
           -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}"
           -Pandroid.injected.signing.key.password="${{ secrets.DEV_KEY_PASSWD }}"
           -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_DEV }}"
-      - name: Delete keystore file
+      - name: Run post-build script
         if: always()
-        run: shred -vz $GITHUB_WORKSPACE/dev-key-store.jks ; rm -f $GITHUB_WORKSPACE/dev-key-store.jks
+        run: ./scripts/post_build_dev.sh
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
