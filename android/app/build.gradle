@@ -132,7 +132,7 @@ def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitect
  * Return deployment key for dev flavor or empty string
  * @return string
  */
-def getDeploymentKeyDev() {
+def findDeploymentKeyDev() {
     if (project.hasProperty("deploymentKeyDev")) {
         return deploymentKeyDev
     } else {
@@ -169,7 +169,7 @@ android {
         devFlavor {
             resValue "string", "app_name", "Open PoliTo [dev]"
             applicationIdSuffix ".dev"
-            resValue "string", "CodePushDeploymentKey", getDeploymentKeyDev()
+            resValue "string", "CodePushDeploymentKey", findDeploymentKeyDev()
         }
         debugFlavor {
             resValue "string", "app_name", "Open PoliTo [debug]"
