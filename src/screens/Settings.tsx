@@ -35,6 +35,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
 import {PersonalData} from 'open-polito-api/user';
+import {sendTestPushNotification} from 'open-polito-api/notifications';
+import Analytics from 'appcenter-analytics';
 
 /**
  * Creates Settings item component from data
@@ -131,6 +133,16 @@ export default function Settings() {
       description: t('debugResetConfigDesc'),
       settingsFunction: () => {
         dispatch(resetConfig());
+      },
+    },
+    {
+      icon: 'bell-alert-outline',
+      name: t('debugTestNotification'),
+      description: t('debugTestNotificationDesc'),
+      settingsFunction: () => {
+        showMessage(warnFlashMessage(t('pleaseWait')));
+        sendTestPushNotification(deviceContext.device);
+        Analytics.trackEvent('test_notification_request');
       },
     },
   ];

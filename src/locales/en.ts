@@ -15,6 +15,7 @@ const EN = {
   noContent: 'Nothing to show...',
   videoPlayer: 'Video player',
   deadline: 'Deadline',
+  pleaseWait: 'Please wait...',
 
   // Splash screen
   loading: 'Loading...',
@@ -69,6 +70,10 @@ const EN = {
   debugEnableLoggingDesc: 'Save logs to device',
   debugResetConfig: 'Reset configuration',
   debugResetConfigDesc: 'Restore to default settings',
+  debugTestNotification: 'Send test notification',
+  debugTestNotificationDesc:
+    'You should receive a notification in a few seconds',
+
   // Experimental settings
   experimentalEmailWebView: 'Open e-mail in app',
   experimentalEmailWebViewDesc: 'Open e-mail page in a WebView',

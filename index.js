@@ -18,8 +18,11 @@ if (ENABLE_CODEPUSH) Analytics.setEnabled(true);
  * Set FCM handler for background push notifications.
  * TODO iOS support
  */
+
 if (Platform.OS == 'android' && VARIANT != 'debug') {
-  messaging().setBackgroundMessageHandler(async remoteMessage => {});
+  messaging().setBackgroundMessageHandler(async remoteMessage => {
+    Analytics.trackEvent('push_background');
+  });
 }
 
 AppRegistry.registerComponent(appName, () =>
