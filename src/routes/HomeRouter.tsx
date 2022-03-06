@@ -75,7 +75,7 @@ export default function HomeRouter() {
             showMessage(
               infoFlashMessage(msg.topic + ': ' + msg.title, msg.text),
             );
-            Analytics.trackEvent('push_foreground', {
+            await Analytics.trackEvent('push_foreground', {
               test: msg.topic == NotificationType.TEST ? 'true' : 'false',
             });
           })
