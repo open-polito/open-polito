@@ -14,6 +14,7 @@ import {loadCoursesData} from '../store/coursesSlice';
 import {DeviceContext} from '../context/Device';
 import {getUnreadEmailCount} from '../store/userSlice';
 import {
+  NotificationType,
   parsePushNotification,
   registerPushNotifications,
 } from 'open-polito-api/notifications';
@@ -23,6 +24,7 @@ import {Platform} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
+import Analytics from 'appcenter-analytics';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -73,6 +75,9 @@ export default function HomeRouter() {
             showMessage(
               infoFlashMessage(msg.topic + ': ' + msg.title, msg.text),
             );
+            Analytics.trackEvent('push_foreground', {
+              test: msg.topic == NotificationType.TEST ? 'true' : 'false',
+            });
           })
         : () => {};
 
