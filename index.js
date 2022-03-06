@@ -21,7 +21,9 @@ if (ENABLE_CODEPUSH) Analytics.setEnabled(true);
 
 if (Platform.OS == 'android' && VARIANT != 'debug') {
   messaging().setBackgroundMessageHandler(async remoteMessage => {
-    Analytics.trackEvent('push_background');
+    Analytics.trackEvent('push_background', {
+      test: msg.topic == NotificationType.TEST ? 'true' : 'false',
+    });
   });
 }
 
