@@ -17,6 +17,10 @@ const IT = {
   deadline: 'Scadenza',
   pleaseWait: 'Per favore attendi...',
 
+  // Notifications
+  defaultMsgTitle: '🚀 Nuova notifica',
+  defaultMsgBody: "Apri l'app per vederla",
+
   // Splash screen
   loading: 'Caricamento...',
   retry: 'Riprova',

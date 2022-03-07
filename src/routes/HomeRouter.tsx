@@ -14,8 +14,8 @@ import {loadCoursesData} from '../store/coursesSlice';
 import {DeviceContext} from '../context/Device';
 import {getUnreadEmailCount} from '../store/userSlice';
 import {
-  NotificationType,
   parsePushNotification,
+  PushNotification,
   registerPushNotifications,
 } from 'open-polito-api/notifications';
 
@@ -24,7 +24,7 @@ import {Platform} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
-import Analytics from 'appcenter-analytics';
+import {foregroundMessageHandler} from '../utils/push-notifications';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -64,6 +64,13 @@ export default function HomeRouter() {
     })();
 
     /**
+     * The callback to show flash message
+     */
+    const showMessageCallback = (msg: PushNotification) => {
+      showMessage(infoFlashMessage(msg.topic + ': ' + msg.title, msg.text));
+    };
+
+    /**
      * Setup FCM handler for notifications received while in app.
      * Show flash message.
      * TODO add iOS support.
@@ -71,13 +78,8 @@ export default function HomeRouter() {
     const unsubscribe =
       Platform.OS == 'android' && Config.VARIANT != 'debug'
         ? messaging().onMessage(async remoteMessage => {
-            const msg = parsePushNotification(remoteMessage.data);
-            showMessage(
-              infoFlashMessage(msg.topic + ': ' + msg.title, msg.text),
-            );
-            await Analytics.trackEvent('push_foreground', {
-              test: msg.topic == NotificationType.TEST ? 'true' : 'false',
-            });
+            await foregroundMessageHandler(remoteMessage);
+            showMessageCallback(parsePushNotification(remoteMessage.data));
           })
         : () => {};
 

@@ -149,8 +149,8 @@ android {
         applicationId "org.openpolito.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "0.5.0-alpha.1"
+        versionCode 7
+        versionName "0.5.0-alpha.2"
         resValue "string", "build_config_package", "org.openpolito.app"
         resValue 'string', "CODE_PUSH_APK_BUILD_TIME", String.format("\"%d\"", System.currentTimeMillis())
     }
@@ -235,6 +235,11 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     implementation project(':react-native-config')
+
+    // We use 2.6.0 for compatibility with API 30
+    implementation("androidx.work:work-runtime:2.6.0") {
+        force = true
+    }
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
