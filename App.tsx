@@ -20,6 +20,7 @@ import {
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
 } from 'react-native-render-html';
+import colors from './src/colors';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -69,7 +70,7 @@ export default function App() {
           <TRenderEngineProvider
             tagsStyles={{
               body: {
-                // color: colors.black,
+                color: '#555',
               },
               p: {
                 marginTop: 0,
