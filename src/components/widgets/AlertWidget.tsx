@@ -17,13 +17,20 @@ const AlertWidget: FC<AlertWidgetProps> = ({action, alerts, ...props}) => {
   return (
     <WidgetBase name={t('alerts')} action={action} compact {...props}>
       {alerts ? (
-        <View style={{flexDirection: 'column', marginTop: 8}}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            marginTop: 8,
+          }}>
           {alerts.map(alert => (
-            <CourseAlert
-              compact
-              alert={alert}
-              key={alert.date.toString() + alert.text.slice(0, 30)}
-            />
+            <View style={{flex: 1, marginBottom: 4}}>
+              <CourseAlert
+                compact
+                alert={alert}
+                key={alert.date.toString() + alert.text.slice(0, 30)}
+              />
+            </View>
           ))}
         </View>
       ) : (

@@ -218,7 +218,6 @@ export default function Course({navigation, route}) {
                 return (
                   <View
                     style={{
-                      ...styles.withHorizontalPadding,
                       flex: 1,
                       paddingTop: 8,
                     }}>

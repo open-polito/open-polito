@@ -1,6 +1,7 @@
 import {Notice} from 'open-polito-api/course';
 import React from 'react';
-import {RefreshControl, ScrollView, View} from 'react-native';
+import {FlatList, RefreshControl, View} from 'react-native';
+import styles from '../styles';
 import CourseAlert from './CourseAlert';
 import NoContent from './NoContent';
 
@@ -12,8 +13,13 @@ const CourseAlerts = ({
   refresh: Function;
 }) => {
   return (
-    <View style={{flexDirection: 'column', flex: 1}}>
-      <ScrollView
+    <View
+      style={{
+        flexDirection: 'column',
+        flex: 1,
+      }}>
+      <FlatList
+        ListEmptyComponent={<NoContent />}
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -21,20 +27,15 @@ const CourseAlerts = ({
               refresh();
             }}
           />
-        }>
-        {alerts.length > 0 ? (
-          alerts.map(alert => {
-            return (
-              <CourseAlert
-                alert={alert}
-                key={alert.date + alert.text.slice(0, 30)}
-              />
-            );
-          })
-        ) : (
-          <NoContent />
+        }
+        data={alerts}
+        keyExtractor={alert => alert.date + alert.text.slice(0, 30)}
+        renderItem={a => (
+          <View style={{...styles.withHorizontalPadding}}>
+            <CourseAlert alert={a.item} />
+          </View>
         )}
-      </ScrollView>
+      />
     </View>
   );
 };

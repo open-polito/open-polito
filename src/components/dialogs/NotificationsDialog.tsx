@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {
   markNotificationRead,
   Notification,
@@ -10,6 +11,7 @@ import {useSelector} from 'react-redux';
 import {DeviceContext} from '../../context/Device';
 import store, {RootState} from '../../store/store';
 import {setNotifications} from '../../store/userSlice';
+import styles from '../../styles';
 import HorizontalSelector from '../HorizontalSelector';
 import NotificationComponent from '../NotificationComponent';
 
@@ -98,9 +100,16 @@ const NotificationsDialog = () => {
           initialNumToRender={10}
           maxToRenderPerBatch={10}
           renderItem={n => (
-            <View key={n.index}>
+            <View
+              style={{
+                marginHorizontal:
+                  styles.withHorizontalPadding.paddingHorizontal,
+              }}>
               <NotificationComponent
-                notification={n.item}
+                read={n.item.is_read}
+                date={moment(n.item.time).format('lll')}
+                title={n.item.title}
+                body={n.item.body}
                 handlePress={() => {
                   handlePress(n.item.id);
                 }}
