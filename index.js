@@ -8,8 +8,6 @@ import App from './App';
 import {name as appName} from './app.json';
 import CodePush from 'react-native-code-push';
 import messaging from '@react-native-firebase/messaging';
-import {parsePushNotification} from 'open-polito-api/notifications';
-import notifee from '@notifee/react-native';
 import {backgroundMessageHandler} from './src/utils/push-notifications';
 
 const VARIANT = Config.VARIANT;

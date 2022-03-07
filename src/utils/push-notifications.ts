@@ -10,6 +10,9 @@ import {FirebaseMessagingTypes} from '@react-native-firebase/messaging';
 import Crashes, {ExceptionModel} from 'appcenter-crashes';
 import Analytics from 'appcenter-analytics';
 import i18next from 'i18next';
+import store from '../store/store';
+import {setNotificationsStatus} from '../store/userSlice';
+import {initialStatus} from '../store/status';
 
 const triggerNotification = async (msg: PushNotification): Promise<void> => {
   // Fallback if error during msg parse
@@ -70,7 +73,8 @@ const commonMessageHandler = async (
     const exceptionModel = ExceptionModel.createFromError(e as Error);
     Crashes.trackError(exceptionModel);
   } finally {
-    Analytics.trackEvent(
+    store.dispatch(setNotificationsStatus(initialStatus)); // Invalidate all notifications to reload them
+    await Analytics.trackEvent(
       background ? 'push_background' : 'push_foreground',
       flags,
     );

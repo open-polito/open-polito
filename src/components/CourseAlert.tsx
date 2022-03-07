@@ -3,7 +3,7 @@ import moment from 'moment';
 import {Notice} from 'open-polito-api/course';
 import React from 'react';
 import {View} from 'react-native';
-import RenderHTML from 'react-native-render-html';
+import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
 import {TextS, TextXS} from './Text';
 
@@ -51,17 +51,7 @@ const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
             text={decode(alert.text.replace(htmlTags, '')).trim()}
           />
         ) : (
-          <RenderHTML
-            source={{html: alert.text}}
-            tagsStyles={{
-              body: {
-                color: colors.black,
-              },
-              p: {
-                marginTop: 0,
-              },
-            }}
-          />
+          <RenderHTMLSource source={{html: alert.text}} />
         )}
       </View>
     </View>

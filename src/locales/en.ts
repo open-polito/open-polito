@@ -16,6 +16,12 @@ const EN = {
   videoPlayer: 'Video player',
   deadline: 'Deadline',
   pleaseWait: 'Please wait...',
+  allF: 'All',
+  allM: 'All',
+  directAlerts: 'Direct',
+  test: 'Test',
+  readF: 'Read',
+  unreadF: 'Unread',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',

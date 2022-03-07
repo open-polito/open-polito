@@ -5,23 +5,44 @@ import styles from '../styles';
 import NotificationButton from './NotificationButton';
 import {TextTitle} from './Text';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import IconBadge from './IconBadge';
 
 const Header = ({
   text = '',
   color = colors.black,
   optionsFunction = null,
+  notificationsFunction = null,
+  notificationsUnread = 0,
 }: {
   text: string;
   color?: Color;
-  optionsFunction?: Function | null;
+  optionsFunction?: Function | null; // Takes precedence over notificationsFunction
+  notificationsFunction?: Function | null;
+  notificationsUnread?: number;
 }) => {
   return (
-    <View style={styles.titleBar}>
+    <View style={{...styles.titleBar}}>
       {/* Title and notification container */}
       <TextTitle color={color} text={text} />
-      {optionsFunction ? (
-        <Pressable>
-          <MaterialIcons name="more-vert" color={colors.black} size={32} />
+      {optionsFunction || notificationsFunction ? (
+        <Pressable
+          onPress={() => {
+            optionsFunction
+              ? optionsFunction()
+              : notificationsFunction
+              ? notificationsFunction()
+              : null;
+          }}>
+          {optionsFunction ? (
+            <MaterialIcons name="more-vert" color={colors.white} size={36} />
+          ) : (
+            <IconBadge
+              name="bell"
+              color={colors.white}
+              size={36}
+              number={notificationsUnread}
+            />
+          )}
         </Pressable>
       ) : null}
     </View>
