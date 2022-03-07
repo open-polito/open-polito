@@ -18,6 +18,7 @@ import {
   login,
   LoginData,
   setAuthStatus,
+  setConfig,
   setConfigState,
 } from '../store/sessionSlice';
 import HomeRouter from './HomeRouter';
@@ -29,7 +30,10 @@ import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
 import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultConfig, {Configuration} from '../defaultConfig';
+import defaultConfig, {
+  Configuration,
+  CONFIG_SCHEMA_VERSION,
+} from '../defaultConfig';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
 import {AuthStatus, AUTH_STATUS} from '../store/status';
@@ -128,12 +132,26 @@ export default function Router() {
   useEffect(() => {
     (async () => {
       // Set config in store
-      dispatch(
-        setConfigState(
-          (JSON.parse((await AsyncStorage.getItem('@config')) || '{}') ||
-            defaultConfig) as Configuration,
-        ),
-      );
+      let config = (JSON.parse(
+        (await AsyncStorage.getItem('@config')) || '{}',
+      ) || defaultConfig) as Configuration;
+
+      /**
+       * Check for old schema.
+       * For now we reset settings when old schema found
+       * TODO When schema version if different than default:
+       * - items that still exist in the default schema will remain in the local config
+       * - update schema version to match default
+       * - items that do not exist (anymore) in the default schema will be removed
+       */
+      if (
+        !config.schemaVersion ||
+        config.schemaVersion != CONFIG_SCHEMA_VERSION
+      ) {
+        config = defaultConfig;
+        dispatch(setConfig(config));
+      }
+      dispatch(setConfigState(config));
 
       // Get logging configuration
       setLoggingEnabled(await getLoggingConfig());
