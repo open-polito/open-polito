@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {
   markNotificationRead,
   Notification,
@@ -6,16 +5,13 @@ import {
 } from 'open-polito-api/notifications';
 import React, {useContext, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {FlatList, Pressable, ScrollView, View} from 'react-native';
-import RenderHTML, {RenderHTMLSource} from 'react-native-render-html';
+import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
-import colors from '../../colors';
 import {DeviceContext} from '../../context/Device';
 import store, {RootState} from '../../store/store';
 import {setNotifications} from '../../store/userSlice';
-import styles from '../../styles';
 import HorizontalSelector from '../HorizontalSelector';
-import {TextN, TextS, TextXS} from '../Text';
+import NotificationComponent from '../NotificationComponent';
 
 const NotificationsDialog = () => {
   const {t} = useTranslation();
@@ -34,7 +30,7 @@ const NotificationsDialog = () => {
    * Set notification as read.
    * @param id The id of the notification
    */
-  const handlePress = (id: number) => {
+  const handlePress = (id: number): void => {
     // Find the notification index
     const index = notifications.findIndex(n => n.id == id);
 
@@ -73,8 +69,6 @@ const NotificationsDialog = () => {
         return notifications.filter(n => n.topic == NotificationType.NOTICE);
       case 'material':
         return notifications.filter(n => n.topic == NotificationType.MATERIAL);
-      case 'test':
-        return notifications.filter(n => n.topic == NotificationType.TEST);
       default:
         return [];
     }
@@ -91,7 +85,6 @@ const NotificationsDialog = () => {
             {label: t('directAlerts'), value: 'direct'},
             {label: t('courses'), value: 'course'},
             {label: t('material'), value: 'material'},
-            {label: t('test'), value: 'test'},
           ]}
           onValueChange={(value: string) => setSelected(value)}
         />
@@ -106,46 +99,12 @@ const NotificationsDialog = () => {
           maxToRenderPerBatch={10}
           renderItem={n => (
             <View key={n.index}>
-              {n.item.is_read ? null : (
-                <View
-                  style={{
-                    position: 'absolute',
-                    backgroundColor: colors.red,
-                    width: 12,
-                    height: 12,
-                    borderRadius: 12,
-                    transform: [{translateX: 6}, {translateY: 10}],
-                  }}
-                />
-              )}
-              <Pressable
-                onPress={() => {
+              <NotificationComponent
+                notification={n.item}
+                handlePress={() => {
                   handlePress(n.item.id);
                 }}
-                android_ripple={{color: colors.lightGray}}
-                style={{
-                  marginHorizontal:
-                    styles.withHorizontalPadding.paddingHorizontal,
-                  ...styles.elevatedSmooth,
-                  ...styles.border,
-                  paddingHorizontal: 8,
-                  paddingVertical: 8,
-                  marginBottom: 16,
-                  backgroundColor: colors.white,
-                }}>
-                <TextS text={moment(n.item.time).format('lll')} />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    overflow: 'hidden',
-                    marginTop: 4,
-                  }}>
-                  <TextS text={n.item.title} weight="bold" />
-                </View>
-                {n.item.body ? (
-                  <RenderHTMLSource source={{html: n.item.body}} />
-                ) : null}
-              </Pressable>
+              />
             </View>
           )}></FlatList>
       </View>
