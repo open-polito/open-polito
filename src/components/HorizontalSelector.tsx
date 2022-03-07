@@ -7,9 +7,11 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 const HorizontalSelector = ({
   items,
   onValueChange,
+  withPadding = true,
 }: {
   items: {label: string; value: string; icon?: string}[];
   onValueChange: Function;
+  withPadding?: boolean;
 }) => {
   const [value, setValue] = useState('');
 
@@ -34,7 +36,7 @@ const HorizontalSelector = ({
         alignItems: 'center',
         paddingVertical: 8,
       }}>
-      <View style={{paddingLeft: 24}} />
+      <View style={{paddingLeft: withPadding ? 24 : 0}} />
       {items.map(item => {
         const backgroundColor =
           value == item.value ? colors.gradient1 : colors.white;
@@ -73,7 +75,9 @@ const HorizontalSelector = ({
                   style={{marginRight: 4}}
                   size={16}
                 />
-              ) : null}
+              ) : (
+                <View />
+              )}
               <TextS text={item.label} color={color} />
             </View>
           </Pressable>

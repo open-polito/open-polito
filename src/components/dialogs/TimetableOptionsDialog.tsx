@@ -1,10 +1,11 @@
-import React, {useMemo} from 'react';
+import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Configuration} from '../../defaultConfig';
 import {setConfig} from '../../store/sessionSlice';
 import {RootState} from '../../store/store';
+import styles from '../../styles';
 import {TimetableOptionsDialogParams} from '../../types';
 import SettingsItem, {SettingsItemProps} from '../SettingsItem';
 
@@ -42,10 +43,15 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
   ];
 
   return (
-    <View>
-      {timetableOptionsItems.map(item => (
-        <SettingsItem key={item.name} {...item} />
-      ))}
+    <View
+      style={{
+        ...styles.withHorizontalPadding,
+      }}>
+      <ScrollView>
+        {timetableOptionsItems.map(item => (
+          <SettingsItem key={item.name} {...item} />
+        ))}
+      </ScrollView>
     </View>
   );
 };

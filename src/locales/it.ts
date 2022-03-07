@@ -16,6 +16,12 @@ const IT = {
   videoPlayer: 'Player video',
   deadline: 'Scadenza',
   pleaseWait: 'Per favore attendi...',
+  allF: 'Tutte',
+  allM: 'Tutti',
+  directAlerts: 'Individuali',
+  test: 'Test',
+  readF: 'Lette',
+  unreadF: 'Non lette',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',

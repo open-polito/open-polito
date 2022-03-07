@@ -1,4 +1,4 @@
-import React, {ReactNode, useEffect, useState} from 'react';
+import React, {ReactNode, useEffect, useMemo, useState} from 'react';
 import {Dimensions, Pressable, ScrollView, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Octicons';
@@ -18,6 +18,9 @@ import {RootState} from '../store/store';
 import {NavigationProp} from '@react-navigation/core';
 import {Status, STATUS} from '../store/status';
 import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
+import {Notification} from 'open-polito-api/notifications';
+import {setDialog} from '../store/sessionSlice';
+import {DIALOG_TYPE} from '../types';
 
 export default function Home({navigation}: {navigation: NavigationProp}) {
   const {t} = useTranslation();
@@ -43,6 +46,14 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
   const loadCoursesStatus = useSelector<RootState, Status>(
     state => state.courses.loadCoursesStatus,
   );
+
+  const notifications = useSelector<RootState, Notification[]>(
+    state => state.user.notifications,
+  );
+
+  const unreadNotificationsCount = useMemo<number>(() => {
+    return notifications.filter(n => !n.is_read).length;
+  }, [notifications]);
 
   const w =
     Dimensions.get('window').width -
@@ -78,7 +89,19 @@ export default function Home({navigation}: {navigation: NavigationProp}) {
           style={{paddingHorizontal: 0, backgroundColor: undefined}}
           barStyle="light-content">
           <View style={styles.withHorizontalPadding}>
-            <Header text={t('home')} color={colors.white} />
+            <Header
+              text={t('home')}
+              color={colors.white}
+              notificationsFunction={() => {
+                dispatch(
+                  setDialog({
+                    visible: true,
+                    params: {type: DIALOG_TYPE.NOTIFICATIONS},
+                  }),
+                );
+              }}
+              notificationsUnread={unreadNotificationsCount}
+            />
           </View>
           <View
             style={{

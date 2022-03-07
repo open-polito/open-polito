@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import colors from '../../colors';
 import {setDialog} from '../../store/sessionSlice';
 import {RootState} from '../../store/store';
+import styles from '../../styles';
 import {
   DialogParams,
   DIALOG_TYPE,
@@ -18,6 +19,7 @@ import {
 } from '../../types';
 import {TextL} from '../Text';
 import ListSelectorDialog from './ListSelectorDialog';
+import NotificationsDialog from './NotificationsDialog';
 import TimetableOptionsDialog from './TimetableOptionsDialog';
 
 const Dialog = () => {
@@ -31,10 +33,13 @@ const Dialog = () => {
 
   const [title, setTitle] = useState('');
 
+  const [fixedHeight, setFixedHeight] = useState(false);
+
   const dialogComponent = useMemo(() => {
     switch (dialog.params?.type) {
       case DIALOG_TYPE.LIST_SELECTOR:
         setTitle(dialog.params?.title || '');
+        setFixedHeight(false);
         return (
           <ListSelectorDialog
             {...{...(dialog.params as ListSelectorDialogParams)}}
@@ -42,11 +47,16 @@ const Dialog = () => {
         );
       case DIALOG_TYPE.TIMETABLE_OPTIONS:
         setTitle(t('timetableOptions'));
+        setFixedHeight(false);
         return (
           <TimetableOptionsDialog
             {...{...(dialog.params as TimetableOptionsDialogParams)}}
           />
         );
+      case DIALOG_TYPE.NOTIFICATIONS:
+        setTitle(t('notifications'));
+        setFixedHeight(true);
+        return <NotificationsDialog />;
     }
   }, [dialog]);
 
@@ -84,37 +94,30 @@ const Dialog = () => {
           onRequestClose={() => {
             dispatch(setDialog({...dialog, visible: false, params: null}));
           }}>
-          <View style={{flex: 1}}></View>
           <View
             style={{
-              flex: 3,
+              flex: 1,
               flexDirection: 'column',
               justifyContent: 'flex-end',
             }}>
             <View
               style={{
+                maxHeight: '80%',
+                flex: fixedHeight ? 1 : 0,
                 backgroundColor: colors.white,
                 paddingTop: 24,
                 borderTopLeftRadius: 16,
                 borderTopRightRadius: 16,
               }}>
-              <ScrollView>
-                <View
-                  style={{
-                    backgroundColor: colors.background,
-                    paddingHorizontal: 24,
-                    paddingBottom: 16,
-                  }}>
-                  <View
-                    style={{
-                      flex: 1,
-                      paddingBottom: 8,
-                    }}>
-                    <TextL text={title} weight="bold" />
-                  </View>
-                  {dialogComponent}
-                </View>
-              </ScrollView>
+              <View
+                style={{
+                  marginHorizontal:
+                    styles.withHorizontalPadding.paddingHorizontal,
+                  paddingBottom: 8,
+                }}>
+                <TextL text={title} weight="bold" />
+              </View>
+              {dialogComponent}
             </View>
           </View>
         </Modal>

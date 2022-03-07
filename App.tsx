@@ -16,6 +16,10 @@ import moment from 'moment';
 import {Device} from 'open-polito-api/device';
 import DeviceProvider from './src/context/Device';
 import Dialog from './src/components/dialogs/Dialog';
+import {
+  RenderHTMLConfigProvider,
+  TRenderEngineProvider,
+} from 'react-native-render-html';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -62,10 +66,22 @@ export default function App() {
     <Suspense fallback="Loading...">
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
-          <Router />
+          <TRenderEngineProvider
+            tagsStyles={{
+              body: {
+                // color: colors.black,
+              },
+              p: {
+                marginTop: 0,
+              },
+            }}>
+            <RenderHTMLConfigProvider>
+              <Router />
+              <Dialog />
+            </RenderHTMLConfigProvider>
+          </TRenderEngineProvider>
         </DeviceProvider>
         <FlashMessage position="top" />
-        <Dialog />
       </Provider>
     </Suspense>
   );

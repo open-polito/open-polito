@@ -4,6 +4,7 @@
 
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Device} from 'open-polito-api/device';
+import {getNotifications, Notification} from 'open-polito-api/notifications';
 import {getUnreadMail, PersonalData} from 'open-polito-api/user';
 import {
   errorStatus,
@@ -19,6 +20,9 @@ type UserState = {
 
   unreadEmailCount: number;
   getUnreadEmailCountStatus: Status;
+
+  notifications: Notification[];
+  getNotificationsStatus: Status;
 };
 
 const initialState: UserState = {
@@ -26,6 +30,9 @@ const initialState: UserState = {
 
   unreadEmailCount: 0,
   getUnreadEmailCountStatus: initialStatus,
+
+  notifications: [],
+  getNotificationsStatus: initialStatus,
 };
 
 /**
@@ -40,12 +47,30 @@ export const getUnreadEmailCount = createAsyncThunk<
   return response.unread;
 });
 
+/**
+ * Wrapper of {@link getNotifications}
+ */
+export const getNotificationList = createAsyncThunk<
+  Notification[],
+  Device,
+  {state: RootState}
+>('user/getNotifications', async device => {
+  const notifications = await getNotifications(device);
+  return notifications.reverse();
+});
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     setUserInfo: (state, action: PayloadAction<PersonalData>) => {
       state.userInfo = action.payload;
+    },
+    setNotificationsStatus: (state, action: PayloadAction<Status>) => {
+      state.getNotificationsStatus = action.payload;
+    },
+    setNotifications: (state, action: PayloadAction<Notification[]>) => {
+      state.notifications = action.payload;
     },
   },
   extraReducers: builder => {
@@ -59,10 +84,21 @@ export const userSlice = createSlice({
       })
       .addCase(getUnreadEmailCount.rejected, (state, action) => {
         state.getUnreadEmailCountStatus = errorStatus(action.error);
+      })
+      .addCase(getNotificationList.pending, state => {
+        state.getNotificationsStatus = pendingStatus();
+      })
+      .addCase(getNotificationList.fulfilled, (state, {payload}) => {
+        state.notifications = payload;
+        state.getNotificationsStatus = successStatus();
+      })
+      .addCase(getNotificationList.rejected, (state, action) => {
+        state.getNotificationsStatus = errorStatus(action.error);
       });
   },
 });
 
-export const {setUserInfo} = userSlice.actions;
+export const {setUserInfo, setNotificationsStatus, setNotifications} =
+  userSlice.actions;
 
 export default userSlice.reducer;

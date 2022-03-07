@@ -12,7 +12,7 @@ import Material from '../screens/Material';
 import {RootState} from '../store/store';
 import {loadCoursesData} from '../store/coursesSlice';
 import {DeviceContext} from '../context/Device';
-import {getUnreadEmailCount} from '../store/userSlice';
+import {getNotificationList, getUnreadEmailCount} from '../store/userSlice';
 import {
   parsePushNotification,
   PushNotification,
@@ -25,6 +25,7 @@ import {showMessage} from 'react-native-flash-message';
 import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
 import {foregroundMessageHandler} from '../utils/push-notifications';
+import {STATUS, Status} from '../store/status';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -42,7 +43,20 @@ export default function HomeRouter() {
     state => state.user.unreadEmailCount,
   );
 
+  const getNotificationsStatus = useSelector<RootState, Status>(
+    state => state.user.getNotificationsStatus,
+  );
+
   const Tab = createBottomTabNavigator<TabNavigatorParamList>();
+
+  /**
+   * Whenever notifications status is set to IDLE,
+   * load them again
+   */
+  useEffect(() => {
+    if (getNotificationsStatus.code != STATUS.IDLE) return;
+    dispatch(getNotificationList(deviceContext.device));
+  }, [getNotificationsStatus]);
 
   /**
    * Load initial data
