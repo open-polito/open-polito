@@ -1,5 +1,3 @@
-import moment from 'moment';
-import {Notification} from 'open-polito-api/notifications';
 import React from 'react';
 import {Pressable, View} from 'react-native';
 import Animated, {
@@ -10,26 +8,34 @@ import Animated, {
 import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
 import styles from '../styles';
-import {TextS} from './Text';
+import {TextS, TextXS} from './Text';
 
 const NotificationComponent = ({
-  notification,
+  read,
+  date,
+  title,
+  body,
   handlePress,
+  compact = false,
 }: {
-  notification: Notification;
-  handlePress: (id: number) => void;
+  read: boolean;
+  date: string;
+  title: string | null;
+  body: string | null;
+  handlePress: () => void;
+  compact?: boolean;
 }) => {
   const offset = useSharedValue(0);
 
   const animStyles = useAnimatedStyle(() => {
     return {
-      width: notification.is_read
+      width: read
         ? withTiming(0, {duration: 500})
         : withTiming(12 - offset.value, {duration: 500}),
-      height: notification.is_read
+      height: read
         ? withTiming(0, {duration: 500})
         : withTiming(12 - offset.value, {duration: 500}),
-      marginRight: notification.is_read
+      marginRight: read
         ? withTiming(0, {duration: 500})
         : withTiming(6, {duration: 500}),
     };
@@ -37,20 +43,21 @@ const NotificationComponent = ({
 
   return (
     <Pressable
+      disabled={compact}
       onPress={() => {
-        if (!notification.is_read) offset.value = 12;
-        handlePress(notification.id);
+        if (!read) offset.value = 12;
+        handlePress();
       }}
       android_ripple={{color: colors.lightGray}}
-      style={{
-        marginHorizontal: styles.withHorizontalPadding.paddingHorizontal,
-        ...styles.elevatedSmooth,
-        ...styles.border,
-        paddingHorizontal: 8,
-        paddingVertical: 8,
-        marginBottom: 16,
-        backgroundColor: colors.white,
-      }}>
+      style={[
+        {
+          paddingHorizontal: compact ? 0 : 8,
+          paddingVertical: compact ? 0 : 8,
+          marginBottom: compact ? 0 : 16,
+          backgroundColor: colors.white,
+        },
+        compact ? {} : {...styles.elevatedSmooth, ...styles.border},
+      ]}>
       <Animated.View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Animated.View
           style={[
@@ -61,18 +68,28 @@ const NotificationComponent = ({
             },
           ]}
         />
-        <TextS text={moment(notification.time).format('lll')} />
+        {compact ? (
+          <TextXS text={date} weight="bold" />
+        ) : (
+          <TextS text={date} weight="medium" />
+        )}
       </Animated.View>
-      <View
-        style={{
-          flexDirection: 'row',
-          overflow: 'hidden',
-          marginTop: 4,
-        }}>
-        <TextS text={notification.title} weight="bold" />
-      </View>
-      {notification.body ? (
-        <RenderHTMLSource source={{html: notification.body}} />
+      {title ? (
+        <View
+          style={{
+            flexDirection: 'row',
+            overflow: 'hidden',
+            marginTop: 4,
+          }}>
+          <TextS text={title} weight="bold" />
+        </View>
+      ) : null}
+      {body ? (
+        compact ? (
+          <TextXS text={body} numberOfLines={2} />
+        ) : (
+          <RenderHTMLSource source={{html: body}} />
+        )
       ) : null}
     </Pressable>
   );
