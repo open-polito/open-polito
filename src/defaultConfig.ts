@@ -1,4 +1,8 @@
+export const CONFIG_SCHEMA_VERSION = 1;
+
 export type Configuration = {
+  schemaVersion: number;
+
   beta: boolean;
 
   logging: boolean;
@@ -6,10 +10,13 @@ export type Configuration = {
 
   timetable: {
     overlap: 'split' | 'priority';
+    priority: string[];
   };
 };
 
 const defaultConfig: Configuration = {
+  schemaVersion: CONFIG_SCHEMA_VERSION,
+
   beta: false,
 
   logging: false,
@@ -17,6 +24,7 @@ const defaultConfig: Configuration = {
 
   timetable: {
     overlap: 'split',
+    priority: [],
   },
 };
 
