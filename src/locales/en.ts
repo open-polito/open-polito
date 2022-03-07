@@ -17,6 +17,10 @@ const EN = {
   deadline: 'Deadline',
   pleaseWait: 'Please wait...',
 
+  // Notifications
+  defaultMsgTitle: '🚀 New notification',
+  defaultMsgBody: 'Open the app to see it',
+
   // Splash screen
   loading: 'Loading...',
   retry: 'Retry',
