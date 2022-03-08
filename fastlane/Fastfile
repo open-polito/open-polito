@@ -1,0 +1,37 @@
+before_all do
+    ensure_git_branch
+    ensure_git_status_clean
+    git_pull
+end
+
+commit_hash = last_git_commit[:commit_hash][0..9]
+package = load_json(json_path: "./package.json")
+
+desc("Updates RN app version (not the binaries!)")
+lane :update_rn_version do
+    write_json(
+        hash: {version: package['version'] + "+" + commit_hash},
+        file_path: './src/version.json'
+    )
+end
+
+platform :android do
+
+    desc("Updates Android binary version and bumps version code")
+    lane :update_version do
+        increment_version_name(
+            gradle_file_path: './android/app/build.gradle',
+            version_name: package['version'] + "+" + commit_hash
+        )
+        increment_version_code(
+            gradle_file_path: './android/app/build.gradle'
+        )
+    end
+
+    desc("Runs gradlew clean")
+    private_lane :clean do
+        gradle(task: 'clean', project_dir: './android/')
+    end
+end
+
+# TODO iOS
