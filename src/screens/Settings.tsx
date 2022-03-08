@@ -37,6 +37,7 @@ import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
 import {PersonalData} from 'open-polito-api/user';
 import {sendTestPushNotification} from 'open-polito-api/notifications';
 import Analytics from 'appcenter-analytics';
+import {version} from '../version.json';
 
 /**
  * Creates Settings item component from data
@@ -208,6 +209,15 @@ export default function Settings() {
               {experimentalSettingsItems.map(item => buildSettingsItem(item))}
             </View>
           ) : null}
+        </View>
+        <View
+          style={{
+            marginTop: 8,
+            marginBottom: 16,
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}>
+          <TextS text={'v' + version} />
         </View>
       </ScrollView>
     </ScreenContainer>
