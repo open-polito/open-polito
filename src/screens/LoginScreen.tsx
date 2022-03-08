@@ -15,6 +15,7 @@ import {useDispatch} from 'react-redux';
 import {DeviceContext} from '../context/Device';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
 import {Device} from 'open-polito-api/device';
+import {version} from '../version.json';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -119,7 +120,7 @@ export default function LoginScreen() {
               </View>
               <View style={_styles.versionView}>
                 <Text
-                  text={`${t('version')} 0.5.0-alpha.2`}
+                  text={'v' + version}
                   style={{
                     marginHorizontal: 'auto',
                     position: 'absolute',
