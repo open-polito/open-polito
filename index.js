@@ -21,17 +21,6 @@ if (ENABLE_CODEPUSH) Analytics.setEnabled(true);
  * TODO iOS support
  */
 if (Platform.OS == 'android' && VARIANT != 'debug') {
-  // Temporary tracking to understand why push notifications don't work
-  // TODO Delete!
-  const attachment = ErrorAttachmentLog.attachmentWithText(
-    JSON.stringify({firebase: firebase.app('[DEFAULT]')}),
-  );
-  const em = ExceptionModel.createFromTypeAndMessage(
-    'background_listener',
-    'Initialized!',
-  );
-  Crashes.trackError(em, undefined, [attachment]);
-
   messaging().setBackgroundMessageHandler(async remoteMessage => {
     await Analytics.trackEvent('push_background_received');
     await backgroundMessageHandler(remoteMessage);
