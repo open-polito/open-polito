@@ -87,11 +87,13 @@ const logs_path =
  * DocumentDirectoryPath on iOS
  */
 export const requestLogger = (entry: Entry) => {
-  if (entry.endpoint.includes('login')) return;
   if (!parseInt(Config.ENABLE_DEBUG_OPTIONS)) return;
-  RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
-    console.log(err),
-  );
+  if (entry.endpoint.includes('login')) return;
+  (async () => {
+    await RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
+      console.log(err),
+    );
+  })();
 };
 
 // Get logging configuration
@@ -154,7 +156,8 @@ export default function Router() {
       dispatch(setConfigState(config));
 
       // Get logging configuration
-      setLoggingEnabled(await getLoggingConfig());
+      const _loggingEnabled = await getLoggingConfig();
+      setLoggingEnabled(_loggingEnabled);
 
       // Try to access with Keychain credentials, if present
       const keychainCredentials = await Keychain.getGenericPassword();
@@ -168,7 +171,7 @@ export default function Router() {
         const device = new Device(
           uuid,
           10000,
-          loggingEnabled ? requestLogger : () => {},
+          _loggingEnabled ? requestLogger : () => {},
         );
 
         // Set device instance
