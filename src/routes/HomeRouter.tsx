@@ -26,6 +26,7 @@ import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
 import {foregroundMessageHandler} from '../utils/push-notifications';
 import {STATUS, Status} from '../store/status';
+import Analytics from 'appcenter-analytics';
 
 export type TabNavigatorParamList = {
   Home: undefined;
@@ -74,6 +75,7 @@ export default function HomeRouter() {
       if (Platform.OS == 'android' && Config.VARIANT != 'debug') {
         const FCMToken = await messaging().getToken();
         await registerPushNotifications(deviceContext.device, FCMToken);
+        await Analytics.trackEvent('fcm_registered');
       }
     })();
 
@@ -96,8 +98,18 @@ export default function HomeRouter() {
             showMessageCallback(parsePushNotification(remoteMessage.data));
           })
         : () => {};
+    const unsubscribe2 =
+      Platform.OS == 'android' && Config.VARIANT != 'debug'
+        ? messaging().onTokenRefresh(async fcmToken => {
+            await registerPushNotifications(deviceContext.device, fcmToken);
+            await Analytics.trackEvent('fcm_refreshed');
+          })
+        : () => {};
 
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      unsubscribe2();
+    };
   }, []);
 
   return (
