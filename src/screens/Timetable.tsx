@@ -1,8 +1,8 @@
 import moment from 'moment';
 import {getTimetable, TimetableSlot} from 'open-polito-api/timetable';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Dimensions, ScrollView, View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import ArrowHeader from '../components/ArrowHeader';
 import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
@@ -14,8 +14,6 @@ import TimetableHeader from '../components/timetable/TimetableHeader';
 import {useDispatch, useSelector} from 'react-redux';
 import {setDialog} from '../store/sessionSlice';
 import {DIALOG_TYPE} from '../types';
-import {RootState} from '../store/store';
-import {Configuration} from '../defaultConfig';
 
 const Timetable = () => {
   const {t} = useTranslation();
@@ -72,6 +70,22 @@ const Timetable = () => {
     mounted && setTimetableDays(_timetableDays);
   }, [slots]);
 
+  /**
+   * Whether to show red line
+   */
+  const showLine: boolean = useMemo(() => {
+    return (
+      (layout == 'week' &&
+        weekStartDate?.getTime() ==
+          moment().startOf('isoWeek').toDate().getTime()) ||
+      (layout == 'day' &&
+        moment(weekStartDate)
+          .add(selectedDay - 1, 'days')
+          .toDate()
+          .getTime() == moment().startOf('day').toDate().getTime())
+    );
+  }, [weekStartDate, selectedDay, layout]);
+
   return (
     <ScreenContainer>
       <View style={styles.withHorizontalPadding}>
@@ -107,18 +121,7 @@ const Timetable = () => {
         />
         <ScrollView>
           <View style={{flex: 1, paddingBottom: 32}}>
-            <TimetableGrid
-              showLine={
-                (layout == 'week' &&
-                  weekStartDate?.getTime() ==
-                    moment().startOf('isoWeek').toDate().getTime()) ||
-                (layout == 'day' &&
-                  moment(weekStartDate)
-                    .add(selectedDay, 'days')
-                    .toDate()
-                    .getTime() == moment().startOf('day').toDate().getTime())
-              }
-            />
+            <TimetableGrid showLine={showLine} />
             <TimetableSlots
               loaded={loaded}
               timetableDays={timetableDays}

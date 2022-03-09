@@ -25,6 +25,17 @@ const TimetableDay = ({
   const [w, setW] = useState(0);
 
   /**
+   * Array of slots sorted by priority
+   */
+  const sortedByPriority: TimetableSlot[] = useMemo(() => {
+    return [...day].sort(
+      (a, b) =>
+        config.priority.indexOf(b.course_name) -
+        config.priority.indexOf(a.course_name),
+    );
+  }, [config.priority, config.overlap, index, day]);
+
+  /**
    * Array of arrays of overlapping events.
    *
    * @remarks
@@ -96,19 +107,13 @@ const TimetableDay = ({
       {fake ? (
         <TimetableDayLoader w={w} h={h} />
       ) : config.overlap == 'priority' ? (
-        // If priority enabled, sort slots by their priority
-        day
-          .sort(
-            (a, b) =>
-              config.priority.indexOf(b.course_name) -
-              config.priority.indexOf(a.course_name),
-          )
-          .map((slot, i) => (
-            <TimetableEvent
-              key={i}
-              {...{overlapGroup: [], slot, w, h, courseNames, index: i}}
-            />
-          ))
+        // If priority enabled, show sorted by priority
+        sortedByPriority.map((slot, i) => (
+          <TimetableEvent
+            key={i}
+            {...{overlapGroup: [], slot, w, h, courseNames, index: i}}
+          />
+        ))
       ) : (
         // If priority not enabled
         day.map((slot, i) => {
