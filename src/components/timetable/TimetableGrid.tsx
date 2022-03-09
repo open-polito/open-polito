@@ -4,7 +4,7 @@ import {Dimensions, View} from 'react-native';
 import colors from '../../colors';
 import {TextXS} from '../Text';
 
-const TimetableGrid = () => {
+const TimetableGrid = ({showLine}: {showLine: boolean}) => {
   const [h, setH] = useState(Dimensions.get('window').height / 15);
 
   // Used to update red line position
@@ -37,46 +37,48 @@ const TimetableGrid = () => {
         justifyContent: 'flex-start',
         alignItems: 'stretch',
       }}>
-      <View
-        style={{
-          zIndex: 300,
-          height: 0,
-          borderTopColor: colors.red,
-          borderBottomColor: colors.red,
-          backgroundColor: colors.red,
-          borderTopWidth: 0.5,
-          borderBottomWidth: 0.5,
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          transform: [
-            {
-              translateY:
-                h +
-                (moment
-                  .duration(
-                    currentTime.diff(
-                      moment().set({
-                        h: 8,
-                        m: 0,
-                      }),
-                    ),
-                  )
-                  .as('ms') /
-                  (3600 * 1000)) *
-                  h -
-                h / 2,
-            },
-          ],
-        }}>
+      {showLine ? (
         <View
           style={{
+            zIndex: 300,
+            height: 0,
+            borderTopColor: colors.red,
+            borderBottomColor: colors.red,
             backgroundColor: colors.red,
-            width: 8,
-            height: 8,
-            borderRadius: 16,
-          }}></View>
-      </View>
+            borderTopWidth: 0.5,
+            borderBottomWidth: 0.5,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            transform: [
+              {
+                translateY:
+                  h +
+                  (moment
+                    .duration(
+                      currentTime.diff(
+                        moment().set({
+                          h: 8,
+                          m: 0,
+                        }),
+                      ),
+                    )
+                    .as('ms') /
+                    (3600 * 1000)) *
+                    h -
+                  h / 2,
+              },
+            ],
+          }}>
+          <View
+            style={{
+              backgroundColor: colors.red,
+              width: 8,
+              height: 8,
+              borderRadius: 16,
+            }}></View>
+        </View>
+      ) : null}
       {Array.from({length: 14}).map((_, index) => (
         <View
           key={index}
