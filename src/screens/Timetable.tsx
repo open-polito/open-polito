@@ -107,7 +107,18 @@ const Timetable = () => {
         />
         <ScrollView>
           <View style={{flex: 1, paddingBottom: 32}}>
-            <TimetableGrid />
+            <TimetableGrid
+              showLine={
+                (layout == 'week' &&
+                  weekStartDate?.getTime() ==
+                    moment().startOf('isoWeek').toDate().getTime()) ||
+                (layout == 'day' &&
+                  moment(weekStartDate)
+                    .add(selectedDay, 'days')
+                    .toDate()
+                    .getTime() == moment().startOf('day').toDate().getTime())
+              }
+            />
             <TimetableSlots
               loaded={loaded}
               timetableDays={timetableDays}
