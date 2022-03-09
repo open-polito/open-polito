@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
-import {ScrollView, View} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Configuration} from '../../defaultConfig';
 import {setConfig} from '../../store/sessionSlice';
 import {RootState} from '../../store/store';
 import styles from '../../styles';
 import {TimetableOptionsDialogParams} from '../../types';
+import ListRank from '../ListRank';
 import SettingsItem, {SettingsItemProps} from '../SettingsItem';
 
 const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
@@ -17,6 +18,12 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
     state => state.session.config,
   );
 
+  const rankItems = useMemo(() => {
+    return config.timetable.priority.map(item => {
+      return {label: item, value: item};
+    });
+  }, [config.timetable.priority]);
+
   const updateTimetableConfig = (params: Configuration['timetable']) => {
     dispatch(
       setConfig({...config, timetable: {...config.timetable, ...params}}),
@@ -26,7 +33,7 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
   const toggleOverlapMode = () => {
     const mode: Configuration['timetable']['overlap'] =
       config.timetable?.overlap == 'split' ? 'priority' : 'split';
-    updateTimetableConfig({overlap: mode});
+    updateTimetableConfig({...config.timetable, overlap: mode});
   };
 
   const timetableOptionsItems: SettingsItemProps[] = [
@@ -40,6 +47,21 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
         toggleOverlapMode();
       },
     },
+    {
+      name: t('timetablePriorityList'),
+      description: t('timetablePriorityListDesc'),
+      settingsFunction: () => {},
+      disabled: config.timetable.overlap != 'priority',
+      children: (
+        <ListRank
+          disabled={config.timetable.overlap != 'priority'}
+          items={rankItems}
+          callback={data => {
+            updateTimetableConfig({...config.timetable, priority: data});
+          }}
+        />
+      ),
+    },
   ];
 
   return (
@@ -47,11 +69,11 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
       style={{
         ...styles.withHorizontalPadding,
       }}>
-      <ScrollView>
-        {timetableOptionsItems.map(item => (
-          <SettingsItem key={item.name} {...item} />
-        ))}
-      </ScrollView>
+      <FlatList
+        data={timetableOptionsItems}
+        keyExtractor={item => item.name}
+        renderItem={item => <SettingsItem {...item.item} />}
+      />
     </View>
   );
 };
