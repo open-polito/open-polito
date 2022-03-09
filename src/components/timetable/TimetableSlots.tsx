@@ -58,7 +58,6 @@ const TimetableSlots = ({
    */
   useEffect(() => {
     if (!config.timetable.overlap || !config.timetable.priority) return;
-    if (config.timetable.overlap == 'split') return;
     let _list: string[] = [...config.timetable.priority];
     courseNames.forEach(courseName => {
       if (!config.timetable.priority.includes(courseName)) {
