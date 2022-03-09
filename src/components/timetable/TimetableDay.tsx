@@ -95,7 +95,22 @@ const TimetableDay = ({
       }}>
       {fake ? (
         <TimetableDayLoader w={w} h={h} />
+      ) : config.overlap == 'priority' ? (
+        // If priority enabled, sort slots by their priority
+        day
+          .sort(
+            (a, b) =>
+              config.priority.indexOf(b.course_name) -
+              config.priority.indexOf(a.course_name),
+          )
+          .map((slot, i) => (
+            <TimetableEvent
+              key={i}
+              {...{overlapGroup: [], slot, w, h, courseNames, index: i}}
+            />
+          ))
       ) : (
+        // If priority not enabled
         day.map((slot, i) => {
           const overlapGroup = findOverlapGroup(slot);
           const _index = overlapGroup.findIndex(_slot => slot == _slot);

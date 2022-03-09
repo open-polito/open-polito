@@ -8,16 +8,26 @@ import {TextXS} from '../Text';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TimetableDay from './TimetableDay';
 import {Configuration} from '../../defaultConfig';
+import {useDispatch, useSelector} from 'react-redux';
+import {setConfig} from '../../store/sessionSlice';
+import {RootState} from '../../store/store';
 
 const TimetableSlots = ({
   loaded,
   timetableDays,
-  config,
+  layout,
+  selectedDay,
 }: {
   loaded: boolean;
   timetableDays: TimetableSlot[][];
-  config: Configuration['timetable'];
+  layout: 'week' | 'day';
+  selectedDay: number;
 }) => {
+  const dispatch = useDispatch();
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
+  );
+
   const [h, setH] = useState(Dimensions.get('window').height / 15);
 
   const [courseNames, setCourseNames] = useState<string[]>(['', '', '']);
@@ -36,12 +46,29 @@ const TimetableSlots = ({
         }
       });
     });
-    return _courseNames;
+    return _courseNames.sort();
   };
 
   useEffect(() => {
     setCourseNames(getCourseNames());
-  }, [timetableDays]);
+  }, [days]);
+
+  /**
+   * When course names or slots change, if priority enabled, update the priority list
+   */
+  useEffect(() => {
+    if (!config.timetable.overlap || !config.timetable.priority) return;
+    if (config.timetable.overlap == 'split') return;
+    let _list: string[] = [...config.timetable.priority];
+    courseNames.forEach(courseName => {
+      if (!config.timetable.priority.includes(courseName)) {
+        _list.push(courseName);
+      }
+    });
+    dispatch(
+      setConfig({...config, timetable: {...config.timetable, priority: _list}}),
+    );
+  }, [days, courseNames]);
 
   return (
     <View
@@ -54,10 +81,10 @@ const TimetableSlots = ({
         alignItems: 'flex-start',
         justifyContent: 'center',
       }}>
-      {days.map((day, index) => (
+      {(layout == 'week' ? days : [days[selectedDay - 1]]).map((day, index) => (
         <TimetableDay
           fake={!loaded}
-          config={config}
+          config={config.timetable}
           key={index}
           {...{day, h, index, courseNames}}
         />

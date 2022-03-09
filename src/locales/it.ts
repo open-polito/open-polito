@@ -117,6 +117,7 @@ const IT = {
   timetablePriority: 'Mostra per priorità',
   timetablePriorityDesc:
     'Gli eventi con priorità più alta verranno mostrati per primi',
+  timetablePriorityList: 'Scegli priorità',
 
   // Flash messages
   logoutFlashMessage: 'Disconnessione...',
