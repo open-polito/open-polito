@@ -118,6 +118,7 @@ const EN = {
   timetableOptions: 'Timetable options',
   timetablePriority: 'Show by priority',
   timetablePriorityDesc: 'Events with higher priority will show first',
+  timetablePriorityList: 'Choose priority',
 
   // Flash messages
   logoutFlashMessage: 'Logging out...',

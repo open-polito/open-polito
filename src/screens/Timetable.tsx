@@ -24,10 +24,6 @@ const Timetable = () => {
 
   const dispatch = useDispatch();
 
-  const timetableConfig = useSelector<RootState, Configuration['timetable']>(
-    state => state.session.config.timetable,
-  );
-
   const [loaded, setLoaded] = useState(false);
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);
 
@@ -112,13 +108,11 @@ const Timetable = () => {
         <ScrollView>
           <View style={{flex: 1, paddingBottom: 32}}>
             <TimetableGrid />
-
             <TimetableSlots
               loaded={loaded}
-              config={timetableConfig}
-              timetableDays={
-                layout == 'week' ? timetableDays : [timetableDays[selectedDay]]
-              }
+              timetableDays={timetableDays}
+              layout={layout}
+              selectedDay={selectedDay}
             />
           </View>
         </ScrollView>

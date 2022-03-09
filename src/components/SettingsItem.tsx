@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {Pressable, StyleSheet, Switch, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../colors';
@@ -8,15 +8,18 @@ export type SettingsItemProps = {
   icon?: string;
   name: string;
   description?: string;
+  disabled?: boolean;
   settingsFunction: Function;
   toggle?: boolean; // whether to show toggle
   toggleValue?: boolean; // value of toggle
+  children?: ReactNode;
 };
 
 const SettingsItem: FC<SettingsItemProps> = ({
   icon,
   name,
   description,
+  disabled = false,
   settingsFunction = () => {},
   toggle = false,
   toggleValue,
@@ -25,19 +28,33 @@ const SettingsItem: FC<SettingsItemProps> = ({
   return (
     <View style={{flex: 1}}>
       <Pressable
+        disabled={disabled}
         android_ripple={{color: '#ccc'}}
         onPress={() => {
           settingsFunction();
-        }}>
+        }}
+        style={{opacity: disabled ? 0.3 : 1}}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <View style={{..._styles.settingsItemContainer, flex: 1}}>
+          <View
+            style={[
+              {..._styles.settingsItemContainer, flex: 1},
+              children ? {paddingBottom: 0} : {},
+            ]}>
             {icon ? <Icon name={icon} size={28} color={colors.black} /> : null}
-            <View style={_styles.settingsItemTextContainer}>
+            <View
+              style={[
+                _styles.settingsItemTextContainer,
+                {
+                  marginLeft: icon
+                    ? _styles.settingsItemTextContainer.marginLeft
+                    : 0,
+                },
+              ]}>
               <TextN text={name} numberOfLines={1} weight="medium" />
               {description ? <TextS text={description} /> : null}
             </View>
@@ -52,9 +69,9 @@ const SettingsItem: FC<SettingsItemProps> = ({
               />
             </View>
           )}
-          {children}
         </View>
       </Pressable>
+      {children}
     </View>
   );
 };
