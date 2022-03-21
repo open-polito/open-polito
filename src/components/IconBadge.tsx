@@ -1,16 +1,27 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import colors from '../colors';
+import colors, {Color} from '../colors';
 import {TextS} from './Text';
 
-export default function IconBadge({name, color, size, number = 0}) {
-  const badgeText = number > 99 ? '99+' : number;
+export default function IconBadge({
+  name,
+  color,
+  size,
+  number = 0,
+}: {
+  name: string;
+  color: Color;
+  size: number;
+  number?: number | string;
+}) {
+  const badgeText =
+    typeof number == 'string' ? number : number > 99 ? '99+' : number;
 
   return (
     <View>
       <Icon name={name} color={color} size={size} />
-      {number > 0 ? (
+      {number != 0 ? (
         <View style={_styles.badge}>
           <TextS style={_styles.badgeText} text={badgeText} weight="medium" />
         </View>
