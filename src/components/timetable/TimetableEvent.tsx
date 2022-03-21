@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import colors, {courseColors} from '../../colors';
 import {TextXS} from '../Text';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -29,6 +29,8 @@ const TimetableEvent = ({
 }) => {
   const offset = useSharedValue(0);
 
+  const [width, setWidth] = useState(0);
+
   useEffect(() => {
     offset.value = w;
   }, [w]);
@@ -52,6 +54,7 @@ const TimetableEvent = ({
 
   return (
     <Animated.View
+      onLayout={e => setWidth(e.nativeEvent.layout.width)}
       style={[
         {
           overflow: 'hidden',
@@ -85,14 +88,14 @@ const TimetableEvent = ({
         },
         animStyle,
       ]}>
-      {overlapGroup.length < 3 ? (
+      {width >= 25 ? (
         <TextXS
           text={slot.course_name}
           color={colors.white}
           numberOfLines={2}
         />
       ) : null}
-      {overlapGroup.length == 0 ? (
+      {width >= 60 ? (
         <>
           <View
             style={{
