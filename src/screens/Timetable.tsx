@@ -14,6 +14,12 @@ import TimetableHeader from '../components/timetable/TimetableHeader';
 import {useDispatch, useSelector} from 'react-redux';
 import {setDialog} from '../store/sessionSlice';
 import {DIALOG_TYPE} from '../types';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 const Timetable = () => {
   const {t} = useTranslation();
@@ -36,28 +42,79 @@ const Timetable = () => {
 
   const [selectedDay, setSelectedDay] = useState(1); // Today's day index. TODO display first day of week when week is not current
 
+  const [fetchTimer, setFetchTimer] = useState<any>(null);
+  const [doUpdate, setDoUpdate] = useState<boolean>(false); // Flip it to trigger effect
+
+  const offset = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const animStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(opacity.value, {duration: 500}),
+      transform: [{translateX: offset.value}],
+    };
+  });
+
+  /**
+   * Controls the "scrolling" effect animation
+   * @param direction left or right
+   */
+  const controlTransition = (direction: 'l' | 'r') => {
+    opacity.value = withSequence(
+      withTiming(0, {duration: 250}),
+      withTiming(0, {duration: 500}),
+      withTiming(1, {duration: 250}),
+    );
+    offset.value =
+      direction == 'l'
+        ? withSequence(
+            withTiming(32, {duration: 750}),
+            withTiming(-32, {duration: 0}),
+            withTiming(0, {duration: 750}),
+          )
+        : withSequence(
+            withTiming(-32, {duration: 750}),
+            withTiming(32, {duration: 0}),
+            withTiming(0, {duration: 750}),
+          );
+  };
+
   /**
    * Get slots and set {@link weekStartDate}
    */
   useEffect(() => {
     (async () => {
-      let slots: TimetableSlot[] = [];
-      try {
-        slots = await getTimetable(deviceContext.device);
-        setLoaded(true);
-      } catch (e) {
-      } finally {
-        if (!weekStartDate) {
-          const date = moment(slots[0].start_time).startOf('isoWeek').toDate();
-          mounted && setWeekStartDate(date);
-        }
-        setSlots(slots);
-      }
+      if (!weekStartDate) controlTransition('r');
+      if (fetchTimer) clearTimeout(fetchTimer);
+      setFetchTimer(
+        setTimeout(async () => {
+          setLoaded(false);
+          let slots: TimetableSlot[] = [];
+          setSlots([]);
+          try {
+            slots = await getTimetable(
+              deviceContext.device,
+              weekStartDate ?? new Date(),
+            );
+            setLoaded(true);
+          } catch (e) {
+            // console.log(e);
+          } finally {
+            if (!weekStartDate) {
+              const date = moment(slots[0].start_time)
+                .startOf('isoWeek')
+                .toDate();
+              mounted && setWeekStartDate(date);
+            }
+            setSlots(slots);
+          }
+        }, 250),
+      );
     })();
     return () => {
+      clearTimeout(fetchTimer);
       setMounted(false);
     };
-  }, []);
+  }, [doUpdate]);
 
   /**
    * When slots change, update {@link timetableDays}
@@ -117,10 +174,19 @@ const Timetable = () => {
             setLayout(value);
           }}
           weekStartDate={weekStartDate}
+          onWeekStartDateChanged={(value: Date) => {
+            if (weekStartDate && value.getTime() < weekStartDate.getTime()) {
+              controlTransition('l');
+            } else {
+              controlTransition('r');
+            }
+            setWeekStartDate(value);
+            setDoUpdate(!doUpdate);
+          }}
           timetableDays={timetableDays}
         />
         <ScrollView>
-          <View style={{flex: 1, paddingBottom: 32}}>
+          <Animated.View style={[animStyle, {flex: 1, paddingBottom: 32}]}>
             <TimetableGrid showLine={showLine} />
             <TimetableSlots
               loaded={loaded}
@@ -128,7 +194,7 @@ const Timetable = () => {
               layout={layout}
               selectedDay={selectedDay}
             />
-          </View>
+          </Animated.View>
         </ScrollView>
       </View>
     </ScreenContainer>

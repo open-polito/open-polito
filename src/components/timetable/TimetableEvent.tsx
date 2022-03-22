@@ -28,12 +28,27 @@ const TimetableEvent = ({
   index: number;
 }) => {
   const offset = useSharedValue(0);
+  const opacity = useSharedValue(0);
+  const textOpacity = useSharedValue(0);
 
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
+    opacity.value = 1;
+  }, []);
+
+  useEffect(() => {
     offset.value = w;
+    if (w >= 60) {
+      setTimeout(() => {
+        textOpacity.value = 1;
+      }, 100);
+    }
   }, [w]);
+
+  const animTextSectionStyle = useAnimatedStyle(() => {
+    return {opacity: withTiming(textOpacity.value, {duration: 500})};
+  });
 
   const animStyle = useAnimatedStyle(() => {
     return {
@@ -89,14 +104,16 @@ const TimetableEvent = ({
         animStyle,
       ]}>
       {width >= 25 ? (
-        <TextXS
-          text={slot.course_name}
-          color={colors.white}
-          numberOfLines={2}
-        />
+        <Animated.View style={[animTextSectionStyle]}>
+          <TextXS
+            text={slot.course_name}
+            color={colors.white}
+            numberOfLines={2}
+          />
+        </Animated.View>
       ) : null}
       {width >= 60 ? (
-        <>
+        <Animated.View style={[animTextSectionStyle]}>
           <View
             style={{
               flexDirection: 'row',
@@ -115,6 +132,7 @@ const TimetableEvent = ({
           </View>
           <View
             style={{
+              opacity: opacity.value,
               flexDirection: 'row',
               marginTop: 4,
               alignItems: 'center',
@@ -133,7 +151,7 @@ const TimetableEvent = ({
               style={{fontSize: 8, marginLeft: 2}}
             />
           </View>
-        </>
+        </Animated.View>
       ) : null}
     </Animated.View>
   );
