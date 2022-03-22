@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Pressable, View} from 'react-native';
 import styles from '../../styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -9,6 +9,12 @@ import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import HorizontalIconSelector from '../HorizontalIconSelector';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 const TimetableHeader = ({
   selectedDay = null,
@@ -16,12 +22,14 @@ const TimetableHeader = ({
   weekStartDate,
   onLayoutChanged,
   onDayChanged,
+  onWeekStartDateChanged,
 }: {
   selectedDay: number | null;
   timetableDays: TimetableSlot[][];
   weekStartDate: Date | null;
   onLayoutChanged: Function;
   onDayChanged: Function;
+  onWeekStartDateChanged: Function;
 }) => {
   const {t} = useTranslation();
 
@@ -32,6 +40,38 @@ const TimetableHeader = ({
   const _onDayChanged = (value: number) => {
     onDayChanged(value);
   };
+
+  const _onWeekStartDateChanged = (value: Date) => {
+    opacity.value = withSequence(
+      withTiming(0, {duration: 250}),
+      withTiming(1, {duration: 250}),
+    );
+    onWeekStartDateChanged(value);
+  };
+
+  const opacity = useSharedValue(1);
+
+  const animStyle = useAnimatedStyle(() => {
+    return {opacity: opacity.value};
+  });
+
+  const headerTitle: string = useMemo(() => {
+    const weekStartMoment = moment(weekStartDate);
+    const weekEndMoment = moment(weekStartDate).add(4, 'day');
+    return weekStartDate
+      ? weekStartDate.getTime() == moment().startOf('w').toDate().getTime()
+        ? t('thisWeek')
+        : `${weekStartMoment.get('date')} ${
+            weekStartMoment.get('month') != weekEndMoment.get('month')
+              ? weekStartMoment.format('MMM ')
+              : ''
+          }${
+            weekStartMoment.get('year') != weekEndMoment.get('year')
+              ? weekStartMoment.format('YYYY ')
+              : ''
+          }- ${weekEndMoment.format('D MMM YYYY')}`
+      : t('thisWeek');
+  }, [weekStartDate]);
 
   return (
     <View style={{borderBottomWidth: 1, borderBottomColor: colors.lightGray}}>
@@ -80,17 +120,31 @@ const TimetableHeader = ({
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        <MaterialCommunityIcons
-          name="arrow-left"
-          size={24}
-          color={colors.gray}
-        />
-        <TextN text={t('thisWeek')} weight="medium" />
-        <MaterialCommunityIcons
-          name="arrow-right"
-          size={24}
-          color={colors.gray}
-        />
+        <Pressable
+          onPress={() =>
+            _onWeekStartDateChanged(
+              moment(weekStartDate).subtract(1, 'w').toDate(),
+            )
+          }>
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={24}
+            color={colors.gray}
+          />
+        </Pressable>
+        <Animated.View style={[animStyle]}>
+          <TextN text={headerTitle} weight="medium" />
+        </Animated.View>
+        <Pressable
+          onPress={() =>
+            _onWeekStartDateChanged(moment(weekStartDate).add(1, 'w').toDate())
+          }>
+          <MaterialCommunityIcons
+            name="arrow-right"
+            size={24}
+            color={colors.gray}
+          />
+        </Pressable>
       </View>
       <View
         style={{
@@ -108,6 +162,7 @@ const TimetableHeader = ({
             }}
             key={index}
             style={{
+              opacity: weekStartDate ? 1 : 0,
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',

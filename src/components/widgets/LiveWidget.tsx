@@ -52,15 +52,14 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
         end={{x: 0.7, y: 0.9}}
         colors={['#EA0000', '#C30000']}
         style={{
-          borderRadius: 16,
           paddingVertical: 16,
           paddingHorizontal: 24,
           ...styles.elevatedSmooth,
+          ...styles.border,
           flex: 1,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: colors.red,
         }}>
         <View
           style={{
