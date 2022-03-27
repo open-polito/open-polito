@@ -256,11 +256,15 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
-    implementation ("com.google.firebase:firebase-messaging:23.0.0") {
+    implementation platform('com.google.firebase:firebase-bom:29.1.0')
+
+    implementation ("com.google.firebase:firebase-messaging") {
         exclude group: 'com.google.firebase', module: 'firebase-core'
-        exclude group: 'com.google.firebase', module: 'firebase-analytics'
+        // exclude group: 'com.google.firebase', module: 'firebase-analytics'
         exclude group: 'com.google.firebase', module: 'firebase-measurement-connector'
     }
+
+    implementation 'com.google.firebase:firebase-analytics'
 
     implementation project(':react-native-fs')
 
