@@ -142,8 +142,10 @@ export default function Settings() {
       description: t('debugTestNotificationDesc'),
       settingsFunction: () => {
         showMessage(warnFlashMessage(t('pleaseWait')));
-        sendTestPushNotification(deviceContext.device);
-        Analytics.trackEvent('test_notification_request');
+        (async () => {
+          await sendTestPushNotification(deviceContext.device);
+          await Analytics.trackEvent('test_notification_request');
+        })();
       },
     },
   ];

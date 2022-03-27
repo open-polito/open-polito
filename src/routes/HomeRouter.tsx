@@ -19,12 +19,10 @@ import {
   registerPushNotifications,
 } from 'open-polito-api/notifications';
 
-import messaging from '@react-native-firebase/messaging';
-import {Platform} from 'react-native';
+import {NativeModules, Platform} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
-import {foregroundMessageHandler} from '../utils/push-notifications';
 import {STATUS, Status} from '../store/status';
 import Analytics from 'appcenter-analytics';
 
@@ -73,43 +71,13 @@ export default function HomeRouter() {
      */
     (async () => {
       if (Platform.OS == 'android' && Config.VARIANT != 'debug') {
-        const FCMToken = await messaging().getToken();
+        const FCMToken = await NativeModules.NotificationModule.getToken();
         await registerPushNotifications(deviceContext.device, FCMToken);
         await Analytics.trackEvent('fcm_registered');
       }
     })();
 
-    /**
-     * The callback to show flash message
-     */
-    const showMessageCallback = (msg: PushNotification) => {
-      showMessage(infoFlashMessage(msg.topic + ': ' + msg.title, msg.text));
-    };
-
-    /**
-     * Setup FCM handler for notifications received while in app.
-     * Show flash message.
-     * TODO add iOS support.
-     */
-    const unsubscribe =
-      Platform.OS == 'android' && Config.VARIANT != 'debug'
-        ? messaging().onMessage(async remoteMessage => {
-            await foregroundMessageHandler(remoteMessage);
-            showMessageCallback(parsePushNotification(remoteMessage.data));
-          })
-        : () => {};
-    const unsubscribe2 =
-      Platform.OS == 'android' && Config.VARIANT != 'debug'
-        ? messaging().onTokenRefresh(async fcmToken => {
-            await registerPushNotifications(deviceContext.device, fcmToken);
-            await Analytics.trackEvent('fcm_refreshed');
-          })
-        : () => {};
-
-    return () => {
-      unsubscribe();
-      unsubscribe2();
-    };
+    return () => {};
   }, []);
 
   return (
