@@ -9,8 +9,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
-import {View} from 'react-native';
+import {Pressable, View} from 'react-native';
 import styles from '../../styles';
+import {useDispatch} from 'react-redux';
+import {setDialog} from '../../store/sessionSlice';
+import {DIALOG_TYPE, TimetableEventDialogParams} from '../../types';
 
 const TimetableEvent = ({
   overlapGroup,
@@ -27,6 +30,8 @@ const TimetableEvent = ({
   courseNames: string[];
   index: number;
 }) => {
+  const dispatch = useDispatch();
+
   const offset = useSharedValue(0);
   const opacity = useSharedValue(0);
   const textOpacity = useSharedValue(0);
@@ -93,7 +98,6 @@ const TimetableEvent = ({
 
           ...styles.border,
           ...styles.elevatedSmooth,
-          padding: 4,
           backgroundColor:
             courseColors[courseNames.findIndex(val => val == slot.course_name)],
           height:
@@ -103,56 +107,74 @@ const TimetableEvent = ({
         },
         animStyle,
       ]}>
-      {width >= 25 ? (
-        <Animated.View style={[animTextSectionStyle]}>
-          <TextXS
-            text={slot.course_name}
-            color={colors.white}
-            numberOfLines={2}
-          />
-        </Animated.View>
-      ) : null}
-      {width >= 60 ? (
-        <Animated.View style={[animTextSectionStyle]}>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 8,
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              overflow: 'hidden',
-            }}>
-            <MaterialIcons name="place" size={12} color={colors.lightGray} />
+      <Pressable
+        style={{
+          flex: 1,
+          padding: 4,
+        }}
+        android_ripple={{color: colors.white}}
+        onPress={() => {
+          dispatch(
+            setDialog({
+              visible: true,
+              params: {
+                type: DIALOG_TYPE.TIMETABLE_EVENT,
+                slot: slot,
+              } as TimetableEventDialogParams,
+            }),
+          );
+        }}>
+        {width >= 25 ? (
+          <Animated.View style={[animTextSectionStyle]}>
             <TextXS
-              numberOfLines={2}
-              text={slot.room}
+              text={slot.course_name}
               color={colors.white}
-              style={{fontSize: 8, marginLeft: 2}}
-            />
-          </View>
-          <View
-            style={{
-              opacity: opacity.value,
-              flexDirection: 'row',
-              marginTop: 4,
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              overflow: 'hidden',
-            }}>
-            <MaterialIcons
-              name="short-text"
-              size={12}
-              color={colors.lightGray}
-            />
-            <TextXS
               numberOfLines={2}
-              text={slot.type}
-              color={colors.white}
-              style={{fontSize: 8, marginLeft: 2}}
             />
-          </View>
-        </Animated.View>
-      ) : null}
+          </Animated.View>
+        ) : null}
+        {width >= 60 ? (
+          <Animated.View style={[animTextSectionStyle]}>
+            <View
+              style={{
+                flexDirection: 'row',
+                marginTop: 8,
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                overflow: 'hidden',
+              }}>
+              <MaterialIcons name="place" size={12} color={colors.lightGray} />
+              <TextXS
+                numberOfLines={2}
+                text={slot.room}
+                color={colors.white}
+                style={{fontSize: 8, marginLeft: 2}}
+              />
+            </View>
+            <View
+              style={{
+                opacity: opacity.value,
+                flexDirection: 'row',
+                marginTop: 4,
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                overflow: 'hidden',
+              }}>
+              <MaterialIcons
+                name="short-text"
+                size={12}
+                color={colors.lightGray}
+              />
+              <TextXS
+                numberOfLines={2}
+                text={slot.type}
+                color={colors.white}
+                style={{fontSize: 8, marginLeft: 2}}
+              />
+            </View>
+          </Animated.View>
+        ) : null}
+      </Pressable>
     </Animated.View>
   );
 };
