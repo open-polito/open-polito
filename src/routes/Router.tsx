@@ -44,6 +44,8 @@ import Button from '../components/Button';
 import {ping} from 'open-polito-api/utils';
 import Config from 'react-native-config';
 import Timetable from '../screens/Timetable';
+import Exams from '../screens/Exams';
+import Bookings from '../screens/Bookings';
 
 /**
  * Types for React Navigation
@@ -60,6 +62,8 @@ export type AppStackParamList = {
   Course: undefined;
   VideoPlayer: undefined;
   Timetable: undefined;
+  Exams: undefined;
+  Bookings: undefined;
 };
 
 /**
@@ -317,6 +321,8 @@ export default function Router() {
           <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
           <AppStack.Screen name="ExamSessions" component={ExamSessions} />
           <AppStack.Screen name="Timetable" component={Timetable} />
+          <AppStack.Screen name="Exams" component={Exams} />
+          <AppStack.Screen name="Bookings" component={Bookings} />
         </AppStack.Navigator>
       ) : authStatus == AUTH_STATUS.NOT_VALID ? (
         <AuthStack.Navigator

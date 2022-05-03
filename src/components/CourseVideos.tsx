@@ -19,7 +19,7 @@ const CourseVideos = ({
   courseData,
   refresh,
 }: {
-  videos: Recording[];
+  videos: Recording[] | undefined;
   courseData: BasicCourseInfo;
   refresh: Function;
 }) => {
@@ -30,7 +30,7 @@ const CourseVideos = ({
   const width = Dimensions.get('window').width;
 
   const [videos] = useState(
-    [..._videos].sort((a, b) => {
+    [...(_videos ?? [])].sort((a, b) => {
       return b.date - a.date;
     }),
   );

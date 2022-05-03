@@ -1,3 +1,5 @@
+import {TimetableSlot} from 'open-polito-api/timetable';
+
 export type DropdownItem = {
   label: string;
   value: string;
@@ -6,6 +8,7 @@ export type DropdownItem = {
 export enum DIALOG_TYPE {
   LIST_SELECTOR = 'LIST_SELECTOR',
   TIMETABLE_OPTIONS = 'TIMETABLE_OPTIONS',
+  TIMETABLE_EVENT = 'TIMETABLE_EVENT',
   NOTIFICATIONS = 'NOTIFICATIONS',
 }
 
@@ -21,6 +24,11 @@ export type ListSelectorDialogParams = DialogParams & {
 
 export type TimetableOptionsDialogParams = DialogParams & {
   type: DIALOG_TYPE.TIMETABLE_OPTIONS;
+};
+
+export type TimetableEventDialogParams = DialogParams & {
+  type: DIALOG_TYPE.TIMETABLE_EVENT;
+  slot: TimetableSlot;
 };
 
 export type NotificationsDialogParams = DialogParams & {

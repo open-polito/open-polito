@@ -15,11 +15,13 @@ import {
   DialogParams,
   DIALOG_TYPE,
   ListSelectorDialogParams,
+  TimetableEventDialogParams,
   TimetableOptionsDialogParams,
 } from '../../types';
 import {TextL} from '../Text';
 import ListSelectorDialog from './ListSelectorDialog';
 import NotificationsDialog from './NotificationsDialog';
+import TimetableEventDialog from './TimetableEventDialog';
 import TimetableOptionsDialog from './TimetableOptionsDialog';
 
 const Dialog = () => {
@@ -51,6 +53,16 @@ const Dialog = () => {
         return (
           <TimetableOptionsDialog
             {...{...(dialog.params as TimetableOptionsDialogParams)}}
+          />
+        );
+      case DIALOG_TYPE.TIMETABLE_EVENT:
+        setTitle(
+          (dialog.params as TimetableEventDialogParams).slot.course_name,
+        );
+        setFixedHeight(false);
+        return (
+          <TimetableEventDialog
+            {...{...(dialog.params as TimetableEventDialogParams)}}
           />
         );
       case DIALOG_TYPE.NOTIFICATIONS:
