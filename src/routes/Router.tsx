@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {TextL, TextS, TextXL} from '../components/Text';
-import LoginScreen from '../screens/LoginScreen';
+import LoginScreen from '../screens_legacy/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api/device';
 import * as Keychain from 'react-native-keychain';
@@ -24,11 +24,11 @@ import {
 import HomeRouter from './HomeRouter';
 import {showMessage} from 'react-native-flash-message';
 import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
-import MaterialSearch from '../screens/MaterialSearch';
-import Courses from '../screens/Courses';
-import Course from '../screens/Course';
-import VideoPlayer from '../screens/VideoPlayer';
-import ExamSessions from '../screens/ExamSessions';
+import MaterialSearch from '../screens_legacy/MaterialSearch';
+import Courses from '../screens_legacy/Courses';
+import Course from '../screens_legacy/Course';
+import VideoPlayer from '../screens_legacy/VideoPlayer';
+import ExamSessions from '../screens_legacy/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig, {
   Configuration,
@@ -43,9 +43,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from '../components/Button';
 import {ping} from 'open-polito-api/utils';
 import Config from 'react-native-config';
-import Timetable from '../screens/Timetable';
-import Exams from '../screens/Exams';
-import Bookings from '../screens/Bookings';
+import Timetable from '../screens_legacy/Timetable';
+import Exams from '../screens_legacy/Exams';
+import Bookings from '../screens_legacy/Bookings';
 
 /**
  * Types for React Navigation
