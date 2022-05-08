@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {ActivityIndicator, StatusBar, View} from 'react-native';
 import {TextL, TextS, TextXL} from '../components/Text';
-import LoginScreen from '../screens_legacy/LoginScreen';
+import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Device} from 'open-polito-api/device';
 import * as Keychain from 'react-native-keychain';
@@ -145,10 +145,9 @@ export default function Router() {
       /**
        * Check for old schema.
        * For now we reset settings when old schema found
-       * TODO When schema version if different than default:
-       * - items that still exist in the default schema will remain in the local config
-       * - update schema version to match default
-       * - items that do not exist (anymore) in the default schema will be removed
+       * TODO remove this method and replace with the following:
+       * - settings json should have depth 1
+       * - it should just assign the default value when not found in storage
        */
       if (
         !config.schemaVersion ||
