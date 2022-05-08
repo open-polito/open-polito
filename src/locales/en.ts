@@ -35,12 +35,25 @@ const EN = {
     'You are either offline or PoliTo servers are not available at the moment',
 
   // Login screen
-  caption: 'The unofficial, open-source\nmobile app',
+  caption: 'The unofficial app for your\nPoliTo account',
   loginCall: 'Log in',
-  userPlaceholder: 'Username or e-mail address',
+  userPlaceholder: 'Username or e-mail address (e.g. S123456)',
   passwordPlaceholder: 'Password',
   login: 'Log in',
+  or: 'or',
+  and: 'and',
+  takeTour: 'Take the tour',
   version: 'version',
+  title1: 'Title 1',
+  desc1: 'Description 1',
+  title2: 'Powerful',
+  desc2:
+    'With features like a download manager and a video player, your experience is going to be a breeze',
+  title3: 'Modern',
+  desc3: 'A modern, easy-to-use user interface',
+  agreement: 'By logging in, you agree to our',
+  tos: 'Terms of service',
+  privacyPolicy: 'Privacy policy',
 
   // Home screen
   home: 'Home',

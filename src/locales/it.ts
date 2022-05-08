@@ -35,12 +35,26 @@ const IT = {
     'Sei offline o i server PoliTo non sono attualmente disponibili',
 
   // Login screen
-  caption: "L'app open-source\nnon ufficiale",
+  caption: "L'app non ufficiale per il\ntuo account PoliTo",
   loginCall: 'Accedi',
-  userPlaceholder: 'Codice utente o indirizzo e-mail',
+  userPlaceholder: 'Codice utente o indirizzo e-mail (es. S123456)',
   passwordPlaceholder: 'Password',
   login: 'Accedi',
+  or: 'oppure',
+  and: 'e',
+  takeTour: 'Fai il tour',
   version: 'versione',
+  title1: 'Open source',
+  desc1:
+    'Il codice sorgente è pubblico. Chiunque può contribuire allo sviluppo',
+  title2: 'Potente',
+  desc2:
+    'Grazie a funzionalità come un download manager e il video player integrato',
+  title3: 'Moderno',
+  desc3: "L'app ha un'interfaccia moderna e facile da usare",
+  agreement: 'Accedendo, acconsenti ai nostri',
+  tos: 'Termini di servizio',
+  privacyPolicy: 'Privacy policy',
 
   // Home screen
   home: 'Home',

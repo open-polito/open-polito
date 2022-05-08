@@ -8,6 +8,8 @@ export type Configuration = {
   logging: boolean;
   emailWebView: boolean;
 
+  theme: 'dark' | 'light' | 'system';
+
   timetable: {
     overlap: 'split' | 'priority';
     priority: string[];
@@ -21,6 +23,8 @@ const defaultConfig: Configuration = {
 
   logging: false,
   emailWebView: false,
+
+  theme: 'system',
 
   timetable: {
     overlap: 'split',
