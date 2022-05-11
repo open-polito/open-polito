@@ -15,7 +15,7 @@ import {
 } from './status';
 import {RootState} from './store';
 
-type UserState = {
+export type UserState = {
   userInfo: PersonalData | null;
 
   unreadEmailCount: number;

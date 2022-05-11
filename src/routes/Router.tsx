@@ -17,6 +17,7 @@ import {
   DeviceInfo,
   login,
   LoginData,
+  SessionState,
   setAuthStatus,
   setConfig,
   setConfigState,
@@ -36,7 +37,7 @@ import defaultConfig, {
 } from '../defaultConfig';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
-import {AuthStatus, AUTH_STATUS} from '../store/status';
+import {AuthStatus, AUTH_STATUS, STATUS, Status} from '../store/status';
 import {RootState} from '../store/store';
 import {DeviceContext} from '../context/Device';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -46,6 +47,7 @@ import Config from 'react-native-config';
 import Timetable from '../screens_legacy/Timetable';
 import Exams from '../screens_legacy/Exams';
 import Bookings from '../screens_legacy/Bookings';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 
 /**
  * Types for React Navigation
@@ -57,13 +59,8 @@ export type AuthStackParamList = {
 export type AppStackParamList = {
   HomeRouter: undefined;
   MaterialSearch: undefined;
-  ExamSessions: undefined;
-  Courses: undefined;
   Course: undefined;
   VideoPlayer: undefined;
-  Timetable: undefined;
-  Exams: undefined;
-  Bookings: undefined;
 };
 
 /**
@@ -124,9 +121,10 @@ export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
 
-  const authStatus = useSelector<RootState, AuthStatus>(
-    state => state.session.authStatus,
-  );
+  const {authStatus, loginStatus, config} = useSelector<
+    RootState,
+    SessionState
+  >(state => state.session);
 
   const deviceContext = useContext(DeviceContext);
 
@@ -134,29 +132,47 @@ export default function Router() {
   const [loggingEnabled, setLoggingEnabled] = useState(false);
   const [message, setMessage] = useState(<View></View>);
 
+  // When auth status changes, update login setting accordingly
+  useEffect(() => {
+    if (authStatus == AUTH_STATUS.NOT_VALID) {
+      dispatch(setConfig({...config, login: false}));
+    } else if (authStatus == AUTH_STATUS.VALID) {
+      dispatch(setConfig({...config, login: true}));
+    }
+  }, [authStatus]);
+
   // Initial setup
   useEffect(() => {
     (async () => {
       // Set config in store
-      let config = (JSON.parse(
+      let loadedConfig = (JSON.parse(
         (await AsyncStorage.getItem('@config')) || '{}',
       ) || defaultConfig) as Configuration;
 
       /**
-       * Check for old schema.
-       * For now we reset settings when old schema found
-       * TODO remove this method and replace with the following:
+       * Check for old schema and/or new default settings items.
+       * TODO implement the following:
        * - settings json should have depth 1
        * - it should just assign the default value when not found in storage
        */
       if (
-        !config.schemaVersion ||
-        config.schemaVersion != CONFIG_SCHEMA_VERSION
+        !loadedConfig.schemaVersion ||
+        loadedConfig.schemaVersion != CONFIG_SCHEMA_VERSION
       ) {
-        config = defaultConfig;
-        dispatch(setConfig(config));
+        const currentSettingsKeys = Object.keys(loadedConfig);
+        const defaultSettingsKeys = Object.keys(defaultConfig);
+
+        // Delete settings that have been deleted in default config
+        const toDelete = currentSettingsKeys.filter(
+          k => !defaultSettingsKeys.includes(k),
+        );
+        toDelete.forEach(k => delete (loadedConfig as any)[k]);
+
+        // Add missing new settings with their default value
+        dispatch(setConfig({...loadedConfig, ...defaultConfig}));
+      } else {
+        dispatch(setConfigState(loadedConfig));
       }
-      dispatch(setConfigState(config));
 
       // Get logging configuration
       const _loggingEnabled = await getLoggingConfig();
@@ -231,106 +247,27 @@ export default function Router() {
     );
   };
 
-  /**
-   * Quick splash screen.
-   * Shown if authStatus is PENDING
-   */
-  // TODO better design
-  return authStatus == AUTH_STATUS.PENDING ||
-    authStatus == AUTH_STATUS.OFFLINE ? (
-    <View style={{flex: 1}}>
-      <LinearGradient
-        colors={[colors.gradient1, colors.gradient2]}
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 1}}
-        style={{flex: 1}}>
-        <SafeAreaView style={{flex: 1}}>
-          <StatusBar
-            translucent
-            backgroundColor="transparent"
-            barStyle="light-content"
-          />
-          <View
-            style={{
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              flex: 1,
-              position: 'relative',
-            }}>
-            {authStatus == AUTH_STATUS.PENDING ? (
-              <View
-                style={{
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingBottom: 64,
-                }}>
-                <TextXL text={t('appName')} color="white" weight="bold" />
-                <View style={{position: 'absolute', bottom: 0}}>
-                  {authStatus == AUTH_STATUS.PENDING && (
-                    <ActivityIndicator size={48} color={colors.white} />
-                  )}
-                </View>
-              </View>
-            ) : (
-              <View
-                style={{
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  paddingBottom: 64,
-                  marginHorizontal: 64,
-                }}>
-                <Icon name="wifi-off" color={colors.white} size={64} />
-                <TextL text={t('networkError')} color="white" weight="bold" />
-                <TextS
-                  text={t('networkErrorDesc')}
-                  color="white"
-                  style={{textAlign: 'center'}}
-                />
-                {/* <Button
-                  icon="reload"
-                  text={t('retry')}
-                  onPress={() => {
-                    dispatch(setAuthStatus(AUTH_STATUS.PENDING));
-                  }}
-                  backgroundColor={colors.white}
-                  color={colors.gradient1}
-                  style={{flex: 0, marginTop: 16}}
-                /> */}
-              </View>
-            )}
-          </View>
-        </SafeAreaView>
-      </LinearGradient>
-    </View>
-  ) : (
+  return (
     <NavigationContainer>
       <View>{message}</View>
-      {authStatus == AUTH_STATUS.VALID ? (
+      {config.login ? (
         <AppStack.Navigator
           screenOptions={{
             headerShown: false,
           }}>
           <AppStack.Screen name="HomeRouter" component={HomeRouter} />
           <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
-          <AppStack.Screen name="Courses" component={Courses} />
           <AppStack.Screen name="Course" component={Course} />
           <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
-          <AppStack.Screen name="ExamSessions" component={ExamSessions} />
-          <AppStack.Screen name="Timetable" component={Timetable} />
-          <AppStack.Screen name="Exams" component={Exams} />
-          <AppStack.Screen name="Bookings" component={Bookings} />
         </AppStack.Navigator>
-      ) : authStatus == AUTH_STATUS.NOT_VALID ? (
+      ) : (
         <AuthStack.Navigator
           screenOptions={{
             headerShown: false,
           }}>
           <AuthStack.Screen name="Login" component={LoginScreen} />
         </AuthStack.Navigator>
-      ) : null}
+      )}
     </NavigationContainer>
   );
 }

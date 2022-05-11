@@ -2,6 +2,7 @@ import React, {FC} from 'react';
 import {createIconSetFromIcoMoon} from 'react-native-vector-icons';
 import {IconProps} from 'react-native-vector-icons/Icon';
 import icoMoonConfig from '../../../assets/fonts/selection.json';
+import {p} from '../../scaling';
 
 const GeneratedIconSet = createIconSetFromIcoMoon(
   icoMoonConfig,
@@ -10,7 +11,7 @@ const GeneratedIconSet = createIconSetFromIcoMoon(
 );
 
 const TablerIcon: FC<IconProps> = ({...props}: IconProps) => {
-  if (!props.size) props.size = 24;
+  if (!props.size) props.size = 24 * p;
   return (
     <GeneratedIconSet
       {...props}

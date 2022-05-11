@@ -31,7 +31,7 @@ export type LoginData = {
   token: string;
 };
 
-type SessionState = {
+export type SessionState = {
   authStatus: AuthStatus;
 
   deviceRegisterStatus: Status;
@@ -151,8 +151,8 @@ export const setConfig = createAsyncThunk<
   Configuration,
   {state: RootState}
 >('session/setConfig', async (config, {dispatch}) => {
+  await dispatch(setConfigState(config));
   await AsyncStorage.setItem('@config', JSON.stringify(config));
-  dispatch(setConfigState(config));
 });
 
 /**

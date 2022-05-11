@@ -9,7 +9,7 @@ import {
 import colors, {Color} from '../../colors';
 
 export type TextParams = {
-  s: 8 | 10 | 12 | 16 | 20 | 24;
+  s: number;
   c: Color;
   w: 'r' | 'm' | 'b'; // regular, medium, bold
   style?: TextStyle;
@@ -42,7 +42,7 @@ const Text: FC<TextParams> = ({
           }
         : {},
     });
-  }, []);
+  }, [c, s, w]);
 
   return (
     <RNText
@@ -52,7 +52,7 @@ const Text: FC<TextParams> = ({
           ? () => {
               Linking.openURL(href);
             }
-          : () => {}
+          : undefined
       }
       {...props}>
       {children}
