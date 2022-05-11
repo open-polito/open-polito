@@ -52,7 +52,6 @@ const DeviceProvider = ({
   const sel = useSelector<RootState, Configuration>(
     state => state.session.config,
   );
-  console.log(sel);
   const _chosenTheme = useSelector<RootState, string>(
     state => state.session.config.theme,
   );

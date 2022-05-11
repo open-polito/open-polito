@@ -3,6 +3,7 @@ import {StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import colors from '../../colors';
 import TablerIcon from './TablerIcon';
 import {TextInput as RNTextInput, TextInputProps} from 'react-native';
+import {p} from '../../scaling';
 
 type TextInputParams = {
   dark: boolean;
@@ -22,16 +23,17 @@ const TextInput: FC<TextInputParams> = ({
     return StyleSheet.create({
       textInputContainer: {
         backgroundColor: dark ? colors.gray700 : colors.gray200,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        borderRadius: 4,
+        // paddingVertical: 8 * p,
+        height: 40 * p,
+        paddingHorizontal: 12 * p,
+        borderRadius: 4 * p,
         flexDirection: 'row',
         alignItems: 'center',
       },
       textInput: {
         padding: 0,
         fontFamily: 'Inter-Regular',
-        fontSize: 10,
+        fontSize: 10 * p,
         flex: 1,
         color: dark ? colors.gray200 : colors.gray700,
       },
@@ -43,9 +45,9 @@ const TextInput: FC<TextInputParams> = ({
       {icon ? (
         <TablerIcon
           name={icon}
-          size={18}
+          size={18 * p}
           color={dark ? colors.gray200 : colors.gray700}
-          style={{marginRight: 8}}
+          style={{marginRight: 8 * p}}
         />
       ) : null}
       <RNTextInput

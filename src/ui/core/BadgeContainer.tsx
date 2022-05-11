@@ -1,6 +1,7 @@
 import React, {FC, ReactNode, useMemo} from 'react';
 import {StyleSheet, View, ViewStyle} from 'react-native';
 import colors from '../../colors';
+import {p} from '../../scaling';
 import Text from './Text';
 
 /**
@@ -25,7 +26,7 @@ const BadgeContainer: FC<{
       {children}
       {badgeText != 0 ? (
         <View style={_styles.badge}>
-          <Text w="r" s={10} c={colors.gray100}>
+          <Text w="r" s={10 * p} c={colors.gray100}>
             {badgeText}
           </Text>
         </View>
@@ -37,12 +38,12 @@ const BadgeContainer: FC<{
 const _styles = StyleSheet.create({
   badge: {
     position: 'absolute',
-    width: 20,
-    height: 20,
-    borderRadius: 20,
+    width: 20 * p,
+    height: 20 * p,
+    borderRadius: 20 * p,
     backgroundColor: colors.red,
-    right: -10,
-    top: -10,
+    right: -10 * p,
+    top: -10 * p,
     justifyContent: 'center',
     alignItems: 'center',
   },

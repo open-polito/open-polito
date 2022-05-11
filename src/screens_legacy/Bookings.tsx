@@ -113,7 +113,6 @@ const Bookings = () => {
   const [slots, setSlots] = useState<BookingSlot[]>([]);
 
   const language = useMemo(() => {
-    console.log(i18next.language);
     return i18next.language;
   }, [i18next.language]);
 

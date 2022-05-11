@@ -44,9 +44,8 @@ const IT = {
   and: 'e',
   takeTour: 'Fai il tour',
   version: 'versione',
-  title1: 'Open source',
-  desc1:
-    'Il codice sorgente è pubblico. Chiunque può contribuire allo sviluppo',
+  title1: 'Titolo 1',
+  desc1: 'Descrizione 1',
   title2: 'Potente',
   desc2:
     'Grazie a funzionalità come un download manager e il video player integrato',

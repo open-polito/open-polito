@@ -88,16 +88,18 @@ export const errorStatus = (error: SerializedError): Status => {
  * Auth status codes. These determine app routing.
  *
  * @remarks
- * PENDING:   Still authenticating. Show Splash screen.
- * VALID:     Access granted. Show {@link AppStack}.
- * NOT_VALID: Access denied. Show Login screen.
- * OFFLINE:   Can't connect. Act accordingly.
+ * PENDING    Still authenticating. Show Splash screen.
+ * VALID      Access granted. Show {@link AppStack}.
+ * NOT_VALID  Access denied. Show Login screen.
+ * OFFLINE    Can't connect. Act accordingly.
+ * RETRY      Retrying connection (e.g. after OFFLINE).
  */
 export const AUTH_STATUS = {
   PENDING: 0,
   VALID: 1,
   NOT_VALID: 2,
   OFFLINE: 3,
+  RETRY: 4,
 };
 
 /**
@@ -107,4 +109,5 @@ export type AuthStatus =
   | typeof AUTH_STATUS.PENDING
   | typeof AUTH_STATUS.VALID
   | typeof AUTH_STATUS.NOT_VALID
-  | typeof AUTH_STATUS.OFFLINE;
+  | typeof AUTH_STATUS.OFFLINE
+  | typeof AUTH_STATUS.RETRY;

@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import {Pressable} from 'react-native';
+import {Pressable, PressableProps} from 'react-native';
 
 /**
  * Basic pressable component.
@@ -8,8 +8,8 @@ import {Pressable} from 'react-native';
  * @param param0
  * @returns
  */
-const PressableBase: FC = ({children}) => {
-  return <Pressable>{children}</Pressable>;
+const PressableBase: FC<PressableProps> = ({children, ...props}) => {
+  return <Pressable {...props}>{children}</Pressable>;
 };
 
 export default PressableBase;

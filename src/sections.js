@@ -1,27 +1,71 @@
 const sections = [
   {
-    name: 'examSessions',
-    icon: 'mortar-board',
+    name: 'general',
+    items: [
+      {
+        name: 'Home',
+        icon: 'layout-dashboard',
+      },
+      {
+        name: 'Email',
+        icon: 'mail',
+      },
+      {
+        name: 'Settings',
+        icon: 'settings',
+      },
+    ],
   },
   {
-    name: 'courses',
-    icon: 'repo',
-  },
-  {
-    name: 'material',
-    icon: 'file-submodule',
+    name: 'classes',
+    items: [
+      {
+        name: 'Courses',
+        icon: 'school',
+      },
+      {
+        name: 'Material',
+        icon: 'folders',
+      },
+      {
+        name: 'Bookings',
+        icon: 'ticket',
+      },
+      {
+        name: 'Timetable',
+        icon: 'clock',
+      },
+    ],
   },
   {
     name: 'exams',
-    icon: 'book',
+    items: [
+      {
+        name: 'Exams',
+        icon: 'book-2',
+      },
+      {
+        name: 'ExamSessions',
+        icon: 'ballpen',
+      },
+    ],
   },
   {
-    name: 'bookings',
-    icon: 'calendar',
-  },
-  {
-    name: 'timetable',
-    icon: 'clock',
+    name: 'headquarters',
+    items: [
+      {
+        name: 'Maps',
+        icon: 'map-2',
+      },
+      {
+        name: 'Classrooms',
+        icon: 'building-arch',
+      },
+      {
+        name: 'People',
+        icon: 'user',
+      },
+    ],
   },
 ];
 

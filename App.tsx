@@ -1,6 +1,6 @@
 import React, {Suspense, useEffect, useState} from 'react';
 import FlashMessage from 'react-native-flash-message';
-import {Provider} from 'react-redux';
+import {Provider, useSelector} from 'react-redux';
 import Router from './src/routes/Router';
 
 import i18n from 'i18next';
@@ -21,6 +21,7 @@ import {
   TRenderEngineProvider,
 } from 'react-native-render-html';
 import colors from './src/colors';
+import Toast from './src/ui/Notification';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -67,6 +68,7 @@ export default function App() {
     <Suspense fallback="Loading...">
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
+          {/* TODO notification context provider */}
           <TRenderEngineProvider
             tagsStyles={{
               body: {
