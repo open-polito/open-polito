@@ -54,7 +54,7 @@ export const getNotificationList = createAsyncThunk<
   Notification[],
   Device,
   {state: RootState}
->('user/getNotifications', async device => {
+>('user/getNotificationList', async device => {
   const notifications = await getNotifications(device);
   return notifications.reverse();
 });

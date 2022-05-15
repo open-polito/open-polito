@@ -5,7 +5,7 @@ import styles from '../styles';
 import {useTranslation} from 'react-i18next';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
-import DirectoryItem from '../components/DirectoryItem';
+import DirectoryItem from '../ui/DirectoryItem';
 import {TextS, TextSubTitle} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';

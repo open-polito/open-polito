@@ -26,7 +26,7 @@ import HomeRouter from './HomeRouter';
 import {showMessage} from 'react-native-flash-message';
 import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
 import MaterialSearch from '../screens_legacy/MaterialSearch';
-import Courses from '../screens_legacy/Courses';
+import Courses from '../screens/Courses';
 import Course from '../screens_legacy/Course';
 import VideoPlayer from '../screens_legacy/VideoPlayer';
 import ExamSessions from '../screens_legacy/ExamSessions';
@@ -177,46 +177,6 @@ export default function Router() {
       // Get logging configuration
       const _loggingEnabled = await getLoggingConfig();
       setLoggingEnabled(_loggingEnabled);
-
-      // Try to access with Keychain credentials, if present
-      const keychainCredentials = await Keychain.getGenericPassword();
-
-      if (keychainCredentials) {
-        const {username, password} = keychainCredentials;
-        const {uuid, token} = JSON.parse(password);
-
-        // Up to this point the global Device is just a placeholder, therefore
-        // we create the actual instance, set it globally, and use it to login
-        const device = new Device(
-          uuid,
-          10000,
-          _loggingEnabled ? requestLogger : () => {},
-        );
-
-        // Set device instance
-        deviceContext.setDevice(device);
-
-        dispatch(
-          login({
-            method: 'token',
-            username: keychainCredentials.username,
-            token: token,
-            device: device,
-          }),
-        );
-      } else {
-        /**
-         * If keychain credentials not present:
-         * - if network error, set offline
-         * - otherwise, redirect to login screen
-         */
-        try {
-          await ping();
-          dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
-        } catch (e) {
-          dispatch(setAuthStatus(AUTH_STATUS.OFFLINE));
-        }
-      }
     })();
 
     return () => {

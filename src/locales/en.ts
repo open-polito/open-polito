@@ -22,6 +22,8 @@ const EN = {
   test: 'Test',
   readF: 'Read',
   unreadF: 'Unread',
+  searchForAnything: 'Search for anything',
+  more: 'More',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',
@@ -61,6 +63,8 @@ const EN = {
   quickAccess: 'Quick access',
   edit: 'EDIT',
   allSections: 'All sections',
+  latestFiles: 'Latest files',
+  latestAlert: 'Latest alert',
 
   // Sections
   examSessions: 'Exam sessions',

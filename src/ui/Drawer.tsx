@@ -1,33 +1,32 @@
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
-  DrawerItemList,
 } from '@react-navigation/drawer';
 import React, {FC, useContext, useMemo, useState} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
-import colors from '../../colors';
-import Text from './Text';
-import {p} from '../../scaling';
-import PressableBase from './PressableBase';
-import {version} from '../../version.json';
-import sections from '../../sections';
+import {StyleSheet, View} from 'react-native';
+import colors from '../colors';
+import Text from './core/Text';
+import {p} from '../scaling';
+import PressableBase from './core/PressableBase';
+import {version} from '../version.json';
+import sections from '../sections';
 import {useTranslation} from 'react-i18next';
-import TablerIcon from './TablerIcon';
-import {color} from 'react-native-reanimated';
+import TablerIcon from './core/TablerIcon';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../store/store';
+import {RootState} from '../store/store';
 import {PersonalData} from 'open-polito-api/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {logout} from '../../store/sessionSlice';
+import {logout} from '../store/sessionSlice';
 import {Device} from 'open-polito-api/device';
-import {DeviceContext} from '../../context/Device';
-import {getLoggingConfig, requestLogger} from '../../routes/Router';
+import {DeviceContext} from '../context/Device';
+import {getLoggingConfig, requestLogger} from '../routes/Router';
 
 type DrawerParams = {
   dark: boolean;
 } & DrawerContentComponentProps;
 
 // TODO proper separation of logic
+// TODO badges
 
 const orderedSections = sections.flatMap(sec => sec.items.map(i => i.name));
 
@@ -54,14 +53,16 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
 
   const deviceContext = useContext(DeviceContext);
 
-  const {name, surname, degree_type, degree_name} = useSelector<
-    RootState,
-    PersonalData
-  >(state => state.user.userInfo!);
+  const userInfo = useSelector<RootState, PersonalData | null>(
+    state => state.user.userInfo,
+  );
 
   const shortDegreeName = useMemo(() => {
-    return getShortenedDegreeName(degree_type, degree_name);
-  }, [degree_name, degree_type]);
+    if (userInfo == null) {
+      return '';
+    }
+    return getShortenedDegreeName(userInfo.degree_type, userInfo.degree_name);
+  }, [userInfo]);
 
   const [current, setCurrent] = useState(orderedSections[0]);
 
@@ -189,7 +190,7 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
               w="b"
               c={dark ? colors.gray100 : colors.gray800}
               s={12 * p}>
-              {surname} {name}
+              {userInfo?.surname} {userInfo?.name}
             </Text>
             <Text
               numberOfLines={1}

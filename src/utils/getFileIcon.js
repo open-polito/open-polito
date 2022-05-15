@@ -1,20 +1,24 @@
 import React from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../colors';
+import {p} from '../scaling';
+import TablerIcon from '../ui/core/TablerIcon';
 
 const FILE_TYPES = [
   {
-    icon: 'file-text-o',
-    color: colors.black,
+    icon: 'file-text',
+    color: colors.gray200,
+    colorLight: colors.gray700,
     extensions: ['csv', 'log', 'md', 'txt'],
   },
   {
-    icon: 'file-archive-o',
-    color: colors.black,
+    icon: 'archive',
+    color: colors.gray200,
+    colorLight: colors.gray700,
     extensions: ['7z', 'bz', 'gz', 'rar', 'tar', 'zip', 'xz'],
   },
   {
-    icon: 'file-code-o',
+    icon: 'file-code',
     color: colors.black,
     extensions: [
       'asm',
@@ -40,49 +44,52 @@ const FILE_TYPES = [
     ],
   },
   {
-    icon: 'file-image-o',
+    icon: 'photo',
     color: colors.gradient1,
     extensions: ['bmp', 'gif', 'jpg', 'jpeg', 'png', 'svg', 'tiff'],
   },
   {
-    icon: 'file-video-o',
+    icon: 'movie',
     color: colors.gradient1,
     extensions: ['flv', 'mkv', 'mp4', 'mov', 'wmv', 'avi', 'webm'],
   },
   {
-    icon: 'file-audio-o',
+    icon: 'headphones',
     color: colors.red,
     extensions: ['aac', 'alac', 'flac', 'm4a', 'mp3', 'ogg', 'wav', 'wma'],
   },
   {
-    icon: 'file-word-o',
+    icon: 'file-text',
     color: colors.gradient1,
     extensions: ['doc', 'docm', 'docx', 'odt'],
   },
   {
-    icon: 'file-pdf-o',
-    color: colors.red,
+    icon: 'file-text',
+    color: '#ff3848',
     extensions: ['pdf'],
   },
   {
-    icon: 'file-powerpoint-o',
+    icon: 'presentation',
     color: colors.orange,
     extensions: ['odp', 'ppt', 'pptm', 'pptx'],
   },
   {
-    icon: 'file-excel-o',
+    icon: 'table',
     color: colors.green,
     extensions: ['ods', 'xls', 'xlsm', 'xlsx'],
   },
 ];
 
-export default function getFileIcon(filename) {
+export default function getFileIcon(filename, dark) {
   const ext = filename.split('.').pop().toLowerCase();
   for (let i = 0; i < FILE_TYPES.length; i++) {
-    const {icon, color, extensions} = FILE_TYPES[i];
+    const {icon, extensions} = FILE_TYPES[i];
     if (extensions.includes(ext)) {
-      return <Icon name={icon} color={color} size={28} />;
+      const color = !dark
+        ? FILE_TYPES[i].colorLight || FILE_TYPES[i].color
+        : FILE_TYPES[i].color;
+      return <TablerIcon name={icon} color={color} size={24 * p} />;
     }
   }
-  return <Icon name="file-o" color={colors.black} size={28} />;
+  return <TablerIcon name="file-unknown" color={colors.black} size={24 * p} />;
 }

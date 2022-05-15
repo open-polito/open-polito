@@ -1,17 +1,21 @@
 import moment from 'moment';
 import {File, getDownloadURL, MaterialItem} from 'open-polito-api/material';
-import React, {ReactNode, useContext, useState} from 'react';
+import React, {ReactNode, useContext, useMemo, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import getFileIcon from '../utils/getFileIcon';
-import {TextS} from './Text';
+import {TextS} from '../components/Text';
+import TablerIcon from './core/TablerIcon';
+import {p} from '../scaling';
+import Text from './core/Text';
+import PressableBase from './core/PressableBase';
 
 export type DirectoryItemProps = {
   item: MaterialItem;
-  compact?: boolean;
   relativeDate?: boolean;
+  dark: boolean;
   course?: string;
   children?: ReactNode[];
   onPress?: Function;
@@ -23,8 +27,8 @@ const computeSizeLabel = (size: number): string => {
 
 export default function DirectoryItem({
   item,
-  compact = false,
   relativeDate = false, // show as "X days/hours ago instead of plain date"
+  dark,
   course = '',
   children = [],
   onPress = () => {},
@@ -41,13 +45,20 @@ export default function DirectoryItem({
     );
   };
 
+  const iconComponent = useMemo(() => {
+    return item.type == 'file' ? (
+      getFileIcon(item.filename)
+    ) : (
+      <TablerIcon name="folder" color={colors.black} size={24 * p} />
+    );
+  }, [item]);
+
   return (
     <View
       style={{
         flexDirection: 'column',
-        flex: 1,
       }}>
-      <Pressable
+      <PressableBase
         android_ripple={{color: colors.lightGray}}
         onPress={() => {
           item.type == 'file' ? downloadFile() : onPress();
@@ -64,74 +75,50 @@ export default function DirectoryItem({
             alignItems: 'center',
             flex: 1,
           }}>
-          {item.type == 'file' ? (
-            getFileIcon(item.filename)
-          ) : (
-            <Icon name="folder-open" color={colors.black} size={28} />
-          )}
+          {iconComponent}
           <View
             style={{
               flexDirection: 'column',
               justifyContent: 'flex-start',
-              marginLeft: 8,
+              marginLeft: 10 * p,
               flex: 1,
             }}>
-            <View style={{marginRight: 16}}>
-              <TextS text={item.name} numberOfLines={1} weight="bold" />
+            <View style={{marginRight: 10 * p}}>
+              <Text
+                c={dark ? colors.gray100 : colors.gray800}
+                w="m"
+                s={12 * p}
+                numberOfLines={1}>
+                {item.name}
+              </Text>
             </View>
             {item.type == 'file' && (
               <View style={{flexDirection: 'column', flex: 1}}>
-                <TextS
-                  numberOfLines={1}
-                  text={
-                    course && !compact
-                      ? course
-                      : relativeDate
-                      ? moment(item.creation_date).fromNow()
-                      : moment(item.creation_date).format('lll')
-                  }
-                />
+                <Text numberOfLines={1} w="r" s={10 * p} c={colors.gray300}>
+                  {relativeDate
+                    ? moment(item.creation_date).fromNow()
+                    : course
+                    ? course
+                    : moment(item.creation_date).format('lll')}
+                  {course ? ` · ${course}` : ''}
+                </Text>
               </View>
             )}
           </View>
         </View>
-        {!compact && (
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            <View
-              style={{
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'flex-end',
-                marginRight: 8,
-              }}>
-              <TextS text={sizeLabel} numberOfLines={1} />
-              {course ? (
-                <TextS
-                  numberOfLines={1}
-                  text={
-                    item.type == 'file'
-                      ? relativeDate
-                        ? moment(item.creation_date).fromNow()
-                        : moment(item.creation_date).format('lll')
-                      : null
-                  }
-                />
-              ) : null}
-            </View>
-            {item.type == 'file' ? (
-              <Pressable
-                android_ripple={{color: colors.lightGray}}
-                onPress={downloadFile}>
-                <Icon name="file-download" size={24} color={colors.gradient1} />
-              </Pressable>
-            ) : null}
-          </View>
-        )}
-      </Pressable>
+
+        {item.type == 'file' ? (
+          <Pressable
+            android_ripple={{color: colors.lightGray}}
+            onPress={downloadFile}>
+            <TablerIcon
+              name="download"
+              size={24 * p}
+              color={colors.accent300}
+            />
+          </Pressable>
+        ) : null}
+      </PressableBase>
       <View style={{marginLeft: 16}}>{children}</View>
     </View>
   );
