@@ -21,7 +21,7 @@ import {
   TRenderEngineProvider,
 } from 'react-native-render-html';
 import colors from './src/colors';
-import Toast from './src/ui/Notification';
+import Toast from './src/ui/Toast';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {

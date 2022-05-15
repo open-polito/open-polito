@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, View} from 'react-native';
-import DirectoryItem from './DirectoryItem';
+import DirectoryItem from '../ui/DirectoryItem';
 import {MaterialItem} from 'open-polito-api/material';
 
 export default function DirectoryItemRecursive({

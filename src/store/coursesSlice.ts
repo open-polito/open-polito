@@ -2,7 +2,7 @@
  * @file Manages actions and state related courses and their data
  */
 
-import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Device} from 'open-polito-api/device';
 import {
   CourseInfo,
@@ -38,6 +38,7 @@ export type CoursesState = {
   };
   courses: CourseState[];
   loadCoursesStatus: Status;
+  loadExtendedCourseInfoStatus: Status;
 
   recentMaterial: File[];
   getRecentMaterialStatus: Status;
@@ -47,6 +48,7 @@ const initialState: CoursesState = {
   marks: {permanent: [], provisional: []},
   courses: [],
   loadCoursesStatus: initialStatus,
+  loadExtendedCourseInfoStatus: initialStatus,
 
   recentMaterial: [],
   getRecentMaterialStatus: initialStatus,
@@ -179,7 +181,11 @@ const getUpdatedCourses = (
 export const coursesSlice = createSlice({
   name: 'courses',
   initialState,
-  reducers: {},
+  reducers: {
+    setLoadExtendedCourseInfoStatus: (state, action: PayloadAction<Status>) => {
+      state.loadExtendedCourseInfoStatus = action.payload;
+    },
+  },
   extraReducers: builder => {
     builder
       .addCase(loadCoursesData.pending, (state, action) => {
@@ -257,6 +263,6 @@ export const coursesSlice = createSlice({
   },
 });
 
-export const {} = coursesSlice.actions;
+export const {setLoadExtendedCourseInfoStatus} = coursesSlice.actions;
 
 export default coursesSlice.reducer;

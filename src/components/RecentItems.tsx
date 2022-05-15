@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
-import DirectoryItem from './DirectoryItem';
+import DirectoryItem from '../ui/DirectoryItem';
 import DirectoryItemLoader from './loaders/DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 import {getRecentCourseMaterial} from '../utils/material';

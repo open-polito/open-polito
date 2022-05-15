@@ -22,6 +22,8 @@ const IT = {
   test: 'Test',
   readF: 'Lette',
   unreadF: 'Non lette',
+  searchForAnything: 'Cerca qualcosa...',
+  more: 'Altro',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
@@ -61,6 +63,8 @@ const IT = {
   quickAccess: 'Accesso rapido',
   edit: 'MODIFICA',
   allSections: 'Tutte le sezioni',
+  latestFiles: 'Ultimi file',
+  latestAlert: 'Ultimo avviso',
 
   // Sections
   examSessions: 'Sessioni',

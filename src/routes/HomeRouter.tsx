@@ -1,7 +1,7 @@
 import React, {useContext, useEffect} from 'react';
 import styles from '../styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Home from '../screens_legacy/Home';
+import Home from '../screens/Home';
 import Email from '../screens_legacy/Email';
 import Settings from '../screens_legacy/Settings';
 import colors from '../colors';
@@ -10,9 +10,19 @@ import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
 import Material from '../screens_legacy/Material';
 import {RootState} from '../store/store';
-import {loadCoursesData} from '../store/coursesSlice';
+import {
+  CoursesState,
+  getRecentMaterial,
+  loadCourse,
+  loadCoursesData,
+  setLoadExtendedCourseInfoStatus,
+} from '../store/coursesSlice';
 import {DeviceContext} from '../context/Device';
-import {getNotificationList, getUnreadEmailCount} from '../store/userSlice';
+import {
+  getNotificationList,
+  getUnreadEmailCount,
+  UserState,
+} from '../store/userSlice';
 import {
   parsePushNotification,
   PushNotification,
@@ -23,11 +33,11 @@ import {NativeModules, Platform, View} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 import {infoFlashMessage} from '../components/CustomFlashMessages';
 import Config from 'react-native-config';
-import {STATUS, Status} from '../store/status';
+import {pendingStatus, STATUS, Status, successStatus} from '../store/status';
 import Analytics from 'appcenter-analytics';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import Drawer from '../ui/core/Drawer';
-import {SessionState} from '../store/sessionSlice';
+import Drawer from '../ui/Drawer';
+import {login, SessionState} from '../store/sessionSlice';
 import Bookings from '../screens_legacy/Bookings';
 import Timetable from '../screens_legacy/Timetable';
 import Exams from '../screens_legacy/Exams';
@@ -35,7 +45,10 @@ import ExamSessions from '../screens_legacy/ExamSessions';
 import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
 import People from '../screens/People';
-import Courses from '../screens_legacy/Courses';
+import Courses from '../screens/Courses';
+import {getLoggingConfig, requestLogger} from './Router';
+import Keychain from 'react-native-keychain';
+import {Device} from 'open-polito-api/device';
 
 export type DrawerStackParamList = {
   Home: undefined;
@@ -57,29 +70,78 @@ const DrawerStack = createDrawerNavigator<DrawerStackParamList>();
 export default function HomeRouter() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
-  const {dark, device} = useContext(DeviceContext);
+  const {dark, device, setDevice} = useContext(DeviceContext);
 
-  const unreadEmailCount = useSelector<RootState, number>(
-    state => state.user.unreadEmailCount,
+  const {unreadEmailCount, getNotificationsStatus} = useSelector<
+    RootState,
+    UserState
+  >(state => state.user);
+
+  const {loginStatus} = useSelector<RootState, SessionState>(
+    state => state.session,
   );
 
-  const getNotificationsStatus = useSelector<RootState, Status>(
-    state => state.user.getNotificationsStatus,
-  );
+  const {courses, recentMaterial, getRecentMaterialStatus, loadCoursesStatus} =
+    useSelector<RootState, CoursesState>(state => state.courses);
 
   /**
    * Whenever notifications status is set to IDLE,
    * load them again
    */
   useEffect(() => {
-    if (getNotificationsStatus.code != STATUS.IDLE) return;
+    if (
+      getNotificationsStatus.code != STATUS.IDLE ||
+      loginStatus.code != STATUS.SUCCESS
+    )
+      return;
     dispatch(getNotificationList(device));
-  }, [getNotificationsStatus]);
+  }, [getNotificationsStatus, loginStatus]);
 
   /**
    * Load initial data
    */
   useEffect(() => {
+    (async () => {
+      // Try to access with Keychain credentials, if present
+      const keychainCredentials = await Keychain.getGenericPassword();
+
+      if (keychainCredentials) {
+        const {username, password} = keychainCredentials;
+        const {uuid, token} = JSON.parse(password);
+
+        const _loggingEnabled = await getLoggingConfig();
+
+        // Up to this point the global Device is just a placeholder, therefore
+        // we create the actual instance, set it globally, and use it to login
+        const device = new Device(
+          uuid,
+          10000,
+          _loggingEnabled ? requestLogger : () => {},
+        );
+
+        // Set device instance
+        setDevice(device);
+
+        dispatch(
+          login({
+            method: 'token',
+            username: keychainCredentials.username,
+            token: token,
+            device: device,
+          }),
+        );
+      } else {
+      }
+
+      return () => {};
+    })();
+  }, []);
+
+  /**
+   * Load everything else only after login successful
+   */
+  useEffect(() => {
+    if (loginStatus.code != STATUS.SUCCESS) return;
     dispatch(loadCoursesData(device));
     dispatch(getUnreadEmailCount(device));
 
@@ -95,9 +157,45 @@ export default function HomeRouter() {
         await Analytics.trackEvent('fcm_registered');
       }
     })();
+  }, [loginStatus]);
 
-    return () => {};
-  }, []);
+  /**
+   * Load full course data when basic data loaded
+   * TODO change when persistence implemented
+   */
+  useEffect(() => {
+    console.log('called loaded courses!!');
+    (async () => {
+      if (loadCoursesStatus.code != STATUS.SUCCESS) return; // Cancel if basic data not loaded
+      console.log('ok populating,...');
+      dispatch(setLoadExtendedCourseInfoStatus(pendingStatus())); // Pending
+      courses.forEach(course => {
+        console.log(course.basicInfo.name);
+        if (course.status.code == STATUS.IDLE) {
+          dispatch(loadCourse({basicCourseInfo: course.basicInfo, device}));
+        }
+      });
+    })();
+  }, [loadCoursesStatus]);
+
+  /**
+   * When all courses fully loaded, get recent material
+   */
+  useEffect(() => {
+    if (
+      getRecentMaterialStatus.code != STATUS.IDLE ||
+      loadCoursesStatus.code != STATUS.SUCCESS
+    )
+      return; // Cancel if already computed/computing or basic data not even loaded
+    let allLoaded = true;
+    courses.forEach(course => {
+      if (course.status.code != STATUS.SUCCESS) allLoaded = false;
+    });
+    if (allLoaded) {
+      dispatch(setLoadExtendedCourseInfoStatus(successStatus())); // Success
+      dispatch(getRecentMaterial());
+    }
+  }, [courses, getRecentMaterialStatus]);
 
   return (
     <DrawerStack.Navigator
