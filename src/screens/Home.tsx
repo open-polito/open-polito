@@ -6,7 +6,7 @@ import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
 import TextInput from '../ui/core/TextInput';
-import Header from '../ui/Header';
+import Header, {HEADER_TYPE} from '../ui/Header';
 import Screen from '../ui/Screen';
 import sections from '../sections';
 import PressableBase from '../ui/core/PressableBase';
@@ -87,7 +87,7 @@ const Home = () => {
 
   return (
     <Screen>
-      <Header title={t('home')} />
+      <Header title={t('home')} headerType={HEADER_TYPE.MAIN} />
       <ScrollView>
         <View style={_styles.container}>
           <TextInput

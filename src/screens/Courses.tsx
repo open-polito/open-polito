@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {Pressable, ScrollView, View} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import colors from '../colors';
 import ArrowHeader from '../components/ArrowHeader';
@@ -11,11 +11,14 @@ import styles from '../styles';
 import {DeviceContext} from '../context/Device';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
+import Screen from '../ui/Screen';
+import {p} from '../scaling';
+import Header, {HEADER_TYPE} from '../ui/Header';
 
 export default function Courses({navigation}) {
   const {t} = useTranslation();
   const dispatch = useDispatch();
-  const deviceContext = useContext(DeviceContext);
+  const {device, dark} = useContext(DeviceContext);
 
   const courses = useSelector<RootState, CourseState[]>(
     state => state.courses.courses,
@@ -67,39 +70,55 @@ export default function Courses({navigation}) {
     );
   };
 
+  const _styles = useMemo(() => {
+    return StyleSheet.create({
+      container: {
+        marginTop: 24 * p,
+        paddingHorizontal: 16 * p,
+        paddingBottom: 16 * p,
+      },
+    });
+  }, [dark]);
+
   return (
-    <ScreenContainer style={{paddingHorizontal: 0}}>
-      <View style={styles.withHorizontalPadding}>
-        <ArrowHeader text={t('courses')} backFunc={navigation.goBack} />
-      </View>
-      <View style={{flex: 1}}>
-        <ScrollView
-          onScroll={e => {
-            setOffsetY(e.nativeEvent.contentOffset.y);
-          }}
-          contentContainerStyle={{
-            ...styles.withHorizontalPadding,
-            paddingBottom: offsetY < 16 ? 32 : 16,
-            ...styles.paddingFromHeader,
-          }}>
-          {courses != null &&
-            courses
-              .filter(course => course.isMain)
-              .map(mainCourse => buildCourseButton(mainCourse))}
-          {courses.filter(course => !course.isMain).length > 0 && (
-            <View>
-              <TextN
-                text={t('otherCourses')}
-                weight="medium"
-                style={{marginBottom: 8}}
-              />
-              {courses
-                .filter(course => !course.isMain)
-                .map(extraCourse => buildCourseButton(extraCourse))}
-            </View>
-          )}
-        </ScrollView>
-      </View>
-    </ScreenContainer>
+    <Screen>
+      <Header title={t('courses')} headerType={HEADER_TYPE.SECONDARY} />
+    </Screen>
   );
+
+  // return (
+  //   <ScreenContainer style={{paddingHorizontal: 0}}>
+  //     <View style={styles.withHorizontalPadding}>
+  //       <ArrowHeader text={t('courses')} backFunc={navigation.goBack} />
+  //     </View>
+  //     <View style={{flex: 1}}>
+  //       <ScrollView
+  //         onScroll={e => {
+  //           setOffsetY(e.nativeEvent.contentOffset.y);
+  //         }}
+  //         contentContainerStyle={{
+  //           ...styles.withHorizontalPadding,
+  //           paddingBottom: offsetY < 16 ? 32 : 16,
+  //           ...styles.paddingFromHeader,
+  //         }}>
+  //         {courses != null &&
+  //           courses
+  //             .filter(course => course.isMain)
+  //             .map(mainCourse => buildCourseButton(mainCourse))}
+  //         {courses.filter(course => !course.isMain).length > 0 && (
+  //           <View>
+  //             <TextN
+  //               text={t('otherCourses')}
+  //               weight="medium"
+  //               style={{marginBottom: 8}}
+  //             />
+  //             {courses
+  //               .filter(course => !course.isMain)
+  //               .map(extraCourse => buildCourseButton(extraCourse))}
+  //           </View>
+  //         )}
+  //       </ScrollView>
+  //     </View>
+  //   </ScreenContainer>
+  // );
 }

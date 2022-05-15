@@ -14,11 +14,17 @@ import Text from './core/Text';
 
 // TODO navigation to drawer, search bar, notifications, downloads
 
+export enum HEADER_TYPE {
+  MAIN = 0,
+  SECONDARY = 1,
+}
+
 export type HeaderParams = {
   title: string;
+  headerType: HEADER_TYPE;
 };
 
-const Header: FC<HeaderParams> = ({title}) => {
+const Header: FC<HeaderParams> = ({title, headerType}) => {
   const {dark} = useContext(DeviceContext);
   const notifications = useSelector<RootState, Notification[]>(
     state => state.user.notifications,
@@ -57,55 +63,74 @@ const Header: FC<HeaderParams> = ({title}) => {
 
   return (
     <View style={_styles.header}>
-      <View style={_styles.headerSection}>
-        {/* TODO add logic for badge number*/}
-        <PressableBase
-          onPress={() => {
-            navigation.toggleDrawer();
-          }}>
-          <BadgeContainer number={0} style={{marginRight: 16 * p}}>
+      {headerType == HEADER_TYPE.MAIN ? (
+        <>
+          <View style={_styles.headerSection}>
+            {/* TODO add logic for badge number*/}
+            <PressableBase
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}>
+              <BadgeContainer number={0} style={{marginRight: 16 * p}}>
+                <TablerIcon
+                  name="menu-2"
+                  size={24 * p}
+                  color={dark ? colors.gray100 : colors.gray800}
+                />
+              </BadgeContainer>
+            </PressableBase>
             <TablerIcon
-              name="menu-2"
+              name="download"
               size={24 * p}
               color={dark ? colors.gray100 : colors.gray800}
             />
-          </BadgeContainer>
-        </PressableBase>
-        <TablerIcon
-          name="download"
-          size={24 * p}
-          color={dark ? colors.gray100 : colors.gray800}
-        />
-      </View>
-      <View
-        style={{
-          ..._styles.headerSection,
-          ..._styles.headerMiddle,
-        }}>
-        <Text
-          c={dark ? colors.gray100 : colors.gray800}
-          w="m"
-          s={16 * p}
-          numberOfLines={1}>
-          {title}
-        </Text>
-      </View>
-      <View style={{..._styles.headerSection, ..._styles.headerEnd}}>
-        <TablerIcon
-          name="search"
-          size={24 * p}
-          color={dark ? colors.gray100 : colors.gray800}
-          style={{marginRight: 16 * p}}
-        />
-        {/* TODO add logic for badge number*/}
-        <BadgeContainer number={notificationCount}>
+          </View>
+          <View
+            style={{
+              ..._styles.headerSection,
+              ..._styles.headerMiddle,
+            }}>
+            <Text
+              c={dark ? colors.gray100 : colors.gray800}
+              w="m"
+              s={16 * p}
+              numberOfLines={1}>
+              {title}
+            </Text>
+          </View>
+          <View style={{..._styles.headerSection, ..._styles.headerEnd}}>
+            <TablerIcon
+              name="search"
+              size={24 * p}
+              color={dark ? colors.gray100 : colors.gray800}
+              style={{marginRight: 16 * p}}
+            />
+            {/* TODO add logic for badge number*/}
+            <BadgeContainer number={notificationCount}>
+              <TablerIcon
+                name="bell"
+                size={24 * p}
+                color={dark ? colors.gray100 : colors.gray800}
+              />
+            </BadgeContainer>
+          </View>
+        </>
+      ) : headerType == HEADER_TYPE.SECONDARY ? (
+        <>
           <TablerIcon
-            name="bell"
+            name="arrow-left"
             size={24 * p}
-            color={dark ? colors.gray100 : colors.gray800}
+            color={dark ? colors.gray200 : colors.gray700}
           />
-        </BadgeContainer>
-      </View>
+          <Text
+            s={16 * p}
+            w="m"
+            c={dark ? colors.gray100 : colors.gray800}
+            style={{marginLeft: 16 * p}}>
+            {title}
+          </Text>
+        </>
+      ) : null}
     </View>
   );
 };
