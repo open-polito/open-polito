@@ -14,6 +14,10 @@ import {CourseState} from '../store/coursesSlice';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
 import Header, {HEADER_TYPE} from '../ui/Header';
+import PressableBase from '../ui/core/PressableBase';
+import Text from '../ui/core/Text';
+import TablerIcon from '../ui/core/TablerIcon';
+import Section from '../ui/Section';
 
 export default function Courses({navigation}) {
   const {t} = useTranslation();
@@ -29,43 +33,30 @@ export default function Courses({navigation}) {
   const buildCourseButton = (course: CourseState) => {
     return (
       <View key={course.basicInfo.code + course.basicInfo.name}>
-        <Pressable
+        <PressableBase
           onPress={() => {
             navigation.navigate('Course', {
               courseCode: course.basicInfo.code + course.basicInfo.name,
             });
           }}
           android_ripple={{color: colors.lightGray}}
-          style={{
-            paddingVertical: 12,
-            paddingHorizontal: 16,
-            marginBottom: 16,
-            backgroundColor: colors.white,
-            ...styles.elevatedSmooth,
-            ...styles.border,
-          }}>
+          style={_styles.button}>
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}>
-            <View style={{flexDirection: 'column', width: '90%'}}>
-              <TextN
-                text={course.basicInfo.name}
-                numberOfLines={1}
-                weight="regular"
-              />
-              <TextS text={course.basicInfo.num_credits + ' CFU'} />
-            </View>
-            <Icon
+            <Text s={12 * p} c={dark ? colors.gray200 : colors.gray700} w="m">
+              {course.basicInfo.name}
+            </Text>
+            <TablerIcon
               name="chevron-right"
-              color={colors.mediumGray}
-              size={24}
-              style={{position: 'absolute', right: 0}}
+              color={dark ? colors.gray200 : colors.gray700}
+              size={24 * p}
             />
           </View>
-        </Pressable>
+        </PressableBase>
       </View>
     );
   };
@@ -77,48 +68,34 @@ export default function Courses({navigation}) {
         paddingHorizontal: 16 * p,
         paddingBottom: 16 * p,
       },
+      button: {
+        paddingVertical: 8 * p,
+        paddingLeft: 16 * p,
+        paddingRight: 8 * p,
+        marginBottom: 16 * p,
+        backgroundColor: dark ? colors.gray700 : colors.gray200,
+        borderRadius: 4 * p,
+      },
     });
   }, [dark]);
 
   return (
     <Screen>
-      <Header title={t('courses')} headerType={HEADER_TYPE.SECONDARY} />
+      <Header title={t('courses')} headerType={HEADER_TYPE.MAIN} />
+      <ScrollView>
+        <View style={_styles.container}>
+          {courses
+            .filter(course => course.isMain)
+            .map(mainCourse => buildCourseButton(mainCourse))}
+          {courses.filter(course => !course.isMain).length > 0 ? (
+            <Section title={t('otherCourses')} style={{marginTop: 8}}>
+              {courses
+                .filter(course => !course.isMain)
+                .map(secondaryCourse => buildCourseButton(secondaryCourse))}
+            </Section>
+          ) : null}
+        </View>
+      </ScrollView>
     </Screen>
   );
-
-  // return (
-  //   <ScreenContainer style={{paddingHorizontal: 0}}>
-  //     <View style={styles.withHorizontalPadding}>
-  //       <ArrowHeader text={t('courses')} backFunc={navigation.goBack} />
-  //     </View>
-  //     <View style={{flex: 1}}>
-  //       <ScrollView
-  //         onScroll={e => {
-  //           setOffsetY(e.nativeEvent.contentOffset.y);
-  //         }}
-  //         contentContainerStyle={{
-  //           ...styles.withHorizontalPadding,
-  //           paddingBottom: offsetY < 16 ? 32 : 16,
-  //           ...styles.paddingFromHeader,
-  //         }}>
-  //         {courses != null &&
-  //           courses
-  //             .filter(course => course.isMain)
-  //             .map(mainCourse => buildCourseButton(mainCourse))}
-  //         {courses.filter(course => !course.isMain).length > 0 && (
-  //           <View>
-  //             <TextN
-  //               text={t('otherCourses')}
-  //               weight="medium"
-  //               style={{marginBottom: 8}}
-  //             />
-  //             {courses
-  //               .filter(course => !course.isMain)
-  //               .map(extraCourse => buildCourseButton(extraCourse))}
-  //           </View>
-  //         )}
-  //       </ScrollView>
-  //     </View>
-  //   </ScreenContainer>
-  // );
 }
