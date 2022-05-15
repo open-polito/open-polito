@@ -117,11 +117,13 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
         </>
       ) : headerType == HEADER_TYPE.SECONDARY ? (
         <>
-          <TablerIcon
-            name="arrow-left"
-            size={24 * p}
-            color={dark ? colors.gray200 : colors.gray700}
-          />
+          <PressableBase onPress={navigation.goBack}>
+            <TablerIcon
+              name="arrow-left"
+              size={24 * p}
+              color={dark ? colors.gray200 : colors.gray700}
+            />
+          </PressableBase>
           <Text
             s={16 * p}
             w="m"
