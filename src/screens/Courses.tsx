@@ -88,7 +88,10 @@ export default function Courses({navigation}) {
             .filter(course => course.isMain)
             .map(mainCourse => buildCourseButton(mainCourse))}
           {courses.filter(course => !course.isMain).length > 0 ? (
-            <Section title={t('otherCourses')} style={{marginTop: 8}}>
+            <Section
+              dark={dark}
+              title={t('otherCourses')}
+              style={{marginTop: 8}}>
               {courses
                 .filter(course => !course.isMain)
                 .map(secondaryCourse => buildCourseButton(secondaryCourse))}

@@ -91,5 +91,7 @@ export default function getFileIcon(filename, dark) {
       return <TablerIcon name={icon} color={color} size={24 * p} />;
     }
   }
-  return <TablerIcon name="file-unknown" color={colors.black} size={24 * p} />;
+  return (
+    <TablerIcon name="file-unknown" color={colors.gray500} size={24 * p} />
+  );
 }

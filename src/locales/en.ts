@@ -24,6 +24,7 @@ const EN = {
   unreadF: 'Unread',
   searchForAnything: 'Search for anything',
   more: 'More',
+  relatedVideos: 'Related videos',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',
@@ -118,6 +119,7 @@ const EN = {
 
   // Course screen
   overview: 'Overview',
+  summary: 'Summary',
   info: 'Info',
   courseInfo: 'About this course',
   recordings: 'Recordings',

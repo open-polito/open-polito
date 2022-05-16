@@ -13,7 +13,7 @@ import {useContext} from 'react';
 import RecentItems from '../components/RecentItems';
 import RecentItemsLoader from '../components/loaders/RecentItemsLoader';
 import {Rect} from 'react-native-svg';
-import MaterialExplorer from '../components/MaterialExplorer';
+import MaterialExplorer from '../ui/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';
 import {DeviceContext} from '../context/Device';
