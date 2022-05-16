@@ -28,6 +28,8 @@ import DirectoryItem from './DirectoryItem';
 import Notification from './Notification';
 import {NotificationType} from 'open-polito-api/notifications';
 
+// TODO "Exam is taken?" feature
+
 const CourseOverview: FC<{
   code: string;
   changeTab: Function;

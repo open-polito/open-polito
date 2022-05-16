@@ -113,6 +113,8 @@ const EN = {
   byCourse: 'By course',
   selectCourseDropdown: 'Select course...',
   selectCourse: 'Select a course to view its files',
+  explore: 'Explore',
+  recentlyAdded: 'Recently added',
 
   // Courses screen
   otherCourses: 'Other courses',
