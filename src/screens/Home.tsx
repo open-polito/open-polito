@@ -121,7 +121,7 @@ const Home = () => {
                   numberOfLines={1}
                   s={10 * p}
                   w="r"
-                  c={colors.gray100}
+                  c={dark ? colors.gray100 : colors.gray800}
                   style={_styles.topSectionText}>
                   {t(btn.name[0].toLowerCase() + btn.name.slice(1))}
                 </Text>
@@ -144,7 +144,7 @@ const Home = () => {
                 numberOfLines={1}
                 s={10 * p}
                 w="r"
-                c={colors.gray100}
+                c={dark ? colors.gray100 : colors.gray800}
                 style={_styles.topSectionText}>
                 {t('more')}
               </Text>
@@ -152,7 +152,10 @@ const Home = () => {
           </View>
 
           {/* Latest files */}
-          <Section title={t('latestFiles')} style={{marginTop: 32 * p}}>
+          <Section
+            dark={dark}
+            title={t('latestFiles')}
+            style={{marginTop: 32 * p}}>
             {loadExtendedCourseInfoStatus.code != STATUS.SUCCESS ? (
               <ActivityIndicator />
             ) : (
@@ -170,7 +173,10 @@ const Home = () => {
           </Section>
 
           {/* Latest alert */}
-          <Section title={t('latestAlert')} style={{marginTop: 24 * p}}>
+          <Section
+            dark={dark}
+            title={t('latestAlert')}
+            style={{marginTop: 24 * p}}>
             {loadExtendedCourseInfoStatus.code != STATUS.SUCCESS ? (
               <ActivityIndicator />
             ) : (

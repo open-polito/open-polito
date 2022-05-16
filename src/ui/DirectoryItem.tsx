@@ -49,7 +49,11 @@ export default function DirectoryItem({
     return item.type == 'file' ? (
       getFileIcon(item.filename)
     ) : (
-      <TablerIcon name="folder" color={colors.black} size={24 * p} />
+      <TablerIcon
+        name="folder"
+        color={dark ? colors.gray200 : colors.gray700}
+        size={24 * p}
+      />
     );
   }, [item]);
 
@@ -119,7 +123,24 @@ export default function DirectoryItem({
           </Pressable>
         ) : null}
       </PressableBase>
-      <View style={{marginLeft: 16}}>{children}</View>
+      {item.type == 'dir' ? (
+        <View style={{flexDirection: 'row'}}>
+          <View
+            style={{
+              width: 32 * p,
+              alignItems: 'center',
+            }}>
+            <View
+              style={{
+                flex: 1,
+                width: 2 * p,
+                backgroundColor: dark ? colors.gray600 : colors.gray300,
+              }}
+            />
+          </View>
+          <View style={{flex: 1}}>{children}</View>
+        </View>
+      ) : null}
     </View>
   );
 }

@@ -27,8 +27,8 @@ import {showMessage} from 'react-native-flash-message';
 import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
 import MaterialSearch from '../screens_legacy/MaterialSearch';
 import Courses from '../screens/Courses';
-import Course from '../screens_legacy/Course';
-import VideoPlayer from '../screens_legacy/VideoPlayer';
+import Course from '../screens/Course';
+import VideoPlayer from '../screens/VideoPlayer';
 import ExamSessions from '../screens_legacy/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig, {

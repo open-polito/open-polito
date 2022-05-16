@@ -164,13 +164,10 @@ export default function HomeRouter() {
    * TODO change when persistence implemented
    */
   useEffect(() => {
-    console.log('called loaded courses!!');
     (async () => {
       if (loadCoursesStatus.code != STATUS.SUCCESS) return; // Cancel if basic data not loaded
-      console.log('ok populating,...');
       dispatch(setLoadExtendedCourseInfoStatus(pendingStatus())); // Pending
       courses.forEach(course => {
-        console.log(course.basicInfo.name);
         if (course.status.code == STATUS.IDLE) {
           dispatch(loadCourse({basicCourseInfo: course.basicInfo, device}));
         }

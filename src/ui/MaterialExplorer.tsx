@@ -4,11 +4,17 @@ import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/store';
 import DirectoryItemRecursive from './DirectoryItemRecursive';
-import NoContent from './NoContent';
+import NoContent from '../components/NoContent';
 
 type MaterialDict = {[code: string]: MaterialItem};
 
-export default function MaterialExplorer({courseId}: {courseId: string}) {
+export default function MaterialExplorer({
+  courseId,
+  dark,
+}: {
+  courseId: string;
+  dark: boolean;
+}) {
   const [material, setMaterial] = useState<MaterialItem[]>([]);
 
   const [materialDict, setMaterialDict] = useState<MaterialDict>({});
@@ -61,11 +67,12 @@ export default function MaterialExplorer({courseId}: {courseId: string}) {
   }
 
   return (
-    <View style={{marginBottom: 50}}>
+    <View>
       {firstLevel.length > 0 ? (
         firstLevel.map(key => {
           return (
             <DirectoryItemRecursive
+              dark={dark}
               key={materialDict[key].code}
               item={materialDict[key]}
               getChildren={getChildren}

@@ -24,6 +24,7 @@ const IT = {
   unreadF: 'Non lette',
   searchForAnything: 'Cerca qualcosa...',
   more: 'Altro',
+  relatedVideos: 'Video correlati',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
@@ -116,6 +117,7 @@ const IT = {
 
   // Course screen
   overview: 'Riepilogo',
+  summary: 'Overview',
   info: 'Info',
   courseInfo: 'Informazioni sul corso',
   recordings: 'Registrazioni',
