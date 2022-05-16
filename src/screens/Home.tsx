@@ -159,7 +159,7 @@ const Home = () => {
             {loadExtendedCourseInfoStatus.code != STATUS.SUCCESS ? (
               <ActivityIndicator />
             ) : (
-              recentMaterial.map(file => (
+              recentMaterial.slice(0, 3).map(file => (
                 <View key={file.code}>
                   <DirectoryItem
                     relativeDate

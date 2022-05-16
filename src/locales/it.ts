@@ -111,6 +111,8 @@ const IT = {
   byCourse: 'Per corso',
   selectCourseDropdown: 'Seleziona corso...',
   selectCourse: 'Seleziona un corso per vederne i file',
+  explore: 'Esplora',
+  recentlyAdded: 'Aggiunti di recente',
 
   // Courses screen
   otherCourses: 'Altri corsi',

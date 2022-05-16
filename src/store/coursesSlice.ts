@@ -129,7 +129,7 @@ export const getRecentMaterial = createAsyncThunk<
   });
   res = findFiles(rootDir)
     .sort((a, b) => b.creation_date - a.creation_date)
-    .slice(0, 3);
+    .slice(0, 50);
   return res;
 });
 

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {File, getDownloadURL, MaterialItem} from 'open-polito-api/material';
-import React, {ReactNode, useContext, useMemo, useState} from 'react';
+import React, {FC, ReactNode, useContext, useMemo, useState} from 'react';
 import {Linking, Pressable, View} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
@@ -17,7 +17,6 @@ export type DirectoryItemProps = {
   relativeDate?: boolean;
   dark: boolean;
   course?: string;
-  children?: ReactNode[];
   onPress?: Function;
 };
 
@@ -25,14 +24,14 @@ const computeSizeLabel = (size: number): string => {
   return size > 999 ? (size / 1000).toFixed(2) + ' MB' : size + ' kB';
 };
 
-export default function DirectoryItem({
+const DirectoryItem: FC<DirectoryItemProps> = ({
   item,
   relativeDate = false, // show as "X days/hours ago instead of plain date"
   dark,
   course = '',
-  children = [],
   onPress = () => {},
-}: DirectoryItemProps) {
+  children,
+}) => {
   const [sizeLabel, setSizeLabel] = useState(
     item.type == 'file' ? computeSizeLabel(item.size) : '',
   );
@@ -143,4 +142,6 @@ export default function DirectoryItem({
       ) : null}
     </View>
   );
-}
+};
+
+export default DirectoryItem;
