@@ -90,12 +90,18 @@ const Home = () => {
       <Header title={t('home')} headerType={HEADER_TYPE.MAIN} />
       <ScrollView>
         <View style={_styles.container}>
-          <TextInput
-            placeholder={t('searchForAnything')}
-            dark={dark}
-            icon="search"
-            style={{marginBottom: 32 * p}}
-          />
+          <PressableBase
+            onPress={() => {
+              navigation.navigate('Search');
+            }}>
+            <TextInput
+              editable={false}
+              placeholder={t('searchForAnything')}
+              dark={dark}
+              icon="search"
+              style={{marginBottom: 32 * p}}
+            />
+          </PressableBase>
 
           {/* Top sections */}
           <View style={_styles.topSections}>

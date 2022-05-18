@@ -25,7 +25,7 @@ import {
 import HomeRouter from './HomeRouter';
 import {showMessage} from 'react-native-flash-message';
 import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
-import MaterialSearch from '../screens_legacy/MaterialSearch';
+import Search from '../screens/Search';
 import Courses from '../screens/Courses';
 import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
@@ -58,7 +58,7 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
   HomeRouter: undefined;
-  MaterialSearch: undefined;
+  Search: undefined;
   Course: undefined;
   VideoPlayer: undefined;
 };
@@ -216,7 +216,7 @@ export default function Router() {
             headerShown: false,
           }}>
           <AppStack.Screen name="HomeRouter" component={HomeRouter} />
-          <AppStack.Screen name="MaterialSearch" component={MaterialSearch} />
+          <AppStack.Screen name="Search" component={Search} />
           <AppStack.Screen name="Course" component={Course} />
           <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
         </AppStack.Navigator>

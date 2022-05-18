@@ -25,6 +25,7 @@ const IT = {
   searchForAnything: 'Cerca qualcosa...',
   more: 'Altro',
   relatedVideos: 'Video correlati',
+  files: 'File',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
