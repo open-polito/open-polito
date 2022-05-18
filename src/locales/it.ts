@@ -9,6 +9,7 @@ const IT = {
   search: 'Cerca',
   searchResults: '{{count}} risultati trovati',
   noResults: 'Nessun risultato',
+  tryADifferentTerm: 'Prova un altro termine',
   open: 'Apri',
   alerts: 'Avvisi',
   oldVideos: 'Video di anni precedenti',

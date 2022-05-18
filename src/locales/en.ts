@@ -9,6 +9,7 @@ const EN = {
   search: 'Search',
   searchResults: '{{count}} results found',
   noResults: 'No results',
+  tryADifferentTerm: 'Try a different term',
   open: 'Open',
   alerts: 'Alerts',
   oldVideos: 'Videos from previous years',
