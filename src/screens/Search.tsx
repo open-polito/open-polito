@@ -1,14 +1,9 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import {FlatList, Pressable, View} from 'react-native';
 import colors from '../colors';
-import styles from '../styles';
 import {useTranslation} from 'react-i18next';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
 import DirectoryItem from '../ui/DirectoryItem';
-import {TextS, TextSubTitle} from '../components/Text';
-import ScreenContainer from '../components/ScreenContainer';
-import DropdownSelector from '../components/DropdownSelector';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
 import {DropdownItem} from '../types';
@@ -20,9 +15,12 @@ import TablerIcon from '../ui/core/TablerIcon';
 import TextInput from '../ui/core/TextInput';
 import {DeviceContext} from '../context/Device';
 import Tabs from '../ui/Tabs';
+import Text from '../ui/core/Text';
+import {color} from 'react-native-reanimated';
 
 // TODO more searchable categories
 // TODO course names for each file
+// TODO filter
 
 const tabs = ['files'];
 
@@ -204,6 +202,7 @@ export default function Search({navigation}) {
       />
       <FlatList
         style={{paddingTop: 24 * p, paddingHorizontal: 16 * p}}
+        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
         data={quickLoad ? results.slice(0, 10) : results}
         keyExtractor={item => item.code}
         initialNumToRender={10}
@@ -218,13 +217,33 @@ export default function Search({navigation}) {
         ListEmptyComponent={
           <View
             style={{
+              flex: 1,
               flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              marginTop: 16,
             }}>
-            <Icon name="search-off" color={colors.gray} size={64} />
-            <TextS text={t('noResults')} weight="bold" color={colors.gray} />
+            <TablerIcon
+              name="search-off"
+              size={64 * p}
+              color={dark ? colors.gray300 : colors.gray600}
+            />
+            <View
+              style={{
+                marginTop: 8 * p,
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}>
+              <Text
+                s={12 * p}
+                w="m"
+                c={dark ? colors.gray200 : colors.gray700}
+                style={{marginBottom: 8 * p}}>
+                {t('noResults')}
+              </Text>
+              <Text s={10 * p} w="m" c={dark ? colors.gray300 : colors.gray600}>
+                {t('tryADifferentTerm')}
+              </Text>
+            </View>
           </View>
         }
         ListFooterComponent={<View style={{marginBottom: 24 * p}}></View>}
