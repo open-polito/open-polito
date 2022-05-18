@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {FlatList, Pressable, TextInput, View} from 'react-native';
+import React, {useContext, useEffect, useRef, useState} from 'react';
+import {FlatList, Pressable, View} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
 import {useTranslation} from 'react-i18next';
@@ -13,9 +13,22 @@ import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
 import {DropdownItem} from '../types';
 import {Directory, File} from 'open-polito-api/material';
+import Screen from '../ui/Screen';
+import {p} from '../scaling';
+import PressableBase from '../ui/core/PressableBase';
+import TablerIcon from '../ui/core/TablerIcon';
+import TextInput from '../ui/core/TextInput';
+import {DeviceContext} from '../context/Device';
+import Tabs from '../ui/Tabs';
 
-export default function MaterialSearch({navigation}) {
+// TODO more searchable categories
+// TODO course names for each file
+
+const tabs = ['files'];
+
+export default function Search({navigation}) {
   const {t} = useTranslation();
+  const {dark} = useContext(DeviceContext);
 
   const courses = useSelector<RootState, CourseState[]>(
     state => state.courses.courses,
@@ -39,7 +52,7 @@ export default function MaterialSearch({navigation}) {
   const [loadTimer, setLoadTimer] = useState<any>(null);
 
   useEffect(() => {
-    inputRef.current.focus();
+    // inputRef.current.focus();
     initDropdown();
   }, []);
 
@@ -145,116 +158,77 @@ export default function MaterialSearch({navigation}) {
   };
 
   return (
-    <ScreenContainer style={{...styles.withHorizontalPadding}}>
+    <Screen>
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
+          paddingHorizontal: 12 * p,
+          paddingVertical: 16 * p,
         }}>
-        <Pressable
-          onPress={() => {
-            navigation.goBack();
-          }}>
-          <Icon name="arrow-back" color={colors.black} size={32} />
-        </Pressable>
+        <PressableBase
+          onPress={navigation.goBack}
+          style={{marginRight: 16 * p}}>
+          <TablerIcon
+            name="arrow-left"
+            color={dark ? colors.gray200 : colors.gray700}
+            size={24 * p}
+          />
+        </PressableBase>
         <TextInput
+          initiallyFocused
+          icon="search"
+          dark={dark}
+          placeholder={t('searchForAnything')}
           autoFocus={true}
-          ref={inputRef}
-          placeholder={t('search')}
-          placeholderTextColor={colors.mediumGray}
-          style={{
-            ...styles.textBold,
-            ...styles.textExtraLarge,
-            ...styles.withHorizontalPadding,
-            width: '100%',
-            color: colors.black,
-          }}
           onChangeText={txt => {
             const _query = txt.toLowerCase().trim();
             setQuery(_query);
             handleNewSearch(_query);
           }}
+          style={{flex: 1}}
         />
-      </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-        }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-          }}>
-          <Icon
-            name="filter-list"
-            size={24}
-            style={{marginRight: 8}}
-            color={colors.black}
+        <PressableBase onPress={() => {}} style={{marginLeft: 16 * p}}>
+          <TablerIcon
+            name="adjustments"
+            color={dark ? colors.gray200 : colors.gray700}
+            size={24 * p}
           />
-          <TextSubTitle text={t('byCourse')} />
-        </View>
-        <View
-          style={{
-            flex: 2,
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <DropdownSelector
-            items={items}
-            placeholder={{label: t('selectCourseDropdown'), value: null}}
-            onValueChange={value => {
-              setSelectedCourse(value ? value : null);
-            }}
-          />
-        </View>
+        </PressableBase>
       </View>
-
-      <View style={{marginTop: 16}}></View>
-      {results != null && (
-        <TextSubTitle text={t('searchResults', {count: results.length})} />
-      )}
-      <View
-        style={{
-          flexDirection: 'column',
-          flex: 1,
-        }}>
-        {results && (
-          <FlatList
-            data={quickLoad ? results.slice(0, 10) : results}
-            keyExtractor={item => item.code}
-            initialNumToRender={10}
-            maxToRenderPerBatch={10}
-            renderItem={({item}) => {
-              return (
-                <View key={item.code}>
-                  <DirectoryItem item={item} />
-                </View>
-              );
-            }}
-            ListEmptyComponent={
-              <View
-                style={{
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 16,
-                }}>
-                <Icon name="search-off" color={colors.gray} size={64} />
-                <TextS
-                  text={t('noResults')}
-                  weight="bold"
-                  color={colors.gray}
-                />
-              </View>
-            }
-            ListFooterComponent={<View style={{marginBottom: 16}}></View>}
-          />
-        )}
-      </View>
-    </ScreenContainer>
+      <Tabs
+        dark={dark}
+        items={[{label: t('files'), value: 'files'}]}
+        onChange={() => {}}
+        adjusted
+      />
+      <FlatList
+        style={{paddingTop: 24 * p, paddingHorizontal: 16 * p}}
+        data={quickLoad ? results.slice(0, 10) : results}
+        keyExtractor={item => item.code}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        renderItem={({item}) => {
+          return (
+            <View key={item.code}>
+              <DirectoryItem item={item} key={item.code} dark={dark} />
+            </View>
+          );
+        }}
+        ListEmptyComponent={
+          <View
+            style={{
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 16,
+            }}>
+            <Icon name="search-off" color={colors.gray} size={64} />
+            <TextS text={t('noResults')} weight="bold" color={colors.gray} />
+          </View>
+        }
+        ListFooterComponent={<View style={{marginBottom: 24 * p}}></View>}
+      />
+    </Screen>
   );
 }

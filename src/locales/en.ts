@@ -25,6 +25,7 @@ const EN = {
   searchForAnything: 'Search for anything',
   more: 'More',
   relatedVideos: 'Related videos',
+  files: 'Files',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',

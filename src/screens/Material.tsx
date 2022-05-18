@@ -31,6 +31,7 @@ import TextInput from '../ui/core/TextInput';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import Tabs from '../ui/Tabs';
 import DirectoryItem from '../ui/DirectoryItem';
+import PressableBase from '../ui/core/PressableBase';
 
 // TODO course names in "recently added"
 // TODO folder stats (n of files, folder size)
@@ -41,6 +42,7 @@ const tabs = ['explore', 'recentlyAdded'];
 export default function Material() {
   const {t} = useTranslation();
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const courses = useSelector<RootState, CourseState[]>(
     state => state.courses.courses,
@@ -133,11 +135,17 @@ export default function Material() {
         data={[0]}
         renderItem={() => (
           <View style={_styles.container}>
-            <TextInput
-              placeholder={t('searchForAnything')}
-              icon="search"
-              dark={dark}
-            />
+            <PressableBase
+              onPress={() => {
+                navigation.navigate('Search');
+              }}>
+              <TextInput
+                editable={false}
+                placeholder={t('searchForAnything')}
+                dark={dark}
+                icon="search"
+              />
+            </PressableBase>
             <Tabs
               style={{marginTop: 24 * p, marginBottom: 16 * p}}
               onChange={i => setSelectedTab(i)}

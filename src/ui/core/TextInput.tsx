@@ -1,4 +1,4 @@
-import React, {FC, useMemo} from 'react';
+import React, {FC, MutableRefObject, useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import colors from '../../colors';
 import TablerIcon from './TablerIcon';
@@ -8,6 +8,7 @@ import {p} from '../../scaling';
 type TextInputParams = {
   dark: boolean;
   icon?: string;
+  initiallyFocused?: boolean;
   inputStyle?: TextStyle;
   style?: ViewStyle;
 } & TextInputProps;
@@ -15,10 +16,17 @@ type TextInputParams = {
 const TextInput: FC<TextInputParams> = ({
   dark,
   icon = '',
+  initiallyFocused = false,
   inputStyle = {},
   style = {},
   ...props
 }) => {
+  const ref = useRef<RNTextInput | null>(null);
+
+  useEffect(() => {
+    if (initiallyFocused) ref.current?.focus();
+  }, [initiallyFocused]);
+
   const _styles = useMemo(() => {
     return StyleSheet.create({
       textInputContainer: {
@@ -51,6 +59,7 @@ const TextInput: FC<TextInputParams> = ({
         />
       ) : null}
       <RNTextInput
+        ref={inputRef => (ref.current = inputRef)}
         {...props}
         style={{
           ..._styles.textInput,
