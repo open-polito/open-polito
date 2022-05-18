@@ -2,7 +2,7 @@ import React, {useContext, useEffect} from 'react';
 import styles from '../styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
-import Email from '../screens_legacy/Email';
+import Email from '../screens/Email';
 import Settings from '../screens_legacy/Settings';
 import colors from '../colors';
 import {useDispatch, useSelector} from 'react-redux';
