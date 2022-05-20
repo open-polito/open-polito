@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {FlatList, ScrollView, View} from 'react-native';
+import {ActivityIndicator, FlatList, ScrollView, View} from 'react-native';
 import {ExamSession} from 'open-polito-api/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
@@ -16,6 +16,10 @@ import Tabs from '../ui/Tabs';
 import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
 import Text from '../ui/core/Text';
+import NoContent from '../components/NoContent';
+
+// TODO book exams
+// TODO refresh controller
 
 const tabs = ['allExams', 'myBookings', 'availableToBook', 'unavailableExams'];
 
@@ -199,6 +203,10 @@ export default function ExamSessions({navigation}) {
         keyExtractor={item => item.session_id + item.course_id + item.date}
         renderItem={({item}) => examSessionCard(item)}
         ItemSeparatorComponent={() => <View style={{height: 16 * p}} />}
+        ListEmptyComponent={<NoContent />}
+        ListHeaderComponent={() =>
+          getExamsStatus.code == STATUS.PENDING ? <ActivityIndicator /> : null
+        }
       />
     </Screen>
   );
