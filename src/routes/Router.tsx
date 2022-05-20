@@ -1,35 +1,20 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {ActivityIndicator, StatusBar, View} from 'react-native';
-import {TextL, TextS, TextXL} from '../components/Text';
+import {StatusBar, View} from 'react-native';
+import {TextS} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Device} from 'open-polito-api/device';
-import * as Keychain from 'react-native-keychain';
-import LinearGradient from 'react-native-linear-gradient';
 import colors from '../colors';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {useTranslation} from 'react-i18next';
 import RNFS from 'react-native-fs';
 
 import {useSelector, useDispatch} from 'react-redux';
-import {
-  DeviceInfo,
-  login,
-  LoginData,
-  SessionState,
-  setAuthStatus,
-  setConfig,
-  setConfigState,
-} from '../store/sessionSlice';
+import {SessionState, setConfig, setConfigState} from '../store/sessionSlice';
 import HomeRouter from './HomeRouter';
-import {showMessage} from 'react-native-flash-message';
-import {loginErrorFlashMessage} from '../components/CustomFlashMessages';
 import Search from '../screens/Search';
-import Courses from '../screens/Courses';
 import Course from '../screens/Course';
 import VideoPlayer from '../screens/VideoPlayer';
-import ExamSessions from '../screens_legacy/ExamSessions';
+import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig, {
   Configuration,
@@ -37,17 +22,10 @@ import defaultConfig, {
 } from '../defaultConfig';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
-import {AuthStatus, AUTH_STATUS, STATUS, Status} from '../store/status';
+import {AUTH_STATUS} from '../store/status';
 import {RootState} from '../store/store';
 import {DeviceContext} from '../context/Device';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Button from '../components/Button';
-import {ping} from 'open-polito-api/utils';
 import Config from 'react-native-config';
-import Timetable from '../screens_legacy/Timetable';
-import Exams from '../screens_legacy/Exams';
-import Bookings from '../screens_legacy/Bookings';
-import {createDrawerNavigator} from '@react-navigation/drawer';
 
 /**
  * Types for React Navigation

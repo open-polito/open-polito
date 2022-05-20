@@ -130,8 +130,10 @@ const IT = {
 
   // Exam sessions screen
   allExams: 'Tutti gli esami',
-  booked: 'Prenotati',
+  myBookings: 'Le mie prenotazioni',
   availableToBook: 'Prenotabili',
+  unavailableExams: 'Non disponibili',
+  bookingDeadline: 'Scadenza',
 
   // Timetable screen
   jumpToDate: 'Vai a data',

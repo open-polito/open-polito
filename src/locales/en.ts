@@ -132,8 +132,10 @@ const EN = {
 
   // Exam sessions screen
   allExams: 'All exams',
-  booked: 'Booked',
+  myBookings: 'My bookings',
   availableToBook: 'Available to book',
+  unavailableExams: 'Unavailable',
+  bookingDeadline: 'Booking deadline',
 
   // Timetable screen
   jumpToDate: 'Jump to date',

@@ -58,7 +58,7 @@ const Tabs: FC<TabsParams> = ({
         horizontal
         showsHorizontalScrollIndicator={false}>
         {items.map((tab, i) => (
-          <View style={_styles.tab}>
+          <View style={_styles.tab} key={tab.value}>
             <PressableBase
               style={{marginRight: 24 * p}}
               onPress={() => select(i)}>

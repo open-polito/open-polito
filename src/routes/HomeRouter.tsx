@@ -41,7 +41,7 @@ import {login, SessionState} from '../store/sessionSlice';
 import Bookings from '../screens_legacy/Bookings';
 import Timetable from '../screens_legacy/Timetable';
 import Exams from '../screens_legacy/Exams';
-import ExamSessions from '../screens_legacy/ExamSessions';
+import ExamSessions from '../screens/ExamSessions';
 import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
 import People from '../screens/People';
