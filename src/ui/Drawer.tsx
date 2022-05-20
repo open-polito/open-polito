@@ -78,7 +78,7 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
         {sec.items.map(screen => (
           <PressableBase
             style={{
-              paddingVertical: 8 * p,
+              paddingVertical: 4 * p,
               flexDirection: 'row',
               alignItems: 'center',
             }}
