@@ -1,8 +1,8 @@
-import React, {useState, useContext, useMemo} from 'react';
+import React, {useState, useContext, useMemo, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
-import {LoginData, login} from '../store/sessionSlice';
+import {LoginData, login, setToast} from '../store/sessionSlice';
 import 'react-native-get-random-values';
 import {v4 as UUIDv4} from 'uuid';
 import {getLoggingConfig} from '../routes/Router';
@@ -19,6 +19,7 @@ import {p} from '../scaling';
 import {AuthStatus, STATUS, Status} from '../store/status';
 import {RootState} from '../store/store';
 import Svg, {SvgFromUri, SvgUri} from 'react-native-svg';
+import {LoginValidationResult, validateLoginInput} from '../utils/auth';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -35,11 +36,42 @@ export default function LoginScreen() {
 
   /**
    * Login with password
-   *
-   * TODO input validation
-   * @param loginData {@link LoginData} object
    */
-  const loginWithPassword = async (loginData: LoginData) => {
+  const loginWithPassword = async () => {
+    const validationResult = validateLoginInput(username, password);
+
+    switch (validationResult) {
+      case LoginValidationResult.OK:
+        break;
+      case LoginValidationResult.NO_USER:
+        dispatch(
+          setToast({
+            message: t('noUsernameProvided'),
+            type: 'err',
+            visible: true,
+          }),
+        );
+        return;
+      case LoginValidationResult.NO_PASSWORD:
+        dispatch(
+          setToast({
+            message: t('noPasswordProvided'),
+            type: 'err',
+            visible: true,
+          }),
+        );
+        return;
+      case LoginValidationResult.INVALID_USERNAME:
+        dispatch(
+          setToast({
+            message: t('invalidUsernameProvided'),
+            type: 'err',
+            visible: true,
+          }),
+        );
+        return;
+    }
+
     const uuid = UUIDv4();
 
     const loggingEnabled = await getLoggingConfig();
@@ -56,8 +88,8 @@ export default function LoginScreen() {
     await dispatch(
       login({
         method: 'password',
-        username: loginData.user,
-        token: loginData.token,
+        username: username,
+        token: password,
         device: device,
       }),
     );
@@ -70,6 +102,21 @@ export default function LoginScreen() {
       ['apps', t('title3'), t('desc3')],
     ];
   }, []);
+
+  /**
+   * Show toast notification based on login result
+   */
+  useEffect(() => {
+    if (loginStatus.code == STATUS.ERROR)
+      dispatch(
+        setToast({
+          type: 'err',
+          message: loginStatus.error?.message ?? '',
+          visible: true,
+          icon: '',
+        }),
+      );
+  }, [loginStatus]);
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -186,7 +233,7 @@ export default function LoginScreen() {
             style={{marginBottom: 16 * p}}
             onPress={() => {
               (async () => {
-                loginWithPassword({user: username, token: password});
+                loginWithPassword();
               })();
             }}
           />

@@ -1,20 +1,17 @@
-import React, {FC, useMemo} from 'react';
+import React, {FC, useContext, useEffect, useMemo, useRef} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import colors from '../colors';
+import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
+import {SessionState, setToast} from '../store/sessionSlice';
+import {RootState} from '../store/store';
+import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
 
-// TODO "x" to dismiss and swipe to dismiss
-// This is only the component, not the context provider I'll later use in the app
-
-export type ToastParams = {
-  visible: boolean;
-  type: 'success' | 'warn' | 'err' | 'info';
-  dark: boolean;
-  text: string;
-  icon?: string; // Overrides default provided icons
-};
+// TODO swipe to dismiss
+// TODO in/out animation
 
 const types = {
   success: ['circle-check', colors.green],
@@ -23,7 +20,31 @@ const types = {
   info: ['info-circle', colors.accent300],
 };
 
-const Toast: FC<ToastParams> = ({visible, type, dark, text, icon = ''}) => {
+const Toast = () => {
+  const {dark} = useContext(DeviceContext);
+  const {toast} = useSelector<RootState, SessionState>(state => state.session);
+  const dispatch = useDispatch();
+
+  const timeoutRef = useRef<any>(null);
+
+  // Hide toast after some time
+  useEffect(() => {
+    if (toast.visible) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(dismissToast, 5000);
+    }
+  }, [toast]);
+
+  // Handles other stuff before resetting toast
+  const dismissToast = () => {
+    setTimeout(resetToast, 0);
+  };
+
+  // Resets toast to default state
+  const resetToast = () => {
+    dispatch(setToast({icon: '', visible: false, message: '', type: 'info'}));
+  };
+
   const _styles = useMemo(() => {
     return StyleSheet.create({
       container: {
@@ -32,28 +53,43 @@ const Toast: FC<ToastParams> = ({visible, type, dark, text, icon = ''}) => {
         left: 0,
         right: 0,
         borderWidth: 1 * p,
-        borderColor: types[type][1],
+        borderColor: types[toast.type][1],
         borderRadius: 4 * p,
         backgroundColor: dark ? colors.gray700 : colors.gray200,
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginHorizontal: 16 * p,
         marginTop: 16 * p,
         padding: 12 * p,
       },
     });
-  }, []);
-  return visible ? (
+  }, [toast, dark]);
+
+  return toast.visible ? (
     <View style={_styles.container}>
-      <TablerIcon
-        name={icon ? icon : types[type][0]}
-        color={types[type][1]}
-        size={18 * p}
-        style={{marginRight: 12 * p}}
-      />
-      <Text s={12 * p} w="m" c={colors.gray100}>
-        {text}
-      </Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <TablerIcon
+          name={toast.icon ? toast.icon : types[toast.type][0]}
+          color={types[toast.type][1]}
+          size={18 * p}
+          style={{marginRight: 12 * p}}
+        />
+        <Text
+          s={12 * p}
+          w="m"
+          c={colors.gray100}
+          style={{flex: 1, marginRight: 2 * p}}>
+          {toast.message}
+        </Text>
+        <PressableBase onPress={dismissToast}>
+          <TablerIcon
+            name="x"
+            color={dark ? colors.gray100 : colors.gray800}
+            size={18 * p}
+          />
+        </PressableBase>
+      </View>
     </View>
   ) : null;
 };

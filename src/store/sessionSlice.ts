@@ -22,6 +22,13 @@ import {ping} from 'open-polito-api/utils';
 import {setUserInfo} from './userSlice';
 import {DialogParams, DIALOG_TYPE} from '../types';
 
+export type ToastData = {
+  visible: boolean;
+  message: string;
+  type: 'info' | 'success' | 'warn' | 'err';
+  icon?: string;
+};
+
 export type DeviceInfo = {
   uuid: string;
 };
@@ -43,6 +50,8 @@ export type SessionState = {
 
   config: Configuration;
 
+  toast: ToastData;
+
   dialog: {
     visible: boolean;
     params: DialogParams | null;
@@ -60,6 +69,13 @@ const initialState: SessionState = {
   logoutStatus: initialStatus,
 
   config: defaultConfig,
+
+  toast: {
+    visible: false,
+    message: '',
+    type: 'info',
+    icon: '',
+  },
 
   dialog: {
     visible: false,
@@ -175,6 +191,9 @@ export const sessionSlice = createSlice({
     setConfigState: (state, action: PayloadAction<Configuration>) => {
       state.config = action.payload;
     },
+    setToast: (state, action: PayloadAction<ToastData>) => {
+      state.toast = action.payload;
+    },
     setDialog: (
       state,
       action: PayloadAction<{
@@ -219,6 +238,7 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const {setAuthStatus, setConfigState, setDialog} = sessionSlice.actions;
+export const {setAuthStatus, setConfigState, setToast, setDialog} =
+  sessionSlice.actions;
 
 export default sessionSlice.reducer;

@@ -59,6 +59,9 @@ const EN = {
   agreement: 'By logging in, you agree to our',
   tos: 'Terms of service',
   privacyPolicy: 'Privacy policy',
+  noUsernameProvided: 'No username provided',
+  noPasswordProvided: 'No password provided',
+  invalidUsernameProvided: 'Username is not valid',
 
   // Home screen
   home: 'Home',
