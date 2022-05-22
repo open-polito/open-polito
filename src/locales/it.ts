@@ -59,6 +59,9 @@ const IT = {
   agreement: 'Accedendo, acconsenti ai nostri',
   tos: 'Termini di servizio',
   privacyPolicy: 'Privacy policy',
+  noUsernameProvided: 'Nessun nome utente inserito',
+  noPasswordProvided: 'Nessuna password inserita',
+  invalidUsernameProvided: 'Nome utente non valido',
 
   // Home screen
   home: 'Home',

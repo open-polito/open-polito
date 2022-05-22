@@ -1,6 +1,6 @@
-import React, {Suspense, useEffect, useState} from 'react';
+import React, {Suspense, useEffect} from 'react';
 import FlashMessage from 'react-native-flash-message';
-import {Provider, useSelector} from 'react-redux';
+import {Provider} from 'react-redux';
 import Router from './src/routes/Router';
 
 import i18n from 'i18next';
@@ -20,7 +20,6 @@ import {
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
 } from 'react-native-render-html';
-import colors from './src/colors';
 import Toast from './src/ui/Toast';
 
 let lng = '';
@@ -68,7 +67,6 @@ export default function App() {
     <Suspense fallback="Loading...">
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
-          {/* TODO notification context provider */}
           <TRenderEngineProvider
             tagsStyles={{
               body: {
@@ -80,6 +78,7 @@ export default function App() {
             }}>
             <RenderHTMLConfigProvider>
               <Router />
+              <Toast />
               <Dialog />
             </RenderHTMLConfigProvider>
           </TRenderEngineProvider>
