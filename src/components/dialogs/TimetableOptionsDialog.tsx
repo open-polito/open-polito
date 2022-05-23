@@ -8,7 +8,7 @@ import {RootState} from '../../store/store';
 import styles from '../../styles';
 import {TimetableOptionsDialogParams} from '../../types';
 import ListRank from '../ListRank';
-import SettingsItem, {SettingsItemProps} from '../SettingsItem';
+import SettingsItem, {SettingsItemProps} from '../../ui/SettingsItem';
 
 const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
   const dispatch = useDispatch();

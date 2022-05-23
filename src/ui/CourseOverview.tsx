@@ -99,10 +99,10 @@ const CourseOverview: FC<{
             courseData?.extendedInfo?.year_period || '',
         icon: 'calendar-time',
       },
-      {
-        name: '(feature coming soon)',
-        icon: 'writing',
-      },
+      // {
+      //   name: '(feature coming soon)',
+      //   icon: 'writing',
+      // },
     ];
   }, [courseData]);
 
@@ -116,12 +116,12 @@ const CourseOverview: FC<{
           <View style={{flexDirection: 'row'}}>
             <View style={{flex: 1}}>
               {fields
-                .slice(0, 3)
+                .slice(0, 2)
                 .map((field, i) => buildField(field.name || '', field.icon, i))}
             </View>
             <View style={{flex: 1}}>
               {fields
-                .slice(3)
+                .slice(2)
                 .map((field, i) => buildField(field.name || '', field.icon, i))}
             </View>
           </View>

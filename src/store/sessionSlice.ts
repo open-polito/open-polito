@@ -176,8 +176,10 @@ export const setConfig = createAsyncThunk<
  */
 export const resetConfig = createAsyncThunk<void, void, {state: RootState}>(
   'session/resetConfig',
-  async (_, {dispatch}) => {
-    await dispatch(setConfig(defaultConfig));
+  async (_, {dispatch, getState}) => {
+    await dispatch(
+      setConfig({...defaultConfig, login: getState().session.config.login}),
+    );
   },
 );
 

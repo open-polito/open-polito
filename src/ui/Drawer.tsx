@@ -25,7 +25,6 @@ import {getLoggingConfig, requestLogger} from '../routes/Router';
 const isSectionUnavailable = (name: string) => {
   return [
     'Exams',
-    'Settings',
     'Bookings',
     'Timetable',
     'Exams',

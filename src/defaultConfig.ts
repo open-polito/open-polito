@@ -8,7 +8,6 @@ export type Configuration = {
   beta: boolean;
 
   logging: boolean;
-  emailWebView: boolean;
 
   theme: 'dark' | 'light' | 'system';
 
@@ -26,7 +25,6 @@ const defaultConfig: Configuration = {
   beta: false,
 
   logging: false,
-  emailWebView: false,
 
   theme: 'system',
 
