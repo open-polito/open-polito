@@ -32,6 +32,12 @@ import {NotificationType} from 'open-polito-api/notifications';
 // TODO show update widget
 // TODO show live classes
 
+const sectionsData = [
+  {name: 'Courses', icon: 'school'},
+  {name: 'Material', icon: 'folders'},
+  {name: 'Email', icon: 'mail'},
+  {name: 'ExamSessions', icon: 'ballpen'},
+];
 const sectionColors = [colors.accent300, colors.red, '#9b51e0', '#f2c94c'];
 
 const Home = () => {
@@ -105,7 +111,7 @@ const Home = () => {
 
           {/* Top sections */}
           <View style={_styles.topSections}>
-            {sections[1].items.map((btn, i) => (
+            {sectionsData.map((btn, i) => (
               <PressableBase
                 key={btn.name}
                 style={_styles.topSection}
