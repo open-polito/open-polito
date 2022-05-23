@@ -15,19 +15,13 @@ import {useNavigation} from '@react-navigation/native';
 import Section from '../ui/Section';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../store/store';
-import {
-  CoursesState,
-  getRecentMaterial,
-  loadCourse,
-  loadCoursesData,
-} from '../store/coursesSlice';
+import {CoursesState} from '../store/coursesSlice';
 import DirectoryItem from '../ui/DirectoryItem';
 import {STATUS} from '../store/status';
 import Notification from '../ui/Notification';
 import {NotificationType} from 'open-polito-api/notifications';
 
 // TODO "quick access" section using recently opened sections
-// TODO open search section
 // TODO open notification section
 // TODO show update widget
 // TODO show live classes
@@ -177,7 +171,7 @@ const Home = () => {
                     relativeDate
                     dark={dark}
                     item={file}
-                    course={'TODO ADD COURSE NAMES'}
+                    course={file.course_name}
                   />
                 </View>
               ))

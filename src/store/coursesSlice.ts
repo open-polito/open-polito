@@ -17,12 +17,13 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
-import {Directory, File} from 'open-polito-api/material';
+import {Directory, File, MaterialItem} from 'open-polito-api/material';
 import {
   getCoursesInfo,
   PermanentMark,
   ProvisionalMark,
 } from 'open-polito-api/courses';
+import {ExtendedFile} from '../types';
 
 export type CourseState = {
   basicInfo: BasicCourseInfo;
@@ -40,7 +41,7 @@ export type CoursesState = {
   loadCoursesStatus: Status;
   loadExtendedCourseInfoStatus: Status;
 
-  recentMaterial: File[];
+  recentMaterial: ExtendedFile[];
   getRecentMaterialStatus: Status;
 };
 
@@ -98,38 +99,45 @@ export const loadCourse = createAsyncThunk<
 });
 
 /**
- * Gets 3 most recent items from material.
+ * Gets most recent items from material.
  */
 export const getRecentMaterial = createAsyncThunk<
-  File[],
+  ExtendedFile[],
   void,
   {state: RootState}
 >('courses/getRecentMaterial', async (_, {getState}) => {
-  let res: File[] = [];
+  let res: ExtendedFile[] = [];
   let rootDir: Directory = {
     type: 'dir',
     code: '',
     name: '',
     children: [],
   };
-  const findFiles = (dir: Directory) => {
-    const res: File[] = [];
-    dir.children.forEach(item => {
+  const findFiles = (
+    items: MaterialItem[],
+    course_name: string,
+    course_code: string,
+  ) => {
+    const res: ExtendedFile[] = [];
+    items.forEach(item => {
       if (item.type == 'file') {
-        res.push(item);
+        res.push({...item, course_code, course_name});
       } else {
-        res.push(...findFiles(item));
+        res.push(...findFiles(item.children, course_name, course_code));
       }
     });
     return res;
   };
   getState().courses.courses.forEach(course => {
-    course.extendedInfo?.material &&
-      rootDir.children.push(...course.extendedInfo.material);
+    res.push(
+      ...findFiles(
+        course.extendedInfo?.material || [],
+        course.basicInfo.name,
+        course.basicInfo.code,
+      ),
+    );
   });
-  res = findFiles(rootDir)
-    .sort((a, b) => b.creation_date - a.creation_date)
-    .slice(0, 50);
+  res.sort((a, b) => b.creation_date - a.creation_date).slice(0, 50);
   return res;
 });
 
