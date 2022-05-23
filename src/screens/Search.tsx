@@ -6,8 +6,8 @@ import {useSelector} from 'react-redux';
 import DirectoryItem from '../ui/DirectoryItem';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
-import {DropdownItem} from '../types';
-import {Directory, File} from 'open-polito-api/material';
+import {DropdownItem, ExtendedFile} from '../types';
+import {Directory, File, MaterialItem} from 'open-polito-api/material';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
 import PressableBase from '../ui/core/PressableBase';
@@ -19,7 +19,6 @@ import Text from '../ui/core/Text';
 import {color} from 'react-native-reanimated';
 
 // TODO more searchable categories
-// TODO course names for each file
 // TODO filter
 
 const tabs = ['files'];
@@ -33,7 +32,7 @@ export default function Search({navigation}) {
   );
 
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<File[]>([]);
+  const [results, setResults] = useState<ExtendedFile[]>([]);
 
   const inputRef = useRef(null);
 
@@ -95,19 +94,30 @@ export default function Search({navigation}) {
   };
 
   /**
-   * Recursively finds files that match query, given directory.
+   * Recursively finds files that match query
    *
-   * @param dir The directory to search
+   * @param query Search string
+   * @param items Array of files or dirs
+   * @param course_name
+   * @param course_code
+   * @returns files
    */
-  const findFiles = (query: string, dir: Directory) => {
-    let results: File[] = [];
-    dir.children.forEach(item => {
+  const findFiles = (
+    query: string,
+    items: MaterialItem[],
+    course_name: string,
+    course_code: string,
+  ): ExtendedFile[] => {
+    let results: ExtendedFile[] = [];
+    items.forEach(item => {
       if (item.type == 'file') {
         if ((item.name + item.filename).toLowerCase().includes(query)) {
-          results.push(item);
+          results.push({...item, course_code, course_name});
         }
       } else if (item.type == 'dir') {
-        results.push(...findFiles(query, item));
+        results.push(
+          ...findFiles(query, item.children, course_name, course_code),
+        );
       }
     });
     return results;
@@ -116,39 +126,30 @@ export default function Search({navigation}) {
   /**
    * Searches files matching specific query and course, and updates state.
    */
-  const searchMaterial = (query: string) => {
+  const searchMaterial = (query: string): void => {
     // Using setTimeout is a bit hacky, but it works.
     (async () => {
       setTimeout(() => {
-        let res: File[] = [];
+        let res: ExtendedFile[] = [];
         if (query == '') {
           setResults([]);
           return;
         }
 
-        let rootDir: Directory = {
-          type: 'dir',
-          code: '',
-          name: '',
-          children: [],
-        };
-
         if (selectedCourse) {
-          rootDir.children =
-            courses.find(
-              course =>
-                selectedCourse == course.basicInfo.code + course.basicInfo.name,
-            )?.extendedInfo?.material || [];
+          // TODO when selected course filter
         } else {
           courses.forEach(course => {
-            course.extendedInfo?.material &&
-              rootDir.children.push(...course.extendedInfo.material);
+            res.push(
+              ...findFiles(
+                query,
+                course.extendedInfo?.material || [],
+                course.basicInfo.name,
+                course.basicInfo.code,
+              ),
+            );
           });
         }
-
-        res = findFiles(query, rootDir).sort(
-          (a, b) => b.creation_date - a.creation_date,
-        );
 
         setResults(res);
       }, 0);
@@ -210,7 +211,12 @@ export default function Search({navigation}) {
         renderItem={({item}) => {
           return (
             <View key={item.code}>
-              <DirectoryItem item={item} key={item.code} dark={dark} />
+              <DirectoryItem
+                item={item}
+                key={item.code}
+                dark={dark}
+                course={item.course_name}
+              />
             </View>
           );
         }}

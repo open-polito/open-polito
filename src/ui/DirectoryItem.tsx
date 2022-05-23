@@ -100,8 +100,6 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
                 <Text numberOfLines={1} w="r" s={10 * p} c={colors.gray300}>
                   {relativeDate
                     ? moment(item.creation_date).fromNow()
-                    : course
-                    ? course
                     : moment(item.creation_date).format('lll')}
                   {course ? ` · ${course}` : ''}
                 </Text>

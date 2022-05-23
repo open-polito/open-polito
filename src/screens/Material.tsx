@@ -33,7 +33,6 @@ import Tabs from '../ui/Tabs';
 import DirectoryItem from '../ui/DirectoryItem';
 import PressableBase from '../ui/core/PressableBase';
 
-// TODO course names in "recently added"
 // TODO folder stats (n of files, folder size)
 // TODO download features (e.g. download folders too, selection feature, ...)
 
@@ -161,7 +160,12 @@ export default function Material() {
                 data={recentMaterial}
                 keyExtractor={item => item.code}
                 renderItem={({item}) => (
-                  <DirectoryItem item={item} key={item.code} dark={dark} />
+                  <DirectoryItem
+                    item={item}
+                    key={item.code}
+                    dark={dark}
+                    course={item.course_name}
+                  />
                 )}
               />
             )}
