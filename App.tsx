@@ -69,9 +69,6 @@ export default function App() {
         <DeviceProvider device={defaultDevice}>
           <TRenderEngineProvider
             tagsStyles={{
-              body: {
-                color: '#555',
-              },
               p: {
                 marginTop: 0,
               },
