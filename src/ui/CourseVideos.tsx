@@ -55,9 +55,6 @@ const CourseVideos = ({
   return (
     <View>
       <FlatList
-        style={{
-          paddingHorizontal: 16 * p,
-        }}
         data={videos}
         ListEmptyComponent={
           <View style={{flexDirection: 'row', justifyContent: 'center'}}>

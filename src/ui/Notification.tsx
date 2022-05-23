@@ -7,12 +7,13 @@ import {View} from 'react-native';
 import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
 import {p} from '../scaling';
+import {ExtendedAlert} from '../types';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
 
 export type NotificationParams = {
   type: NotificationType;
-  notification: Notice; // TODO add support for generic notifications (Notification type in API code)
+  notification: ExtendedAlert; // TODO add support for generic notifications (Notification type in API code)
   dark: boolean;
 };
 
@@ -72,7 +73,8 @@ const Notification: FC<NotificationParams> = ({type, notification, dark}) => {
             c={dark ? colors.gray200 : colors.gray700}
             w="r"
             numberOfLines={1}>
-            {dateString} · TODO ADD COURSE NAME
+            {dateString}
+            {notification.course_name ? ' · ' + notification.course_name : ''}
           </Text>
         </View>
       </View>
