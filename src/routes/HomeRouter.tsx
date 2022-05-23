@@ -3,7 +3,7 @@ import styles from '../styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Email from '../screens/Email';
-import Settings from '../screens_legacy/Settings';
+import Settings from '../screens/Settings';
 import colors from '../colors';
 import {useDispatch, useSelector} from 'react-redux';
 import IconBadge from '../components/IconBadge';

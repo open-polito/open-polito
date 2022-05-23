@@ -79,11 +79,12 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
                 />
               </BadgeContainer>
             </PressableBase>
-            <TablerIcon
+            {/* TODO download manager */}
+            {/* <TablerIcon
               name="download"
               size={24 * p}
               color={dark ? colors.gray100 : colors.gray800}
-            />
+            /> */}
           </View>
           <View
             style={{
@@ -99,13 +100,14 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
             </Text>
           </View>
           <View style={{..._styles.headerSection, ..._styles.headerEnd}}>
-            <TablerIcon
-              name="search"
-              size={24 * p}
-              color={dark ? colors.gray100 : colors.gray800}
-              style={{marginRight: 16 * p}}
-            />
-            {/* TODO add logic for badge number*/}
+            <PressableBase onPress={() => navigation.navigate('Search')}>
+              <TablerIcon
+                name="search"
+                size={24 * p}
+                color={dark ? colors.gray100 : colors.gray800}
+                style={{marginRight: 16 * p}}
+              />
+            </PressableBase>
             <BadgeContainer number={notificationCount}>
               <TablerIcon
                 name="bell"

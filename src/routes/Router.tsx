@@ -176,7 +176,6 @@ export default function Router() {
         style={{
           backgroundColor: type == 'warn' ? colors.orange : colors.black,
           paddingVertical: 4,
-          paddingTop: StatusBar.currentHeight,
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
