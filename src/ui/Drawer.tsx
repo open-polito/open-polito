@@ -21,6 +21,20 @@ import {Device} from 'open-polito-api/device';
 import {DeviceContext} from '../context/Device';
 import {getLoggingConfig, requestLogger} from '../routes/Router';
 
+// TODO remove when sections completed
+const isSectionUnavailable = (name: string) => {
+  return [
+    'Exams',
+    'Settings',
+    'Bookings',
+    'Timetable',
+    'Exams',
+    'Maps',
+    'Classrooms',
+    'People',
+  ].includes(name);
+};
+
 type DrawerParams = {
   dark: boolean;
 } & DrawerContentComponentProps;
@@ -77,10 +91,12 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
         </View>
         {sec.items.map(screen => (
           <PressableBase
+            disabled={isSectionUnavailable(screen.name)}
             style={{
               paddingVertical: 4 * p,
               flexDirection: 'row',
               alignItems: 'center',
+              opacity: isSectionUnavailable(screen.name) ? 0.3 : 1,
             }}
             key={screen.name}
             onPress={() => {
@@ -109,7 +125,7 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
                   ? colors.gray100
                   : colors.gray800
               }>
-              {t(screen.name)}
+              {t(screen.name.charAt(0).toLowerCase() + screen.name.slice(1))}
             </Text>
           </PressableBase>
         ))}

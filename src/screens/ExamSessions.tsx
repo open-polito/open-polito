@@ -1,6 +1,12 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {ActivityIndicator, FlatList, ScrollView, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  ScrollView,
+  View,
+} from 'react-native';
 import {ExamSession} from 'open-polito-api/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
@@ -19,7 +25,6 @@ import Text from '../ui/core/Text';
 import NoContent from '../components/NoContent';
 
 // TODO book exams
-// TODO refresh controller
 
 const tabs = ['allExams', 'myBookings', 'availableToBook', 'unavailableExams'];
 
@@ -60,6 +65,13 @@ export default function ExamSessions({navigation}) {
       }
     })();
   }, []);
+
+  /**
+   * Refresh exams
+   */
+  const refresh = () => {
+    if (getExamsStatus.code != STATUS.PENDING) dispatch(getExams(device));
+  };
 
   // If tab or exams change, re-filter the exam sessions based on the active tab
   const filteredSessions = useMemo(() => {
@@ -204,8 +216,12 @@ export default function ExamSessions({navigation}) {
         renderItem={({item}) => examSessionCard(item)}
         ItemSeparatorComponent={() => <View style={{height: 16 * p}} />}
         ListEmptyComponent={<NoContent />}
-        ListHeaderComponent={() =>
-          getExamsStatus.code == STATUS.PENDING ? <ActivityIndicator /> : null
+        refreshing={getExamsStatus.code == STATUS.PENDING}
+        refreshControl={
+          <RefreshControl
+            refreshing={getExamsStatus.code == STATUS.PENDING}
+            onRefresh={refresh}
+          />
         }
       />
     </Screen>

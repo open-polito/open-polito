@@ -49,11 +49,10 @@ const EN = {
   and: 'and',
   takeTour: 'Take the tour',
   version: 'version',
-  title1: 'Title 1',
+  title1: 'Open source',
   desc1: 'Description 1',
   title2: 'Powerful',
-  desc2:
-    'With features like a download manager and a video player, your experience is going to be a breeze',
+  desc2: 'Description 2',
   title3: 'Modern',
   desc3: 'A modern, easy-to-use user interface',
   agreement: 'By logging in, you agree to our',

@@ -95,13 +95,11 @@ export default function LoginScreen() {
     );
   };
 
-  const fields = useMemo(() => {
-    return [
-      ['brand-open-source', t('title1'), t('desc1')],
-      ['bolt', t('title2'), t('desc2')],
-      ['apps', t('title3'), t('desc3')],
-    ];
-  }, []);
+  const fields = [
+    ['brand-open-source', t('title1'), t('desc1')],
+    ['bolt', t('title2'), t('desc2')],
+    ['apps', t('title3'), t('desc3')],
+  ];
 
   /**
    * Show toast notification based on login result
@@ -133,6 +131,7 @@ export default function LoginScreen() {
       },
       field: {
         flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 16 * p,
       },
       fieldText: {
