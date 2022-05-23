@@ -98,9 +98,10 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
             {item.type == 'file' && (
               <View style={{flexDirection: 'column', flex: 1}}>
                 <Text numberOfLines={1} w="r" s={10 * p} c={colors.gray300}>
+                  {sizeLabel + ' · '}
                   {relativeDate
                     ? moment(item.creation_date).fromNow()
-                    : moment(item.creation_date).format('lll')}
+                    : moment(item.creation_date).format('ll')}
                   {course ? ` · ${course}` : ''}
                 </Text>
               </View>
@@ -124,12 +125,13 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
         <View style={{flexDirection: 'row'}}>
           <View
             style={{
-              width: 32 * p,
-              alignItems: 'center',
+              width: 16 * p,
+              alignItems: 'flex-start',
             }}>
             <View
               style={{
                 flex: 1,
+                marginLeft: 4 * p,
                 width: 2 * p,
                 backgroundColor: dark ? colors.gray600 : colors.gray300,
               }}
