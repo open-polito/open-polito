@@ -153,7 +153,11 @@ const CourseOverview: FC<{
           <ActivityIndicator />
         ) : (courseData?.extendedInfo?.notices || []).length > 0 ? (
           <Notification
-            notification={courseData?.extendedInfo?.notices[0]!}
+            notification={{
+              ...courseData?.extendedInfo?.notices[0]!,
+              course_code: courseData?.basicInfo.code || '',
+              course_name: courseData?.basicInfo.name || '',
+            }}
             type={NotificationType.NOTICE}
             dark={dark}
           />

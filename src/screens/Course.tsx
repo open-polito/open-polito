@@ -125,7 +125,15 @@ export default function Course({navigation, route}) {
               <RefreshControl refreshing={refreshing} onRefresh={refresh} />
             }
             dark={dark}
-            alerts={courseData?.extendedInfo?.notices || []}
+            alerts={
+              courseData?.extendedInfo?.notices.map(alert => {
+                return {
+                  ...alert,
+                  course_code: courseData.basicInfo.code,
+                  course_name: courseData.basicInfo.name,
+                };
+              }) || []
+            }
           />
         );
       case 'videos':

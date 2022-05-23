@@ -12,15 +12,11 @@ const VideoCard = ({
   item,
   onPress,
   dark,
-  selected = false,
 }: {
   item: Recording;
   onPress: () => any;
   dark: boolean;
-  selected?: boolean; // Highligted if true
 }) => {
-  const navigation = useNavigation();
-
   const width = Dimensions.get('window').width;
 
   let hours = item.length / 60;
@@ -38,11 +34,9 @@ const VideoCard = ({
         {
           flexDirection: 'row',
           justifyContent: 'space-between',
-          marginBottom: 24 * p,
+          paddingVertical: 12 * p,
+          paddingHorizontal: 16 * p,
         },
-        selected
-          ? {backgroundColor: dark ? colors.gray600 : colors.gray300}
-          : {},
       ]}>
       <View>
         <Image

@@ -20,6 +20,7 @@ import DirectoryItem from '../ui/DirectoryItem';
 import {STATUS} from '../store/status';
 import Notification from '../ui/Notification';
 import {NotificationType} from 'open-polito-api/notifications';
+import {ExtendedAlert} from '../types';
 
 // TODO "quick access" section using recently opened sections
 // TODO open notification section
@@ -48,9 +49,18 @@ const Home = () => {
     loadExtendedCourseInfoStatus,
   } = useSelector<RootState, CoursesState>(state => state.courses);
 
-  const latestAlert = useMemo(() => {
+  const latestAlert = useMemo<ExtendedAlert>(() => {
     return courses
-      .flatMap(c => c.extendedInfo?.notices || [])
+      .flatMap(
+        c =>
+          c.extendedInfo?.notices.map(notice => {
+            return {
+              ...notice,
+              course_name: c.basicInfo.name,
+              course_code: c.basicInfo.code,
+            };
+          }) || [],
+      )
       .sort((a, b) => b.date - a.date)[0];
   }, [courses]);
 

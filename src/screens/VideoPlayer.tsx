@@ -62,7 +62,6 @@ export default function VideoPlayer({route}) {
       container: {
         paddingHorizontal: 16 * p,
         paddingTop: 24 * p,
-        paddingBottom: 16 * p,
       },
     });
   }, [dark]);
@@ -82,39 +81,42 @@ export default function VideoPlayer({route}) {
         />
       </View>
       <FlatList
-        data={[]}
-        renderItem={() => null}
+        data={relatedVideos}
+        renderItem={({item}) => (
+          <View
+            style={[
+              item.url == currentVideo.url
+                ? {backgroundColor: dark ? colors.gray600 : colors.gray300}
+                : {},
+            ]}>
+            <VideoCard
+              item={item}
+              dark={dark}
+              onPress={() => setCurrentVideo(item)}
+            />
+          </View>
+        )}
+        keyExtractor={item => item.url}
         ListHeaderComponent={() => (
           <View style={_styles.container}>
-            <Text s={16 * p} w="b" c={colors.gray100}>
+            <Text s={16 * p} w="b" c={dark ? colors.gray100 : colors.gray800}>
               {currentVideo.title}
             </Text>
             <Text
               s={12 * p}
               w="m"
-              c={colors.gray200}
+              c={dark ? colors.gray200 : colors.gray500}
               style={{marginTop: 8 * p}}>
               {courseData?.basicInfo.name} ·{' '}
               {moment(currentVideo.date).format('ll')}
             </Text>
-            <Button
-              text={t('download (feature coming soon)')}
-              secondary
-              style={{marginVertical: 24 * p}}
-            />
-            <Section dark={dark} title={t('relatedVideos')}>
-              <FlatList
-                data={relatedVideos}
-                renderItem={({item}) => (
-                  <VideoCard
-                    selected={item.url == currentVideo.url}
-                    item={item}
-                    dark={dark}
-                    onPress={() => setCurrentVideo(item)}
-                  />
-                )}
-              />
-            </Section>
+
+            <View style={{marginVertical: 24 * p}}>
+              {/* <Button text={t('download (feature coming soon)')} secondary /> */}
+            </View>
+            <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>
+              {t('relatedVideos')}
+            </Text>
           </View>
         )}
       />
