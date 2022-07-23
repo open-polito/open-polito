@@ -137,6 +137,14 @@ const IT = {
   unavailableExams: 'Non disponibili',
   bookingDeadline: 'Scadenza',
 
+  // Exams screen (Libretto)
+  yourAverageMark: 'La tua media',
+  yourAverageMarkNotice: 'Non depurata dai crediti più bassi',
+  progressOverTime: 'Progresso nel tempo',
+  permanentMarks: 'Valutazioni',
+  provisionalMarks: 'Valutazioni provvisorie',
+  statusCodeHelp: 'Cosa significano i codici di stato?',
+
   // Timetable screen
   jumpToDate: 'Vai a data',
   thisWeek: 'Questa settimana',
