@@ -139,6 +139,14 @@ const EN = {
   unavailableExams: 'Unavailable',
   bookingDeadline: 'Booking deadline',
 
+  // Exams screen (Libretto)
+  yourAverageMark: 'Your average mark',
+  yourAverageMarkNotice: 'Not accounting for lowest credits',
+  progressOverTime: 'Progress over time',
+  permanentMarks: 'Marks',
+  provisionalMarks: 'Provisional marks',
+  statusCodeHelp: 'What do status codes mean?',
+
   // Timetable screen
   jumpToDate: 'Jump to date',
   thisWeek: 'This week',

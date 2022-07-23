@@ -40,7 +40,7 @@ import Drawer from '../ui/Drawer';
 import {login, SessionState} from '../store/sessionSlice';
 import Bookings from '../screens_legacy/Bookings';
 import Timetable from '../screens_legacy/Timetable';
-import Exams from '../screens_legacy/Exams';
+import Exams from '../screens/Exams';
 import ExamSessions from '../screens/ExamSessions';
 import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
