@@ -143,6 +143,7 @@ const EN = {
   yourAverageMark: 'Your average mark',
   yourAverageMarkNotice: 'Not adjusted for lowest credits',
   progressOverTime: 'Progress over time',
+  weightedAverage: 'Weighted average',
   permanentMarks: 'Marks',
   provisionalMarks: 'Provisional marks',
   statusCodeHelp: 'What do status codes mean?',

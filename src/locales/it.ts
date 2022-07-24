@@ -141,6 +141,7 @@ const IT = {
   yourAverageMark: 'La tua media',
   yourAverageMarkNotice: 'Non depurata dai crediti più bassi',
   progressOverTime: 'Progresso nel tempo',
+  weightedAverage: 'Media ponderata',
   permanentMarks: 'Valutazioni',
   provisionalMarks: 'Valutazioni provvisorie',
   statusCodeHelp: 'Cosa significano i codici di stato?',
