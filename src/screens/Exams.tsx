@@ -15,15 +15,15 @@ import Screen from '../ui/Screen';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import Tabs from '../ui/Tabs';
 import {DeviceContext} from '../context/Device';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {p} from '../scaling';
 import Text from '../ui/core/Text';
 import Section from '../ui/Section';
-import NoContent from '../components/NoContent';
+import NoContent from '../ui/NoContent';
 import TablerIcon from '../ui/core/TablerIcon';
 import moment from 'moment';
 import i18next from 'i18next';
-import Svg, {Circle, Text as SvgText} from 'react-native-svg';
+import ProgressCircle from '../ui/ProgressCircle';
 
 const tabs = ['overview', 'permanentMarks', 'provisionalMarks'];
 
@@ -42,14 +42,18 @@ const Exams = () => {
   }, [marks, tab]);
 
   const avg = useMemo(() => {
-    console.log(marks);
-    const _marks = [...marks.permanent, ...marks.provisional].filter(
-      mark => !!parseInt(mark.mark || ''),
-    );
-    return (
-      _marks.reduce((acc, mark) => {
-        return acc + parseInt(mark.mark!);
-      }, 0) / _marks.length
+    const _marks = marks.permanent.filter(mark => !!parseInt(mark.mark || ''));
+
+    const total_credits = _marks.reduce((acc, mark) => {
+      return acc + mark.num_credits;
+    }, 0);
+
+    return parseFloat(
+      (
+        _marks.reduce((acc, mark) => {
+          return acc + parseInt(mark.mark) * mark.num_credits;
+        }, 0) / total_credits
+      ).toFixed(2),
     );
   }, [marks, tab]);
 
@@ -117,13 +121,6 @@ const Exams = () => {
           </>
         ) : (
           <FlatList
-            contentContainerStyle={
-              {
-                // paddingTop: 24 * p,
-                // paddingHorizontal: 16 * p,
-                // paddingBottom: 24 * p,
-              }
-            }
             data={filteredMarks}
             keyExtractor={item => item.date + item.name}
             renderItem={({item}) => (
@@ -139,13 +136,6 @@ const Exams = () => {
             )}
             ItemSeparatorComponent={() => <View style={{height: 16 * p}} />}
             ListEmptyComponent={<NoContent />}
-            // refreshing={getExamsStatus.code == STATUS.PENDING}
-            // refreshControl={
-            //   <RefreshControl
-            //     refreshing={getExamsStatus.code == STATUS.PENDING}
-            //     onRefresh={refresh}
-            //   />
-            // }
           />
         )}
       </View>
@@ -158,22 +148,13 @@ const AvgWidget = ({avg, dark}: {avg: number; dark: boolean}) => {
 
   return (
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <View
-        style={{
-          width: 64 * p,
-          height: 64 * p,
-          borderRadius: 64 * p,
-          borderWidth: 8 * p,
-          borderColor: colors.accent300,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginRight: 20 * p,
-        }}>
-        <Text s={16 * p} w="b" c={dark ? colors.gray100 : colors.gray800}>
-          {avg}
-        </Text>
-      </View>
-      <View>
+      <ProgressCircle
+        strokeWidth={8 * p}
+        radius={30 * p}
+        value={avg}
+        max={30}
+      />
+      <View style={{marginLeft: 16 * p}}>
         <Text
           s={16 * p}
           w="m"
@@ -245,43 +226,11 @@ const MarkWidget = ({
         </View>
       </View>
       {parseInt(mark.mark!) ? (
-        <View style={{position: 'relative'}}>
-          <Svg width={48 * p} height={48 * p}>
-            <Circle
-              transform="rotate(-90 28 28)"
-              strokeWidth={4 * p}
-              fill="transparent"
-              stroke={colors.accent300}
-              strokeDasharray={2 * Math.PI * 20 * p}
-              strokeDashoffset={
-                ((100 - 100 * ((parseInt(mark.mark!) || 30) / 30)) *
-                  2 *
-                  Math.PI *
-                  20 *
-                  p) /
-                100
-              }
-              r={20 * p}
-              cx={24 * p}
-              cy={24 * p}></Circle>
-          </Svg>
-          <View
-            style={{
-              position: 'absolute',
-              width: 48 * p,
-              height: 48 * p,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Text
-              s={parseInt(mark.mark!) ? 16 * p : 10 * p}
-              c={colors.gray100}
-              w="b">
-              {mark.mark}
-            </Text>
-          </View>
-        </View>
+        <ProgressCircle
+          radius={20 * p}
+          value={parseInt(mark.mark!) || 30}
+          max={30}
+        />
       ) : (
         <View
           style={{

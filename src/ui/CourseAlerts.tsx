@@ -1,6 +1,6 @@
 import React, {ReactElement, useEffect, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
-import NoContent from '../components/NoContent';
+import NoContent from './NoContent';
 import Notification from './Notification';
 import {NotificationType} from 'open-polito-api/notifications';
 import {p} from '../scaling';

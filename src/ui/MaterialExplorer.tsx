@@ -4,7 +4,7 @@ import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/store';
 import DirectoryItemRecursive from './DirectoryItemRecursive';
-import NoContent from '../components/NoContent';
+import NoContent from './NoContent';
 import {CoursesState, CourseState} from '../store/coursesSlice';
 import DirectoryItem from './DirectoryItem';
 
