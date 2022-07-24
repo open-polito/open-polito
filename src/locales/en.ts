@@ -141,7 +141,7 @@ const EN = {
 
   // Exams screen (Libretto)
   yourAverageMark: 'Your average mark',
-  yourAverageMarkNotice: 'Not accounting for lowest credits',
+  yourAverageMarkNotice: 'Not adjusted for lowest credits',
   progressOverTime: 'Progress over time',
   permanentMarks: 'Marks',
   provisionalMarks: 'Provisional marks',

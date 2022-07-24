@@ -22,7 +22,7 @@ import Tabs from '../ui/Tabs';
 import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
 import Text from '../ui/core/Text';
-import NoContent from '../components/NoContent';
+import NoContent from '../ui/NoContent';
 
 // TODO book exams
 
