@@ -26,7 +26,7 @@ const Timetable = () => {
   const deviceContext = useContext(DeviceContext);
   const navigation = useNavigation();
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [loaded, setLoaded] = useState(false);
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);

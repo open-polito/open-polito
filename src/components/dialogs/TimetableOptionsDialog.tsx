@@ -4,14 +4,14 @@ import {FlatList, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Configuration} from '../../defaultConfig';
 import {setConfig} from '../../store/sessionSlice';
-import {RootState} from '../../store/store';
+import {AppDispatch, RootState} from '../../store/store';
 import styles from '../../styles';
 import {TimetableOptionsDialogParams} from '../../types';
 import ListRank from '../ListRank';
 import SettingsItem, {SettingsItemProps} from '../../ui/SettingsItem';
 
 const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {t} = useTranslation();
 
   const config = useSelector<RootState, Configuration>(

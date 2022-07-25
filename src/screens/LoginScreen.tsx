@@ -17,13 +17,13 @@ import TextInput from '../ui/core/TextInput';
 import Button from '../ui/core/Button';
 import {p} from '../scaling';
 import {AuthStatus, STATUS, Status} from '../store/status';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import Svg, {SvgFromUri, SvgUri} from 'react-native-svg';
 import {LoginValidationResult, validateLoginInput} from '../utils/auth';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const loginStatus = useSelector<RootState, Status>(
     state => state.session.loginStatus,

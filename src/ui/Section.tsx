@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {View, ViewStyle} from 'react-native';
 import colors from '../colors';
 import {p} from '../scaling';
@@ -8,9 +8,10 @@ export type SectionParams = {
   title: string;
   dark: boolean;
   style?: ViewStyle;
+  children: ReactNode;
 };
 
-const Section: FC<SectionParams> = ({title, dark, style = {}, children}) => {
+const Section = ({title, dark, style = {}, children}: SectionParams) => {
   return (
     <View style={{...style}}>
       <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>

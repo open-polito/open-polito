@@ -15,7 +15,7 @@ import MaterialExplorer from '../ui/MaterialExplorer';
 import ScreenContainer from '../components/ScreenContainer';
 import DropdownSelector from '../components/DropdownSelector';
 import {DeviceContext} from '../context/Device';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {
   CoursesState,
   CourseState,
@@ -40,7 +40,7 @@ const tabs = ['explore', 'recentlyAdded'];
 
 export default function Material() {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigation = useNavigation();
 
   const courses = useSelector<RootState, CourseState[]>(

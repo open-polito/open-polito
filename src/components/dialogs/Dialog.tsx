@@ -9,7 +9,7 @@ import Animated, {
 import {useDispatch, useSelector} from 'react-redux';
 import colors from '../../colors';
 import {setDialog} from '../../store/sessionSlice';
-import {RootState} from '../../store/store';
+import {AppDispatch, RootState} from '../../store/store';
 import styles from '../../styles';
 import {
   DialogParams,
@@ -25,7 +25,7 @@ import TimetableEventDialog from './TimetableEventDialog';
 import TimetableOptionsDialog from './TimetableOptionsDialog';
 
 const Dialog = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {t} = useTranslation();
 
   const dialog = useSelector<

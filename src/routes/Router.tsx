@@ -13,7 +13,7 @@ import {SessionState, setConfig, setConfigState} from '../store/sessionSlice';
 import HomeRouter from './HomeRouter';
 import Search from '../screens/Search';
 import Course from '../screens/Course';
-import VideoPlayer from '../screens/VideoPlayer';
+import Video from '../screens/Video';
 import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig, {
@@ -23,7 +23,7 @@ import defaultConfig, {
 import moment from 'moment';
 import {Entry} from 'open-polito-api/device';
 import {AUTH_STATUS} from '../store/status';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {DeviceContext} from '../context/Device';
 import Config from 'react-native-config';
 
@@ -38,7 +38,7 @@ export type AppStackParamList = {
   HomeRouter: undefined;
   Search: undefined;
   Course: undefined;
-  VideoPlayer: undefined;
+  Video: undefined;
 };
 
 /**
@@ -97,7 +97,7 @@ export const getLoggingConfig = async () => {
  */
 export default function Router() {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {authStatus, loginStatus, config} = useSelector<
     RootState,
@@ -195,7 +195,7 @@ export default function Router() {
           <AppStack.Screen name="HomeRouter" component={HomeRouter} />
           <AppStack.Screen name="Search" component={Search} />
           <AppStack.Screen name="Course" component={Course} />
-          <AppStack.Screen name="VideoPlayer" component={VideoPlayer} />
+          <AppStack.Screen name="Video" component={Video} />
         </AppStack.Navigator>
       ) : (
         <AuthStack.Navigator

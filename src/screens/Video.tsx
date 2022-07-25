@@ -26,18 +26,19 @@ import {CourseState} from '../store/coursesSlice';
 import Section from '../ui/Section';
 import VideoCard from '../ui/VideoCard';
 import moment from 'moment';
+import VideoPlayer from '../ui/VideoPlayer';
 
 // TODO fullscreen mode
 // TODO custom video controls design
 // TODO "cast to" feature
 // TODO video download
 
-export default function VideoPlayer({route}) {
+export default function Video({route}) {
   const {t} = useTranslation();
 
-  const video: Recording = route.params.video;
+  const video: {video: Recording; courseId: string} = route.params.video;
 
-  const [currentVideo, setCurrentVideo] = useState(video);
+  const [currentVideo, setCurrentVideo] = useState<Recording>(video.video);
 
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
     state.courses.courses.find(
@@ -74,11 +75,12 @@ export default function VideoPlayer({route}) {
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
-        <RNVideoPlayer
+        {/* <RNVideoPlayer
           source={{uri: currentVideo.url}}
           navigator={navigation}
           seekColor={colors.gradient1}
-        />
+        /> */}
+        <VideoPlayer video={currentVideo} />
       </View>
       <FlatList
         data={relatedVideos}

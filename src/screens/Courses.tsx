@@ -9,7 +9,7 @@ import {TextN, TextS} from '../components/Text';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styles from '../styles';
 import {DeviceContext} from '../context/Device';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
@@ -21,7 +21,7 @@ import Section from '../ui/Section';
 
 export default function Courses({navigation}) {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {device, dark} = useContext(DeviceContext);
 
   const courses = useSelector<RootState, CourseState[]>(

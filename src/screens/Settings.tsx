@@ -16,7 +16,7 @@ import notImplemented from '../utils/notImplemented';
 import {TextS} from '../components/Text';
 import ScreenContainer from '../components/ScreenContainer';
 import ArrowHeader from '../components/ArrowHeader';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {
   logout,
   resetConfig,
@@ -62,7 +62,7 @@ export default function Settings() {
     state => state.session.config,
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const _setConfig = (config: Configuration) => {
     dispatch(setConfig(config));

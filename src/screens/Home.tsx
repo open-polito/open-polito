@@ -14,7 +14,7 @@ import Text from '../ui/core/Text';
 import {useNavigation} from '@react-navigation/native';
 import Section from '../ui/Section';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {CoursesState} from '../store/coursesSlice';
 import DirectoryItem from '../ui/DirectoryItem';
 import {STATUS} from '../store/status';
@@ -39,7 +39,7 @@ const Home = () => {
   const {t} = useTranslation();
   const {dark, device} = useContext(DeviceContext);
   const navigation = useNavigation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {
     courses,

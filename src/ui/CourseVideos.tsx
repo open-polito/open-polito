@@ -68,9 +68,9 @@ const CourseVideos = ({
             item={item}
             dark={dark}
             onPress={() => {
-              navigation.navigate('VideoPlayer', {
+              navigation.navigate('Video', {
                 video: {
-                  ...item,
+                  video: item,
                   courseId: courseId,
                 }, // Directly convert Date to localized date string because react-navigation wants serialized data
               });

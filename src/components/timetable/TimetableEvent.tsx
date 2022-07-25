@@ -14,6 +14,7 @@ import styles from '../../styles';
 import {useDispatch} from 'react-redux';
 import {setDialog} from '../../store/sessionSlice';
 import {DIALOG_TYPE, TimetableEventDialogParams} from '../../types';
+import {AppDispatch} from '../../store/store';
 
 const TimetableEvent = ({
   overlapGroup,
@@ -30,7 +31,7 @@ const TimetableEvent = ({
   courseNames: string[];
   index: number;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const offset = useSharedValue(0);
   const opacity = useSharedValue(0);
