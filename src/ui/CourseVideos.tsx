@@ -20,6 +20,7 @@ import {RootState} from '../store/store';
 import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
+import NoContent from './NoContent';
 import VideoCard from './VideoCard';
 
 // TODO previous years videos
@@ -56,11 +57,7 @@ const CourseVideos = ({
     <View>
       <FlatList
         data={videos}
-        ListEmptyComponent={
-          <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-            <TextN text={t('noVideos')} />
-          </View>
-        }
+        ListEmptyComponent={<NoContent />}
         refreshControl={refreshControl}
         ListHeaderComponent={() => <View style={{height: 24 * p}} />}
         renderItem={({item}) => (
