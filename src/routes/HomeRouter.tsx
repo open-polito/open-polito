@@ -9,7 +9,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
 import Material from '../screens/Material';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {
   CoursesState,
   getRecentMaterial,
@@ -69,7 +69,7 @@ const DrawerStack = createDrawerNavigator<DrawerStackParamList>();
 
 export default function HomeRouter() {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const {dark, device, setDevice} = useContext(DeviceContext);
 
   const {unreadEmailCount, getNotificationsStatus} = useSelector<

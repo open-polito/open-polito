@@ -1,4 +1,10 @@
-import {configureStore, createReducer} from '@reduxjs/toolkit';
+import {
+  AnyAction,
+  configureStore,
+  createReducer,
+  Dispatch,
+  ThunkDispatch,
+} from '@reduxjs/toolkit';
 import coursesSlice from './coursesSlice';
 import examsSlice from './examsSlice';
 import sessionSlice from './sessionSlice';
@@ -14,5 +20,7 @@ const store = configureStore({
 });
 
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = Dispatch<AnyAction> &
+  ThunkDispatch<RootState, null, AnyAction>;
 
 export default store;

@@ -5,7 +5,7 @@ import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
 import {SessionState, setToast} from '../store/sessionSlice';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
@@ -23,7 +23,7 @@ const types = {
 const Toast = () => {
   const {dark} = useContext(DeviceContext);
   const {toast} = useSelector<RootState, SessionState>(state => state.session);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const timeoutRef = useRef<any>(null);
 

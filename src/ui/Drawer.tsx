@@ -13,7 +13,7 @@ import sections from '../sections';
 import {useTranslation} from 'react-i18next';
 import TablerIcon from './core/TablerIcon';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {PersonalData} from 'open-polito-api/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../store/sessionSlice';
@@ -56,7 +56,7 @@ const getShortenedDegreeName = (degreeType: string, degreeName: string) => {
 
 const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const deviceContext = useContext(DeviceContext);
 

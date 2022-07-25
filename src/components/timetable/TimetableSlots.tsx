@@ -10,7 +10,7 @@ import TimetableDay from './TimetableDay';
 import {Configuration} from '../../defaultConfig';
 import {useDispatch, useSelector} from 'react-redux';
 import {setConfig} from '../../store/sessionSlice';
-import {RootState} from '../../store/store';
+import {AppDispatch, RootState} from '../../store/store';
 
 const TimetableSlots = ({
   loaded,
@@ -23,7 +23,7 @@ const TimetableSlots = ({
   layout: 'week' | 'day';
   selectedDay: number;
 }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const config = useSelector<RootState, Configuration>(
     state => state.session.config,
   );

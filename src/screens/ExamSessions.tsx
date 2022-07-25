@@ -12,7 +12,7 @@ import colors from '../colors';
 import moment from 'moment';
 import * as RNLocalize from 'react-native-localize';
 import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {ExamsState, getExams} from '../store/examsSlice';
 import {STATUS} from '../store/status';
 import {DeviceContext} from '../context/Device';
@@ -30,7 +30,7 @@ const tabs = ['allExams', 'myBookings', 'availableToBook', 'unavailableExams'];
 
 export default function ExamSessions({navigation}) {
   const {t} = useTranslation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {dark, device} = useContext(DeviceContext);
 

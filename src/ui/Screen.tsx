@@ -1,9 +1,9 @@
-import React, {FC, useContext, useMemo} from 'react';
+import React, {FC, ReactNode, useContext, useMemo} from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 
-const Screen: FC = ({children}) => {
+const Screen = ({children}: {children: ReactNode}) => {
   const {dark, chosenTheme} = useContext(DeviceContext);
 
   const _styles = useMemo(() => {

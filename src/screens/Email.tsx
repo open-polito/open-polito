@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTranslation} from 'react-i18next';
 import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import WebView, {WebViewNavigation} from 'react-native-webview';
 import {getUnreadEmailCount, UserState} from '../store/userSlice';
 import {Configuration} from '../defaultConfig';
@@ -36,7 +36,7 @@ export default function Email() {
   const {t} = useTranslation();
 
   const {dark, device} = useContext(DeviceContext);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [mounted, setMounted] = useState(true);
   const [loaded, setLoaded] = useState(false);
@@ -91,7 +91,7 @@ export default function Email() {
             flex: loaded ? 1 : 0,
           }}>
           <WebView
-            ref={ref => setWebViewRef(ref)}
+            ref={ref => !ref && setWebViewRef(ref)}
             source={{uri: webMailUrl}}
             onNavigationStateChange={handleNavigationStateChange}
           />

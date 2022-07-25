@@ -23,7 +23,7 @@ import RecentItemsLoader from '../components/loaders/RecentItemsLoader';
 import CourseLoader from '../components/loaders/CourseLoader';
 import CourseAlerts from '../ui/CourseAlerts';
 import {DeviceContext} from '../context/Device';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {CourseState, loadCourse} from '../store/coursesSlice';
 import {STATUS} from '../store/status';
 import Screen from '../ui/Screen';
@@ -34,7 +34,7 @@ import Tabs from '../ui/Tabs';
 // TODO old videos
 
 export default function Course({navigation, route}) {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const {t} = useTranslation();
 
