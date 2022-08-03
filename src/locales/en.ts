@@ -147,6 +147,8 @@ const EN = {
   permanentMarks: 'Marks',
   provisionalMarks: 'Provisional marks',
   statusCodeHelp: 'What do status codes mean?',
+  examAbsent: 'ABSENT',
+  examFailed: 'FAILED',
 
   // Timetable screen
   jumpToDate: 'Jump to date',
