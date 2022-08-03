@@ -11,7 +11,9 @@ const Filters = ({
   items: {label: string; value: string}[];
   onChange: (arg0: string) => any;
 }) => {
-  const [selected, setSelected] = useState<string>(items[0].value);
+  const [selected, setSelected] = useState<string>(
+    items && items.length > 0 ? items[0].value : '',
+  );
 
   return (
     <View style={{flexDirection: 'row'}}>
