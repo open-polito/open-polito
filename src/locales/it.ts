@@ -145,6 +145,8 @@ const IT = {
   permanentMarks: 'Valutazioni',
   provisionalMarks: 'Valutazioni provvisorie',
   statusCodeHelp: 'Cosa significano i codici di stato?',
+  examAbsent: 'ASSENTE',
+  examFailed: 'FALLITO',
 
   // Timetable screen
   jumpToDate: 'Vai a data',

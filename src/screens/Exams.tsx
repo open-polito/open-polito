@@ -174,6 +174,7 @@ const MarkWidget = ({
     () => getFields(mark, provisional, dark),
     [mark, provisional, dark],
   );
+  const {t} = useTranslation();
 
   return (
     <View
@@ -224,14 +225,35 @@ const MarkWidget = ({
         />
       ) : (
         <View
-          style={{
-            padding: 8 * p,
-            borderRadius: 4 * p,
-            backgroundColor: colors.accent300,
-          }}>
-          <Text s={12} w="m" c={colors.gray100}>
-            {mark.mark}
-          </Text>
+          style={[
+            {
+              padding: 8 * p,
+              borderRadius: 4 * p,
+              backgroundColor: colors.accent300,
+            },
+            !mark.mark ||
+            (mark as ProvisionalMark).failed ||
+            (mark as ProvisionalMark).absent
+              ? {
+                  backgroundColor: colors.red,
+                }
+              : null,
+          ]}>
+          {(mark as ProvisionalMark).failed ? (
+            <Text s={12} w="m" c={colors.gray100}>
+              {t('examFailed')}
+            </Text>
+          ) : null}
+          {(mark as ProvisionalMark).absent ? (
+            <Text s={12} w="m" c={colors.gray100}>
+              {t('examAbsent')}
+            </Text>
+          ) : null}
+          {mark.mark ? (
+            <Text s={12} w="m" c={colors.gray100}>
+              {mark.mark}
+            </Text>
+          ) : null}
         </View>
       )}
     </View>
