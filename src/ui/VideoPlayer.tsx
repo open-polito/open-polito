@@ -26,7 +26,7 @@ const VideoPlayer = ({video}: {video: Recording}) => {
         onBuffer={() => {}}
         onError={() => {}}
         onBandwidthUpdate={() => {}}
-        onAudioBecomingNoisy={() => setPaused(!paused)}
+        onAudioBecomingNoisy={() => setPaused(true)}
         style={{
           position: 'absolute',
           top: 0,
