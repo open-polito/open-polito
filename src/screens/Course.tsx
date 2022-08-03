@@ -144,7 +144,7 @@ export default function Course({navigation, route}) {
             }
             dark={dark}
             courseId={code}
-            year="-1"
+            year="current"
           />
         );
       // case 'oldVideos':
