@@ -20,6 +20,7 @@ import {RootState} from '../store/store';
 import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
+import Filters from './Filters';
 import NoContent from './NoContent';
 import VideoCard from './VideoCard';
 
@@ -34,12 +35,12 @@ const CourseVideos = ({
   courseId: string;
   dark: boolean;
   refreshControl: ReactElement;
-  year: string; // Set to -1 to show current year's videos
+  year: string; // Set to "current" to show current year's videos
 }) => {
   const {t} = useTranslation();
   const navigation = useNavigation();
 
-  const width = Dimensions.get('window').width;
+  const [selectedYear, setSelectedYear] = useState(year);
 
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
     state.courses.courses.find(
@@ -48,10 +49,16 @@ const CourseVideos = ({
   );
 
   const videos = useMemo(() => {
-    return [...(courseData?.extendedInfo?.vc_recordings.current || [])].sort(
-      (a, b) => b.date - a.date,
-    );
-  }, [courseData, year]);
+    if (selectedYear === 'current') {
+      return [...(courseData?.extendedInfo?.vc_recordings.current || [])].sort(
+        (a, b) => b.date - a.date,
+      );
+    }
+    return [
+      ...(courseData?.extendedInfo?.vc_recordings[parseInt(selectedYear, 10)] ||
+        []),
+    ].sort((a, b) => b.date - a.date);
+  }, [courseData, selectedYear]);
 
   return (
     <View>
@@ -59,7 +66,12 @@ const CourseVideos = ({
         data={videos}
         ListEmptyComponent={<NoContent />}
         refreshControl={refreshControl}
-        ListHeaderComponent={() => <View style={{height: 24 * p}} />}
+        ListHeaderComponent={
+          <CourseVideosHeader
+            courseData={courseData}
+            onYearChange={y => setSelectedYear(y)}
+          />
+        }
         renderItem={({item}) => (
           <VideoCard
             item={item}
@@ -75,6 +87,27 @@ const CourseVideos = ({
           />
         )}
       />
+    </View>
+  );
+};
+
+const CourseVideosHeader = ({
+  courseData,
+  onYearChange,
+}: {
+  courseData: CourseState | undefined;
+  onYearChange: (arg0: string) => any;
+}) => {
+  return (
+    <View style={{marginLeft: 16 * p}}>
+      <View style={{height: 16 * p}} />
+      <Filters
+        items={Object.keys(courseData?.extendedInfo?.vc_recordings || {})
+          .sort((a, b) => (a < b ? 1 : -1))
+          .map(key => ({label: key, value: key}))}
+        onChange={y => onYearChange(y)}
+      />
+      <View style={{height: 8 * p}} />
     </View>
   );
 };
