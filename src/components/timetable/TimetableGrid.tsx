@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment, {Moment} from 'moment';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, View} from 'react-native';
 import colors from '../../colors';
@@ -15,11 +15,12 @@ const TimetableGrid = ({
   const [h, setH] = useState(Dimensions.get('window').height / 15);
 
   // Used to update red line position
-  const [currentTime, setCurrentTime] = useState(moment());
-  const [mounted, setMounted] = useState(true);
+  const [currentTime, setCurrentTime] = useState<Moment>(moment());
+  const [mounted, setMounted] = useState<boolean>(true);
   const [updateTimeout, setUpdateTimeout] = useState<any>(null);
 
   useEffect(() => {
+    setMounted(true);
     return () => {
       if (updateTimeout) clearTimeout(updateTimeout);
       setMounted(false);
