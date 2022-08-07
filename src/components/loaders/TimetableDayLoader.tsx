@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {View} from 'react-native';
 import {Rect} from 'react-native-svg';
+import {p} from '../../scaling';
 import AnimatedGradientBase from './AnimatedGradientBase';
 import LoaderBase from './LoaderBase';
 
@@ -19,8 +20,8 @@ const TimetableDayLoader = ({w, h}: {w: number; h: number}) => {
               key={i}
               x={0}
               y={yPositions[i]}
-              rx={8}
-              ry={8}
+              rx={4 * p}
+              ry={4 * p}
               width={w - 4}
               height={h * 2}
             />

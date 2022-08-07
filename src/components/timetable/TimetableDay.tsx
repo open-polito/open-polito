@@ -4,6 +4,7 @@ import React, {useMemo, useState} from 'react';
 import {View} from 'react-native';
 import colors from '../../colors';
 import {Configuration} from '../../defaultConfig';
+import {p} from '../../scaling';
 import TimetableDayLoader from '../loaders/TimetableDayLoader';
 import TimetableEvent from './TimetableEvent';
 
@@ -51,8 +52,8 @@ const TimetableDay = ({
    * |----------|----------|----------|
    */
   const overlapping: TimetableSlot[][] = useMemo(() => {
-    if (config.overlap == 'priority') return []; // Only compute if splitting enabled
-    if (day.length == 0) return []; // Only compute when slots fetched
+    if (config.overlap === 'priority') return []; // Only compute if splitting enabled
+    if (day.length === 0) return []; // Only compute when slots fetched
 
     let _overlapping: TimetableSlot[][] = [];
     // Go through slots and find overlaps
@@ -101,24 +102,26 @@ const TimetableDay = ({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        borderLeftWidth: index > 0 ? 1 : 0,
-        borderColor: colors.lightGray,
+        borderLeftWidth: index > 0 ? 1 * p : 0,
+        borderColor: colors.gray200,
       }}>
       {fake ? (
         <TimetableDayLoader w={w} h={h} />
-      ) : config.overlap == 'priority' ? (
+      ) : config.overlap === 'priority' ? (
         // If priority enabled, show sorted by priority
-        sortedByPriority.map((slot, i) => (
-          <TimetableEvent
-            key={i}
-            {...{overlapGroup: [], slot, w, h, courseNames, index: i}}
-          />
-        ))
+        sortedByPriority.map((slot, i) => {
+          return (
+            <TimetableEvent
+              key={i}
+              {...{overlapGroup: [], slot, w, h, courseNames, index: i}}
+            />
+          );
+        })
       ) : (
         // If priority not enabled
         day.map((slot, i) => {
           const overlapGroup = findOverlapGroup(slot);
-          const _index = overlapGroup.findIndex(_slot => slot == _slot);
+          const _index = overlapGroup.findIndex(_slot => slot === _slot);
           return (
             <TimetableEvent
               key={i}

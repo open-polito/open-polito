@@ -20,10 +20,14 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import {AppDispatch} from '../store/store';
+import Screen from '../ui/Screen';
+import Header, {HEADER_TYPE} from '../ui/Header';
+import {p} from '../scaling';
 
 const Timetable = () => {
   const {t} = useTranslation();
-  const deviceContext = useContext(DeviceContext);
+  const {device, dark} = useContext(DeviceContext);
   const navigation = useNavigation();
 
   const dispatch = useDispatch<AppDispatch>();
@@ -32,9 +36,17 @@ const Timetable = () => {
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);
 
   const [slots, setSlots] = useState<TimetableSlot[]>([]);
-  const [timetableDays, setTimetableDays] = useState<TimetableSlot[][]>(
-    Array.from({length: 7}, () => []),
-  );
+
+  /**
+   * When slots change, update {@link timetableDays}
+   */
+  const timetableDays = useMemo(() => {
+    let _timetableDays: TimetableSlot[][] = Array.from({length: 7}, () => []);
+    slots.forEach(slot => {
+      _timetableDays[moment(slot.start_time).day()].push(slot);
+    });
+    return _timetableDays;
+  }, [slots]);
 
   const [layout, setLayout] = useState<'day' | 'week'>('day');
 
@@ -65,7 +77,7 @@ const Timetable = () => {
       withTiming(1, {duration: 250}),
     );
     offset.value =
-      direction == 'l'
+      direction === 'l'
         ? withSequence(
             withTiming(32, {duration: 750}),
             withTiming(-32, {duration: 0}),
@@ -91,18 +103,13 @@ const Timetable = () => {
           let slots: TimetableSlot[] = [];
           setSlots([]);
           try {
-            slots = await getTimetable(
-              deviceContext.device,
-              weekStartDate ?? new Date(),
-            );
+            slots = await getTimetable(device, weekStartDate ?? new Date());
             setLoaded(true);
           } catch (e) {
             // console.log(e);
           } finally {
             if (!weekStartDate) {
-              const date = moment(slots[0].start_time)
-                .startOf('isoWeek')
-                .toDate();
+              const date = moment().startOf('isoWeek').toDate();
               mounted && setWeekStartDate(date);
             }
             setSlots(slots);
@@ -117,77 +124,54 @@ const Timetable = () => {
   }, [doUpdate]);
 
   /**
-   * When slots change, update {@link timetableDays}
-   */
-  useEffect(() => {
-    let _timetableDays: TimetableSlot[][] = Array.from({length: 7}, () => []);
-    slots.forEach(slot => {
-      _timetableDays[moment(slot.start_time).day()].push(slot);
-    });
-    mounted && setTimetableDays(_timetableDays);
-  }, [slots]);
-
-  /**
    * Whether to show red line
    */
   const showLine: boolean = useMemo(() => {
     return (
-      (layout == 'week' &&
-        weekStartDate?.getTime() ==
+      (layout === 'week' &&
+        weekStartDate?.getTime() ===
           moment().startOf('isoWeek').toDate().getTime()) ||
-      (layout == 'day' &&
+      (layout === 'day' &&
         moment(weekStartDate)
           .add(selectedDay - 1, 'days')
           .toDate()
-          .getTime() == moment().startOf('day').toDate().getTime())
+          .getTime() === moment().startOf('day').toDate().getTime())
     );
   }, [weekStartDate, selectedDay, layout]);
 
   return (
-    <ScreenContainer>
-      <View style={styles.withHorizontalPadding}>
-        <ArrowHeader
-          text={t('timetable')}
-          backFunc={navigation.goBack}
-          optionsFunction={() => {
-            dispatch(
-              setDialog({
-                visible: true,
-                params: {type: DIALOG_TYPE.TIMETABLE_OPTIONS},
-              }),
-            );
-          }}
-        />
-      </View>
+    <Screen>
+      <Header headerType={HEADER_TYPE.MAIN} title={t('timetable')} />
       <View
         style={{
-          ...styles.paddingFromHeader,
-          flexDirection: 'column',
           flex: 1,
+          paddingTop: 24 * p,
         }}>
-        <TimetableHeader
-          selectedDay={layout == 'week' ? null : selectedDay}
-          onDayChanged={(value: number) => {
-            setSelectedDay(value);
-          }}
-          onLayoutChanged={(value: 'day' | 'week') => {
-            setLayout(value);
-          }}
-          weekStartDate={weekStartDate}
-          onWeekStartDateChanged={(value: Date) => {
-            if (weekStartDate && value.getTime() < weekStartDate.getTime()) {
-              controlTransition('l');
-            } else {
-              controlTransition('r');
-            }
-            setWeekStartDate(value);
-            setDoUpdate(!doUpdate);
-          }}
-          timetableDays={timetableDays}
-        />
-        <ScrollView>
-          <Animated.View style={[animStyle, {flex: 1, paddingBottom: 32}]}>
-            <TimetableGrid showLine={showLine} />
+        <View style={{paddingHorizontal: 16 * p}}>
+          <TimetableHeader
+            selectedDay={layout === 'week' ? null : selectedDay}
+            onDayChanged={(value: number) => {
+              setSelectedDay(value);
+            }}
+            onLayoutChanged={(value: 'day' | 'week') => {
+              setLayout(value);
+            }}
+            weekStartDate={weekStartDate}
+            onWeekStartDateChanged={(value: Date) => {
+              if (weekStartDate && value.getTime() < weekStartDate.getTime()) {
+                controlTransition('l');
+              } else {
+                controlTransition('r');
+              }
+              setWeekStartDate(moment(value).startOf('isoWeek').toDate());
+              setDoUpdate(!doUpdate);
+            }}
+            timetableDays={timetableDays}
+          />
+        </View>
+        <ScrollView style={{flex: 1}}>
+          <Animated.View style={[animStyle, {flex: 1}]}>
+            <TimetableGrid showLine={showLine} dark={dark} />
             <TimetableSlots
               loaded={loaded}
               timetableDays={timetableDays}
@@ -197,7 +181,7 @@ const Timetable = () => {
           </Animated.View>
         </ScrollView>
       </View>
-    </ScreenContainer>
+    </Screen>
   );
 };
 
