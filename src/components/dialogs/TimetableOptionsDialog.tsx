@@ -20,21 +20,15 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
   );
 
   const rankItems = useMemo(() => {
-    return config.timetable.priority.map(item => {
+    return config.timetablePriority.map(item => {
       return {label: item, value: item};
     });
-  }, [config.timetable.priority]);
-
-  const updateTimetableConfig = (params: Configuration['timetable']) => {
-    dispatch(
-      setConfig({...config, timetable: {...config.timetable, ...params}}),
-    );
-  };
+  }, [config.timetablePriority]);
 
   const toggleOverlapMode = () => {
-    const mode: Configuration['timetable']['overlap'] =
-      config.timetable?.overlap === 'split' ? 'priority' : 'split';
-    updateTimetableConfig({...config.timetable, overlap: mode});
+    const mode: Configuration['timetableOverlap'] =
+      config.timetableOverlap === 'split' ? 'priority' : 'split';
+    dispatch(setConfig({...config, timetableOverlap: mode}));
   };
 
   const timetableOptionsItems: SettingsItemProps[] = [
@@ -43,24 +37,27 @@ const TimetableOptionsDialog = ({}: TimetableOptionsDialogParams) => {
       description: t('timetablePriorityDesc'),
       icon: 'stack-2',
       toggle: true,
-      toggleValue: config.timetable.overlap === 'priority',
-      settingsFunction: () => {
-        toggleOverlapMode();
-      },
+      toggleValue: config.timetableOverlap === 'priority',
+      settingsFunction: toggleOverlapMode,
       padding: true,
     },
     {
       name: t('timetablePriorityList'),
       settingsFunction: () => {},
-      disabled: config.timetable.overlap !== 'priority',
+      disabled: config.timetableOverlap !== 'priority',
       children: (
         <ListRank
           dark={dark}
-          disabled={config.timetable.overlap !== 'priority'}
+          disabled={config.timetableOverlap !== 'priority'}
           items={rankItems}
-          callback={data => {
-            updateTimetableConfig({...config.timetable, priority: data});
-          }}
+          callback={data =>
+            dispatch(
+              setConfig({
+                ...config,
+                timetablePriority: data.filter(d => d !== ''),
+              }),
+            )
+          }
         />
       ),
       padding: true,

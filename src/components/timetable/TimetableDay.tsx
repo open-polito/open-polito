@@ -20,7 +20,7 @@ const TimetableDay = ({
   day: TimetableSlot[];
   h: number;
   courseNames: string[];
-  config: Configuration['timetable'];
+  config: Configuration;
   index?: number;
 }) => {
   const [w, setW] = useState(0);
@@ -31,10 +31,10 @@ const TimetableDay = ({
   const sortedByPriority: TimetableSlot[] = useMemo(() => {
     return [...day].sort(
       (a, b) =>
-        config.priority.indexOf(b.course_name) -
-        config.priority.indexOf(a.course_name),
+        config.timetablePriority.indexOf(b.course_name) -
+        config.timetablePriority.indexOf(a.course_name),
     );
-  }, [config.priority, config.overlap, index, day]);
+  }, [config.timetablePriority, config.timetableOverlap, index, day]);
 
   /**
    * Array of arrays of overlapping events.
@@ -52,7 +52,7 @@ const TimetableDay = ({
    * |----------|----------|----------|
    */
   const overlapping: TimetableSlot[][] = useMemo(() => {
-    if (config.overlap === 'priority') return []; // Only compute if splitting enabled
+    if (config.timetableOverlap === 'priority') return []; // Only compute if splitting enabled
     if (day.length === 0) return []; // Only compute when slots fetched
 
     let _overlapping: TimetableSlot[][] = [];
@@ -72,7 +72,7 @@ const TimetableDay = ({
       if (_localOverlapping.length > 1) _overlapping.push(_localOverlapping);
     }
     return _overlapping;
-  }, [day, config.overlap]);
+  }, [day, config.timetableOverlap]);
 
   /**
    * Finds and returns overlap group of given slot
@@ -107,7 +107,7 @@ const TimetableDay = ({
       }}>
       {fake ? (
         <TimetableDayLoader w={w} h={h} />
-      ) : config.overlap === 'priority' ? (
+      ) : config.timetableOverlap === 'priority' ? (
         // If priority enabled, show sorted by priority
         sortedByPriority.map((slot, i) => {
           return (

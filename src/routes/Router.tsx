@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {StatusBar, View} from 'react-native';
+import {View} from 'react-native';
 import {TextS} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -14,7 +14,6 @@ import HomeRouter from './HomeRouter';
 import Search from '../screens/Search';
 import Course from '../screens/Course';
 import Video from '../screens/Video';
-import ExamSessions from '../screens/ExamSessions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import defaultConfig, {
   Configuration,
@@ -129,9 +128,6 @@ export default function Router() {
 
       /**
        * Check for old schema and/or new default settings items.
-       * TODO implement the following:
-       * - settings json should have depth 1
-       * - it should just assign the default value when not found in storage
        */
       if (
         !loadedConfig.schemaVersion ||
@@ -147,7 +143,13 @@ export default function Router() {
         toDelete.forEach(k => delete (loadedConfig as any)[k]);
 
         // Add missing new settings with their default value
-        dispatch(setConfig({...loadedConfig, ...defaultConfig}));
+        dispatch(
+          setConfig({
+            ...loadedConfig,
+            ...defaultConfig,
+            login: !!loadedConfig.login, // Preserve login status. False if not set
+          }),
+        );
       } else {
         dispatch(setConfigState(loadedConfig));
       }
