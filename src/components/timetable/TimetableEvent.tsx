@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import colors, {courseColors} from '../../colors';
 import {TextXS} from '../Text';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -9,12 +8,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
-import {Pressable, View} from 'react-native';
-import styles from '../../styles';
+import {TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {setDialog} from '../../store/sessionSlice';
 import {DIALOG_TYPE, TimetableEventDialogParams} from '../../types';
 import {AppDispatch} from '../../store/store';
+import {p} from '../../scaling';
+import Text from '../../ui/core/Text';
+import TablerIcon from '../../ui/core/TablerIcon';
 
 const TimetableEvent = ({
   overlapGroup,
@@ -97,8 +98,7 @@ const TimetableEvent = ({
               h -
             h / 2,
 
-          ...styles.border,
-          ...styles.elevatedSmooth,
+          borderRadius: 4 * p,
           backgroundColor:
             courseColors[courseNames.findIndex(val => val == slot.course_name)],
           height:
@@ -108,12 +108,11 @@ const TimetableEvent = ({
         },
         animStyle,
       ]}>
-      <Pressable
+      <TouchableOpacity
         style={{
           flex: 1,
-          padding: 4,
+          padding: 4 * p,
         }}
-        android_ripple={{color: colors.white}}
         onPress={() => {
           dispatch(
             setDialog({
@@ -139,43 +138,43 @@ const TimetableEvent = ({
             <View
               style={{
                 flexDirection: 'row',
-                marginTop: 8,
+                marginTop: 8 * p,
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 overflow: 'hidden',
               }}>
-              <MaterialIcons name="place" size={12} color={colors.lightGray} />
-              <TextXS
+              <TablerIcon name="map-pin" size={8 * p} color={colors.gray50} />
+              <Text
+                w="r"
+                s={8 * p}
+                c={colors.gray50}
                 numberOfLines={2}
-                text={slot.room}
-                color={colors.white}
-                style={{fontSize: 8, marginLeft: 2}}
-              />
+                style={{marginLeft: 2 * p}}>
+                {slot.room}
+              </Text>
             </View>
             <View
               style={{
                 opacity: opacity.value,
                 flexDirection: 'row',
-                marginTop: 4,
+                marginTop: 4 * p,
                 alignItems: 'center',
                 justifyContent: 'flex-start',
                 overflow: 'hidden',
               }}>
-              <MaterialIcons
-                name="short-text"
-                size={12}
-                color={colors.lightGray}
-              />
-              <TextXS
+              <TablerIcon name="list" size={8 * p} color={colors.gray50} />
+              <Text
+                w="r"
+                s={8 * p}
+                c={colors.gray50}
                 numberOfLines={2}
-                text={slot.type}
-                color={colors.white}
-                style={{fontSize: 8, marginLeft: 2}}
-              />
+                style={{marginLeft: 2 * p}}>
+                {slot.type}
+              </Text>
             </View>
           </Animated.View>
         ) : null}
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   );
 };

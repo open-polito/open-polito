@@ -2,9 +2,16 @@ import moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {Dimensions, View} from 'react-native';
 import colors from '../../colors';
-import {TextXS} from '../Text';
+import {p} from '../../scaling';
+import Text from '../../ui/core/Text';
 
-const TimetableGrid = ({showLine}: {showLine: boolean}) => {
+const TimetableGrid = ({
+  showLine,
+  dark,
+}: {
+  showLine: boolean;
+  dark: boolean;
+}) => {
   const [h, setH] = useState(Dimensions.get('window').height / 15);
 
   // Used to update red line position
@@ -32,7 +39,9 @@ const TimetableGrid = ({showLine}: {showLine: boolean}) => {
     <View
       style={{
         flex: 1,
-        marginHorizontal: 8,
+        paddingLeft: 8 * p,
+        paddingRight: 16 * p,
+        paddingBottom: 16 * p,
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'stretch',
@@ -45,8 +54,8 @@ const TimetableGrid = ({showLine}: {showLine: boolean}) => {
             borderTopColor: colors.red,
             borderBottomColor: colors.red,
             backgroundColor: colors.red,
-            borderTopWidth: 0.5,
-            borderBottomWidth: 0.5,
+            borderTopWidth: 0.5 * p,
+            borderBottomWidth: 0.5 * p,
             flexDirection: 'row',
             justifyContent: 'flex-start',
             alignItems: 'center',
@@ -73,9 +82,9 @@ const TimetableGrid = ({showLine}: {showLine: boolean}) => {
           <View
             style={{
               backgroundColor: colors.red,
-              width: 8,
-              height: 8,
-              borderRadius: 16,
+              width: 8 * p,
+              height: 8 * p,
+              borderRadius: 16 * p,
             }}></View>
         </View>
       ) : null}
@@ -90,17 +99,29 @@ const TimetableGrid = ({showLine}: {showLine: boolean}) => {
             justifyContent: 'flex-start',
             alignItems: 'flex-end',
           }}>
-          <TextXS text={`${8 + index}:00`} />
+          <Text
+            s={8 * p}
+            c={dark ? colors.gray200 : colors.gray700}
+            w="r"
+            style={{
+              transform: [{translateY: 4 * p}],
+            }}>
+            {`${8 + index}:00`}
+          </Text>
           <View
             style={{
-              width: '100%',
-              borderBottomWidth: 1,
-              borderColor: colors.lightGray,
+              flex: 1,
+              // width: '100%',
+              borderBottomWidth: 0.5 * p,
+              borderColor: dark ? colors.gray200 : colors.gray700,
+              marginLeft: 4 * p,
+
               height: h,
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'flex-end',
-            }}></View>
+            }}
+          />
         </View>
       ))}
     </View>

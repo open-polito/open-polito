@@ -23,9 +23,7 @@ import {getLoggingConfig, requestLogger} from '../routes/Router';
 
 // TODO remove when sections completed
 const isSectionUnavailable = (name: string) => {
-  return ['Bookings', 'Timetable', 'Maps', 'Classrooms', 'People'].includes(
-    name,
-  );
+  return ['Bookings', 'Maps', 'Classrooms', 'People'].includes(name);
 };
 
 type DrawerParams = {

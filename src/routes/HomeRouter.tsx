@@ -39,7 +39,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import Drawer from '../ui/Drawer';
 import {login, SessionState} from '../store/sessionSlice';
 import Bookings from '../screens_legacy/Bookings';
-import Timetable from '../screens_legacy/Timetable';
+import Timetable from '../screens/Timetable';
 import Exams from '../screens/Exams';
 import ExamSessions from '../screens/ExamSessions';
 import Maps from '../screens/Maps';

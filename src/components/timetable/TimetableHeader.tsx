@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {Pressable, View} from 'react-native';
 import styles from '../../styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -8,13 +8,27 @@ import {TextN, TextS} from '../Text';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
-import HorizontalIconSelector from '../HorizontalIconSelector';
+import Toggles from '../../ui/Toggles';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import Text from '../../ui/core/Text';
+import {DeviceContext} from '../../context/Device';
+import {p} from '../../scaling';
+import Button from '../../ui/core/Button';
+import TablerIcon from '../../ui/core/TablerIcon';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+
+const showDatePicker = (callback: (date: number | undefined) => any) => {
+  DateTimePickerAndroid.open({
+    mode: 'date',
+    value: new Date(),
+    onChange: date => callback(date.nativeEvent.timestamp),
+  });
+};
 
 const TimetableHeader = ({
   selectedDay = null,
@@ -32,6 +46,8 @@ const TimetableHeader = ({
   onWeekStartDateChanged: Function;
 }) => {
   const {t} = useTranslation();
+
+  const {dark} = useContext(DeviceContext);
 
   const _onLayoutChanged = (value: string) => {
     onLayoutChanged(value);
@@ -74,48 +90,42 @@ const TimetableHeader = ({
   }, [weekStartDate]);
 
   return (
-    <View style={{borderBottomWidth: 1, borderBottomColor: colors.lightGray}}>
+    <View style={{borderBottomWidth: 1 * p, borderBottomColor: colors.gray200}}>
       <View
         style={{
-          ...styles.withHorizontalPadding,
-          marginBottom: 16,
+          marginBottom: 16 * p,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        <Pressable
-          style={{
-            ...styles.border,
-            borderWidth: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            backgroundColor: colors.gradient1,
-          }}>
-          <MaterialIcons name="double-arrow" size={16} color={colors.white} />
-          <TextS
-            text={t('jumpToDate')}
-            style={{marginLeft: 8}}
-            color={colors.white}
-          />
-        </Pressable>
-        <HorizontalIconSelector
+        <Button
+          secondary
+          small
+          text={t('jumpToDate')}
+          icon="chevrons-right"
+          onPress={() =>
+            showDatePicker(date => {
+              if (!date) return;
+              _onWeekStartDateChanged(new Date(date));
+            })
+          }
+        />
+        <Toggles
           defaultValue="week"
           onValueChange={(value: string) => {
             _onLayoutChanged(value);
           }}
           label="Layout:"
           items={[
-            {icon: 'view-day-outline', value: 'day'},
-            {icon: 'view-week-outline', value: 'week'},
+            {icon: 'layout-rows', value: 'day'},
+            {icon: 'layout-columns', value: 'week'},
           ]}
+          dark={dark}
         />
       </View>
       <View
         style={{
-          ...styles.withHorizontalPadding,
-          marginBottom: 16,
+          marginBottom: 16 * p,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -126,29 +136,31 @@ const TimetableHeader = ({
               moment(weekStartDate).subtract(1, 'w').toDate(),
             )
           }>
-          <MaterialCommunityIcons
+          <TablerIcon
             name="arrow-left"
-            size={24}
-            color={colors.gray}
+            size={24 * p}
+            color={dark ? colors.gray100 : colors.gray800}
           />
         </Pressable>
         <Animated.View style={[animStyle]}>
-          <TextN text={headerTitle} weight="medium" />
+          <Text c={dark ? colors.gray100 : colors.gray800} s={12 * p} w="m">
+            {headerTitle}
+          </Text>
         </Animated.View>
         <Pressable
           onPress={() =>
             _onWeekStartDateChanged(moment(weekStartDate).add(1, 'w').toDate())
           }>
-          <MaterialCommunityIcons
+          <TablerIcon
             name="arrow-right"
-            size={24}
-            color={colors.gray}
+            size={24 * p}
+            color={dark ? colors.gray100 : colors.gray800}
           />
         </Pressable>
       </View>
       <View
         style={{
-          ...styles.withHorizontalPadding,
+          // ...styles.withHorizontalPadding,
           marginLeft: 12,
           flexDirection: 'row',
           alignItems: 'flex-start',
@@ -170,25 +182,37 @@ const TimetableHeader = ({
               paddingVertical: 4,
               borderRadius: 4,
               backgroundColor:
-                selectedDay == index + 1 ? colors.gradient1 : colors.white,
+                selectedDay == index + 1 ? colors.accent300 : colors.gray700,
             }}>
-            <TextS
-              text={
-                weekStartDate
-                  ? moment(weekStartDate).add(index, 'd').format('ddd')
-                  : ''
+            <Text
+              s={10 * p}
+              w="r"
+              c={
+                selectedDay == index + 1
+                  ? colors.gray100
+                  : dark
+                  ? colors.gray100
+                  : colors.gray800
+              }>
+              {weekStartDate
+                ? moment(weekStartDate).add(index, 'd').format('ddd')
+                : ''}
+            </Text>
+            <Text
+              s={10 * p}
+              w="r"
+              c={
+                selectedDay == index + 1
+                  ? colors.gray100
+                  : dark
+                  ? colors.gray100
+                  : colors.gray700
               }
-              color={selectedDay == index + 1 ? colors.white : colors.black}
-            />
-            <TextS
-              key={index}
-              text={
-                weekStartDate
-                  ? moment(weekStartDate).add(index, 'd').date()
-                  : ''
-              }
-              color={selectedDay == index + 1 ? colors.white : colors.black}
-            />
+              key={index}>
+              {weekStartDate
+                ? moment(weekStartDate).add(index, 'd').date()
+                : ''}
+            </Text>
           </Pressable>
         ))}
       </View>

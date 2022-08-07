@@ -11,6 +11,7 @@ import {Configuration} from '../../defaultConfig';
 import {useDispatch, useSelector} from 'react-redux';
 import {setConfig} from '../../store/sessionSlice';
 import {AppDispatch, RootState} from '../../store/store';
+import {p} from '../../scaling';
 
 const TimetableSlots = ({
   loaded,
@@ -33,7 +34,7 @@ const TimetableSlots = ({
   const [courseNames, setCourseNames] = useState<string[]>(['', '', '']);
 
   const days = useMemo<TimetableSlot[][]>(() => {
-    if (timetableDays.length == 1) return timetableDays;
+    if (timetableDays.length === 1) return timetableDays;
     return timetableDays.slice(1, 6);
   }, [timetableDays]);
 
@@ -74,20 +75,22 @@ const TimetableSlots = ({
       style={{
         position: 'absolute',
         flex: 1,
-        ...styles.withHorizontalPadding,
-        marginLeft: 16,
+        marginLeft: 32 * p,
+        marginRight: 16 * p,
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'center',
       }}>
-      {(layout == 'week' ? days : [days[selectedDay - 1]]).map((day, index) => (
-        <TimetableDay
-          fake={!loaded}
-          config={config.timetable}
-          key={index}
-          {...{day, h, index, courseNames}}
-        />
-      ))}
+      {(layout === 'week' ? days : [days[selectedDay - 1]]).map(
+        (day, index) => (
+          <TimetableDay
+            fake={!loaded}
+            config={config.timetable}
+            key={index}
+            {...{day, h, index, courseNames}}
+          />
+        ),
+      )}
     </View>
   );
 };
