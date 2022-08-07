@@ -1,11 +1,6 @@
-import moment from 'moment';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Dimensions, View} from 'react-native';
-import colors, {courseColors} from '../../colors';
-import styles from '../../styles';
-import {TextXS} from '../Text';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TimetableDay from './TimetableDay';
 import {Configuration} from '../../defaultConfig';
 import {useDispatch, useSelector} from 'react-redux';
@@ -58,16 +53,14 @@ const TimetableSlots = ({
    * When course names or slots change, if priority enabled, update the priority list
    */
   useEffect(() => {
-    if (!config.timetable.overlap || !config.timetable.priority) return;
-    let _list: string[] = [...config.timetable.priority];
+    if (!config.timetableOverlap || !config.timetablePriority) return;
+    let _list: string[] = [...config.timetablePriority];
     courseNames.forEach(courseName => {
-      if (!config.timetable.priority.includes(courseName)) {
+      if (!config.timetablePriority.includes(courseName)) {
         _list.push(courseName);
       }
     });
-    dispatch(
-      setConfig({...config, timetable: {...config.timetable, priority: _list}}),
-    );
+    dispatch(setConfig({...config, timetablePriority: _list}));
   }, [days, courseNames]);
 
   return (
@@ -85,7 +78,7 @@ const TimetableSlots = ({
         (day, index) => (
           <TimetableDay
             fake={!loaded}
-            config={config.timetable}
+            config={config}
             key={index}
             {...{day, h, index, courseNames}}
           />

@@ -1,4 +1,4 @@
-export const CONFIG_SCHEMA_VERSION = 2;
+export const CONFIG_SCHEMA_VERSION = 3;
 
 export type Configuration = {
   schemaVersion: number;
@@ -11,10 +11,8 @@ export type Configuration = {
 
   theme: 'dark' | 'light' | 'system';
 
-  timetable: {
-    overlap: 'split' | 'priority';
-    priority: string[];
-  };
+  timetableOverlap: 'split' | 'priority';
+  timetablePriority: string[];
 };
 
 const defaultConfig: Configuration = {
@@ -28,10 +26,8 @@ const defaultConfig: Configuration = {
 
   theme: 'system',
 
-  timetable: {
-    overlap: 'split',
-    priority: [],
-  },
+  timetableOverlap: 'split',
+  timetablePriority: [],
 };
 
 export default defaultConfig;
