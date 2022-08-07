@@ -1,10 +1,6 @@
 import React, {useContext, useMemo} from 'react';
 import {Pressable, View} from 'react-native';
-import styles from '../../styles';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../colors';
-import {TextN, TextS} from '../Text';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
@@ -21,6 +17,10 @@ import {p} from '../../scaling';
 import Button from '../../ui/core/Button';
 import TablerIcon from '../../ui/core/TablerIcon';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useDispatch} from 'react-redux';
+import {setDialog} from '../../store/sessionSlice';
+import {DIALOG_TYPE} from '../../types';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
   DateTimePickerAndroid.open({
@@ -48,6 +48,8 @@ const TimetableHeader = ({
   const {t} = useTranslation();
 
   const {dark} = useContext(DeviceContext);
+
+  const dispatch = useDispatch();
 
   const _onLayoutChanged = (value: string) => {
     onLayoutChanged(value);
@@ -110,18 +112,37 @@ const TimetableHeader = ({
             })
           }
         />
-        <Toggles
-          defaultValue="week"
-          onValueChange={(value: string) => {
-            _onLayoutChanged(value);
-          }}
-          label="Layout:"
-          items={[
-            {icon: 'layout-rows', value: 'day'},
-            {icon: 'layout-columns', value: 'week'},
-          ]}
-          dark={dark}
-        />
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Toggles
+            defaultValue="week"
+            onValueChange={(value: string) => {
+              _onLayoutChanged(value);
+            }}
+            label="Layout:"
+            items={[
+              {icon: 'layout-rows', value: 'day'},
+              {icon: 'layout-columns', value: 'week'},
+            ]}
+            dark={dark}
+          />
+          <TouchableOpacity style={{marginLeft: 24 * p}}>
+            <TablerIcon
+              onPress={() =>
+                dispatch(
+                  setDialog({
+                    visible: true,
+                    params: {
+                      type: DIALOG_TYPE.TIMETABLE_OPTIONS,
+                    },
+                  }),
+                )
+              }
+              name="settings"
+              size={20 * p}
+              color={dark ? colors.gray100 : colors.gray800}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
       <View
         style={{
