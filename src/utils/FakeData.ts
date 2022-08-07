@@ -1,5 +1,5 @@
-import faker from '@faker-js/faker';
-import moment, {Moment} from 'moment';
+import {faker} from '@faker-js/faker';
+import moment from 'moment';
 import {Directory, File, MaterialItem} from 'open-polito-api/material';
 import {TimetableSlot} from 'open-polito-api/timetable';
 
