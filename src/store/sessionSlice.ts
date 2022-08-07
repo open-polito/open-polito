@@ -20,7 +20,7 @@ import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ping} from 'open-polito-api/utils';
 import {setUserInfo} from './userSlice';
-import {DialogParams, DIALOG_TYPE} from '../types';
+import {DialogParams} from '../types';
 
 export type ToastData = {
   visible: boolean;
