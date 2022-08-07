@@ -1,29 +1,27 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import DraggableFlatList, {
   RenderItemParams,
   ScaleDecorator,
-  useOnCellActiveAnimation,
 } from 'react-native-draggable-flatlist';
 import {TouchableOpacity} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../colors';
-import {TextN} from './Text';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {p} from '../scaling';
+import TablerIcon from '../ui/core/TablerIcon';
+import Text from '../ui/core/Text';
 
 const ListRank = ({
   items,
   callback,
   disabled,
+  dark,
 }: {
   items: Array<{label: string; value: string}>;
   callback: (data: string[]) => void;
   disabled: boolean;
+  dark: boolean;
 }) => {
-  const length = useMemo(() => {
-    return items.length;
-  }, [items]);
-
   const [data, setData] = useState(items);
 
   useEffect(() => {
@@ -42,22 +40,26 @@ const ListRank = ({
           onPressIn={drag}
           onPress={drag}
           style={{
-            paddingVertical: 8,
+            paddingVertical: 4 * p,
           }}>
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'flex-start',
               alignItems: 'center',
-              marginLeft: -8,
+              marginLeft: 0 * p,
               opacity: disabled ? 0.5 : 1,
             }}>
-            <MaterialCommunityIcons
-              name="drag"
-              size={32}
-              color={colors.mediumGray}
+            <TablerIcon
+              name="grid-dots"
+              size={24 * p}
+              color={dark ? colors.gray300 : colors.gray600}
             />
-            <TextN text={item.label} />
+            <View style={{marginLeft: 8 * p}}>
+              <Text s={12 * p} c={dark ? colors.gray100 : colors.gray800} w="r">
+                {item.label}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
       </ScaleDecorator>
@@ -67,14 +69,6 @@ const ListRank = ({
   return (
     <GestureHandlerRootView>
       <DraggableFlatList
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: colors.lightGray,
-            }}
-          />
-        )}
         onDragEnd={({data}) => setData(data)}
         data={data}
         keyExtractor={item => item.value}

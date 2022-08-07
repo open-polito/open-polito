@@ -1,28 +1,30 @@
-import React, {FC, useMemo} from 'react';
+import React, {FC, useContext, useMemo} from 'react';
 import {View} from 'react-native';
-import styles from '../../styles';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {TimetableEventDialogParams} from '../../types';
 import colors from '../../colors';
-import {TextL, TextN, TextS, TextSubTitle, TextTitle, TextXL} from '../Text';
 import {useTranslation} from 'react-i18next';
 import moment from 'moment';
+import TablerIcon from '../../ui/core/TablerIcon';
+import {p} from '../../scaling';
+import {DeviceContext} from '../../context/Device';
+import Text from '../../ui/core/Text';
 
 const TimetableEventDialog: FC<TimetableEventDialogParams> = ({slot}) => {
   const {t} = useTranslation();
+  const {dark} = useContext(DeviceContext);
 
   const items: {icon: string; name: string}[] = useMemo(() => {
     return [
       {
-        icon: 'place',
+        icon: 'map-pin',
         name: slot.room,
       },
       {
-        icon: 'short-text',
+        icon: 'align-justified',
         name: slot.type,
       },
       {
-        icon: 'access-time',
+        icon: 'clock',
         name:
           moment(slot.start_time).format('HH:mm') +
           ' - ' +
@@ -32,29 +34,31 @@ const TimetableEventDialog: FC<TimetableEventDialogParams> = ({slot}) => {
           ')',
       },
       {
-        icon: 'person-outline',
+        icon: 'user',
         name: slot.professor.surname + ' ' + slot.professor.name,
       },
     ];
   }, [slot]);
 
   return (
-    <View style={{...styles.withHorizontalPadding, paddingBottom: 16}}>
-      {items.map(item => (
+    <View style={{paddingHorizontal: 16 * p}}>
+      {items.map((item, i) => (
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'flex-start',
             alignItems: 'center',
-            marginTop: 8,
+            marginTop: (i == 0 ? 0 : 8) * p,
           }}>
-          <MaterialIcons
+          <TablerIcon
             name={item.icon}
-            size={20}
-            color={colors.gray}
-            style={{marginRight: 8}}
+            size={16 * p}
+            color={dark ? colors.gray300 : colors.gray600}
+            style={{marginRight: 8 * p}}
           />
-          <TextN text={item.name} />
+          <Text s={12 * p} c={dark ? colors.gray100 : colors.gray800} w="r">
+            {item.name}
+          </Text>
         </View>
       ))}
     </View>

@@ -30,25 +30,31 @@ export enum DIALOG_TYPE {
   NOTIFICATIONS = 'NOTIFICATIONS',
 }
 
-export type DialogParams = {
+export type DialogParamsBase = {
   title?: string;
   type: DIALOG_TYPE;
 };
 
-export type ListSelectorDialogParams = DialogParams & {
+export type ListSelectorDialogParams = DialogParamsBase & {
   type: DIALOG_TYPE.LIST_SELECTOR;
   items: [];
 };
 
-export type TimetableOptionsDialogParams = DialogParams & {
+export type TimetableOptionsDialogParams = DialogParamsBase & {
   type: DIALOG_TYPE.TIMETABLE_OPTIONS;
 };
 
-export type TimetableEventDialogParams = DialogParams & {
+export type TimetableEventDialogParams = DialogParamsBase & {
   type: DIALOG_TYPE.TIMETABLE_EVENT;
   slot: TimetableSlot;
 };
 
-export type NotificationsDialogParams = DialogParams & {
+export type NotificationsDialogParams = DialogParamsBase & {
   type: DIALOG_TYPE.NOTIFICATIONS;
 };
+
+export type DialogParams =
+  | ListSelectorDialogParams
+  | TimetableOptionsDialogParams
+  | TimetableEventDialogParams
+  | NotificationsDialogParams;
