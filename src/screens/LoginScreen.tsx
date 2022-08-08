@@ -5,9 +5,7 @@ import {DeviceContext} from '../context/Device';
 import {LoginData, login, setToast} from '../store/sessionSlice';
 import 'react-native-get-random-values';
 import {v4 as UUIDv4} from 'uuid';
-import {getLoggingConfig} from '../routes/Router';
 import {Device} from 'open-polito-api/device';
-import {requestLogger} from '../routes/Router';
 import Screen from '../ui/Screen';
 import {StyleSheet, View, ToastAndroid, Alert} from 'react-native';
 import Text from '../ui/core/Text';
@@ -20,6 +18,7 @@ import {AuthStatus, STATUS, Status} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
 import Svg, {SvgFromUri, SvgUri} from 'react-native-svg';
 import {LoginValidationResult, validateLoginInput} from '../utils/auth';
+import Logger from '../utils/Logger';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -74,12 +73,12 @@ export default function LoginScreen() {
 
     const uuid = UUIDv4();
 
-    const loggingEnabled = await getLoggingConfig();
+    const loggingEnabled = await Logger.isLoggingEnabled();
 
     const device = new Device(
       uuid,
       10000,
-      loggingEnabled ? requestLogger : () => {},
+      loggingEnabled ? Logger.logRequestSync : () => {},
     );
 
     // Set device instance
@@ -105,7 +104,7 @@ export default function LoginScreen() {
    * Show toast notification based on login result
    */
   useEffect(() => {
-    if (loginStatus.code == STATUS.ERROR)
+    if (loginStatus.code === STATUS.ERROR)
       dispatch(
         setToast({
           type: 'err',

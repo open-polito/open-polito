@@ -1,12 +1,8 @@
 import React, {useContext, useEffect} from 'react';
-import styles from '../styles';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Email from '../screens/Email';
 import Settings from '../screens/Settings';
-import colors from '../colors';
 import {useDispatch, useSelector} from 'react-redux';
-import IconBadge from '../components/IconBadge';
 import {useTranslation} from 'react-i18next';
 import Material from '../screens/Material';
 import {AppDispatch, RootState} from '../store/store';
@@ -23,17 +19,11 @@ import {
   getUnreadEmailCount,
   UserState,
 } from '../store/userSlice';
-import {
-  parsePushNotification,
-  PushNotification,
-  registerPushNotifications,
-} from 'open-polito-api/notifications';
+import {registerPushNotifications} from 'open-polito-api/notifications';
 
-import {NativeModules, Platform, View} from 'react-native';
-import {showMessage} from 'react-native-flash-message';
-import {infoFlashMessage} from '../components/CustomFlashMessages';
+import {NativeModules, Platform} from 'react-native';
 import Config from 'react-native-config';
-import {pendingStatus, STATUS, Status, successStatus} from '../store/status';
+import {pendingStatus, STATUS, successStatus} from '../store/status';
 import Analytics from 'appcenter-analytics';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Drawer from '../ui/Drawer';
@@ -46,9 +36,9 @@ import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
 import People from '../screens/People';
 import Courses from '../screens/Courses';
-import {getLoggingConfig, requestLogger} from './Router';
 import Keychain from 'react-native-keychain';
 import {Device} from 'open-polito-api/device';
+import Logger from '../utils/Logger';
 
 export type DrawerStackParamList = {
   Home: undefined;
@@ -109,14 +99,14 @@ export default function HomeRouter() {
         const {username, password} = keychainCredentials;
         const {uuid, token} = JSON.parse(password);
 
-        const _loggingEnabled = await getLoggingConfig();
+        const _loggingEnabled = await Logger.isLoggingEnabled();
 
         // Up to this point the global Device is just a placeholder, therefore
         // we create the actual instance, set it globally, and use it to login
         const device = new Device(
           uuid,
           10000,
-          _loggingEnabled ? requestLogger : () => {},
+          _loggingEnabled ? Logger.logRequestSync : () => {},
         );
 
         // Set device instance

@@ -6,7 +6,6 @@ import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import colors from '../colors';
 import {useTranslation} from 'react-i18next';
-import RNFS from 'react-native-fs';
 
 import {useSelector, useDispatch} from 'react-redux';
 import {SessionState, setConfig, setConfigState} from '../store/sessionSlice';
@@ -19,12 +18,10 @@ import defaultConfig, {
   Configuration,
   CONFIG_SCHEMA_VERSION,
 } from '../defaultConfig';
-import moment from 'moment';
-import {Entry} from 'open-polito-api/device';
 import {AUTH_STATUS} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
 import {DeviceContext} from '../context/Device';
-import Config from 'react-native-config';
+import Logger from '../utils/Logger';
 
 /**
  * Types for React Navigation
@@ -47,51 +44,6 @@ const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
 /**
- * Generate filename and compute log file path
- */
-const logFilename =
-  'request_log-' + moment().format('YYYY-MM-DD-THHmmssSSS') + '.txt';
-const logs_path =
-  (RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath) +
-  '/' +
-  logFilename;
-
-/**
- * Log requests to log file.
- * @param entry The log entry
- *
- * @remarks
- * Uses ExternalDirectoryPath (/storage/emulated/0/Android/data/org.openpolito.app/files/) on Android,
- * DocumentDirectoryPath on iOS
- */
-export const requestLogger = (entry: Entry) => {
-  if (!parseInt(Config.ENABLE_DEBUG_OPTIONS)) return;
-  if (entry.endpoint.includes('login')) return;
-  (async () => {
-    await RNFS.appendFile(logs_path, JSON.stringify(entry)).catch(err =>
-      console.log(err),
-    );
-  })();
-};
-
-// Get logging configuration
-export const getLoggingConfig = async () => {
-  let loggingEnabled = false;
-  try {
-    const loggingConfig = await AsyncStorage.getItem('@config');
-    if (loggingConfig == null) {
-      await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
-      loggingEnabled = defaultConfig.logging;
-    } else {
-      loggingEnabled = JSON.parse(loggingConfig).logging;
-    }
-  } catch (e) {
-  } finally {
-    return loggingEnabled;
-  }
-};
-
-/**
  * Main routing component. Manages login and access to {@link AuthStack} and {@link AppStack}.
  */
 export default function Router() {
@@ -102,8 +54,6 @@ export default function Router() {
     RootState,
     SessionState
   >(state => state.session);
-
-  const deviceContext = useContext(DeviceContext);
 
   // Logging-related stuff
   const [loggingEnabled, setLoggingEnabled] = useState(false);
@@ -155,7 +105,7 @@ export default function Router() {
       }
 
       // Get logging configuration
-      const _loggingEnabled = await getLoggingConfig();
+      const _loggingEnabled = await Logger.isLoggingEnabled();
       setLoggingEnabled(_loggingEnabled);
     })();
 
