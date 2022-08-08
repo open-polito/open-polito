@@ -83,6 +83,12 @@ project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
 ]
 
+// Icons with react-native-vector-icons
+project.ext.vectoricons = [
+    iconFontNames: [ 'tabler-icons.ttf' ]
+]
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 
@@ -382,12 +388,6 @@ def isNewArchitectureEnabled() {
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
-
-// Material Icons from react-native-vector-icons
-project.ext.vectoricons = [
-    iconFontNames: []
-]
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 apply plugin: 'com.google.gms.google-services'
 
