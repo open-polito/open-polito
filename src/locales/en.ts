@@ -27,6 +27,9 @@ const EN = {
   more: 'More',
   relatedVideos: 'Related videos',
   files: 'Files',
+  cancel: 'Cancel',
+  confirm: 'Confirm',
+  enable: 'Enable',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',
@@ -100,6 +103,10 @@ const EN = {
   // Debug settings
   debugEnableLogging: 'Enable logging',
   debugEnableLoggingDesc: 'Save logs to device',
+  debugEnableLoggingDialogMessage: `<p>This option logs network requests and errors to a <b>local file</b>.
+  It is intended for debugging purposes only.</p> <p>Do <b>NOT</b> share these files
+  with people you don't trust, as they contain data from your account.</p>
+  <p>You can find the log files in <code>{{path}}</code>.</p>`,
   debugResetConfig: 'Reset configuration',
   debugResetConfigDesc: 'Restore to default settings',
   debugTestNotification: 'Send test notification',

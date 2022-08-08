@@ -22,6 +22,7 @@ import {
   resetConfig,
   setConfig,
   setConfig as _setConfig,
+  setDialog,
   setToast,
 } from '../store/sessionSlice';
 import {DeviceContext} from '../context/Device';
@@ -105,8 +106,18 @@ export default function Settings() {
       name: t('debugEnableLogging'),
       description: t('debugEnableLoggingDesc'),
       settingsFunction: () => {
-        _setConfig({...config, logging: !config.logging});
-        showRestartAppNeeded();
+        if (!config.logging) {
+          dispatch(
+            setDialog({
+              visible: true,
+              params: {
+                type: 'SETTINGS_ENABLE_LOGGING',
+              },
+            }),
+          );
+        } else {
+          dispatch(setConfig({...config, logging: false}));
+        }
       },
       toggle: true,
       toggleValue: config.logging,

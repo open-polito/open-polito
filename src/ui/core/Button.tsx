@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import colors from '../../colors';
+import colors, {Color} from '../../colors';
 import {p} from '../../scaling';
 import PressableBase from './PressableBase';
 import TablerIcon from './TablerIcon';
@@ -17,6 +17,7 @@ type ButtonParams = {
   text: string;
   icon?: string;
   secondary?: boolean;
+  color?: Color;
   loading?: boolean;
   style?: ViewStyle;
   small?: boolean;
@@ -26,6 +27,7 @@ const Button: FC<ButtonParams> = ({
   text,
   icon = '',
   secondary = false,
+  color = '',
   loading = false,
   style = {},
   small = false,
@@ -35,8 +37,8 @@ const Button: FC<ButtonParams> = ({
     return StyleSheet.create({
       container: {
         flexDirection: 'row',
-        backgroundColor: colors.accent300,
-        borderColor: secondary ? colors.accent300 : 'rgba(0,0,0,0)',
+        backgroundColor: color || colors.accent300,
+        borderColor: secondary ? color || colors.accent300 : 'rgba(0,0,0,0)',
         borderWidth: secondary ? 1 * p : 0,
         justifyContent: 'center',
         alignItems: 'center',
@@ -63,13 +65,13 @@ const Button: FC<ButtonParams> = ({
           {loading ? (
             <ActivityIndicator
               size={(small ? 10 : 18) * p}
-              color={secondary ? colors.accent300 : colors.gray100}
+              color={color || (secondary ? colors.accent300 : colors.gray50)}
               style={{marginRight: (small ? 4 : 8) * p}}
             />
           ) : icon ? (
             <TablerIcon
               name={icon}
-              color={secondary ? colors.accent300 : colors.gray100}
+              color={color || (secondary ? colors.accent300 : colors.gray50)}
               size={(small ? 14 : 18) * p}
               style={{marginRight: (small ? 4 : 8) * p}}
             />
@@ -77,7 +79,7 @@ const Button: FC<ButtonParams> = ({
           <Text
             s={small ? 10 : 12}
             w="m"
-            c={secondary ? colors.accent300 : colors.gray100}>
+            c={secondary ? color || colors.accent300 : colors.gray50}>
             {text.toUpperCase()}
           </Text>
         </View>

@@ -20,7 +20,6 @@ import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {useDispatch} from 'react-redux';
 import {setDialog} from '../../store/sessionSlice';
-import {DIALOG_TYPE} from '../../types';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
   DateTimePickerAndroid.open({
@@ -132,7 +131,7 @@ const TimetableHeader = ({
                   setDialog({
                     visible: true,
                     params: {
-                      type: DIALOG_TYPE.TIMETABLE_OPTIONS,
+                      type: 'TIMETABLE_OPTIONS',
                     },
                   }),
                 )

@@ -23,38 +23,36 @@ export type DropdownItem = {
   value: string;
 };
 
-export enum DIALOG_TYPE {
-  LIST_SELECTOR = 'LIST_SELECTOR',
-  TIMETABLE_OPTIONS = 'TIMETABLE_OPTIONS',
-  TIMETABLE_EVENT = 'TIMETABLE_EVENT',
-  NOTIFICATIONS = 'NOTIFICATIONS',
-}
-
 export type DialogParamsBase = {
   title?: string;
-  type: DIALOG_TYPE;
+  type: string;
 };
 
 export type ListSelectorDialogParams = DialogParamsBase & {
-  type: DIALOG_TYPE.LIST_SELECTOR;
+  type: 'LIST_SELECTOR';
   items: [];
 };
 
 export type TimetableOptionsDialogParams = DialogParamsBase & {
-  type: DIALOG_TYPE.TIMETABLE_OPTIONS;
+  type: 'TIMETABLE_OPTIONS';
 };
 
 export type TimetableEventDialogParams = DialogParamsBase & {
-  type: DIALOG_TYPE.TIMETABLE_EVENT;
+  type: 'TIMETABLE_EVENT';
   slot: TimetableSlot;
 };
 
 export type NotificationsDialogParams = DialogParamsBase & {
-  type: DIALOG_TYPE.NOTIFICATIONS;
+  type: 'NOTIFICATIONS';
+};
+
+export type SettingsEnableLoggingDialogParams = DialogParamsBase & {
+  type: 'SETTINGS_ENABLE_LOGGING';
 };
 
 export type DialogParams =
   | ListSelectorDialogParams
   | TimetableOptionsDialogParams
   | TimetableEventDialogParams
-  | NotificationsDialogParams;
+  | NotificationsDialogParams
+  | SettingsEnableLoggingDialogParams;
