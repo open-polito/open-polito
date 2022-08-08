@@ -12,10 +12,11 @@ import {DeviceContext} from '../../context/Device';
 import {p} from '../../scaling';
 import {setDialog} from '../../store/sessionSlice';
 import {AppDispatch, RootState} from '../../store/store';
-import {DialogParams, DIALOG_TYPE} from '../../types';
+import {DialogParams} from '../../types';
 import Text from '../../ui/core/Text';
 import ListSelectorDialog from './ListSelectorDialog';
 import NotificationsDialog from './NotificationsDialog';
+import SettingsEnableLoggingDialog from './SettingsEnableLoggingDialog';
 import TimetableEventDialog from './TimetableEventDialog';
 import TimetableOptionsDialog from './TimetableOptionsDialog';
 
@@ -39,22 +40,26 @@ const Dialog = () => {
 
   const dialogComponent = useMemo(() => {
     switch (dialog.params?.type) {
-      case DIALOG_TYPE.LIST_SELECTOR:
+      case 'LIST_SELECTOR':
         setTitle(dialog.params?.title || '');
         setFixedHeight(false);
         return <ListSelectorDialog {...dialog.params} />;
-      case DIALOG_TYPE.TIMETABLE_OPTIONS:
+      case 'TIMETABLE_OPTIONS':
         setTitle(t('timetableOptions'));
         setFixedHeight(false);
         return <TimetableOptionsDialog {...dialog.params} />;
-      case DIALOG_TYPE.TIMETABLE_EVENT:
+      case 'TIMETABLE_EVENT':
         setTitle(dialog.params.slot.course_name);
         setFixedHeight(false);
         return <TimetableEventDialog {...dialog.params} />;
-      case DIALOG_TYPE.NOTIFICATIONS:
+      case 'NOTIFICATIONS':
         setTitle(t('notifications'));
         setFixedHeight(true);
         return <NotificationsDialog />;
+      case 'SETTINGS_ENABLE_LOGGING':
+        setTitle('');
+        setFixedHeight(false);
+        return <SettingsEnableLoggingDialog />;
     }
   }, [dialog]);
 
@@ -105,11 +110,13 @@ const Dialog = () => {
                 borderRadius: 4 * p,
                 paddingVertical: 16 * p,
               }}>
-              <View style={{marginBottom: 24 * p, paddingHorizontal: 16 * p}}>
-                <Text s={16} w="m" c={dark ? colors.gray100 : colors.gray800}>
-                  {title}
-                </Text>
-              </View>
+              {title ? (
+                <View style={{marginBottom: 24 * p, paddingHorizontal: 16 * p}}>
+                  <Text s={16} w="m" c={dark ? colors.gray100 : colors.gray800}>
+                    {title}
+                  </Text>
+                </View>
+              ) : null}
               {dialogComponent}
             </View>
             <TouchableOpacity onPress={close} style={{flex: 1}} />

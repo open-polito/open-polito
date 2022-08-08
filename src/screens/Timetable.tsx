@@ -13,7 +13,6 @@ import TimetableGrid from '../components/timetable/TimetableGrid';
 import TimetableHeader from '../components/timetable/TimetableHeader';
 import {useDispatch, useSelector} from 'react-redux';
 import {setDialog} from '../store/sessionSlice';
-import {DIALOG_TYPE} from '../types';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,

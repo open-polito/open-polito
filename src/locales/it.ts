@@ -27,6 +27,9 @@ const IT = {
   more: 'Altro',
   relatedVideos: 'Video correlati',
   files: 'File',
+  cancel: 'Annulla',
+  confirm: 'Conferma',
+  enable: 'Abilita',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
@@ -100,6 +103,10 @@ const IT = {
   // Debug settings
   debugEnableLogging: 'Abilita logging',
   debugEnableLoggingDesc: 'Salva i log nel dispositivo',
+  debugEnableLoggingDialogMessage: `<p>Questa opzione salva le richieste di rete e gli errori in un <b>file locale</b>.
+  Deve essere utilizzata esclusivamente per il debugging.</p> <p><b>NON</b> condividere questi file
+  con persone di cui non ti fidi, perché contengono dati del tuo account.</p>
+  <p>Puoi trovare i file di log in <code>{{path}}</code>.</p>`,
   debugResetConfig: 'Ripristina impostazioni',
   debugResetConfigDesc: 'Torna alle impostazioni iniziali',
   debugTestNotification: 'Invia notifica di test',

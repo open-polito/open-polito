@@ -11,7 +11,7 @@ import moment from 'moment';
 import {TouchableOpacity, View} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {setDialog} from '../../store/sessionSlice';
-import {DIALOG_TYPE, TimetableEventDialogParams} from '../../types';
+import {TimetableEventDialogParams} from '../../types';
 import {AppDispatch} from '../../store/store';
 import {p} from '../../scaling';
 import Text from '../../ui/core/Text';
@@ -118,7 +118,7 @@ const TimetableEvent = ({
             setDialog({
               visible: true,
               params: {
-                type: DIALOG_TYPE.TIMETABLE_EVENT,
+                type: 'TIMETABLE_EVENT',
                 slot: slot,
               } as TimetableEventDialogParams,
             }),
