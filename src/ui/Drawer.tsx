@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../store/sessionSlice';
 import {Device} from 'open-polito-api/device';
 import {DeviceContext} from '../context/Device';
-import {getLoggingConfig, requestLogger} from '../routes/Router';
+import Logger from '../utils/Logger';
 
 // TODO remove when sections completed
 const isSectionUnavailable = (name: string) => {
@@ -137,7 +137,9 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
           new Device(
             deviceContext.device.uuid,
             10000,
-            (await getLoggingConfig()) ? requestLogger : () => {},
+            (await Logger.isLoggingEnabled())
+              ? Logger.logRequestSync
+              : () => {},
           ),
         ),
       );

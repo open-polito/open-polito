@@ -27,7 +27,6 @@ import {
 import {DeviceContext} from '../context/Device';
 import {createDevice} from '../utils/api-utils';
 import {Device} from 'open-polito-api/device';
-import {getLoggingConfig, requestLogger} from '../routes/Router';
 import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Config from 'react-native-config';
