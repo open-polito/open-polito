@@ -99,27 +99,27 @@ export const successFlashMessage = (
  */
 
 export const logoutFlashMessage = (t: TFunction) => {
-  return infoFlashMessage(t('logoutFlashMessage'));
+  return infoFlashMessage(t('logoutToastMessage'));
 };
 
 export const loginPendingFlashMessage = (t: TFunction) => {
-  return infoFlashMessage(t('loginPendingFlashMessage'));
+  return infoFlashMessage(t('loginPendingToastMessage'));
 };
 
 export const loginErrorFlashMessage = (t: TFunction) => {
   return errorFlashMessage(
-    t('loginErrorFlashMessage'),
+    t('loginErrorToastMessage'),
     t('loginErrorFlashDesc'),
   );
 };
 
 export const loginSuccessFlashMessage = (t: TFunction) => {
-  return successFlashMessage(t('loginSuccessFlashMessage'));
+  return successFlashMessage(t('loginSuccessToastMessage'));
 };
 
 export const notImplementedFlashMessage = (t: TFunction) => {
   return warnFlashMessage(
-    t('notImplementedFlashMessage'),
-    t('notImplementedFlashMessageDesc'),
+    t('notImplementedToastMessage'),
+    t('notImplementedToastMessageDesc'),
   );
 };

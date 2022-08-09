@@ -1,4 +1,5 @@
 import {Notice} from 'open-polito-api/course';
+import {ExamSession} from 'open-polito-api/exam_sessions';
 import {File} from 'open-polito-api/material';
 import {TimetableSlot} from 'open-polito-api/timetable';
 
@@ -50,9 +51,21 @@ export type SettingsEnableLoggingDialogParams = DialogParamsBase & {
   type: 'SETTINGS_ENABLE_LOGGING';
 };
 
+export type ExamsBookExamDialogParams = DialogParamsBase & {
+  type: 'EXAMS_BOOK_EXAM';
+  examSession: ExamSession;
+};
+
+export type ExamsCancelExamDialogParams = DialogParamsBase & {
+  type: 'EXAMS_CANCEL_EXAM';
+  examSession: ExamSession;
+};
+
 export type DialogParams =
   | ListSelectorDialogParams
   | TimetableOptionsDialogParams
   | TimetableEventDialogParams
   | NotificationsDialogParams
-  | SettingsEnableLoggingDialogParams;
+  | SettingsEnableLoggingDialogParams
+  | ExamsBookExamDialogParams
+  | ExamsCancelExamDialogParams;

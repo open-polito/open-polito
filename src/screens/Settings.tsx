@@ -71,7 +71,7 @@ export default function Settings() {
   const showRestartAppNeeded = () => {
     dispatch(
       setToast({
-        message: t('restartFlashMessage'),
+        message: t('restartToastMessage'),
         type: 'warn',
         visible: true,
       }),
