@@ -30,6 +30,7 @@ const EN = {
   cancel: 'Cancel',
   confirm: 'Confirm',
   enable: 'Enable',
+  bookVerb: 'Book',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',
@@ -145,6 +146,12 @@ const EN = {
   availableToBook: 'Available to book',
   unavailableExams: 'Unavailable',
   bookingDeadline: 'Booking deadline',
+  confirmExamBooking: 'Confirm exam booking',
+  confirmExamBookingDialogMessage: `<p>Do you want to book this exam?</p>
+  <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
+  cancelExamBooking: 'Cancel exam booking',
+  cancelExamBookingDialogMessage: `<p>Do you really want to <b><cancel</b> this exam booking?</p>
+  <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
 
   // Exams screen (Libretto)
   yourAverageMark: 'Your average mark',
@@ -165,16 +172,20 @@ const EN = {
   timetablePriorityDesc: 'Events with higher priority will show first',
   timetablePriorityList: 'Choose priority',
 
-  // Flash messages
-  logoutFlashMessage: 'Logging out...',
-  loginPendingFlashMessage: 'Connecting...',
-  loginErrorFlashMessage: 'Authentication error',
+  // Toast
+  logoutToastMessage: 'Logging out...',
+  loginPendingToastMessage: 'Connecting...',
+  loginErrorToastMessage: 'Authentication error',
   loginErrorFlashDesc:
     'Invalid credentials or Internet connection not available',
-  loginSuccessFlashMessage: 'Log in successful!',
-  notImplementedFlashMessage: 'Feature coming soon!',
-  notImplementedFlashMessageDesc: 'Feature will be available in a next release',
-  restartFlashMessage: 'Restart the app',
+  loginSuccessToastMessage: 'Log in successful!',
+  notImplementedToastMessage: 'Feature coming soon!',
+  notImplementedToastMessageDesc: 'Feature will be available in a next release',
+  restartToastMessage: 'Restart the app',
+  examsExamBookedToastMessage: 'Exam booked successfully!',
+  examsExamBookingErrorToastMessage: "Error: Can't book exam",
+  examsExamCanceledToastMessage: 'Exam booking canceled successfully!',
+  examsExamCancelingErrorToastMessage: "Error: Can't cancel exam booking",
 
   // Info widgets
   wipInfoWidgetTitle: 'Work in progress',

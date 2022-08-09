@@ -5,6 +5,7 @@ import {
   FlatList,
   RefreshControl,
   ScrollView,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {ExamSession} from 'open-polito-api/exam_sessions';
@@ -23,8 +24,30 @@ import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
 import Text from '../ui/core/Text';
 import NoContent from '../ui/NoContent';
+import PressableBase from '../ui/core/PressableBase';
+import {setDialog} from '../store/sessionSlice';
 
-// TODO book exams
+const isExamBooked = (examSession: ExamSession): boolean => {
+  return examSession.user_is_signed_up;
+};
+
+const isExamAvailable = (examSession: ExamSession): boolean => {
+  return !examSession.user_is_signed_up && examSession.error.id == 0;
+};
+
+const isExamUnavailable = (examSession: ExamSession): boolean => {
+  return !examSession.user_is_signed_up && examSession.error.id != 0;
+};
+
+const getExamStatusString = (
+  examSession: ExamSession,
+): 'BOOKED' | 'AVAILABLE' | 'UNAVAILABLE' | 'UNKNOWN' => {
+  if (isExamBooked(examSession)) return 'BOOKED';
+  if (isExamAvailable(examSession)) return 'AVAILABLE';
+  if (isExamUnavailable(examSession)) return 'UNAVAILABLE';
+
+  return 'UNKNOWN';
+};
 
 const tabs = ['allExams', 'myBookings', 'availableToBook', 'unavailableExams'];
 
@@ -79,11 +102,11 @@ export default function ExamSessions({navigation}) {
       case tabs[0]:
         return exams;
       case tabs[1]:
-        return exams.filter(e => e.user_is_signed_up);
+        return exams.filter(e => isExamBooked(e));
       case tabs[2]:
-        return exams.filter(e => !e.user_is_signed_up && e.error.id == 0);
+        return exams.filter(e => isExamAvailable(e));
       case tabs[3]:
-        return exams.filter(e => !e.user_is_signed_up && e.error.id != 0);
+        return exams.filter(e => isExamUnavailable(e));
       default:
         return [];
     }
@@ -142,55 +165,111 @@ export default function ExamSessions({navigation}) {
   };
 
   const examSessionCard = (examSession: ExamSession) => (
-    <View
-      style={{
-        flexDirection: 'column',
-        padding: 16 * p,
-        paddingRight: 8 * p,
-        paddingBottom: 8 * p,
-        borderRadius: 4 * p,
-        backgroundColor: dark ? colors.gray700 : colors.gray200,
-      }}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TablerIcon
-          name={
-            examSession.user_is_signed_up
-              ? 'circle-check'
-              : examSession.error.id == 0
-              ? 'circle'
-              : 'circle-off'
-          }
-          color={
-            examSession.user_is_signed_up
-              ? colors.green
-              : examSession.error.id == 0
-              ? colors.accent200
-              : colors.red
-          }
-          size={24 * p}
-          style={{marginRight: 8 * p}}
-        />
-        <Text s={12 * p} w="m" c={dark ? colors.gray200 : colors.gray700}>
-          {examSession.exam_name}
-        </Text>
+    <View style={{flexDirection: 'row'}}>
+      <View
+        style={{
+          flexDirection: 'column',
+          flex: 1,
+          padding: 16 * p,
+          paddingRight: 8 * p,
+          paddingBottom: 8 * p,
+          borderTopLeftRadius: 4 * p,
+          borderBottomLeftRadius: 4 * p,
+          backgroundColor: dark ? colors.gray700 : colors.gray200,
+        }}>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <TablerIcon
+            name={
+              examSession.user_is_signed_up
+                ? 'circle-check'
+                : examSession.error.id == 0
+                ? 'circle'
+                : 'circle-off'
+            }
+            color={
+              examSession.user_is_signed_up
+                ? colors.green
+                : examSession.error.id == 0
+                ? colors.accent200
+                : colors.red
+            }
+            size={24 * p}
+            style={{marginRight: 8 * p}}
+          />
+          <Text s={12 * p} w="m" c={dark ? colors.gray200 : colors.gray700}>
+            {examSession.exam_name}
+          </Text>
+        </View>
+        <View
+          style={{
+            flexDirection: 'column',
+            marginTop: 16 * p,
+          }}>
+          {['course', 'date', 'deadline', 'rooms'].map(field =>
+            buildField(field, examSession),
+          )}
+        </View>
+        {examSession.error.id != 0 &&
+        (examSession.error.eng != '' || examSession.error.ita != '') ? (
+          <Text s={10 * p} w="r" c={colors.red} style={{marginVertical: 8 * p}}>
+            {errorMsgLanguage == 'it'
+              ? examSession.error.ita
+              : examSession.error.eng}
+          </Text>
+        ) : null}
       </View>
       <View
         style={{
           flexDirection: 'column',
-          marginTop: 16 * p,
+          justifyContent: 'center',
+          borderTopRightRadius: 4 * p,
+          borderBottomRightRadius: 4 * p,
+          backgroundColor: dark ? colors.gray600 : colors.gray300,
         }}>
-        {['course', 'date', 'deadline', 'rooms'].map(field =>
-          buildField(field, examSession),
-        )}
+        {isExamAvailable(examSession) || isExamBooked(examSession) ? (
+          <TouchableOpacity
+            onPress={() =>
+              dispatch(
+                setDialog({
+                  visible: true,
+                  params: {
+                    type: isExamAvailable(examSession)
+                      ? 'EXAMS_BOOK_EXAM'
+                      : 'EXAMS_CANCEL_EXAM',
+                    examSession: examSession,
+                  },
+                }),
+              )
+            }>
+            <View
+              style={{
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 8 * p,
+              }}>
+              <View style={{marginBottom: 4 * p}}>
+                <TablerIcon
+                  name={
+                    isExamAvailable(examSession) ? 'circle-plus' : 'circle-x'
+                  }
+                  color={
+                    isExamAvailable(examSession) ? colors.accent300 : colors.red
+                  }
+                  size={20 * p}
+                />
+              </View>
+              <Text
+                s={10 * p}
+                w="m"
+                c={
+                  isExamAvailable(examSession) ? colors.accent300 : colors.red
+                }>
+                {t(isExamAvailable(examSession) ? 'bookVerb' : 'cancel')}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ) : null}
       </View>
-      {examSession.error.id != 0 &&
-      (examSession.error.eng != '' || examSession.error.ita != '') ? (
-        <Text s={10 * p} w="r" c={colors.red} style={{marginVertical: 8 * p}}>
-          {errorMsgLanguage == 'it'
-            ? examSession.error.ita
-            : examSession.error.eng}
-        </Text>
-      ) : null}
     </View>
   );
 

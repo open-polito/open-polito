@@ -14,6 +14,8 @@ import {setDialog} from '../../store/sessionSlice';
 import {AppDispatch, RootState} from '../../store/store';
 import {DialogParams} from '../../types';
 import Text from '../../ui/core/Text';
+import ExamsBookExamDialog from './ExamsBookExamDialog';
+import ExamsCancelExamDialog from './ExamsCancelExamDialog';
 import ListSelectorDialog from './ListSelectorDialog';
 import NotificationsDialog from './NotificationsDialog';
 import SettingsEnableLoggingDialog from './SettingsEnableLoggingDialog';
@@ -60,6 +62,14 @@ const Dialog = () => {
         setTitle('');
         setFixedHeight(false);
         return <SettingsEnableLoggingDialog />;
+      case 'EXAMS_BOOK_EXAM':
+        setTitle('');
+        setFixedHeight(false);
+        return <ExamsBookExamDialog {...dialog.params} />;
+      case 'EXAMS_CANCEL_EXAM':
+        setTitle('');
+        setFixedHeight(false);
+        return <ExamsCancelExamDialog {...dialog.params} />;
     }
   }, [dialog]);
 

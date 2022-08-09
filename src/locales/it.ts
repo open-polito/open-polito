@@ -30,6 +30,7 @@ const IT = {
   cancel: 'Annulla',
   confirm: 'Conferma',
   enable: 'Abilita',
+  bookVerb: 'Prenota',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
@@ -143,6 +144,12 @@ const IT = {
   availableToBook: 'Prenotabili',
   unavailableExams: 'Non disponibili',
   bookingDeadline: 'Scadenza',
+  confirmExamBooking: 'Conferma prenotazione esame',
+  confirmExamBookingDialogMessage: `<p>Confermi la prenotazione dell'esame?</p>
+  <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
+  cancelExamBooking: 'Annulla prenotazione esame',
+  cancelExamBookingDialogMessage: `<p>Vuoi davvero <b>annullare</b> questa prenotazione?</p>
+  <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
 
   // Exams screen (Libretto)
   yourAverageMark: 'La tua media',
@@ -165,16 +172,21 @@ const IT = {
   timetablePriorityList: 'Scegli priorità',
 
   // Flash messages
-  logoutFlashMessage: 'Disconnessione...',
-  loginPendingFlashMessage: 'Accesso...',
-  loginErrorFlashMessage: 'Errore di accesso',
+  logoutToastMessage: 'Disconnessione...',
+  loginPendingToastMessage: 'Accesso...',
+  loginErrorToastMessage: 'Errore di accesso',
   loginErrorFlashDesc:
     'Credenziali invalide o connessione Internet non disponibile',
-  loginSuccessFlashMessage: 'Accesso riuscito!',
-  notImplementedFlashMessage: 'Funzionalità in arrivo!',
-  notImplementedFlashMessageDesc:
+  loginSuccessToastMessage: 'Accesso riuscito!',
+  notImplementedToastMessage: 'Funzionalità in arrivo!',
+  notImplementedToastMessageDesc:
     'Questa funzionalità sarà disponibile in una prossima versione',
-  restartFlashMessage: "Riavvia l'app",
+  restartToastMessage: "Riavvia l'app",
+  examsExamBookedToastMessage: 'Esame prenotato con successo!',
+  examsExamBookingErrorToastMessage: "Errore: Impossibile prenotare l'esame",
+  examsExamCanceledToastMessage: 'Prenotazione annullata con successo!',
+  examsExamCancelingErrorToastMessage:
+    'Errore: Impossibile annullare la prenotazione',
 
   // Info widgets
   wipInfoWidgetTitle: 'Lavori in corso',
