@@ -24,6 +24,11 @@ export type DropdownItem = {
   value: string;
 };
 
+export type SearchFilterParams = {
+  type: '' | 'COURSE';
+  selected: string;
+};
+
 export type DialogParamsBase = {
   title?: string;
   type: string;
@@ -31,7 +36,7 @@ export type DialogParamsBase = {
 
 export type ListSelectorDialogParams = DialogParamsBase & {
   type: 'LIST_SELECTOR';
-  items: [];
+  selectorType: 'SEARCH_FILTER';
 };
 
 export type TimetableOptionsDialogParams = DialogParamsBase & {

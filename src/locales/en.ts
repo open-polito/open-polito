@@ -31,6 +31,8 @@ const EN = {
   confirm: 'Confirm',
   enable: 'Enable',
   bookVerb: 'Book',
+  allCourses: 'All courses',
+  selectItem: 'Select item',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',

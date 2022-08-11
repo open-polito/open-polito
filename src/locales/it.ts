@@ -31,6 +31,8 @@ const IT = {
   confirm: 'Conferma',
   enable: 'Abilita',
   bookVerb: 'Prenota',
+  allCourses: 'Tutti i corsi',
+  selectItem: 'Scegli elemento',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
