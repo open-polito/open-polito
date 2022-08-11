@@ -15,16 +15,16 @@ import Text from './Text';
 const BadgeContainer: FC<{
   children: ReactNode;
   style?: ViewStyle;
-  number: number;
+  number: number | string;
 }> = ({children, style = {}, number}) => {
   const badgeText = useMemo(() => {
-    return typeof number == 'string' ? number : number > 99 ? '99+' : number;
+    return typeof number === 'string' ? number : number > 99 ? '99+' : number;
   }, [number]);
 
   return (
     <View style={{...style}}>
       {children}
-      {badgeText != 0 ? (
+      {badgeText !== 0 ? (
         <View style={_styles.badge}>
           <Text w="r" s={10 * p} c={colors.gray100}>
             {badgeText}

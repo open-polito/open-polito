@@ -20,7 +20,7 @@ import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ping} from 'open-polito-api/utils';
 import {setUserInfo} from './userSlice';
-import {DialogParams} from '../types';
+import {DialogParams, SearchFilterParams} from '../types';
 
 export type ToastData = {
   visible: boolean;
@@ -56,6 +56,8 @@ export type SessionState = {
     visible: boolean;
     params: DialogParams | null;
   };
+
+  searchFilter: SearchFilterParams;
 };
 
 const initialState: SessionState = {
@@ -80,6 +82,11 @@ const initialState: SessionState = {
   dialog: {
     visible: false,
     params: null,
+  },
+
+  searchFilter: {
+    type: '',
+    selected: '',
   },
 };
 
@@ -205,6 +212,9 @@ export const sessionSlice = createSlice({
     ) => {
       state.dialog = action.payload;
     },
+    setSearchFilter: (state, action: PayloadAction<SearchFilterParams>) => {
+      state.searchFilter = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -232,7 +242,7 @@ export const sessionSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.authStatus =
-          action.payload == 'offline'
+          action.payload === 'offline'
             ? AUTH_STATUS.OFFLINE
             : AUTH_STATUS.NOT_VALID;
         state.loginStatus = errorStatus(action.error);
@@ -240,7 +250,12 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const {setAuthStatus, setConfigState, setToast, setDialog} =
-  sessionSlice.actions;
+export const {
+  setAuthStatus,
+  setConfigState,
+  setToast,
+  setDialog,
+  setSearchFilter,
+} = sessionSlice.actions;
 
 export default sessionSlice.reducer;

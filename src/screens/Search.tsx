@@ -1,13 +1,13 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
-import {FlatList, Pressable, View} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {FlatList, View} from 'react-native';
 import colors from '../colors';
 import {useTranslation} from 'react-i18next';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import DirectoryItem from '../ui/DirectoryItem';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
 import {DropdownItem, ExtendedFile} from '../types';
-import {Directory, File, MaterialItem} from 'open-polito-api/material';
+import {MaterialItem} from 'open-polito-api/material';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
 import PressableBase from '../ui/core/PressableBase';
@@ -16,15 +16,15 @@ import TextInput from '../ui/core/TextInput';
 import {DeviceContext} from '../context/Device';
 import Tabs from '../ui/Tabs';
 import Text from '../ui/core/Text';
-import {color} from 'react-native-reanimated';
+import {SessionState, setDialog, setSearchFilter} from '../store/sessionSlice';
+import BadgeContainer from '../ui/core/BadgeContainer';
 
 // TODO more searchable categories
-// TODO filter
-
 const tabs = ['files'];
 
 export default function Search({navigation}) {
   const {t} = useTranslation();
+  const dispatch = useDispatch<AppDispatch>();
   const {dark} = useContext(DeviceContext);
 
   const courses = useSelector<RootState, CourseState[]>(
@@ -34,9 +34,9 @@ export default function Search({navigation}) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ExtendedFile[]>([]);
 
-  const inputRef = useRef(null);
-
-  const [selectedCourse, setSelectedCourse] = useState(null);
+  const {searchFilter} = useSelector<RootState, SessionState>(
+    state => state.session,
+  );
 
   const [items, setItems] = useState<DropdownItem[]>([]);
 
@@ -49,24 +49,8 @@ export default function Search({navigation}) {
   const [loadTimer, setLoadTimer] = useState<any>(null);
 
   useEffect(() => {
-    // inputRef.current.focus();
-    initDropdown();
-  }, []);
-
-  useEffect(() => {
     handleNewSearch(query);
-  }, [selectedCourse]);
-
-  const initDropdown = () => {
-    let items: {label: string; value: string}[] = [];
-    courses.forEach(course => {
-      items.push({
-        label: course.basicInfo.name,
-        value: course.basicInfo.code + course.basicInfo.name,
-      });
-    });
-    setItems(items);
-  };
+  }, [searchFilter.selected]);
 
   /**
    * Handles a new search
@@ -96,53 +80,69 @@ export default function Search({navigation}) {
   /**
    * Recursively finds files that match query
    *
-   * @param query Search string
-   * @param items Array of files or dirs
+   * @param _query Search string
+   * @param _items Array of files or dirs
    * @param course_name
    * @param course_code
    * @returns files
    */
   const findFiles = (
-    query: string,
-    items: MaterialItem[],
+    _query: string,
+    _items: MaterialItem[],
     course_name: string,
     course_code: string,
   ): ExtendedFile[] => {
-    let results: ExtendedFile[] = [];
-    items.forEach(item => {
+    let _results: ExtendedFile[] = [];
+    _items.forEach(item => {
       if (item.type == 'file') {
-        if ((item.name + item.filename).toLowerCase().includes(query)) {
-          results.push({...item, course_code, course_name});
+        if ((item.name + item.filename).toLowerCase().includes(_query)) {
+          _results.push({...item, course_code, course_name});
         }
       } else if (item.type == 'dir') {
-        results.push(
-          ...findFiles(query, item.children, course_name, course_code),
+        _results.push(
+          ...findFiles(_query, item.children, course_name, course_code),
         );
       }
     });
-    return results;
+    return _results;
   };
 
   /**
    * Searches files matching specific query and course, and updates state.
    */
-  const searchMaterial = (query: string): void => {
+  const searchMaterial = (_query: string): void => {
     // Using setTimeout is a bit hacky, but it works.
     (async () => {
       setTimeout(() => {
         let res: ExtendedFile[] = [];
-        if (query == '') {
+        if (_query === '') {
           setResults([]);
           return;
         }
 
-        if (selectedCourse) {
-          // TODO when selected course filter
+        if (searchFilter.selected) {
+          const _course = courses.find(
+            course =>
+              searchFilter.selected ===
+              `${course.basicInfo.code}${course.basicInfo.name}`,
+          );
+          if (!_course) {
+            res = [];
+            return;
+          }
+          res.push(
+            ...findFiles(
+              _query,
+              _course.extendedInfo?.material || [],
+              _course.basicInfo.name,
+              _course.basicInfo.code,
+            ),
+          );
         } else {
           courses.forEach(course => {
             res.push(
               ...findFiles(
-                query,
+                _query,
                 course.extendedInfo?.material || [],
                 course.basicInfo.name,
                 course.basicInfo.code,
@@ -187,12 +187,32 @@ export default function Search({navigation}) {
           }}
           style={{flex: 1}}
         />
-        <PressableBase onPress={() => {}} style={{marginLeft: 16 * p}}>
-          <TablerIcon
-            name="adjustments"
-            color={dark ? colors.gray200 : colors.gray700}
-            size={24 * p}
-          />
+        <PressableBase
+          onPress={() => {
+            dispatch(
+              setSearchFilter({
+                ...searchFilter,
+                type: 'COURSE',
+              }),
+            );
+            dispatch(
+              setDialog({
+                visible: true,
+                params: {
+                  type: 'LIST_SELECTOR',
+                  selectorType: 'SEARCH_FILTER',
+                },
+              }),
+            );
+          }}
+          style={{marginLeft: 16 * p}}>
+          <BadgeContainer number={searchFilter.selected === '' ? 0 : ''}>
+            <TablerIcon
+              name="adjustments"
+              color={dark ? colors.gray200 : colors.gray700}
+              size={24 * p}
+            />
+          </BadgeContainer>
         </PressableBase>
       </View>
       <Tabs
@@ -203,7 +223,7 @@ export default function Search({navigation}) {
       />
       <FlatList
         style={{paddingTop: 24 * p, paddingHorizontal: 16 * p}}
-        contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}
+        contentContainerStyle={{flexGrow: 1}}
         data={quickLoad ? results.slice(0, 10) : results}
         keyExtractor={item => item.code}
         initialNumToRender={10}
