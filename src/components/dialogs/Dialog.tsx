@@ -17,7 +17,6 @@ import Text from '../../ui/core/Text';
 import ExamsBookExamDialog from './ExamsBookExamDialog';
 import ExamsCancelExamDialog from './ExamsCancelExamDialog';
 import ListSelectorDialog from './ListSelectorDialog';
-import NotificationsDialog from './NotificationsDialog';
 import SettingsEnableLoggingDialog from './SettingsEnableLoggingDialog';
 import TimetableEventDialog from './TimetableEventDialog';
 import TimetableOptionsDialog from './TimetableOptionsDialog';
@@ -54,10 +53,6 @@ const Dialog = () => {
         setTitle(dialog.params.slot.course_name);
         setFixedHeight(false);
         return <TimetableEventDialog {...dialog.params} />;
-      case 'NOTIFICATIONS':
-        setTitle(t('notifications'));
-        setFixedHeight(true);
-        return <NotificationsDialog />;
       case 'SETTINGS_ENABLE_LOGGING':
         setTitle('');
         setFixedHeight(false);

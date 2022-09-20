@@ -17,7 +17,7 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
-import {Directory, File, MaterialItem} from 'open-polito-api/material';
+import {MaterialItem} from 'open-polito-api/material';
 import {
   getCoursesInfo,
   PermanentMark,
@@ -94,7 +94,7 @@ export const loadCourse = createAsyncThunk<
   CourseInfo,
   {basicCourseInfo: BasicCourseInfo; device: Device},
   {state: RootState}
->('courses/loadCourse', async ({basicCourseInfo, device}, {getState}) => {
+>('courses/loadCourse', async ({basicCourseInfo, device}, _) => {
   return await getExtendedCourseInfo(device, basicCourseInfo);
 });
 
@@ -107,26 +107,20 @@ export const getRecentMaterial = createAsyncThunk<
   {state: RootState}
 >('courses/getRecentMaterial', async (_, {getState}) => {
   let res: ExtendedFile[] = [];
-  let rootDir: Directory = {
-    type: 'dir',
-    code: '',
-    name: '',
-    children: [],
-  };
   const findFiles = (
     items: MaterialItem[],
     course_name: string,
     course_code: string,
   ) => {
-    const res: ExtendedFile[] = [];
+    const _res: ExtendedFile[] = [];
     items.forEach(item => {
       if (item.type == 'file') {
-        res.push({...item, course_code, course_name});
+        _res.push({...item, course_code, course_name});
       } else {
-        res.push(...findFiles(item.children, course_name, course_code));
+        _res.push(...findFiles(item.children, course_name, course_code));
       }
     });
-    return res;
+    return _res;
   };
   getState().courses.courses.forEach(course => {
     res.push(
@@ -147,7 +141,7 @@ export const getRecentMaterial = createAsyncThunk<
  * @param courses
  * @returns index (-1 if not found)
  */
-const findCourseIndexByID = (
+export const findCourseIndexByID = (
   courseID: string,
   courses: CourseState[],
 ): number => {
@@ -196,7 +190,7 @@ export const coursesSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(loadCoursesData.pending, (state, action) => {
+      .addCase(loadCoursesData.pending, (state, _) => {
         state.loadCoursesStatus = pendingStatus();
       })
       .addCase(loadCoursesData.fulfilled, (state, action) => {

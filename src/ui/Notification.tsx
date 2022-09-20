@@ -1,9 +1,14 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
-import {Notice} from 'open-polito-api/course';
+import {Notification} from 'open-polito-api/notifications';
 import {NotificationType} from 'open-polito-api/notifications';
-import React, {FC, useMemo} from 'react';
+import React, {FC, useEffect, useMemo} from 'react';
 import {View} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
 import {p} from '../scaling';
@@ -12,12 +17,23 @@ import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
 
 export type NotificationParams = {
-  type: NotificationType;
-  notification: ExtendedAlert; // TODO add support for generic notifications (Notification type in API code)
+  type: NotificationType | string;
+  notification: ExtendedAlert | Notification; // TODO add support for generic notifications (Notification type in API code)
   dark: boolean;
+  read?: boolean;
+  courseName?: string;
 };
 
-const Notification: FC<NotificationParams> = ({type, notification, dark}) => {
+const isCourseAlert = (n: ExtendedAlert | Notification): n is ExtendedAlert => {
+  return (n as Notification).topic === undefined;
+};
+const NotificationComponent: FC<NotificationParams> = ({
+  type,
+  notification,
+  dark,
+  read = true,
+  courseName = '',
+}) => {
   const htmlTags = /[<][/]?[^/>]+[/]?[>]+/g;
 
   const icon = useMemo(() => {
@@ -37,17 +53,44 @@ const Notification: FC<NotificationParams> = ({type, notification, dark}) => {
 
   const text = useMemo(() => {
     return decode(
-      notification.text.replace('\n', ' \n').replace(htmlTags, '').trim(),
+      (isCourseAlert(notification)
+        ? notification.text
+        : notification.body || ''
+      )
+        .replace('\n', ' \n')
+        .replace(htmlTags, '')
+        .trim(),
     );
   }, [notification]);
 
   const dateString = useMemo(() => {
-    return moment(notification.date).format('ll');
+    return moment(
+      isCourseAlert(notification) ? notification.date : notification.time,
+    ).format('ll');
   }, [notification]);
+
+  const offset = useSharedValue(read ? 0 : 1);
+
+  const animStyle = useAnimatedStyle(() => ({
+    width: 8 * p * offset.value,
+    height: 8 * p * offset.value,
+    backgroundColor: colors.red,
+    borderRadius: 8 * p,
+    marginRight: 8 * p * offset.value,
+  }));
+
+  /**
+   * If read, hide red badge
+   */
+  useEffect(() => {
+    if (!read) return;
+    offset.value = withTiming(0, {duration: 500});
+  }, [read]);
 
   return (
     <View style={{flexDirection: 'column'}}>
-      <View style={{flexDirection: 'row'}}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Animated.View style={[animStyle]}></Animated.View>
         <View
           style={{
             width: 32 * p,
@@ -65,30 +108,38 @@ const Notification: FC<NotificationParams> = ({type, notification, dark}) => {
             s={12 * p}
             c={dark ? colors.gray100 : colors.gray800}
             w="r"
-            numberOfLines={1}>
-            {text}
+            numberOfLines={isCourseAlert(notification) ? 1 : 2}>
+            {isCourseAlert(notification) ? text : notification.title}
           </Text>
           <Text
             s={10 * p}
             c={dark ? colors.gray200 : colors.gray700}
             w="r"
-            numberOfLines={1}>
+            numberOfLines={2}>
             {dateString}
-            {notification.course_name ? ' · ' + notification.course_name : ''}
+            {isCourseAlert(notification)
+              ? notification.course_name && ' · ' + notification.course_name
+              : courseName && ' · ' + courseName}
           </Text>
         </View>
       </View>
-      <View
-        style={{
-          marginTop: 12 * p,
-          padding: 16 * p,
-          borderRadius: 4 * p,
-          backgroundColor: dark ? colors.gray700 : colors.gray200,
-        }}>
-        <RenderHTMLSource source={{html: notification.text}} />
-      </View>
+      {text !== '' && (
+        <View
+          style={{
+            marginTop: 12 * p,
+            padding: 16 * p,
+            borderRadius: 4 * p,
+            backgroundColor: dark ? colors.gray700 : colors.gray200,
+          }}>
+          <RenderHTMLSource
+            source={{
+              html: text,
+            }}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
-export default Notification;
+export default NotificationComponent;

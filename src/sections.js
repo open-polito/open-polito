@@ -11,6 +11,10 @@ const sections = [
         icon: 'mail',
       },
       {
+        name: 'Notifications',
+        icon: 'bell',
+      },
+      {
         name: 'Settings',
         icon: 'settings',
       },

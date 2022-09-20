@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {View} from 'react-native';
 import {TextS} from '../components/Text';
@@ -20,7 +20,6 @@ import defaultConfig, {
 } from '../defaultConfig';
 import {AUTH_STATUS} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
-import {DeviceContext} from '../context/Device';
 import Logger from '../utils/Logger';
 
 /**

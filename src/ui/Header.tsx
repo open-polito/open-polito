@@ -12,7 +12,7 @@ import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
 
-// TODO navigation to drawer, search bar, notifications, downloads
+// TODO navigation to notifications, downloads
 
 export enum HEADER_TYPE {
   MAIN = 0,
@@ -108,13 +108,15 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
                 style={{marginRight: 16 * p}}
               />
             </PressableBase>
-            <BadgeContainer number={notificationCount}>
-              <TablerIcon
-                name="bell"
-                size={24 * p}
-                color={dark ? colors.gray100 : colors.gray800}
-              />
-            </BadgeContainer>
+            <PressableBase onPress={() => navigation.navigate('Notifications')}>
+              <BadgeContainer number={notificationCount}>
+                <TablerIcon
+                  name="bell"
+                  size={24 * p}
+                  color={dark ? colors.gray100 : colors.gray800}
+                />
+              </BadgeContainer>
+            </PressableBase>
           </View>
         </>
       ) : headerType == HEADER_TYPE.SECONDARY ? (
