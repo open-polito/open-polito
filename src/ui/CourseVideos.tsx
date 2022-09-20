@@ -24,23 +24,19 @@ import Filters from './Filters';
 import NoContent from './NoContent';
 import VideoCard from './VideoCard';
 
-// TODO previous years videos
-
 const CourseVideos = ({
   courseId,
   dark,
   refreshControl,
-  year,
 }: {
   courseId: string;
   dark: boolean;
   refreshControl: ReactElement;
-  year: string; // Set to "current" to show current year's videos
 }) => {
   const {t} = useTranslation();
   const navigation = useNavigation();
 
-  const [selectedYear, setSelectedYear] = useState(year);
+  const [selectedYear, setSelectedYear] = useState('current');
 
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
     state.courses.courses.find(

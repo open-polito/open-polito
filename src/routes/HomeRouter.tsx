@@ -39,11 +39,13 @@ import Courses from '../screens/Courses';
 import Keychain from 'react-native-keychain';
 import {Device} from 'open-polito-api/device';
 import Logger from '../utils/Logger';
+import Notifications from '../screens/Notifications';
 
 export type DrawerStackParamList = {
   Home: undefined;
   Material: undefined;
   Email: undefined;
+  Notifications: undefined;
   Settings: undefined;
   ExamSessions: undefined;
   Timetable: undefined;
@@ -192,6 +194,7 @@ export default function HomeRouter() {
       drawerContent={props => <Drawer dark={dark} {...props} />}>
       <DrawerStack.Screen name="Home" component={Home} />
       <DrawerStack.Screen name="Email" component={Email} />
+      <DrawerStack.Screen name="Notifications" component={Notifications} />
       <DrawerStack.Screen name="Settings" component={Settings} />
       <DrawerStack.Screen name="Courses" component={Courses} />
       <DrawerStack.Screen name="Material" component={Material} />

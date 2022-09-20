@@ -31,8 +31,6 @@ import {p} from '../scaling';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import Tabs from '../ui/Tabs';
 
-// TODO old videos
-
 export default function Course({navigation, route}) {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -144,20 +142,8 @@ export default function Course({navigation, route}) {
             }
             dark={dark}
             courseId={code}
-            year="current"
           />
         );
-      // case 'oldVideos':
-      //   return (
-      //     <CourseVideos
-      //       refreshControl={
-      //         <RefreshControl refreshing={refreshing} onRefresh={refresh} />
-      //       }
-      //       dark={dark}
-      //       courseId={code}
-      //       year={}
-      //     />
-      //   );
     }
   }, [currentTab]);
 

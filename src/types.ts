@@ -48,10 +48,6 @@ export type TimetableEventDialogParams = DialogParamsBase & {
   slot: TimetableSlot;
 };
 
-export type NotificationsDialogParams = DialogParamsBase & {
-  type: 'NOTIFICATIONS';
-};
-
 export type SettingsEnableLoggingDialogParams = DialogParamsBase & {
   type: 'SETTINGS_ENABLE_LOGGING';
 };
@@ -70,7 +66,6 @@ export type DialogParams =
   | ListSelectorDialogParams
   | TimetableOptionsDialogParams
   | TimetableEventDialogParams
-  | NotificationsDialogParams
   | SettingsEnableLoggingDialogParams
   | ExamsBookExamDialogParams
   | ExamsCancelExamDialogParams;

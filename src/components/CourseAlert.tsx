@@ -1,6 +1,7 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
 import {Notice} from 'open-polito-api/course';
+import {Notification} from 'open-polito-api/notifications';
 import React from 'react';
 import {View} from 'react-native';
 import {RenderHTMLSource} from 'react-native-render-html';

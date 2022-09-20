@@ -4,7 +4,7 @@ import colors from '../../colors';
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
-import Toggles from '../../ui/Toggles';
+import Toggles from '../../ui/HorizontalIconSelector';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,

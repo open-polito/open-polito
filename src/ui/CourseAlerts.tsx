@@ -1,7 +1,7 @@
 import React, {ReactElement, useEffect, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import NoContent from './NoContent';
-import Notification from './Notification';
+import NotificationComponent from './Notification';
 import {NotificationType} from 'open-polito-api/notifications';
 import {p} from '../scaling';
 import {ExtendedAlert} from '../types';
@@ -40,7 +40,7 @@ const CourseAlerts = ({
         keyExtractor={alert => alert.id + alert.date + alert.text.slice(0, 10)}
         renderItem={a => (
           <View style={{marginBottom: 24 * p}}>
-            <Notification
+            <NotificationComponent
               type={NotificationType.NOTICE}
               notification={a.item}
               dark={dark}
