@@ -50,14 +50,14 @@ export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
-  const {authStatus, loginStatus, config} = useSelector<
-    RootState,
-    SessionState
-  >(state => state.session);
+  const {authStatus, config} = useSelector<RootState, SessionState>(
+    state => state.session,
+  );
 
   // Logging-related stuff
   const [loggingEnabled, setLoggingEnabled] = useState(false);
   const [message, setMessage] = useState(<View></View>);
+  const [setupDone, setSetupDone] = useState(false);
 
   // When auth status changes, update login setting accordingly
   useEffect(() => {
@@ -104,6 +104,9 @@ export default function Router() {
         dispatch(setConfigState(loadedConfig));
       }
 
+      // Setup complete
+      setSetupDone(true);
+
       // Get logging configuration
       const _loggingEnabled = await Logger.isLoggingEnabled();
       setLoggingEnabled(_loggingEnabled);
@@ -139,7 +142,7 @@ export default function Router() {
   return (
     <NavigationContainer>
       <View>{message}</View>
-      {config.login ? (
+      {!setupDone ? null : config.login ? (
         <AppStack.Navigator
           screenOptions={{
             headerShown: false,
