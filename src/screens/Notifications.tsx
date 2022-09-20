@@ -345,7 +345,7 @@ const Notifications = () => {
     {
       icon: areAllSelected() ? 'circle-minus' : 'circle-plus',
       value: 'selectAll',
-      label: areAllSelected() ? 'Deselect all' : 'Select All',
+      label: areAllSelected() ? t('deselectAll') : t('selectAll'),
       action: () =>
         areAllSelected()
           ? setSelected([])
@@ -354,8 +354,17 @@ const Notifications = () => {
     {
       icon: deleting ? 'loading' : 'trash',
       value: 'delete',
-      label: 'Delete',
+      label: t('delete'),
       action: deleteSelected,
+    },
+    {
+      icon: 'checks',
+      value: 'markAsRead',
+      label: t('markAsRead'),
+      action: () => {
+        selected.forEach(id => handlePress(id));
+        setSelecting(false);
+      },
     },
   ];
 
