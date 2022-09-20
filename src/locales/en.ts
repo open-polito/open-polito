@@ -33,6 +33,10 @@ const EN = {
   bookVerb: 'Book',
   allCourses: 'All courses',
   selectItem: 'Select item',
+  selectAll: 'Select all',
+  deselectAll: 'Deselect all',
+  delete: 'Delete',
+  markAsRead: 'Mark as read',
 
   // Notifications
   defaultMsgTitle: '🚀 New notification',

@@ -33,6 +33,10 @@ const IT = {
   bookVerb: 'Prenota',
   allCourses: 'Tutti i corsi',
   selectItem: 'Scegli elemento',
+  selectAll: 'Seleziona tutto',
+  deselectAll: 'Deseleziona tutto',
+  delete: 'Elimina',
+  markAsRead: 'Segna come letto',
 
   // Notifications
   defaultMsgTitle: '🚀 Nuova notifica',
