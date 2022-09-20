@@ -40,6 +40,8 @@ import Screen from '../ui/Screen';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import Section from '../ui/Section';
 import {p} from '../scaling';
+import Text from '../ui/core/Text';
+import colors from '../colors';
 
 /**
  * Creates Settings item component from data
@@ -190,7 +192,9 @@ export default function Settings() {
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
-        <TextS text={'v' + version} />
+        <Text s={10 * p} w="r" c={dark ? colors.gray200 : colors.gray700}>
+          {'v' + version}
+        </Text>
       </View>
     </Screen>
   );
