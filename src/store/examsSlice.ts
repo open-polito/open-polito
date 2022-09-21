@@ -9,6 +9,7 @@ import {
   errorStatus,
   initialStatus,
   pendingStatus,
+  shouldWaitForCooldown,
   Status,
   successStatus,
 } from './status';
@@ -31,15 +32,17 @@ export const getExams = createAsyncThunk<
   ExamSession[],
   Device,
   {state: RootState}
->('exams/getExams', async (device, {dispatch, getState}) => {
-  const exams = await getExamSessions(device);
-  return exams;
-});
-
-/**
- * TODO bookExam
- * TODO cancelExam
- */
+>(
+  'exams/getExams',
+  async (device, {dispatch, getState}) => {
+    const exams = await getExamSessions(device);
+    return exams;
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().exams.getExamsStatus),
+  },
+);
 
 export const examsSlice = createSlice({
   name: 'exams',

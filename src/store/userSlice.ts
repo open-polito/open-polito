@@ -10,6 +10,7 @@ import {
   errorStatus,
   initialStatus,
   pendingStatus,
+  shouldWaitForCooldown,
   Status,
   successStatus,
 } from './status';
@@ -42,10 +43,17 @@ export const getUnreadEmailCount = createAsyncThunk<
   number,
   Device,
   {state: RootState}
->('user/getUnreadEmailCount', async device => {
-  const response = await getUnreadMail(device);
-  return response.unread;
-});
+>(
+  'user/getUnreadEmailCount',
+  async device => {
+    const response = await getUnreadMail(device);
+    return response.unread;
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().user.getUnreadEmailCountStatus, 10),
+  },
+);
 
 /**
  * Wrapper of {@link getNotifications}
@@ -54,10 +62,17 @@ export const getNotificationList = createAsyncThunk<
   Notification[],
   Device,
   {state: RootState}
->('user/getNotificationList', async device => {
-  const notifications = await getNotifications(device);
-  return notifications.reverse();
-});
+>(
+  'user/getNotificationList',
+  async device => {
+    const notifications = await getNotifications(device);
+    return notifications.reverse();
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().user.getNotificationsStatus, 10),
+  },
+);
 
 export const userSlice = createSlice({
   name: 'user',
