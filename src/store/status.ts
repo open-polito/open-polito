@@ -111,3 +111,20 @@ export type AuthStatus =
   | typeof AUTH_STATUS.NOT_VALID
   | typeof AUTH_STATUS.OFFLINE
   | typeof AUTH_STATUS.RETRY;
+
+/**
+ * Returns true if the cooldown period (rate limiting) has not passed yet.
+ * @param status
+ * @param customTimeoutSeconds Custom interval (in seconds)
+ * @returns boolean
+ */
+export const shouldWaitForCooldown = (
+  status: Status | undefined,
+  customTimeoutSeconds?: number,
+): boolean => {
+  // If status is undefined, or if error, skip rate limiter
+  if (!status || status.code === STATUS.ERROR) return false;
+  return (
+    Date.now() - status.lastUpdated < (customTimeoutSeconds || 2 * 60) * 1000
+  );
+};

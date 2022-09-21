@@ -13,6 +13,7 @@ import {
   errorStatus,
   initialStatus,
   pendingStatus,
+  shouldWaitForCooldown,
   Status,
   successStatus,
 } from './status';
@@ -66,22 +67,30 @@ export const loadCoursesData = createAsyncThunk<
     marks: {permanent: PermanentMark[]; provisional: ProvisionalMark[]};
     courses: CourseState[];
   },
-  Device
->('courses/loadCoursesData', async device => {
-  const data = await getCoursesInfo(device);
-  let courses: CourseState[] = [
-    ...data.course_plan.standard.map(course => {
-      return {basicInfo: course, status: initialStatus, isMain: true};
-    }),
-    ...data.course_plan.extra.map(course => {
-      return {basicInfo: course, status: initialStatus, isMain: false};
-    }),
-  ];
-  return {
-    marks: data.marks,
-    courses: courses,
-  };
-});
+  Device,
+  {state: RootState}
+>(
+  'courses/loadCoursesData',
+  async device => {
+    const data = await getCoursesInfo(device);
+    let courses: CourseState[] = [
+      ...data.course_plan.standard.map(course => {
+        return {basicInfo: course, status: initialStatus, isMain: true};
+      }),
+      ...data.course_plan.extra.map(course => {
+        return {basicInfo: course, status: initialStatus, isMain: false};
+      }),
+    ];
+    return {
+      marks: data.marks,
+      courses: courses,
+    };
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().courses.loadCoursesStatus),
+  },
+);
 
 /**
  * Wrapper of {@link getExtendedCourseInfo}.
@@ -94,9 +103,22 @@ export const loadCourse = createAsyncThunk<
   CourseInfo,
   {basicCourseInfo: BasicCourseInfo; device: Device},
   {state: RootState}
->('courses/loadCourse', async ({basicCourseInfo, device}, _) => {
-  return await getExtendedCourseInfo(device, basicCourseInfo);
-});
+>(
+  'courses/loadCourse',
+  async ({basicCourseInfo, device}, _) => {
+    return await getExtendedCourseInfo(device, basicCourseInfo);
+  },
+  {
+    condition: ({basicCourseInfo}, {getState}) =>
+      !shouldWaitForCooldown(
+        getState().courses.courses.find(
+          c =>
+            c.basicInfo.code + c.basicInfo.name ===
+            basicCourseInfo.code + basicCourseInfo.name,
+        )?.status,
+      ),
+  },
+);
 
 /**
  * Gets most recent items from material.
