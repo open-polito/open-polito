@@ -97,7 +97,12 @@ const _SelectableNotification = ({
             }
           }
         }}>
-        <Animated.View style={{marginBottom: 24 * p, flexDirection: 'row'}}>
+        <Animated.View
+          style={{
+            marginBottom: 24 * p,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
           <Animated.View style={[animStyleCheckbox]}>
             <Checkbox
               selected={selected}
