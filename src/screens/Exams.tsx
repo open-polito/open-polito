@@ -218,11 +218,20 @@ const MarkWidget = ({
         </View>
       </View>
       {parseInt(mark.mark!) ? (
-        <ProgressCircle
-          radius={20 * p}
-          value={parseInt(mark.mark!) || 30}
-          max={30}
-        />
+        <ProgressCircle radius={20 * p} value={parseInt(mark.mark!)} max={30}>
+          {(mark.mark?.toLowerCase() === '30 e lode' ||
+            parseInt(mark.mark!) > 30) && (
+            <>
+              <Text
+                style={{marginTop: -4 * p}} // make the text fit better
+                s={8 * p}
+                c={colors.gray100}
+                w="b">
+                LODE
+              </Text>
+            </>
+          )}
+        </ProgressCircle>
       ) : (
         <View
           style={[

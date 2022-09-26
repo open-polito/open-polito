@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ReactNode, useState} from 'react';
 import {View} from 'react-native';
 import Svg, {Circle} from 'react-native-svg';
 import colors from '../colors';
@@ -6,17 +6,23 @@ import {p} from '../scaling';
 import Text from './core/Text';
 
 const ProgressCircle = ({
+  label, // Optional label to display instead of the value
   value,
   max,
   radius,
   strokeWidth = 4 * p,
+  children,
 }: {
+  label?: string | null;
   value: number | string;
   max: number;
   radius: number;
   strokeWidth?: number;
+  children?: ReactNode;
 }) => {
   const circ = 2 * Math.PI * radius;
+
+  const [_value] = useState(value <= max ? value : max); // Avoid going over max value
 
   return (
     <View style={{position: 'relative'}}>
@@ -32,8 +38,8 @@ const ProgressCircle = ({
           stroke={colors.accent300}
           strokeDasharray={circ}
           strokeDashoffset={
-            typeof value == 'number'
-              ? ((100 - (100 * value) / max) * circ) / 100
+            typeof _value == 'number'
+              ? ((100 - (100 * _value) / max) * circ) / 100
               : 0
           }
           r={radius}
@@ -45,16 +51,17 @@ const ProgressCircle = ({
           position: 'absolute',
           width: 2 * (radius + strokeWidth),
           height: 2 * (radius + strokeWidth),
-          flexDirection: 'row',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
         }}>
         <Text
-          s={typeof value == 'number' ? 16 * p : 10 * p}
+          s={label || typeof _value === 'string' ? 10 * p : 16 * p}
           c={colors.gray100}
           w="b">
-          {value}
+          {label || _value}
         </Text>
+        {children}
       </View>
     </View>
   );
