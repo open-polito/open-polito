@@ -309,10 +309,8 @@ dependencies {
 
     implementation project(':react-native-config')
 
-    // We use 2.6.0 for compatibility with API 30
-    implementation("androidx.work:work-runtime:2.6.0") {
-        force = true
-    }
+    // We use 2.7.1 for compatibility with API 30 and above
+    implementation 'androidx.work:work-runtime:2.7.1'
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
