@@ -10,6 +10,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -41,29 +42,25 @@ public class FCMService extends FirebaseMessagingService {
 
     private void showNotification(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
-        String channelName;
+        NotificationUtils.NotificationChannelDetails channelDetails;
 
-        // TODO localize channel names?
-        // TODO set channel descriptions
-        try {
-            channelName = NotificationUtils.getChannelName(
-                    Objects.requireNonNull(data.get("polito_transazione") != null ? data.get("polito_transazione") : NotificationUtils.DEFAULT_TOPIC)
-            );
-        } catch (NullPointerException e) {
-            Log.d(TAG, "Null notification topic!");
-            channelName = NotificationUtils.DEFAULT_TOPIC;
-        }
+        String rawChannelName = data.get("polito_transazione");
+        if (rawChannelName == null) rawChannelName = "";
+
+        channelDetails = NotificationUtils.getChannelDetails(rawChannelName);
+
 
         // Create notification channel for API level >= 26
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel =
-                    new NotificationChannel(channelName.toLowerCase(), channelName, NotificationManager.IMPORTANCE_DEFAULT);
+                    new NotificationChannel(getString(channelDetails.id), getString(channelDetails.title), NotificationManager.IMPORTANCE_DEFAULT);
+            notificationChannel.setDescription(getString(channelDetails.description));
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
 
         // Notification
-        Notification notification = new NotificationCompat.Builder(this, channelName.toLowerCase())
+        Notification notification = new NotificationCompat.Builder(this, rawChannelName.toLowerCase())
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(data.get("title") != null ? data.get("title") : "")
                 .setContentText(data.get("message") != null ? data.get("message") : "")
@@ -73,7 +70,15 @@ public class FCMService extends FirebaseMessagingService {
                 .build();
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        notificationManagerCompat.notify(Integer.parseInt(data.get("polito_id_notifica") != null ? data.get("polito_id_notifica") : "1"), notification);
+        int notificationId;
+        try {
+            String idString = data.get("polito_id_notifica");
+            if (idString == null) idString = "1";
+            notificationId = Integer.parseInt(idString);
+        } catch (NumberFormatException e) {
+            notificationId = 1;
+        }
+        notificationManagerCompat.notify(notificationId, notification);
 
         Log.d(TAG, "Displayed notification");
 

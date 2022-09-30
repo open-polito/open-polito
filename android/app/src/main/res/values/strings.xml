@@ -1,4 +1,19 @@
 <resources>
     <string name="appCenterCrashes_whenToSendCrashes" moduleConfig="true" translatable="false">DO_NOT_ASK_JAVASCRIPT</string>
     <string name="appCenterAnalytics_whenToEnableAnalytics" moduleConfig="true" translatable="false">ENABLE_IN_JS</string>
+    <string name="notification_channel_test">Test</string>
+    <string name="notification_channel_test_desc">Test notifications</string>
+    <string name="notification_channel_direct">Direct</string>
+    <string name="notification_channel_direct_desc">Direct notifications (e.g. reminders)</string>
+    <string name="notification_channel_notices">Courses</string>
+    <string name="notification_channel_notices_desc">Course notifications</string>
+    <string name="notification_channel_material">Material</string>
+    <string name="notification_channel_material_desc">Notifications for newly uploaded files</string>
+    <string name="notification_channel_general">General</string>
+    <string name="notification_channel_general_desc">General notifications</string>
+    <string name="notification_channel_test_id" translatable="false">test</string>
+    <string name="notification_channel_direct_id" translatable="false">direct</string>
+    <string name="notification_channel_notices_id" translatable="false">notices</string>
+    <string name="notification_channel_material_id" translatable="false">material</string>
+    <string name="notification_channel_general_id" translatable="false">general</string>
 </resources>

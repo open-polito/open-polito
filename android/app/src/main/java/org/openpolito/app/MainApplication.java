@@ -23,6 +23,12 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
+  private static Context context;
+
+  public static Context getContext() {
+    return context;
+  }
+
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     protected String getJSBundleFile() {
@@ -71,6 +77,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public void onCreate() {
     super.onCreate();
+    context = getApplicationContext();
     // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
