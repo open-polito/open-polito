@@ -67,6 +67,8 @@ public class FCMService extends FirebaseMessagingService {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(data.get("message") != null ? data.get("message") : ""))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true)
+                .setColor(getResources().getColor(R.color.accent_300))
+                .setSmallIcon(R.drawable.ic_tablericons_school)
                 .build();
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
