@@ -29,7 +29,7 @@
     "html-entities": "^2.3.3",
     "i18next": "^21.8.14",
     "moment": "^2.29.4",
-    "open-polito-api": "^1.1.1",
+    "open-polito-api": "github:open-polito/open-polito-api",
     "react": "18.2.0",
     "react-i18next": "^11.18.1",
     "react-native": "0.69.2",

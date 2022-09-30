@@ -3,6 +3,12 @@
  */
 
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {
+  Booking,
+  BookingContext,
+  getBookings,
+  getContexts,
+} from 'open-polito-api/booking';
 import {Device} from 'open-polito-api/device';
 import {getNotifications, Notification} from 'open-polito-api/notifications';
 import {getUnreadMail, PersonalData} from 'open-polito-api/user';
@@ -24,16 +30,28 @@ export type UserState = {
 
   notifications: Notification[];
   getNotificationsStatus: Status;
+
+  bookings: Booking[];
+  getBookingsStatus: Status;
+
+  bookingContexts: BookingContext[];
+  getBookingContextsStatus: Status;
 };
 
 const initialState: UserState = {
   userInfo: null,
 
   unreadEmailCount: 0,
-  getUnreadEmailCountStatus: initialStatus,
+  getUnreadEmailCountStatus: initialStatus(),
 
   notifications: [],
-  getNotificationsStatus: initialStatus,
+  getNotificationsStatus: initialStatus(),
+
+  bookings: [],
+  getBookingsStatus: initialStatus(),
+
+  bookingContexts: [],
+  getBookingContextsStatus: initialStatus(),
 };
 
 /**
@@ -74,6 +92,44 @@ export const getNotificationList = createAsyncThunk<
   },
 );
 
+/**
+ * Wrapper of {@link getBookings}
+ */
+export const getMyBookings = createAsyncThunk<
+  Booking[],
+  Device,
+  {state: RootState}
+>(
+  'user/getMyBookings',
+  async device => {
+    const bookings = await getBookings(device);
+    return bookings;
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().user.getBookingsStatus),
+  },
+);
+
+/**
+ * Wrapper of {@link getContexts}
+ */
+export const getBookingContexts = createAsyncThunk<
+  BookingContext[],
+  Device,
+  {state: RootState}
+>(
+  'user/getBookingContexts',
+  async device => {
+    const contexts = await getContexts(device);
+    return contexts;
+  },
+  {
+    condition: (_, {getState}) =>
+      !shouldWaitForCooldown(getState().user.getBookingContextsStatus),
+  },
+);
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -109,6 +165,26 @@ export const userSlice = createSlice({
       })
       .addCase(getNotificationList.rejected, (state, action) => {
         state.getNotificationsStatus = errorStatus(action.error);
+      })
+      .addCase(getMyBookings.pending, state => {
+        state.getBookingsStatus = pendingStatus();
+      })
+      .addCase(getMyBookings.fulfilled, (state, {payload}) => {
+        state.bookings = payload;
+        state.getBookingsStatus = successStatus();
+      })
+      .addCase(getMyBookings.rejected, (state, action) => {
+        state.getNotificationsStatus = errorStatus(action.error);
+      })
+      .addCase(getBookingContexts.pending, state => {
+        state.getBookingContextsStatus = pendingStatus();
+      })
+      .addCase(getBookingContexts.fulfilled, (state, {payload}) => {
+        state.bookingContexts = payload;
+        state.getBookingContextsStatus = successStatus();
+      })
+      .addCase(getBookingContexts.rejected, (state, action) => {
+        state.getBookingContextsStatus = errorStatus(action.error);
       });
   },
 });

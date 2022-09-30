@@ -49,11 +49,11 @@ export type CoursesState = {
 const initialState: CoursesState = {
   marks: {permanent: [], provisional: []},
   courses: [],
-  loadCoursesStatus: initialStatus,
-  loadExtendedCourseInfoStatus: initialStatus,
+  loadCoursesStatus: initialStatus(),
+  loadExtendedCourseInfoStatus: initialStatus(),
 
   recentMaterial: [],
-  getRecentMaterialStatus: initialStatus,
+  getRecentMaterialStatus: initialStatus(),
 };
 
 /**
@@ -75,10 +75,10 @@ export const loadCoursesData = createAsyncThunk<
     const data = await getCoursesInfo(device);
     let courses: CourseState[] = [
       ...data.course_plan.standard.map(course => {
-        return {basicInfo: course, status: initialStatus, isMain: true};
+        return {basicInfo: course, status: initialStatus(), isMain: true};
       }),
       ...data.course_plan.extra.map(course => {
-        return {basicInfo: course, status: initialStatus, isMain: false};
+        return {basicInfo: course, status: initialStatus(), isMain: false};
       }),
     ];
     return {
@@ -239,7 +239,7 @@ export const coursesSlice = createSlice({
           state.courses,
         );
 
-        state.getRecentMaterialStatus = initialStatus;
+        state.getRecentMaterialStatus = initialStatus();
         state.recentMaterial = [];
       })
       .addCase(loadCourse.fulfilled, (state, action) => {

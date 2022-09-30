@@ -41,10 +41,12 @@ export type Status = {
 /**
  * Initial status to use in store
  */
-export const initialStatus: Status = {
-  code: STATUS.IDLE,
-  lastUpdated: 0,
-  error: null,
+export const initialStatus = (): Status => {
+  return {
+    code: STATUS.IDLE,
+    lastUpdated: 0,
+    error: null,
+  };
 };
 
 /**

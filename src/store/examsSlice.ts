@@ -22,7 +22,7 @@ export type ExamsState = {
 
 const initialState: ExamsState = {
   exams: [],
-  getExamsStatus: initialStatus,
+  getExamsStatus: initialStatus(),
 };
 
 /**
@@ -34,7 +34,7 @@ export const getExams = createAsyncThunk<
   {state: RootState}
 >(
   'exams/getExams',
-  async (device, {dispatch, getState}) => {
+  async device => {
     const exams = await getExamSessions(device);
     return exams;
   },
