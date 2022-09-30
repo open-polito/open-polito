@@ -1,7 +1,6 @@
 import {
   AnyAction,
   configureStore,
-  createReducer,
   Dispatch,
   ThunkDispatch,
 } from '@reduxjs/toolkit';

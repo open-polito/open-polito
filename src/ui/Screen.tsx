@@ -1,4 +1,4 @@
-import React, {FC, ReactNode, useContext, useMemo} from 'react';
+import React, {ReactNode, useContext, useMemo} from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
@@ -24,7 +24,8 @@ const Screen = ({children}: {children: ReactNode}) => {
             : dark
             ? 'dark-content'
             : 'light-content'
-        }></StatusBar>
+        }
+      />
       <View style={_styles.screen}>{children}</View>
     </View>
   );

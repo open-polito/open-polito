@@ -63,12 +63,12 @@ export type SessionState = {
 const initialState: SessionState = {
   authStatus: AUTH_STATUS.PENDING,
 
-  deviceRegisterStatus: initialStatus,
+  deviceRegisterStatus: initialStatus(),
 
-  loginStatus: initialStatus,
+  loginStatus: initialStatus(),
   loginData: null,
 
-  logoutStatus: initialStatus,
+  logoutStatus: initialStatus(),
 
   config: defaultConfig,
 
@@ -100,7 +100,7 @@ export const registerDevice = createAsyncThunk<
   void,
   Device,
   {state: RootState}
->('session/registerDevice', async (device, {dispatch}) => {
+>('session/registerDevice', async device => {
   const deviceData = getDeviceData();
   await device.register(deviceData);
 });
