@@ -134,6 +134,9 @@ const EN = {
   explore: 'Explore',
   recentlyAdded: 'Recently added',
 
+  // Bookings screen
+  newBooking: 'New booking',
+
   // Courses screen
   otherCourses: 'Other courses',
 
