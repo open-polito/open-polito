@@ -132,6 +132,9 @@ const IT = {
   explore: 'Esplora',
   recentlyAdded: 'Aggiunti di recente',
 
+  // Bookings screen
+  newBooking: 'Nuova prenotazione',
+
   // Courses screen
   otherCourses: 'Altri corsi',
 

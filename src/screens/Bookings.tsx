@@ -37,6 +37,7 @@ import PressableCard from '../ui/core/PressableCard';
 import TablerIcon from '../ui/core/TablerIcon';
 import Text from '../ui/core/Text';
 import Header, {HEADER_TYPE} from '../ui/Header';
+import NoContent from '../ui/NoContent';
 import Screen from '../ui/Screen';
 import Tabs from '../ui/Tabs';
 
@@ -249,7 +250,7 @@ const Bookings = () => {
   const mounted = useRef(true);
 
   const tabs = useMemo(() => {
-    return ['yourBookings', 'newBooking'];
+    return ['myBookings', 'newBooking'];
   }, []);
 
   const [state, setState] = useState<{
@@ -270,8 +271,8 @@ const Bookings = () => {
 
   // Refresh
   const refresh = useCallback(
-    (tab: 'yourBookings' | 'newBooking') => {
-      if (tab === 'yourBookings') {
+    (tab: 'myBookings' | 'newBooking') => {
+      if (tab === 'myBookings') {
         dispatch(getMyBookings(device));
       }
       if (tab === 'newBooking') {
@@ -340,7 +341,7 @@ const Bookings = () => {
               refreshing={refreshing}
               onRefresh={() =>
                 refresh(
-                  state.currentTab === tabs[0] ? 'yourBookings' : 'newBooking',
+                  state.currentTab === tabs[0] ? 'myBookings' : 'newBooking',
                 )
               }
             />
@@ -351,14 +352,20 @@ const Bookings = () => {
             getBookingContextsStatus.code === STATUS.PENDING) ? (
             <ActivityIndicator />
           ) : state.currentTab === tabs[0] ? (
-            bookings.map(booking => (
-              <BookingCard
-                key={`${booking.context_id}${booking.subcontext_id}${booking.start_time}${booking.end_time}`}
-                dark={dark}
-                booking={booking}
-                barcodeUrl={state.barcodeUrl}
-              />
-            ))
+            bookings.length === 0 ? (
+              <NoContent />
+            ) : (
+              bookings.map(booking => (
+                <BookingCard
+                  key={`${booking.context_id}${booking.subcontext_id}${booking.start_time}${booking.end_time}`}
+                  dark={dark}
+                  booking={booking}
+                  barcodeUrl={state.barcodeUrl}
+                />
+              ))
+            )
+          ) : bookingContexts.length === 0 ? (
+            <NoContent />
           ) : (
             bookingContexts.map(ctx => (
               <BookingCtx
