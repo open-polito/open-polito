@@ -102,8 +102,8 @@ const TimetableDay = ({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        borderLeftWidth: index > 0 ? 1 * p : 0,
         borderColor: colors.gray200,
+        marginHorizontal: 1 * p,
       }}>
       {fake ? (
         <TimetableDayLoader w={w} h={h} />
