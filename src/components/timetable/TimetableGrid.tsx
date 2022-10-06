@@ -114,7 +114,7 @@ const TimetableGrid = ({
               flex: 1,
               // width: '100%',
               borderBottomWidth: 0.5 * p,
-              borderColor: dark ? colors.gray200 : colors.gray700,
+              borderColor: dark ? colors.gray500 : colors.gray200,
               marginLeft: 4 * p,
 
               height: h,

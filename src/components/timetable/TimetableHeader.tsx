@@ -192,7 +192,11 @@ const TimetableHeader = ({
               paddingVertical: 4,
               borderRadius: 4,
               backgroundColor:
-                selectedDay == index + 1 ? colors.accent300 : colors.gray700,
+                selectedDay == index + 1
+                  ? colors.accent300
+                  : dark
+                  ? colors.gray700
+                  : colors.gray200,
             }}>
             <Text
               s={10 * p}
