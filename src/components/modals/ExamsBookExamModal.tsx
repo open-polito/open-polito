@@ -1,8 +1,6 @@
 import React, {useContext} from 'react';
 import i18next, {t} from 'i18next';
-import colors from '../../colors';
-import {ExamsBookExamDialogParams} from '../../types';
-import BaseActionConfirmDialog from './BaseActionConfirmDialog';
+import BaseActionConfirmModal from './BaseActionConfirmModal';
 import {RenderHTMLSource} from 'react-native-render-html';
 import moment from 'moment';
 import {bookExamSession, ExamSession} from 'open-polito-api/exam_sessions';
@@ -44,25 +42,24 @@ const bookExamSync = (
   })();
 };
 
-const ExamsBookExamDialog = ({...params}: ExamsBookExamDialogParams) => {
+const ExamsBookExamModal = ({examSession}: {examSession: ExamSession}) => {
   const {device} = useContext(DeviceContext);
   return (
-    <BaseActionConfirmDialog
+    <BaseActionConfirmModal
       title={t('confirmExamBooking')}
-      accentColor={colors.green}
-      onConfirm={() => bookExamSync(device, params.examSession)}>
+      onConfirm={() => bookExamSync(device, examSession)}>
       <RenderHTMLSource
         source={{
           html: t('confirmExamBookingDialogMessage', {
-            code: params.examSession.course_id,
-            name: params.examSession.exam_name,
-            date: moment(params.examSession.date).format('lll'),
-            rooms: params.examSession.rooms,
+            code: examSession.course_id,
+            name: examSession.exam_name,
+            date: moment(examSession.date).format('lll'),
+            rooms: examSession.rooms,
           }),
         }}
       />
-    </BaseActionConfirmDialog>
+    </BaseActionConfirmModal>
   );
 };
 
-export default ExamsBookExamDialog;
+export default ExamsBookExamModal;

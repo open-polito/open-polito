@@ -1,38 +1,14 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, Switch, View} from 'react-native';
-import {ScrollView} from 'react-native-gesture-handler';
+import React, {useContext, useMemo} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import SettingsItem, {SettingsItemProps} from '../ui/SettingsItem';
-import styles from '../styles';
 import {useDispatch} from 'react-redux';
-import * as Keychain from 'react-native-keychain';
-import {showMessage} from 'react-native-flash-message';
-import {
-  logoutFlashMessage,
-  warnFlashMessage,
-} from '../components/CustomFlashMessages';
 import {useTranslation} from 'react-i18next';
-import notImplemented from '../utils/notImplemented';
-import {TextS} from '../components/Text';
-import ScreenContainer from '../components/ScreenContainer';
-import ArrowHeader from '../components/ArrowHeader';
 import {AppDispatch, RootState} from '../store/store';
-import {
-  logout,
-  resetConfig,
-  setConfig,
-  setConfig as _setConfig,
-  setDialog,
-  setToast,
-} from '../store/sessionSlice';
+import {resetConfig, setConfig, setToast} from '../store/sessionSlice';
 import {DeviceContext} from '../context/Device';
-import {createDevice} from '../utils/api-utils';
-import {Device} from 'open-polito-api/device';
-import defaultConfig, {Configuration} from '../defaultConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Configuration} from '../defaultConfig';
 import Config from 'react-native-config';
-import WIPInfoWidget from '../components/widgets/WIPInfoWidget';
-import {PersonalData} from 'open-polito-api/user';
 import {sendTestPushNotification} from 'open-polito-api/notifications';
 import Analytics from 'appcenter-analytics';
 import {version} from '../version.json';
@@ -42,6 +18,8 @@ import Section from '../ui/Section';
 import {p} from '../scaling';
 import Text from '../ui/core/Text';
 import colors from '../colors';
+import SettingsEnableLoggingModal from '../components/modals/SettingsEnableLoggingModal';
+import {ModalContext} from '../context/ModalProvider';
 
 /**
  * Creates Settings item component from data
@@ -55,52 +33,51 @@ export const buildSettingsItem = (item: SettingsItemProps) => {
 export default function Settings() {
   const {t} = useTranslation();
 
-  const {dark, device, setDevice} = useContext(DeviceContext);
+  const {dark, device} = useContext(DeviceContext);
 
-  const userInfo = useSelector<RootState, PersonalData | null>(
-    state => state.user.userInfo,
-  );
+  const {setModal} = useContext(ModalContext);
+
   const config = useSelector<RootState, Configuration>(
     state => state.session.config,
   );
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const _setConfig = (config: Configuration) => {
-    dispatch(setConfig(config));
-  };
+  // const _setConfig = (config: Configuration) => {
+  //   dispatch(setConfig(config));
+  // };
 
-  const showRestartAppNeeded = () => {
-    dispatch(
-      setToast({
-        message: t('restartToastMessage'),
-        type: 'warn',
-        visible: true,
-      }),
-    );
-  };
+  // const showRestartAppNeeded = () => {
+  //   dispatch(
+  //     setToast({
+  //       message: t('restartToastMessage'),
+  //       type: 'warn',
+  //       visible: true,
+  //     }),
+  //   );
+  // };
 
-  const settingsItems: SettingsItemProps[] = [
-    // {
-    //   icon: 'bell',
-    //   name: t('notifications'),
-    //   description: t('notificationsDesc'),
-    //   settingsFunction: () => notImplemented(t),
-    // },
-    // {
-    //   icon: 'moon-stars',
-    //   name: t('darkMode'),
-    //   settingsFunction: () => notImplemented(t),
-    //   toggle: true,
-    //   toggleValue: config.theme == 'dark',
-    // },
-    // {
-    //   icon: 'info-circle',
-    //   name: t('about'),
-    //   description: t('aboutDesc'),
-    //   settingsFunction: () => notImplemented(t),
-    // },
-  ];
+  // const settingsItems: SettingsItemProps[] = [
+  //   {
+  //     icon: 'bell',
+  //     name: t('notifications'),
+  //     description: t('notificationsDesc'),
+  //     settingsFunction: () => notImplemented(t),
+  //   },
+  //   {
+  //     icon: 'moon-stars',
+  //     name: t('darkMode'),
+  //     settingsFunction: () => notImplemented(t),
+  //     toggle: true,
+  //     toggleValue: config.theme == 'dark',
+  //   },
+  //   {
+  //     icon: 'info-circle',
+  //     name: t('about'),
+  //     description: t('aboutDesc'),
+  //     settingsFunction: () => notImplemented(t),
+  //   },
+  // ];
 
   const debugSettingsItems: SettingsItemProps[] = [
     {
@@ -109,14 +86,7 @@ export default function Settings() {
       description: t('debugEnableLoggingDesc'),
       settingsFunction: () => {
         if (!config.logging) {
-          dispatch(
-            setDialog({
-              visible: true,
-              params: {
-                type: 'SETTINGS_ENABLE_LOGGING',
-              },
-            }),
-          );
+          setModal(<SettingsEnableLoggingModal />);
         } else {
           dispatch(setConfig({...config, logging: false}));
         }
@@ -148,7 +118,7 @@ export default function Settings() {
     },
   ];
 
-  const experimentalSettingsItems: SettingsItemProps[] = [];
+  // const experimentalSettingsItems: SettingsItemProps[] = [];
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -158,7 +128,7 @@ export default function Settings() {
         paddingBottom: 16 * p,
       },
     });
-  }, [dark]);
+  }, []);
 
   return (
     <Screen>

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import colors, {courseColors} from '../../colors';
 import {TextXS} from '../Text';
 import Animated, {
@@ -9,13 +9,11 @@ import Animated, {
 import {TimetableSlot} from 'open-polito-api/timetable';
 import moment from 'moment';
 import {TouchableOpacity, View} from 'react-native';
-import {useDispatch} from 'react-redux';
-import {setDialog} from '../../store/sessionSlice';
-import {TimetableEventDialogParams} from '../../types';
-import {AppDispatch} from '../../store/store';
 import {p} from '../../scaling';
 import Text from '../../ui/core/Text';
 import TablerIcon from '../../ui/core/TablerIcon';
+import {ModalContext} from '../../context/ModalProvider';
+import TimetableEventModal from '../modals/TimetableEventModal';
 
 const TimetableEvent = ({
   overlapGroup,
@@ -32,7 +30,7 @@ const TimetableEvent = ({
   courseNames: string[];
   index: number;
 }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const {setModal} = useContext(ModalContext);
 
   const offset = useSharedValue(0);
   const opacity = useSharedValue(0);
@@ -114,15 +112,7 @@ const TimetableEvent = ({
           padding: 4 * p,
         }}
         onPress={() => {
-          dispatch(
-            setDialog({
-              visible: true,
-              params: {
-                type: 'TIMETABLE_EVENT',
-                slot: slot,
-              } as TimetableEventDialogParams,
-            }),
-          );
+          setModal(<TimetableEventModal slot={slot} />);
         }}>
         {width >= 25 ? (
           <Animated.View style={[animTextSectionStyle]}>

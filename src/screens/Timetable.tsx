@@ -3,23 +3,16 @@ import {getTimetable, TimetableSlot} from 'open-polito-api/timetable';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';
-import ArrowHeader from '../components/ArrowHeader';
-import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
-import styles from '../styles';
-import {useNavigation} from '@react-navigation/native';
 import TimetableSlots from '../components/timetable/TimetableSlots';
 import TimetableGrid from '../components/timetable/TimetableGrid';
 import TimetableHeader from '../components/timetable/TimetableHeader';
-import {useDispatch, useSelector} from 'react-redux';
-import {setDialog} from '../store/sessionSlice';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import {AppDispatch} from '../store/store';
 import Screen from '../ui/Screen';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import {p} from '../scaling';
@@ -27,9 +20,6 @@ import {p} from '../scaling';
 const Timetable = () => {
   const {t} = useTranslation();
   const {device, dark} = useContext(DeviceContext);
-  const navigation = useNavigation();
-
-  const dispatch = useDispatch<AppDispatch>();
 
   const [loaded, setLoaded] = useState(false);
   const [weekStartDate, setWeekStartDate] = useState<Date | null>(null);

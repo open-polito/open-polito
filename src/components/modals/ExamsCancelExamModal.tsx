@@ -1,8 +1,7 @@
 import React, {useContext} from 'react';
 import i18next, {t} from 'i18next';
 import colors from '../../colors';
-import {ExamsCancelExamDialogParams} from '../../types';
-import BaseActionConfirmDialog from './BaseActionConfirmDialog';
+import BaseActionConfirmModal from './BaseActionConfirmModal';
 import {RenderHTMLSource} from 'react-native-render-html';
 import moment from 'moment';
 import {Device} from 'open-polito-api/device';
@@ -45,26 +44,26 @@ const cancelExamSync = (
   })();
 };
 
-const ExamsCancelExamDialog = ({...params}: ExamsCancelExamDialogParams) => {
+const ExamsCancelExamModal = ({examSession}: {examSession: ExamSession}) => {
   const {device} = useContext(DeviceContext);
   return (
-    <BaseActionConfirmDialog
+    <BaseActionConfirmModal
       title={t('cancelExamBooking')}
       accentColor={colors.red}
       icon="alert-triangle"
-      onConfirm={() => cancelExamSync(device, params.examSession)}>
+      onConfirm={() => cancelExamSync(device, examSession)}>
       <RenderHTMLSource
         source={{
           html: t('cancelExamBookingDialogMessage', {
-            code: params.examSession.course_id,
-            name: params.examSession.exam_name,
-            date: moment(params.examSession.date).format('lll'),
-            rooms: params.examSession.rooms,
+            code: examSession.course_id,
+            name: examSession.exam_name,
+            date: moment(examSession.date).format('lll'),
+            rooms: examSession.rooms,
           }),
         }}
       />
-    </BaseActionConfirmDialog>
+    </BaseActionConfirmModal>
   );
 };
 
-export default ExamsCancelExamDialog;
+export default ExamsCancelExamModal;

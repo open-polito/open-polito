@@ -37,6 +37,7 @@ const ListRank = ({
       <ScaleDecorator>
         <TouchableOpacity
           disabled={disabled}
+          onLongPress={drag}
           onPressIn={drag}
           onPress={drag}
           style={{
