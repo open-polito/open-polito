@@ -46,7 +46,7 @@ const SettingsItem: FC<SettingsItemProps> = ({
         justifyContent: 'flex-start',
       },
     });
-  }, [dark]);
+  }, []);
 
   return (
     <View
@@ -86,7 +86,7 @@ const SettingsItem: FC<SettingsItemProps> = ({
           <Switch value={toggleValue} onChange={settingsFunction} />
         ) : null}
       </PressableBase>
-      {children}
+      <View>{children}</View>
     </View>
   );
 };

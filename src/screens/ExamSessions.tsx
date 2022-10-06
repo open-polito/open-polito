@@ -1,13 +1,6 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  ScrollView,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, TouchableOpacity, View} from 'react-native';
 import {ExamSession} from 'open-polito-api/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
@@ -24,19 +17,20 @@ import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
 import Text from '../ui/core/Text';
 import NoContent from '../ui/NoContent';
-import PressableBase from '../ui/core/PressableBase';
-import {setDialog} from '../store/sessionSlice';
+import ExamsBookExamModal from '../components/modals/ExamsBookExamModal';
+import ExamsCancelExamModal from '../components/modals/ExamsCancelExamModal';
+import {ModalContext} from '../context/ModalProvider';
 
 const isExamBooked = (examSession: ExamSession): boolean => {
   return examSession.user_is_signed_up;
 };
 
 const isExamAvailable = (examSession: ExamSession): boolean => {
-  return !examSession.user_is_signed_up && examSession.error.id == 0;
+  return !examSession.user_is_signed_up && examSession.error.id === 0;
 };
 
 const isExamUnavailable = (examSession: ExamSession): boolean => {
-  return !examSession.user_is_signed_up && examSession.error.id != 0;
+  return !examSession.user_is_signed_up && examSession.error.id !== 0;
 };
 
 const getExamStatusString = (
@@ -56,6 +50,7 @@ export default function ExamSessions({navigation}) {
   const dispatch = useDispatch<AppDispatch>();
 
   const {dark, device} = useContext(DeviceContext);
+  const {setModal} = useContext(ModalContext);
 
   const {exams, getExamsStatus} = useSelector<RootState, ExamsState>(
     state => state.exams,
@@ -68,8 +63,8 @@ export default function ExamSessions({navigation}) {
   // Initial setup
   useEffect(() => {
     if (
-      getExamsStatus.code == STATUS.IDLE ||
-      getExamsStatus.code == STATUS.ERROR
+      getExamsStatus.code === STATUS.IDLE ||
+      getExamsStatus.code === STATUS.ERROR
     ) {
       dispatch(getExams(device));
     }
@@ -87,13 +82,15 @@ export default function ExamSessions({navigation}) {
           break;
       }
     })();
-  }, []);
+  }, [device, dispatch, getExamsStatus.code]);
 
   /**
    * Refresh exams
    */
   const refresh = () => {
-    if (getExamsStatus.code != STATUS.PENDING) dispatch(getExams(device));
+    if (getExamsStatus.code !== STATUS.PENDING) {
+      dispatch(getExams(device));
+    }
   };
 
   // If tab or exams change, re-filter the exam sessions based on the active tab
@@ -110,33 +107,33 @@ export default function ExamSessions({navigation}) {
       default:
         return [];
     }
-  }, [tab, exams, getExamsStatus]);
+  }, [tab, exams]);
 
   const buildField = (type: string, e: ExamSession) => {
     const icon =
-      type == 'date'
+      type === 'date'
         ? 'calendar-time'
-        : type == 'course'
+        : type === 'course'
         ? 'grid-pattern'
-        : type == 'type'
+        : type === 'type'
         ? 'writing'
-        : type == 'deadline'
+        : type === 'deadline'
         ? 'alert-triangle'
-        : type == 'rooms'
+        : type === 'rooms'
         ? 'map-pin'
         : 'user-circle';
     const text =
-      type == 'date'
+      type === 'date'
         ? `${moment(e.date).format('lll')} (${moment(e.date).fromNow()})`
-        : type == 'course'
+        : type === 'course'
         ? e.course_id
-        : type == 'type'
+        : type === 'type'
         ? e.type
-        : type == 'deadline'
+        : type === 'deadline'
         ? `${t('bookingDeadline')}: ${moment(e.signup_deadline).format(
             'lll',
           )} (${moment(e.signup_deadline).fromNow()})`
-        : type == 'rooms'
+        : type === 'rooms'
         ? e.rooms.join(', ')
         : '(coming soon)';
     return (
@@ -182,14 +179,14 @@ export default function ExamSessions({navigation}) {
             name={
               examSession.user_is_signed_up
                 ? 'circle-check'
-                : examSession.error.id == 0
+                : examSession.error.id === 0
                 ? 'circle'
                 : 'circle-off'
             }
             color={
               examSession.user_is_signed_up
                 ? colors.green
-                : examSession.error.id == 0
+                : examSession.error.id === 0
                 ? colors.accent200
                 : colors.red
             }
@@ -209,10 +206,10 @@ export default function ExamSessions({navigation}) {
             buildField(field, examSession),
           )}
         </View>
-        {examSession.error.id != 0 &&
-        (examSession.error.eng != '' || examSession.error.ita != '') ? (
+        {examSession.error.id !== 0 &&
+        (examSession.error.eng !== '' || examSession.error.ita !== '') ? (
           <Text s={10 * p} w="r" c={colors.red} style={{marginVertical: 8 * p}}>
-            {errorMsgLanguage == 'it'
+            {errorMsgLanguage === 'it'
               ? examSession.error.ita
               : examSession.error.eng}
           </Text>
@@ -229,16 +226,12 @@ export default function ExamSessions({navigation}) {
         {isExamAvailable(examSession) || isExamBooked(examSession) ? (
           <TouchableOpacity
             onPress={() =>
-              dispatch(
-                setDialog({
-                  visible: true,
-                  params: {
-                    type: isExamAvailable(examSession)
-                      ? 'EXAMS_BOOK_EXAM'
-                      : 'EXAMS_CANCEL_EXAM',
-                    examSession: examSession,
-                  },
-                }),
+              setModal(
+                isExamAvailable(examSession) ? (
+                  <ExamsBookExamModal examSession={examSession} />
+                ) : (
+                  <ExamsCancelExamModal examSession={examSession} />
+                ),
               )
             }>
             <View

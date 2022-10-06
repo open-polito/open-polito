@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import colors from '../colors';
 import {useTranslation} from 'react-i18next';
@@ -16,8 +16,9 @@ import TextInput from '../ui/core/TextInput';
 import {DeviceContext} from '../context/Device';
 import Tabs from '../ui/Tabs';
 import Text from '../ui/core/Text';
-import {SessionState, setDialog, setSearchFilter} from '../store/sessionSlice';
 import BadgeContainer from '../ui/core/BadgeContainer';
+import {ModalContext} from '../context/ModalProvider';
+import ListSelectorModal from '../components/modals/ListSelectorModal';
 
 // TODO more searchable categories
 const tabs = ['files'];
@@ -26,6 +27,7 @@ export default function Search({navigation}) {
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const {dark} = useContext(DeviceContext);
+  const {setModal} = useContext(ModalContext);
 
   const courses = useSelector<RootState, CourseState[]>(
     state => state.courses.courses,
@@ -34,11 +36,7 @@ export default function Search({navigation}) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<ExtendedFile[]>([]);
 
-  const {searchFilter} = useSelector<RootState, SessionState>(
-    state => state.session,
-  );
-
-  const [items, setItems] = useState<DropdownItem[]>([]);
+  const [searchFilter, setSearchFilter] = useState('');
 
   const [quickLoad, setQuickLoad] = useState(true);
 
@@ -48,9 +46,22 @@ export default function Search({navigation}) {
   // Timer controlling when to show full list
   const [loadTimer, setLoadTimer] = useState<any>(null);
 
+  const items = useMemo<DropdownItem[]>(() => {
+    return [
+      {
+        label: t('allCourses'),
+        value: '',
+      },
+      ...courses.map(c => ({
+        label: c.basicInfo.name,
+        value: c.basicInfo.code + c.basicInfo.name,
+      })),
+    ];
+  }, [courses]);
+
   useEffect(() => {
     handleNewSearch(query);
-  }, [searchFilter.selected]);
+  }, [searchFilter, query]);
 
   /**
    * Handles a new search
@@ -120,10 +131,10 @@ export default function Search({navigation}) {
           return;
         }
 
-        if (searchFilter.selected) {
+        if (searchFilter) {
           const _course = courses.find(
             course =>
-              searchFilter.selected ===
+              searchFilter ===
               `${course.basicInfo.code}${course.basicInfo.name}`,
           );
           if (!_course) {
@@ -189,24 +200,16 @@ export default function Search({navigation}) {
         />
         <PressableBase
           onPress={() => {
-            dispatch(
-              setSearchFilter({
-                ...searchFilter,
-                type: 'COURSE',
-              }),
-            );
-            dispatch(
-              setDialog({
-                visible: true,
-                params: {
-                  type: 'LIST_SELECTOR',
-                  selectorType: 'SEARCH_FILTER',
-                },
-              }),
+            setModal(
+              <ListSelectorModal
+                items={items}
+                title={t('selectCourseDropdown')}
+                onSelect={value => setSearchFilter(value)}
+              />,
             );
           }}
           style={{marginLeft: 16 * p}}>
-          <BadgeContainer number={searchFilter.selected === '' ? 0 : ''}>
+          <BadgeContainer number={searchFilter === '' ? 0 : ''}>
             <TablerIcon
               name="adjustments"
               color={dark ? colors.gray200 : colors.gray700}

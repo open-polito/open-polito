@@ -18,8 +18,8 @@ import Button from '../../ui/core/Button';
 import TablerIcon from '../../ui/core/TablerIcon';
 import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import {useDispatch} from 'react-redux';
-import {setDialog} from '../../store/sessionSlice';
+import {ModalContext} from '../../context/ModalProvider';
+import TimetableOptionsModal from '../modals/TimetableOptionsModal';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
   DateTimePickerAndroid.open({
@@ -47,8 +47,7 @@ const TimetableHeader = ({
   const {t} = useTranslation();
 
   const {dark} = useContext(DeviceContext);
-
-  const dispatch = useDispatch();
+  const {setModal} = useContext(ModalContext);
 
   const _onLayoutChanged = (value: string) => {
     onLayoutChanged(value);
@@ -88,7 +87,7 @@ const TimetableHeader = ({
               : ''
           }- ${weekEndMoment.format('D MMM YYYY')}`
       : t('thisWeek');
-  }, [weekStartDate]);
+  }, [weekStartDate, t]);
 
   return (
     <View style={{borderBottomWidth: 1 * p, borderBottomColor: colors.gray200}}>
@@ -126,16 +125,7 @@ const TimetableHeader = ({
           />
           <TouchableOpacity style={{marginLeft: 24 * p}}>
             <TablerIcon
-              onPress={() =>
-                dispatch(
-                  setDialog({
-                    visible: true,
-                    params: {
-                      type: 'TIMETABLE_OPTIONS',
-                    },
-                  }),
-                )
-              }
+              onPress={() => setModal(<TimetableOptionsModal />)}
               name="settings"
               size={20 * p}
               color={dark ? colors.gray100 : colors.gray800}

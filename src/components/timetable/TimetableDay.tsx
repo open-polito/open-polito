@@ -34,7 +34,7 @@ const TimetableDay = ({
         config.timetablePriority.indexOf(b.course_name) -
         config.timetablePriority.indexOf(a.course_name),
     );
-  }, [config.timetablePriority, config.timetableOverlap, index, day]);
+  }, [config.timetablePriority, day]);
 
   /**
    * Array of arrays of overlapping events.

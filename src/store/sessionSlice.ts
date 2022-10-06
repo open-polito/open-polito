@@ -20,7 +20,6 @@ import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ping} from 'open-polito-api/utils';
 import {setUserInfo} from './userSlice';
-import {DialogParams, SearchFilterParams} from '../types';
 
 export type ToastData = {
   visible: boolean;
@@ -51,13 +50,6 @@ export type SessionState = {
   config: Configuration;
 
   toast: ToastData;
-
-  dialog: {
-    visible: boolean;
-    params: DialogParams | null;
-  };
-
-  searchFilter: SearchFilterParams;
 };
 
 const initialState: SessionState = {
@@ -77,16 +69,6 @@ const initialState: SessionState = {
     message: '',
     type: 'info',
     icon: '',
-  },
-
-  dialog: {
-    visible: false,
-    params: null,
-  },
-
-  searchFilter: {
-    type: '',
-    selected: '',
   },
 };
 
@@ -203,18 +185,6 @@ export const sessionSlice = createSlice({
     setToast: (state, action: PayloadAction<ToastData>) => {
       state.toast = action.payload;
     },
-    setDialog: (
-      state,
-      action: PayloadAction<{
-        visible: boolean;
-        params: DialogParams | null;
-      }>,
-    ) => {
-      state.dialog = action.payload;
-    },
-    setSearchFilter: (state, action: PayloadAction<SearchFilterParams>) => {
-      state.searchFilter = action.payload;
-    },
   },
   extraReducers: builder => {
     builder
@@ -250,12 +220,6 @@ export const sessionSlice = createSlice({
   },
 });
 
-export const {
-  setAuthStatus,
-  setConfigState,
-  setToast,
-  setDialog,
-  setSearchFilter,
-} = sessionSlice.actions;
+export const {setAuthStatus, setConfigState, setToast} = sessionSlice.actions;
 
 export default sessionSlice.reducer;

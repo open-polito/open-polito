@@ -15,12 +15,13 @@ import store from './src/store/store';
 import moment from 'moment';
 import {Device} from 'open-polito-api/device';
 import DeviceProvider from './src/context/Device';
-import Dialog from './src/components/dialogs/Dialog';
 import {
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
 } from 'react-native-render-html';
 import Toast from './src/ui/Toast';
+import {ModalProvivder} from './src/context/ModalProvider';
+import ModalComponent from './src/components/modals/ModalComponent';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -67,18 +68,20 @@ export default function App() {
     <Suspense fallback="Loading...">
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
-          <TRenderEngineProvider
-            tagsStyles={{
-              p: {
-                marginTop: 0,
-              },
-            }}>
-            <RenderHTMLConfigProvider>
-              <Router />
-              <Toast />
-              <Dialog />
-            </RenderHTMLConfigProvider>
-          </TRenderEngineProvider>
+          <ModalProvivder>
+            <TRenderEngineProvider
+              tagsStyles={{
+                p: {
+                  marginTop: 0,
+                },
+              }}>
+              <RenderHTMLConfigProvider>
+                <Router />
+                <Toast />
+                <ModalComponent />
+              </RenderHTMLConfigProvider>
+            </TRenderEngineProvider>
+          </ModalProvivder>
         </DeviceProvider>
         <FlashMessage position="top" />
       </Provider>

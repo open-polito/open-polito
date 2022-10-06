@@ -1,16 +1,15 @@
 import React, {FC, useContext, useMemo} from 'react';
 import {View} from 'react-native';
-import {TimetableEventDialogParams} from '../../types';
 import colors from '../../colors';
-import {useTranslation} from 'react-i18next';
 import moment from 'moment';
 import TablerIcon from '../../ui/core/TablerIcon';
 import {p} from '../../scaling';
 import {DeviceContext} from '../../context/Device';
 import Text from '../../ui/core/Text';
+import ModalBase from './ModalBase';
+import {TimetableSlot} from 'open-polito-api/timetable';
 
-const TimetableEventDialog: FC<TimetableEventDialogParams> = ({slot}) => {
-  const {t} = useTranslation();
+const TimetableEventModal: FC<{slot: TimetableSlot}> = ({slot}) => {
   const {dark} = useContext(DeviceContext);
 
   const items: {icon: string; name: string}[] = useMemo(() => {
@@ -41,7 +40,7 @@ const TimetableEventDialog: FC<TimetableEventDialogParams> = ({slot}) => {
   }, [slot]);
 
   return (
-    <View style={{paddingHorizontal: 16 * p}}>
+    <ModalBase title={slot.course_name}>
       {items.map((item, i) => (
         <View
           style={{
@@ -61,8 +60,8 @@ const TimetableEventDialog: FC<TimetableEventDialogParams> = ({slot}) => {
           </Text>
         </View>
       ))}
-    </View>
+    </ModalBase>
   );
 };
 
-export default TimetableEventDialog;
+export default TimetableEventModal;

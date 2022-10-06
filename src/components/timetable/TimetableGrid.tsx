@@ -34,7 +34,7 @@ const TimetableGrid = ({
     setTimeout(() => {
       mounted && setCurrentTime(moment());
     }, 10000);
-  }, [currentTime]);
+  }, [currentTime, mounted]);
 
   return (
     <View

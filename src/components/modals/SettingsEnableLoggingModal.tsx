@@ -7,9 +7,9 @@ import {Configuration} from '../../defaultConfig';
 import {setConfig, setToast} from '../../store/sessionSlice';
 import {AppDispatch, RootState} from '../../store/store';
 import Logger from '../../utils/Logger';
-import BaseActionConfirmDialog from './BaseActionConfirmDialog';
+import BaseActionConfirmModal from './BaseActionConfirmModal';
 
-const SettingsEnableLoggingDialog = () => {
+const SettingsEnableLoggingModal = () => {
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -29,7 +29,7 @@ const SettingsEnableLoggingDialog = () => {
   };
 
   return (
-    <BaseActionConfirmDialog
+    <BaseActionConfirmModal
       title={t('debugEnableLogging')}
       icon="alert-triangle"
       accentColor={colors.red}
@@ -41,8 +41,8 @@ const SettingsEnableLoggingDialog = () => {
           }),
         }}
       />
-    </BaseActionConfirmDialog>
+    </BaseActionConfirmModal>
   );
 };
 
-export default SettingsEnableLoggingDialog;
+export default SettingsEnableLoggingModal;

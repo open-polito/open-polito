@@ -2,7 +2,6 @@ import {Device} from 'open-polito-api/device';
 import React, {createContext, ReactNode, useMemo, useState} from 'react';
 import {ColorSchemeName, useColorScheme} from 'react-native';
 import {useSelector} from 'react-redux';
-import {Configuration} from '../defaultConfig';
 import {RootState} from '../store/store';
 import {createDevice} from '../utils/api-utils';
 
@@ -47,27 +46,23 @@ const DeviceProvider = ({
   children: ReactNode;
   device: Device;
 }) => {
-  // Overrides
   const [_device, _setDevice] = useState(device);
-  const sel = useSelector<RootState, Configuration>(
-    state => state.session.config,
-  );
   const _chosenTheme = useSelector<RootState, string>(
     state => state.session.config.theme,
   );
   const _colorScheme = useColorScheme();
   const _dark = useMemo<boolean>(() => {
-    return _chosenTheme == 'system'
-      ? _colorScheme == 'dark'
-      : _chosenTheme == 'dark';
+    return _chosenTheme === 'system'
+      ? _colorScheme === 'dark'
+      : _chosenTheme === 'dark';
   }, [_chosenTheme, _colorScheme]);
 
   return (
     <DeviceContext.Provider
       value={{
         device: _device,
-        setDevice: device => {
-          _setDevice(device);
+        setDevice: d => {
+          _setDevice(d);
         },
 
         chosenTheme: _chosenTheme,
