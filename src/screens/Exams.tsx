@@ -54,7 +54,7 @@ const Exams = () => {
     return [];
   }, [marks, tab]);
 
-  const avg = useMemo(() => get_avg(marks.permanent), [marks, tab]);
+  const avg = useMemo(() => get_avg(marks.permanent), [marks]);
 
   return (
     <Screen>
@@ -86,10 +86,10 @@ const Exams = () => {
             <TablerIcon
               name="help"
               size={12 * p}
-              color={colors.gray200}
+              color={dark ? colors.gray200 : colors.gray700}
               style={{marginRight: 8 * p}}
             />
-            <Text s={12} w="m" c={colors.gray200}>
+            <Text s={12} w="m" c={dark ? colors.gray200 : colors.gray700}>
               {t('statusCodeHelp')}
             </Text>
           </TouchableOpacity>
@@ -143,6 +143,7 @@ const AvgWidget = ({avg, dark}: {avg: number; dark: boolean}) => {
         strokeWidth={8 * p}
         radius={30 * p}
         value={avg}
+        dark={dark}
         max={30}
       />
       <View style={{marginLeft: 16 * p}}>
@@ -218,14 +219,18 @@ const MarkWidget = ({
         </View>
       </View>
       {parseInt(mark.mark!) ? (
-        <ProgressCircle radius={20 * p} value={parseInt(mark.mark!)} max={30}>
+        <ProgressCircle
+          radius={20 * p}
+          value={parseInt(mark.mark!)}
+          max={30}
+          dark={dark}>
           {(mark.mark?.toLowerCase() === '30 e lode' ||
             parseInt(mark.mark!) > 30) && (
             <>
               <Text
                 style={{marginTop: -4 * p}} // make the text fit better
                 s={8 * p}
-                c={colors.gray100}
+                c={dark ? colors.gray100 : colors.gray800}
                 w="b">
                 LODE
               </Text>
@@ -325,7 +330,7 @@ const Progress = ({marks, dark}: {marks: PermanentMark[]; dark: boolean}) => {
       ],
       legend: [t('weightedAverage')],
     }),
-    [sorted_marks, dark],
+    [sorted_marks, avgs, t],
   );
 
   return sorted_marks.length == 0 ? (

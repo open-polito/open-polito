@@ -11,6 +11,7 @@ const ProgressCircle = ({
   max,
   radius,
   strokeWidth = 4 * p,
+  dark,
   children,
 }: {
   label?: string | null;
@@ -18,6 +19,7 @@ const ProgressCircle = ({
   max: number;
   radius: number;
   strokeWidth?: number;
+  dark: boolean;
   children?: ReactNode;
 }) => {
   const circ = 2 * Math.PI * radius;
@@ -57,7 +59,7 @@ const ProgressCircle = ({
         }}>
         <Text
           s={label || typeof _value === 'string' ? 10 * p : 16 * p}
-          c={colors.gray100}
+          c={dark ? colors.gray100 : colors.gray800}
           w="b">
           {label || _value}
         </Text>
