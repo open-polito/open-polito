@@ -181,6 +181,17 @@ const EN = {
   timetablePriorityDesc: 'Events with higher priority will show first',
   timetablePriorityList: 'Choose priority',
 
+  // Updater screen
+  uploaderStateIdle: 'Waiting...',
+  uploaderStateGetData: 'Getting latest update data...',
+  uploaderStateDownload: 'Downloading update...',
+  uploaderStateDone: 'Done! Please install the file.',
+  uploaderStateCheckIntegrity: 'Checking file integrity...',
+  uploaderStateError: 'Error during update!',
+  tryAgain: 'Try again',
+  reopenInstallMenu: 'Reopen install menu',
+  didYouMissTheInstallMenu: 'Did you miss the install menu?',
+
   // Toast
   logoutToastMessage: 'Logging out...',
   loginPendingToastMessage: 'Connecting...',

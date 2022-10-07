@@ -23,6 +23,7 @@ public class NativePackage implements ReactPackage {
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new NotificationModule(reactContext));
+        modules.add(new UpdaterModule(reactContext));
         return modules;
     }
 }
