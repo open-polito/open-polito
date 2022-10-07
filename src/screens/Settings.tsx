@@ -112,7 +112,6 @@ export default function Settings() {
         );
         (async () => {
           await sendTestPushNotification(device);
-          await Analytics.trackEvent('test_notification_request');
         })();
       },
     },
