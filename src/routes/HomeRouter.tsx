@@ -146,7 +146,6 @@ export default function HomeRouter() {
       if (Platform.OS == 'android' && Config.VARIANT != 'debug') {
         const FCMToken = await NativeModules.NotificationModule.getToken();
         await registerPushNotifications(device, FCMToken);
-        await Analytics.trackEvent('fcm_registered');
       }
     })();
   }, [loginStatus]);
