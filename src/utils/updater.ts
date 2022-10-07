@@ -63,7 +63,7 @@ export const fetchReleaseByTag = async (
 ): Promise<PartialGitHubReleaseResponse> =>
   (await (
     await fetch(
-      `https://api.github.com/repos/robertolaru/testrepo/releases/tags/${tag}`,
+      `https://api.github.com/repos/open-polito/open-polito/releases/tags/${tag}`,
       {
         headers: {Accept: 'application/vnd.github+json'},
       },

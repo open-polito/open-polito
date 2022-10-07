@@ -39,6 +39,7 @@ import {DeviceContext} from '../context/Device';
 import {getLocales} from 'react-native-localize';
 import Updater from '../screens/Updater';
 import {unlink} from 'react-native-fs';
+import {RenderHTMLSource} from 'react-native-render-html';
 
 /**
  * Types for React Navigation
@@ -157,18 +158,29 @@ export default function Router() {
       setModal(
         <BaseActionConfirmModal
           title={t('newUpdateModalTitle')}
-          accentColor={colors.green}
+          icon="download"
+          accentColor={'#2dba2a'}
           onConfirm={() =>
             setUpdaterState(prev => ({
               ...prev,
               acceptedUpdate: true,
             }))
           }>
-          {[t('newUpdateModaltext'), ...(notes?.content || [])].map(note => (
-            <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>
-              {note}
-            </Text>
-          ))}
+          <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>
+            {t('newUpdateModalText') + '\n\n' + t('newUpdateModalNotes') + '\n'}
+          </Text>
+          {updaterState.releaseData.format === 'text'
+            ? (notes?.content || []).map(note => (
+                <Text
+                  s={12 * p}
+                  w="r"
+                  c={dark ? colors.gray100 : colors.gray800}>
+                  {`  • ${note}`}
+                </Text>
+              ))
+            : (notes?.content || []).map(note => (
+                <RenderHTMLSource source={{html: note}} />
+              ))}
         </BaseActionConfirmModal>,
       );
     }
