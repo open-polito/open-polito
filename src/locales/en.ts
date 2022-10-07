@@ -182,12 +182,17 @@ const EN = {
   timetablePriorityList: 'Choose priority',
 
   // Updater screen
-  uploaderStateIdle: 'Waiting...',
-  uploaderStateGetData: 'Getting latest update data...',
-  uploaderStateDownload: 'Downloading update...',
-  uploaderStateDone: 'Done! Please install the file.',
-  uploaderStateCheckIntegrity: 'Checking file integrity...',
-  uploaderStateError: 'Error during update!',
+  newUpdateModalTitle: 'New update available',
+  newUpdateModalText:
+    'A new update is available. Please update the app to enjoy the latest features and bug fixes.',
+  newUpdateModalNotes: 'Update notes:',
+  updaterScreenHeading: 'Updating Open PoliTo',
+  updaterStateIdle: 'Waiting...',
+  updaterStateGetData: 'Getting latest update data...',
+  updaterStateDownload: 'Downloading update...',
+  updaterStateDone: 'Done! Please install the file.',
+  updaterStateCheckIntegrity: 'Checking file integrity...',
+  updaterStateError: 'Error during update!',
   tryAgain: 'Try again',
   reopenInstallMenu: 'Reopen install menu',
   didYouMissTheInstallMenu: 'Did you miss the install menu?',

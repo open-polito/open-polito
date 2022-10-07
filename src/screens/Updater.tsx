@@ -287,17 +287,17 @@ const Updater: FC<UpdaterScreenProps> = ({releaseData}) => {
   const stateLabel = useMemo(() => {
     switch (state) {
       case 'IDLE':
-        return t('uploaderStateIdle');
+        return t('updaterStateIdle');
       case 'GET_DATA':
-        return t('uploaderStateGetData');
+        return t('updaterStateGetData');
       case 'DOWNLOAD':
-        return t('uploaderStateDownload');
+        return t('updaterStateDownload');
       case 'DONE':
-        return t('uploaderStateDone');
+        return t('updaterStateDone');
       case 'CHECK_INTEGRITY':
-        return t('uploaderStateCheckIntegrity');
+        return t('updaterStateCheckIntegrity');
       case 'ERROR':
-        return `${t('uploaderStateError')}\n${errMsg}`;
+        return `${t('updaterStateError')}\n${errMsg}`;
     }
   }, [state, t, errMsg]);
 
@@ -323,7 +323,7 @@ const Updater: FC<UpdaterScreenProps> = ({releaseData}) => {
       <View style={[_styles.container]}>
         <View style={_styles.section}>
           <Text s={20 * p} w="r" c={dark ? colors.gray100 : colors.gray800}>
-            Updating Open PoliTo...
+            {t('updaterScreenHeading')}
           </Text>
         </View>
         <View style={_styles.section}>

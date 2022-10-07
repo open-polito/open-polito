@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import {Modal, TouchableOpacity, View} from 'react-native';
+import {Modal, ScrollView, TouchableOpacity, View} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -92,36 +92,43 @@ const ModalBase: FC<ModalBaseProps> = ({
             maxHeight: '80%',
             backgroundColor: dark ? colors.gray700 : colors.gray200,
             borderRadius: 4 * p,
-            paddingVertical: 24 * p,
-            paddingHorizontal: 16 * p,
             marginHorizontal: 16 * p,
           }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}>
-            {icon && (
-              <>
-                <TablerIcon name={icon} color={accentColor} size={24 * p} />
-                <View style={{width: 16 * p}} />
-              </>
-            )}
-            <Text s={16} w="m" c={dark ? colors.gray100 : colors.gray800}>
-              {title}
-            </Text>
-          </View>
-          <View
-            style={{
-              marginTop: 16 * p,
-            }}>
-            {children}
-          </View>
+          <ScrollView>
+            <View
+              style={{
+                paddingVertical: 24 * p,
+                paddingHorizontal: 16 * p,
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                {icon && (
+                  <>
+                    <TablerIcon name={icon} color={accentColor} size={24 * p} />
+                    <View style={{width: 16 * p}} />
+                  </>
+                )}
+                <Text s={16} w="m" c={dark ? colors.gray100 : colors.gray800}>
+                  {title}
+                </Text>
+              </View>
+              <View
+                style={{
+                  marginTop: 16 * p,
+                }}>
+                {children}
+              </View>
+            </View>
+          </ScrollView>
           {actions && (
             <View
               style={{
                 flexDirection: 'row',
-                marginTop: 16 * p,
+                paddingBottom: 24 * p,
+                paddingHorizontal: 16 * p,
               }}>
               {actions.map((action, i) => (
                 <View

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import {useTranslation} from 'react-i18next';
-import {View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Configuration} from '../../defaultConfig';
 import {setConfig} from '../../store/sessionSlice';
@@ -15,6 +15,7 @@ import ListRank from '../ListRank';
 import SettingsItem, {SettingsItemProps} from '../../ui/SettingsItem';
 import {DeviceContext} from '../../context/Device';
 import ModalBase from './ModalBase';
+import colors from '../../colors';
 
 const TimetableOptionsModal = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -87,10 +88,13 @@ const TimetableOptionsModal = () => {
   return (
     <ModalBase title={t('timetableOptions')}>
       <View>
-        {showListRank &&
+        {showListRank ? (
           timetableOptionsItems.map(item => (
             <SettingsItem key={item.name} {...item} />
-          ))}
+          ))
+        ) : (
+          <ActivityIndicator color={colors.accent300} />
+        )}
       </View>
     </ModalBase>
   );
