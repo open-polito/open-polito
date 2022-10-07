@@ -11,6 +11,7 @@ import TablerIcon from './core/TablerIcon';
 import {p} from '../scaling';
 import Text from './core/Text';
 import PressableBase from './core/PressableBase';
+import {Device} from 'open-polito-api/device';
 
 export type DirectoryItemProps = {
   item: MaterialItem;
@@ -18,10 +19,24 @@ export type DirectoryItemProps = {
   dark: boolean;
   course?: string;
   onPress?: Function;
+  children: ReactNode;
 };
 
-const computeSizeLabel = (size: number): string => {
-  return size > 999 ? (size / 1000).toFixed(2) + ' MB' : size + ' kB';
+const sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
+
+export const computeSizeLabel = (size: number) => {
+  const _size = Math.floor(size);
+  const index = Math.min(
+    _size > 0 ? Math.floor(Math.floor(Math.log10(_size)) / 3) : 0,
+    sizes.length - 1,
+  );
+  return `${(_size / 10 ** (index === 0 ? 1 : 3 * index)).toFixed(2)} ${
+    sizes[index]
+  }`;
+};
+
+const downloadFile = (device: Device, item: File) => {
+  getDownloadURL(device, item).then(url => Linking.openURL(url));
 };
 
 const DirectoryItem: FC<DirectoryItemProps> = ({
@@ -32,20 +47,14 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
   onPress = () => {},
   children,
 }) => {
-  const [sizeLabel, setSizeLabel] = useState(
-    item.type == 'file' ? computeSizeLabel(item.size) : '',
-  );
+  const sizeLabel = useMemo(() => {
+    return item.type === 'file' ? computeSizeLabel(item.size * 1000) : '';
+  }, [item]);
 
-  const deviceContext = useContext(DeviceContext);
-
-  const downloadFile = () => {
-    getDownloadURL(deviceContext.device, item as File).then(url =>
-      Linking.openURL(url),
-    );
-  };
+  const {device} = useContext(DeviceContext);
 
   const iconComponent = useMemo(() => {
-    return item.type == 'file' ? (
+    return item.type === 'file' ? (
       getFileIcon(item.filename)
     ) : (
       <TablerIcon
@@ -54,7 +63,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
         size={24 * p}
       />
     );
-  }, [item]);
+  }, [item, dark]);
 
   return (
     <View
@@ -64,7 +73,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
       <PressableBase
         android_ripple={{color: colors.lightGray}}
         onPress={() => {
-          item.type == 'file' ? downloadFile() : onPress();
+          item.type === 'file' ? () => downloadFile(device, item) : onPress();
         }} // download file if file, otherwise use onPress prop
         style={{
           flexDirection: 'row',
@@ -95,7 +104,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
                 {item.name}
               </Text>
             </View>
-            {item.type == 'file' && (
+            {item.type === 'file' && (
               <View style={{flexDirection: 'column', flex: 1}}>
                 <Text numberOfLines={1} w="r" s={10 * p} c={colors.gray300}>
                   {sizeLabel + ' · '}
@@ -109,10 +118,10 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
           </View>
         </View>
 
-        {item.type == 'file' ? (
+        {item.type === 'file' ? (
           <Pressable
             android_ripple={{color: colors.lightGray}}
-            onPress={downloadFile}>
+            onPress={() => downloadFile(device, item)}>
             <TablerIcon
               name="download"
               size={24 * p}
@@ -121,7 +130,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
           </Pressable>
         ) : null}
       </PressableBase>
-      {item.type == 'dir' ? (
+      {item.type === 'dir' ? (
         <View style={{flexDirection: 'row'}}>
           <View
             style={{

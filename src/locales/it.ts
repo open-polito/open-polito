@@ -180,7 +180,18 @@ const IT = {
     'Gli eventi con priorità più alta verranno mostrati per primi',
   timetablePriorityList: 'Scegli priorità',
 
-  // Flash messages
+  // Updater screen
+  uploaderStateIdle: 'In attesa...',
+  uploaderStateGetData: 'Scaricando dati di aggiornamento...',
+  uploaderStateDownload: 'Download in corso...',
+  uploaderStateDone: 'Fatto! Installa il file.',
+  uploaderStateCheckIntegrity: 'Controllo integrità del file...',
+  uploaderStateError: "Errore durante l'aggiornamento!",
+  tryAgain: 'Riprova',
+  reopenInstallMenu: 'Riapri menu di installazione',
+  didYouMissTheInstallMenu: 'Hai perso il menu di installazione?',
+
+  // Toast
   logoutToastMessage: 'Disconnessione...',
   loginPendingToastMessage: 'Accesso...',
   loginErrorToastMessage: 'Errore di accesso',

@@ -51,7 +51,7 @@ const Button: FC<ButtonParams> = ({
         backgroundColor: 'rgba(0,0,0,0)',
       },
     });
-  }, []);
+  }, [color, secondary, small]);
 
   return (
     <PressableBase>

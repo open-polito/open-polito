@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {View} from 'react-native';
+import {Platform, View} from 'react-native';
 import {TextS} from '../components/Text';
 import LoginScreen from '../screens/LoginScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -21,6 +21,24 @@ import defaultConfig, {
 import {AUTH_STATUS} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
 import Logger from '../utils/Logger';
+import {
+  AssetsJsonEntry,
+  fetchReleaseJson,
+  getUpdateDestinationFilePath,
+  isGitHubOnline,
+  PartialGitHubReleaseResponse,
+  ReleaseJsonEntry,
+} from '../utils/updater';
+import Config from 'react-native-config';
+import version from '../version.json';
+import {ModalContext} from '../context/ModalProvider';
+import BaseActionConfirmModal from '../components/modals/BaseActionConfirmModal';
+import Text from '../ui/core/Text';
+import {p} from '../scaling';
+import {DeviceContext} from '../context/Device';
+import {getLocales} from 'react-native-localize';
+import Updater from '../screens/Updater';
+import {unlink} from 'react-native-fs';
 
 /**
  * Types for React Navigation
@@ -36,6 +54,15 @@ export type AppStackParamList = {
   Video: undefined;
 };
 
+export type UpdaterState = {
+  checked: boolean;
+  shouldUpdate: boolean;
+  acceptedUpdate: boolean;
+  releaseData?: ReleaseJsonEntry;
+  githubReleaseData?: PartialGitHubReleaseResponse;
+  assetData?: AssetsJsonEntry;
+};
+
 /**
  * Stack navigators
  */
@@ -48,6 +75,104 @@ const AppStack = createNativeStackNavigator<AppStackParamList>();
 export default function Router() {
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
+  const {setModal} = useContext(ModalContext);
+  const {dark} = useContext(DeviceContext);
+
+  // Update checking-related stuff
+  const [updaterState, setUpdaterState] = useState<UpdaterState>({
+    checked: false,
+    shouldUpdate: false,
+    acceptedUpdate: false,
+  });
+
+  /**
+   * Begin update checking, if and only if the following are all true:
+   * - The OS is Android
+   * - The app hasn't checked for updates during this app session
+   * - The app was not installed from PLAY_STORE (see {@link version})
+   * - The device is online (can reach GitHub API)
+   *
+   * Instead, checking versionCode from AsyncStorage is done regardless of
+   * the conditions above.
+   */
+  useEffect(() => {
+    if (
+      Platform.OS === 'android' &&
+      !updaterState.checked &&
+      !['PLAY_STORE'].includes(version.from)
+    ) {
+      (async () => {
+        const reachable = await isGitHubOnline();
+        if (!reachable) {
+          return;
+        }
+        try {
+          const releaseData = (await fetchReleaseJson()).find(
+            r =>
+              r.type === Config.VARIANT && r.versionCode > version.versionCode,
+          );
+
+          if (releaseData !== undefined) {
+            setUpdaterState(prev => ({
+              ...prev,
+              releaseData,
+              shouldUpdate: true,
+            }));
+          }
+        } catch (e) {}
+      })();
+    }
+
+    /**
+     * Delete older APK and clear AsyncStorage entry
+     * if update has been done (compare version codes)
+     */
+    (async () => {
+      try {
+        const previousUpdateVersionCode = await AsyncStorage.getItem(
+          '@versionCode',
+        );
+        if (
+          previousUpdateVersionCode &&
+          version.versionCode >= parseInt(previousUpdateVersionCode)
+        ) {
+          unlink(getUpdateDestinationFilePath())
+            .catch()
+            .then(() => {
+              AsyncStorage.removeItem('@versionCode');
+            });
+        }
+      } catch (e) {}
+    })();
+  }, [updaterState.checked]);
+
+  // Show modal if update available
+  useEffect(() => {
+    if (updaterState.shouldUpdate && updaterState.releaseData) {
+      const locale = getLocales()[0].languageCode;
+      let notes = updaterState.releaseData.notes.find(
+        n => n.language === locale,
+      );
+
+      setModal(
+        <BaseActionConfirmModal
+          title={t('newUpdateModalTitle')}
+          accentColor={colors.green}
+          onConfirm={() =>
+            setUpdaterState(prev => ({
+              ...prev,
+              acceptedUpdate: true,
+            }))
+          }>
+          {[t('newUpdateModaltext'), ...(notes?.content || [])].map(note => (
+            <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>
+              {note}
+            </Text>
+          ))}
+        </BaseActionConfirmModal>,
+      );
+    }
+  }, [updaterState.shouldUpdate, updaterState.releaseData, dark, setModal, t]);
 
   const {authStatus, config} = useSelector<RootState, SessionState>(
     state => state.session,
@@ -60,9 +185,9 @@ export default function Router() {
 
   // When auth status changes, update login setting accordingly
   useEffect(() => {
-    if (authStatus == AUTH_STATUS.NOT_VALID) {
+    if (authStatus === AUTH_STATUS.NOT_VALID) {
       dispatch(setConfig({...config, login: false}));
-    } else if (authStatus == AUTH_STATUS.VALID) {
+    } else if (authStatus === AUTH_STATUS.VALID) {
       dispatch(setConfig({...config, login: true}));
     }
   }, [authStatus]);
@@ -80,7 +205,7 @@ export default function Router() {
        */
       if (
         !loadedConfig.schemaVersion ||
-        loadedConfig.schemaVersion != CONFIG_SCHEMA_VERSION
+        loadedConfig.schemaVersion !== CONFIG_SCHEMA_VERSION
       ) {
         const currentSettingsKeys = Object.keys(loadedConfig);
         const defaultSettingsKeys = Object.keys(defaultConfig);
@@ -121,7 +246,7 @@ export default function Router() {
     loggingEnabled
       ? setMessage(buildMessage({text: t('Logging enabled'), type: 'warn'}))
       : setMessage(<View></View>);
-  }, [loggingEnabled]);
+  }, [loggingEnabled, t]);
 
   // Returns message component
   const buildMessage = ({text = '', type = 'warn'}) => {
@@ -141,7 +266,9 @@ export default function Router() {
   return (
     <NavigationContainer>
       <View>{message}</View>
-      {!setupDone ? null : config.login ? (
+      {!setupDone ? null : updaterState.acceptedUpdate ? (
+        <Updater releaseData={updaterState.releaseData!} />
+      ) : config.login ? (
         <AppStack.Navigator
           screenOptions={{
             headerShown: false,
