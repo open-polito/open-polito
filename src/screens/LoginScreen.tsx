@@ -104,7 +104,7 @@ export default function LoginScreen() {
    * Show toast notification based on login result
    */
   useEffect(() => {
-    if (loginStatus.code === STATUS.ERROR)
+    if (loginStatus.code === STATUS.ERROR) {
       dispatch(
         setToast({
           type: 'err',
@@ -113,7 +113,8 @@ export default function LoginScreen() {
           icon: '',
         }),
       );
-  }, [loginStatus]);
+    }
+  }, [loginStatus, dispatch]);
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -140,7 +141,7 @@ export default function LoginScreen() {
       loginSection: {
         flex: 1,
         flexDirection: 'column',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
       },
       or: {
         flexDirection: 'row',
@@ -161,7 +162,7 @@ export default function LoginScreen() {
 
   return (
     <Screen>
-      <View style={_styles.backgroundContainer}></View>
+      <View style={_styles.backgroundContainer} />
       <View style={_styles.container}>
         <Text
           c={deviceContext.dark ? colors.gray100 : colors.gray800}
@@ -176,7 +177,7 @@ export default function LoginScreen() {
           s={16 * p}>
           {t('caption')}
         </Text>
-        <View style={{marginTop: 48 * p}}>
+        {/* <View style={{marginTop: 48 * p}}>
           {fields.map(part => (
             <View style={_styles.field}>
               <TablerIcon name={part[0]} color={colors.accent300} />
@@ -197,7 +198,7 @@ export default function LoginScreen() {
               </View>
             </View>
           ))}
-        </View>
+        </View> */}
         <View style={_styles.loginSection}>
           {/* TODO proper behavior when keyboard shows up */}
           <TextInput
@@ -208,8 +209,8 @@ export default function LoginScreen() {
             style={{
               marginBottom: 16 * p,
             }}
-            onChangeText={t => {
-              setUsername(t);
+            onChangeText={text => {
+              setUsername(text);
             }}
           />
           <TextInput
@@ -221,12 +222,12 @@ export default function LoginScreen() {
             style={{
               marginBottom: 16 * p,
             }}
-            onChangeText={t => {
-              setPassword(t);
+            onChangeText={passwd => {
+              setPassword(passwd);
             }}
           />
           <Button
-            loading={loginStatus.code == STATUS.PENDING}
+            loading={loginStatus.code === STATUS.PENDING}
             text={t('login')}
             style={{marginBottom: 16 * p}}
             onPress={() => {
@@ -235,7 +236,7 @@ export default function LoginScreen() {
               })();
             }}
           />
-          <View style={_styles.or}>
+          {/* <View style={_styles.or}>
             <View style={_styles.line} />
             <Text
               w="r"
@@ -246,7 +247,7 @@ export default function LoginScreen() {
             </Text>
             <View style={_styles.line} />
           </View>
-          <Button text={t('takeTour')} secondary />
+          <Button text={t('takeTour')} secondary /> */}
           {/*
           TODO enable when ToS defined
           */}
