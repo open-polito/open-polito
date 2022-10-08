@@ -4,34 +4,65 @@ before_all do
     git_pull
 end
 
-commit_hash = last_git_commit[:commit_hash][0..9]
-package = load_json(json_path: "./package.json")
+commit_hash_suffix = "+" + last_git_commit[:commit_hash][0..9]
+version_path = './src/version.json'
 
-desc("Updates RN app version (not the binaries!)")
-lane :update_rn_version do
-    write_json(
-        hash: {version: package['version'] + "+" + commit_hash},
-        file_path: './src/version.json'
+desc("Private. Updates version name and code across all platforms.")
+private_lane :global_version do |options|
+    # Update Android version
+    increment_version_name(
+        gradle_file_path: './android/app/build.gradle',
+        version_name: options[:tag] + options[:suffix]
     )
-end
-
-platform :android do
-
-    desc("Updates Android binary version and bumps version code")
-    lane :update_version do
-        increment_version_name(
-            gradle_file_path: './android/app/build.gradle',
-            version_name: package['version'] + "+" + commit_hash
-        )
+    if options[:bump]
         increment_version_code(
             gradle_file_path: './android/app/build.gradle'
         )
     end
 
-    desc("Runs gradlew clean")
-    private_lane :clean do
-        gradle(task: 'clean', project_dir: './android/')
+    # Update iOS version
+    # TODO
+    
+    # Update version.json
+    version_json = read_json(
+        json_path: version_path
+    )
+    version_json[:version] = options[:tag] + options[:suffix]
+    if options[:bump]
+        version_json[:versionCode] = version_json[:versionCode] + 1
     end
+    write_json(
+        hash: version_json,
+        file_path: version_path
+    )
 end
 
-# TODO iOS
+desc("[For new binary versions]. Increase binary version name and code (without hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).")
+lane :bump do |options|
+    global_version(
+        tag: options[:tag],
+        bump: true,
+        suffix: "",
+    )
+end
+
+desc("Update version name (+ commit hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).")
+lane :version_hash do |options|
+    global_version(
+        tag: options[:tag],
+        bump: false,
+        suffix: commit_hash_suffix
+    )
+end
+
+desc("Update version name (without hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).")
+lane :version do |options|
+    global_version(
+        tag: options[:tag],
+        bump: false,
+        suffix: ""
+    )
+end

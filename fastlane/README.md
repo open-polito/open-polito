@@ -13,26 +13,32 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
-### update_rn_version
+### bump
 
 ```sh
-[bundle exec] fastlane update_rn_version
+[bundle exec] fastlane bump
 ```
 
-Updates RN app version (not the binaries!)
+[For new binary versions]. Increase binary version name and code (without hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).
 
-----
-
-
-## Android
-
-### android update_version
+### version_hash
 
 ```sh
-[bundle exec] fastlane android update_version
+[bundle exec] fastlane version_hash
 ```
 
-Updates Android binary version and bumps version code
+Update version name (+ commit hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).
+
+### version
+
+```sh
+[bundle exec] fastlane version
+```
+
+Update version name (without hash).
+Pass tag:tagname as argument (e.g. tag:0.5.0).
 
 ----
 
