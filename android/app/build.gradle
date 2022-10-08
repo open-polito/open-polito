@@ -149,6 +149,18 @@ def findDeploymentKeyDev() {
     }
 }
 
+/**
+ * Return deployment key for production (release) flavor or empty string
+ * @return string
+ */
+def findDeploymentKeyProd() {
+    if (project.hasProperty("deploymentKeyProd")) {
+        return deploymentKeyProd
+    } else {
+        return "''"
+    }
+}
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -237,7 +249,7 @@ android {
     productFlavors {
         releaseFlavor {
             resValue "string", "app_name", "Open PoliTo"
-            resValue "string", "CodePushDeploymentKey", '""'
+            resValue "string", "CodePushDeploymentKey", findDeploymentKeyProd()
         }
         betaFlavor {
             resValue "string", "app_name", "Open PoliTo [beta]"
