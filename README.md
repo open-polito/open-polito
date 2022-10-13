@@ -43,24 +43,24 @@ To run on a real device (Android): connect the device to your development machin
 
 More info on the environment setup is available at the [React Native website](https://reactnative.dev/docs/environment-setup) (under the "React Native CLI" section).
 
-Install all dependencies: `npm install`
+Install all dependencies: `yarn`
 
 For iOS, install dependencies: `cd ios && pod install`
 
 #### 2. Run in debug mode
 
-Start Metro bundler: `npx react-native start` or `npm start`
+Start Metro bundler: `yarn start`
 
 Open a new terminal, from which you can:
 
-- start the Android app: `npm run android:debug`
-- start the iOS app: `npm run ios`
+- start the Android app: `yarn run android:debug`
+- start the iOS app: `yarn run ios`
 
 #### 3. Run in release mode
 
 Alternatively, you can directly run the app in release mode:
 
-- Android: `npm run android:release` (replace `release` with `beta` or `dev` to run the beta or dev release, respectively).
+- Android: `yarn run android:release` (replace `release` with `beta` or `dev` to run the beta or dev release, respectively).
 - iOS: (coming soon).
 
 ## Contributors
