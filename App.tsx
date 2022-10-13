@@ -11,7 +11,7 @@ import * as RNLocalize from 'react-native-localize';
 
 import 'moment/locale/it';
 
-import store from './src/store/store';
+import store, {persistor} from './src/store/store';
 import moment from 'moment';
 import {Device} from 'open-polito-api/device';
 import DeviceProvider from './src/context/Device';
@@ -22,6 +22,7 @@ import {
 import Toast from './src/ui/Toast';
 import {ModalProvivder} from './src/context/ModalProvider';
 import ModalComponent from './src/components/modals/ModalComponent';
+import {PersistGate} from 'redux-persist/integration/react';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -67,22 +68,24 @@ export default function App() {
   return (
     <Suspense fallback="Loading...">
       <Provider store={store}>
-        <DeviceProvider device={defaultDevice}>
-          <ModalProvivder>
-            <TRenderEngineProvider
-              tagsStyles={{
-                p: {
-                  marginTop: 0,
-                },
-              }}>
-              <RenderHTMLConfigProvider>
-                <Router />
-                <Toast />
-                <ModalComponent />
-              </RenderHTMLConfigProvider>
-            </TRenderEngineProvider>
-          </ModalProvivder>
-        </DeviceProvider>
+        <PersistGate persistor={persistor}>
+          <DeviceProvider device={defaultDevice}>
+            <ModalProvivder>
+              <TRenderEngineProvider
+                tagsStyles={{
+                  p: {
+                    marginTop: 0,
+                  },
+                }}>
+                <RenderHTMLConfigProvider>
+                  <Router />
+                  <Toast />
+                  <ModalComponent />
+                </RenderHTMLConfigProvider>
+              </TRenderEngineProvider>
+            </ModalProvivder>
+          </DeviceProvider>
+        </PersistGate>
         <FlashMessage position="top" />
       </Provider>
     </Suspense>
