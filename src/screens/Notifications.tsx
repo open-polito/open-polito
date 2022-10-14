@@ -137,13 +137,23 @@ const Notifications = () => {
     {label: t('material'), value: 'material'},
   ];
 
-  const _styles = useMemo(() => {
-    return StyleSheet.create({
-      container: {
-        paddingHorizontal: 16 * p,
-      },
-    });
-  }, [dark]);
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          paddingTop: 24 * p,
+          flex: 1,
+        },
+        paddingHorizontal: {
+          paddingHorizontal: 16 * p,
+        },
+        list: {
+          paddingHorizontal: 16 * p,
+          paddingBottom: 24 * p,
+        },
+      }),
+    [],
+  );
 
   const {notifications, getNotificationsStatus} = useSelector<
     RootState,
@@ -375,54 +385,50 @@ const Notifications = () => {
 
   return (
     <Screen>
-      <View
-        style={{
-          position: 'absolute',
-          bottom: 16 * p,
-          left: 0,
-          right: 0,
-          zIndex: 1000,
-        }}>
-        <Animated.View
-          style={[
-            animStyle,
-            {
-              backgroundColor: dark ? colors.gray700 : colors.gray200,
-              paddingVertical: 8 * p,
-              marginHorizontal: 16 * p,
-              borderRadius: 16 * p,
-              borderWidth: 1 * p,
-              borderColor: dark ? colors.gray600 : colors.gray300,
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-            },
-          ]}>
-          {selectionOptions.map(opt => (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <PressableBase
-                disabled={opt.icon === 'loading'}
-                style={{justifyContent: 'center', alignItems: 'center'}}
-                onPress={opt.action}>
-                {opt.icon === 'loading' ? (
-                  <ActivityIndicator color={colors.accent300} size={20 * p} />
-                ) : (
-                  <TablerIcon
-                    name={opt.icon}
-                    color={colors.accent300}
-                    size={20 * p}
-                  />
-                )}
-                <View style={{height: 4 * p}} />
-                <Text c={colors.accent300} w="r" s={10 * p}>
-                  {opt.label}
-                </Text>
-              </PressableBase>
-            </View>
-          ))}
-        </Animated.View>
-      </View>
+      <Animated.View
+        style={[
+          animStyle,
+          {
+            position: 'absolute',
+            bottom: 16 * p,
+            left: 0,
+            right: 0,
+            zIndex: 1000,
+            backgroundColor: dark ? colors.gray700 : colors.gray200,
+            paddingVertical: 8 * p,
+            marginHorizontal: 16 * p,
+            borderRadius: 16 * p,
+            borderWidth: 1 * p,
+            borderColor: dark ? colors.gray600 : colors.gray300,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+        ]}>
+        {selectionOptions.map(opt => (
+          <View
+            style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <PressableBase
+              disabled={opt.icon === 'loading'}
+              style={{justifyContent: 'center', alignItems: 'center'}}
+              onPress={opt.action}>
+              {opt.icon === 'loading' ? (
+                <ActivityIndicator color={colors.accent300} size={20 * p} />
+              ) : (
+                <TablerIcon
+                  name={opt.icon}
+                  color={colors.accent300}
+                  size={20 * p}
+                />
+              )}
+              <View style={{height: 4 * p}} />
+              <Text c={colors.accent300} w="r" s={10 * p}>
+                {opt.label}
+              </Text>
+            </PressableBase>
+          </View>
+        ))}
+      </Animated.View>
       <Header headerType={HEADER_TYPE.MAIN} title={t('notifications')} />
       <Tabs
         adjusted
@@ -432,9 +438,9 @@ const Notifications = () => {
           setSelectedCategory(notificationTypes[index].value)
         }
       />
-      <View style={{}}>
+      <View style={styles.container}>
         <FlatList
-          style={_styles.container}
+          contentContainerStyle={styles.paddingHorizontal}
           data={visible}
           keyExtractor={item => item.id.toString()}
           ListEmptyComponent={<NoContent />}
@@ -444,7 +450,6 @@ const Notifications = () => {
               onRefresh={refreshNotifications}
             />
           }
-          ListHeaderComponent={() => <View style={{height: 24 * p}} />}
           initialNumToRender={10}
           maxToRenderPerBatch={10}
           renderItem={n => (

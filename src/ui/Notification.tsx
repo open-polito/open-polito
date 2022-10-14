@@ -76,7 +76,6 @@ const NotificationComponent: FC<NotificationParams> = ({
     height: 8 * p * offset.value,
     backgroundColor: colors.red,
     borderRadius: 8 * p,
-    marginRight: 8 * p * offset.value,
   }));
 
   /**
@@ -84,13 +83,12 @@ const NotificationComponent: FC<NotificationParams> = ({
    */
   useEffect(() => {
     if (!read) return;
-    offset.value = withTiming(0, {duration: 500});
+    offset.value = withTiming(0, {duration: 200});
   }, [read]);
 
   return (
     <View style={{flexDirection: 'column'}}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <Animated.View style={[animStyle]}></Animated.View>
         <View
           style={{
             width: 32 * p,
@@ -101,9 +99,21 @@ const NotificationComponent: FC<NotificationParams> = ({
             justifyContent: 'center',
             marginRight: 16 * p,
           }}>
+          <View
+            style={{
+              position: 'absolute',
+              justifyContent: 'center',
+              alignItems: 'center',
+              top: -4 * p,
+              right: -4 * p,
+              width: 8 * p,
+              height: 8 * p,
+            }}>
+            <Animated.View style={[animStyle]} />
+          </View>
           <TablerIcon name={icon} color={colors.accent300} size={16 * p} />
         </View>
-        <View style={{flexDirection: 'column'}}>
+        <View style={{flexDirection: 'column', flex: 1}}>
           <Text
             s={12 * p}
             c={dark ? colors.gray100 : colors.gray800}
