@@ -1,7 +1,13 @@
 import {PermanentMark, ProvisionalMark} from 'open-polito-api/courses';
 import React, {useContext, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {FlatList, Linking, useWindowDimensions, View} from 'react-native';
+import {
+  FlatList,
+  Linking,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
 import {RootState} from '../store/store';
@@ -56,6 +62,24 @@ const Exams = () => {
 
   const avg = useMemo(() => get_avg(marks.permanent), [marks]);
 
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        container: {
+          paddingTop: 24 * p,
+          flex: 1,
+        },
+        paddingHorizontal: {
+          paddingHorizontal: 16 * p,
+        },
+        list: {
+          paddingHorizontal: 16 * p,
+          paddingBottom: 24 * p,
+        },
+      }),
+    [],
+  );
+
   return (
     <Screen>
       <Header title={t('exams')} headerType={HEADER_TYPE.MAIN} />
@@ -65,37 +89,35 @@ const Exams = () => {
         items={tabs.map(tab => ({label: t(tab), value: tab}))}
         onChange={idx => setTab(tabs[idx])}
       />
-      <View
-        style={{
-          paddingTop: 24 * p,
-          paddingHorizontal: 16 * p,
-          paddingBottom: 24 * p,
-        }}>
+
+      <View style={styles.container}>
         {tab == tabs[2] ? (
-          <TouchableOpacity
-            onPress={async () =>
-              await Linking.openURL(
-                'https://didattica.polito.it/img/RE_stati.jpg',
-              )
-            }
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 16 * p,
-            }}>
-            <TablerIcon
-              name="help"
-              size={12 * p}
-              color={dark ? colors.gray200 : colors.gray700}
-              style={{marginRight: 8 * p}}
-            />
-            <Text s={12} w="m" c={dark ? colors.gray200 : colors.gray700}>
-              {t('statusCodeHelp')}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.paddingHorizontal}>
+            <TouchableOpacity
+              onPress={async () =>
+                await Linking.openURL(
+                  'https://didattica.polito.it/img/RE_stati.jpg',
+                )
+              }
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 16 * p,
+              }}>
+              <TablerIcon
+                name="help"
+                size={12 * p}
+                color={dark ? colors.gray200 : colors.gray700}
+                style={{marginRight: 8 * p}}
+              />
+              <Text s={12} w="m" c={dark ? colors.gray200 : colors.gray700}>
+                {t('statusCodeHelp')}
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : null}
         {tab == tabs[0] ? (
-          <>
+          <View style={styles.list}>
             <AvgWidget avg={avg} dark={dark} />
             <View
               style={{
@@ -109,10 +131,11 @@ const Exams = () => {
                 <Progress marks={marks.permanent || []} dark={dark} />
               </View>
             </Section>
-          </>
+          </View>
         ) : (
           <FlatList
-            data={filteredMarks}
+            contentContainerStyle={styles.list}
+            data={[...filteredMarks, ...filteredMarks]}
             keyExtractor={item => item.date + item.name}
             renderItem={({item}) => (
               <MarkWidget
