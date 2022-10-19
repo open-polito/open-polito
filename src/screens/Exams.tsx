@@ -135,7 +135,7 @@ const Exams = () => {
         ) : (
           <FlatList
             contentContainerStyle={styles.list}
-            data={[...filteredMarks, ...filteredMarks]}
+            data={filteredMarks}
             keyExtractor={item => item.date + item.name}
             renderItem={({item}) => (
               <MarkWidget
