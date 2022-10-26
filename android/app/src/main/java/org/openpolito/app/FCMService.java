@@ -60,8 +60,7 @@ public class FCMService extends FirebaseMessagingService {
         }
 
         // Notification
-        Notification notification = new NotificationCompat.Builder(this, rawChannelName.toLowerCase())
-                .setSmallIcon(R.mipmap.ic_launcher)
+        Notification notification = new NotificationCompat.Builder(this, getString(channelDetails.id))
                 .setContentTitle(data.get("title") != null ? data.get("title") : "")
                 .setContentText(data.get("message") != null ? data.get("message") : "")
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(data.get("message") != null ? data.get("message") : ""))
