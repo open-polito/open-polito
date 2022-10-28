@@ -1,6 +1,6 @@
 {
   "name": "open-polito",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "android:debug": "cross-env ENVFILE=.env.debug react-native run-android --variant debugFlavorDebug --appIdSuffix debug",
