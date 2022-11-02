@@ -19,12 +19,11 @@ import {
   getUnreadEmailCount,
   UserState,
 } from '../store/userSlice';
-import {registerPushNotifications} from 'open-polito-api/notifications';
+import {registerPushNotifications} from 'open-polito-api/lib/notifications';
 
 import {NativeModules, Platform} from 'react-native';
 import Config from 'react-native-config';
 import {pendingStatus, STATUS, successStatus} from '../store/status';
-import Analytics from 'appcenter-analytics';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Drawer from '../ui/Drawer';
 import {login, SessionState} from '../store/sessionSlice';
@@ -36,7 +35,7 @@ import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
 import People from '../screens/People';
 import Courses from '../screens/Courses';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import Logger from '../utils/Logger';
 import Notifications from '../screens/Notifications';
 import {getCredentials} from '../utils/fs';

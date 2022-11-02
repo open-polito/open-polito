@@ -11,7 +11,11 @@ export const appendFile = async (path: string, content: string) => {
 };
 
 export const getCredentials = async () => {
-  return JSON.parse((await AsyncStorage.getItem(credentialsKey)) || '{}');
+  const res = await AsyncStorage.getItem(credentialsKey);
+  if (res) {
+    return JSON.parse(res);
+  }
+  return undefined;
 };
 
 export const saveCredentials = async (username: string, password: string) => {
