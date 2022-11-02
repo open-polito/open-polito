@@ -1,7 +1,7 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
-import {Notification} from 'open-polito-api/notifications';
-import {NotificationType} from 'open-polito-api/notifications';
+import {Notification} from 'open-polito-api/lib/notifications';
+import {NotificationType} from 'open-polito-api/lib/notifications';
 import React, {FC, useEffect, useMemo} from 'react';
 import {View} from 'react-native';
 import Animated, {

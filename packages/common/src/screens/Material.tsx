@@ -1,18 +1,9 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {FlatList, Pressable, ScrollView, StyleSheet, View} from 'react-native';
-import styles from '../styles';
-import colors from '../colors';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {TextN, TextSubTitle} from '../components/Text';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useContext} from 'react';
-import RecentItems from '../components/RecentItems';
-import RecentItemsLoader from '../components/loaders/RecentItemsLoader';
-import {Rect} from 'react-native-svg';
 import MaterialExplorer from '../ui/MaterialExplorer';
-import ScreenContainer from '../components/ScreenContainer';
-import DropdownSelector from '../components/DropdownSelector';
 import {DeviceContext} from '../context/Device';
 import {AppDispatch, RootState} from '../store/store';
 import {
@@ -21,9 +12,8 @@ import {
   getRecentMaterial,
   loadCourse,
 } from '../store/coursesSlice';
-import {Status, STATUS} from '../store/status';
+import {STATUS} from '../store/status';
 import {useNavigation} from '@react-navigation/core';
-import {DropdownItem} from '../types';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
 import TextInput from '../ui/core/TextInput';

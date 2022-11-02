@@ -1,4 +1,4 @@
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import React, {createContext, ReactNode, useMemo, useState} from 'react';
 import {ColorSchemeName, useColorScheme} from 'react-native';
 import {useSelector} from 'react-redux';

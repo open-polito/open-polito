@@ -5,7 +5,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import moment from 'moment';
 import {TouchableOpacity, View} from 'react-native';
 import {p} from '../../scaling';

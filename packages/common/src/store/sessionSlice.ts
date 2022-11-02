@@ -14,10 +14,10 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ping} from 'open-polito-api/utils';
+import {ping} from 'open-polito-api/lib/utils';
 import {setUserInfo} from './userSlice';
 import {clearCredentials, saveCredentials} from '../utils/fs';
 

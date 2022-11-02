@@ -12,7 +12,7 @@ import 'moment/locale/it';
 
 import store from './store/store';
 import moment from 'moment';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import DeviceProvider from './context/Device';
 import {
   RenderHTMLConfigProvider,

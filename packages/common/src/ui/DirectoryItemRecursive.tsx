@@ -1,7 +1,7 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {Pressable, View} from 'react-native';
+import React, {useState} from 'react';
+import {View} from 'react-native';
 import DirectoryItem from './DirectoryItem';
-import {MaterialItem} from 'open-polito-api/material';
+import {MaterialItem} from 'open-polito-api/lib/material';
 
 export default function DirectoryItemRecursive({
   dark,

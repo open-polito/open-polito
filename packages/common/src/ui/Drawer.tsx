@@ -14,10 +14,10 @@ import {useTranslation} from 'react-i18next';
 import TablerIcon from './core/TablerIcon';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store/store';
-import {PersonalData} from 'open-polito-api/user';
+import {PersonalData} from 'open-polito-api/lib/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../store/sessionSlice';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import {DeviceContext} from '../context/Device';
 import Logger from '../utils/Logger';
 

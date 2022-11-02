@@ -1,4 +1,4 @@
-import {PermanentMark, ProvisionalMark} from 'open-polito-api/courses';
+import {PermanentMark, ProvisionalMark} from 'open-polito-api/lib/courses';
 import React, {useContext, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {

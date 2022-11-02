@@ -1,12 +1,13 @@
 {
   "name": "@open-polito/common",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "dependencies": {
+    "@react-navigation/stack": "^6.3.3",
     "html-entities": "^2.3.3",
     "i18next": "^21.8.14",
     "moment": "^2.29.4",
-    "open-polito-api": "https://github.com/open-polito/open-polito-api",
+    "open-polito-api": "^1.1.6",
     "react": "*",
     "react-dom": "^18.2.0",
     "react-native-chart-kit": "^6.12.0",

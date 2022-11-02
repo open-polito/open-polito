@@ -1,4 +1,4 @@
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Dimensions, View} from 'react-native';
 import TimetableDay from './TimetableDay';

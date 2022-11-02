@@ -1,25 +1,11 @@
 import {useNavigation} from '@react-navigation/core';
-import moment from 'moment';
-import {BasicCourseInfo, Recording} from 'open-polito-api/course';
-import React, {ReactElement, useEffect, useMemo, useState} from 'react';
+import React, {ReactElement, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  RefreshControl,
-  View,
-} from 'react-native';
+import {FlatList, View} from 'react-native';
 import {useSelector} from 'react-redux';
-import colors from '../colors';
-import {TextN, TextS} from '../components/Text';
 import {p} from '../scaling';
 import {CourseState} from '../store/coursesSlice';
 import {RootState} from '../store/store';
-import PressableBase from './core/PressableBase';
-import TablerIcon from './core/TablerIcon';
-import Text from './core/Text';
 import Filters from './Filters';
 import NoContent from './NoContent';
 import VideoCard from './VideoCard';

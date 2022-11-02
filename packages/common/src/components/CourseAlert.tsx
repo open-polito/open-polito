@@ -1,20 +1,21 @@
 import {decode} from 'html-entities';
 import moment from 'moment';
-import {Notice} from 'open-polito-api/course';
-import {Notification} from 'open-polito-api/notifications';
+import {Notice} from 'open-polito-api/lib/course';
 import React from 'react';
 import {View} from 'react-native';
 import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
+import {p} from '../scaling';
+import Text from '../ui/core/Text';
 import NotificationComponent from './NotificationComponent';
-import {TextS, TextXS} from './Text';
 
 export type CourseAlertProps = {
   alert: Notice;
   compact?: boolean;
+  dark?: boolean;
 };
 
-const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
+const CourseAlert = ({alert, compact = false, dark}: CourseAlertProps) => {
   const htmlTags = /[<][/]?[^/>]+[/]?[>]+/g;
 
   return compact ? (
@@ -40,18 +41,25 @@ const CourseAlert = ({alert, compact = false}: CourseAlertProps) => {
           alignItems: 'center',
           marginRight: compact ? 4 : 8,
         }}>
-        <TextXS text={moment(alert.date).format('MMM')} color={colors.white} />
-        <TextXS text={moment(alert.date).format('DD')} color={colors.white} />
+        <Text s={10 * p} c={dark ? colors.gray200 : colors.gray700} w="r">
+          {moment(alert.date).format('MMM')} color={colors.white}{' '}
+        </Text>
+        <Text s={10 * p} c={dark ? colors.gray200 : colors.gray700} w="r">
+          {moment(alert.date).format('DD')}{' '}
+        </Text>
       </View>
       <View
         style={{
           flex: compact ? 5 : 11,
         }}>
         {compact ? (
-          <TextS
-            numberOfLines={2}
-            text={decode(alert.text.replace(htmlTags, '')).trim()}
-          />
+          <Text
+            s={12 * p}
+            c={dark ? colors.gray200 : colors.gray700}
+            w="r"
+            numberOfLines={2}>
+            {decode(alert.text.replace(htmlTags, '')).trim()}
+          </Text>
         ) : (
           <RenderHTMLSource source={{html: alert.text}} />
         )}

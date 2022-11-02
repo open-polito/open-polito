@@ -1,28 +1,16 @@
 import {useNavigation} from '@react-navigation/core';
 import React, {useContext, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Pressable,
-  SectionList,
-  StyleSheet,
-  View,
-} from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
-import styles from '../styles';
+import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
 import colors from '../colors';
-import {TextL, TextN, TextS} from '../components/Text';
 import {useTranslation} from 'react-i18next';
-import {Recording} from 'open-polito-api/course';
+import {Recording} from 'open-polito-api/lib/course';
 import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
 import Screen from '../ui/Screen';
 import Text from '../ui/core/Text';
-import Button from '../ui/core/Button';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
-import Section from '../ui/Section';
 import VideoCard from '../ui/VideoCard';
 import moment from 'moment';
 import VideoPlayer from '../ui/VideoPlayer';

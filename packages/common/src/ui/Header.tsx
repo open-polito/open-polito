@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import {Notification} from 'open-polito-api/notifications';
+import {Notification} from 'open-polito-api/lib/notifications';
 import React, {FC, useContext, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
@@ -11,6 +11,7 @@ import BadgeContainer from './core/BadgeContainer';
 import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
+import {DrawerActions} from '@react-navigation/native';
 
 // TODO navigation to notifications, downloads
 
@@ -69,7 +70,7 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
             {/* TODO add logic for badge number*/}
             <PressableBase
               onPress={() => {
-                navigation.toggleDrawer();
+                navigation.dispatch(DrawerActions.toggleDrawer());
               }}>
               <BadgeContainer number={0} style={{marginRight: 16 * p}}>
                 <TablerIcon

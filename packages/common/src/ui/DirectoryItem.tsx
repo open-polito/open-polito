@@ -1,17 +1,15 @@
 import moment from 'moment';
-import {File, getDownloadURL, MaterialItem} from 'open-polito-api/material';
-import React, {FC, ReactNode, useContext, useMemo, useState} from 'react';
+import {File, getDownloadURL, MaterialItem} from 'open-polito-api/lib/material';
+import React, {FC, ReactNode, useContext, useMemo} from 'react';
 import {Linking, Pressable, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import getFileIcon from '../utils/getFileIcon';
-import {TextS} from '../components/Text';
 import TablerIcon from './core/TablerIcon';
 import {p} from '../scaling';
 import Text from './core/Text';
 import PressableBase from './core/PressableBase';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 
 export type DirectoryItemProps = {
   item: MaterialItem;
@@ -19,7 +17,7 @@ export type DirectoryItemProps = {
   dark: boolean;
   course?: string;
   onPress?: Function;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 const sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
@@ -55,7 +53,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
 
   const iconComponent = useMemo(() => {
     return item.type === 'file' ? (
-      getFileIcon(item.filename)
+      getFileIcon(item.filename, dark)
     ) : (
       <TablerIcon
         name="folder"

@@ -1,17 +1,24 @@
-import {Notice} from 'open-polito-api/course';
+import {Notice} from 'open-polito-api/lib/course';
 import React, {FC} from 'react';
 import {useTranslation} from 'react-i18next';
 import {View} from 'react-native';
+import colors from '../../colors';
+import Text from '../../ui/core/Text';
 import CourseAlert from '../CourseAlert';
-import {TextS} from '../Text';
 import WidgetBase, {WidgetBaseProps} from './WidgetBase';
 
 export type AlertWidgetProps = {
   action: Function;
   alerts: Notice[];
+  dark?: boolean;
 } & WidgetBaseProps;
 
-const AlertWidget: FC<AlertWidgetProps> = ({action, alerts, ...props}) => {
+const AlertWidget: FC<AlertWidgetProps> = ({
+  action,
+  dark,
+  alerts,
+  ...props
+}) => {
   const {t} = useTranslation();
 
   return (
@@ -20,6 +27,7 @@ const AlertWidget: FC<AlertWidgetProps> = ({action, alerts, ...props}) => {
         <View style={{flexDirection: 'column', marginTop: 8}}>
           {alerts.map(alert => (
             <CourseAlert
+              dark={dark}
               compact
               alert={alert}
               key={alert.date.toString() + alert.text.slice(0, 30)}
@@ -27,7 +35,9 @@ const AlertWidget: FC<AlertWidgetProps> = ({action, alerts, ...props}) => {
           ))}
         </View>
       ) : (
-        <TextS text={t('loading')} />
+        <Text s={12 * p} w="m" c={dark ? colors.gray100 : colors.gray800}>
+          {t('loading')}
+        </Text>
       )}
     </WidgetBase>
   );

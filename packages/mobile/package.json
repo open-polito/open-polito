@@ -1,6 +1,6 @@
 {
   "name": "@open-polito/mobile",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "android:debug": "cross-env ENVFILE=.env.debug react-native run-android --variant debugFlavorDebug --appIdSuffix debug",
@@ -29,7 +29,6 @@
     "html-entities": "^2.3.3",
     "i18next": "^21.8.14",
     "moment": "^2.29.4",
-    "open-polito-api": "github:open-polito/open-polito-api",
     "react": "18.2.0",
     "react-i18next": "^11.18.1",
     "react-native": "0.69.2",

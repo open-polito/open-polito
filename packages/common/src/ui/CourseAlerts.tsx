@@ -2,7 +2,7 @@ import React, {ReactElement, useEffect, useMemo} from 'react';
 import {FlatList, StyleSheet, View} from 'react-native';
 import NoContent from './NoContent';
 import NotificationComponent from './Notification';
-import {NotificationType} from 'open-polito-api/notifications';
+import {NotificationType} from 'open-polito-api/lib/notifications';
 import {p} from '../scaling';
 import {ExtendedAlert} from '../types';
 

@@ -1,4 +1,4 @@
-import {Recording} from 'open-polito-api/course';
+import {Recording} from 'open-polito-api/lib/course';
 import React from 'react';
 
 const VideoPlayer = ({video}: {video: Recording}) => {

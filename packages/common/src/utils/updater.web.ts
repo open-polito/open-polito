@@ -1,4 +1,8 @@
-import {isGitHubOnline, fetchReleaseByTag, fetchReleaseJson} from './updater';
+import {
+  isGitHubOnline,
+  fetchReleaseByTag,
+  fetchReleaseJson,
+} from './updater.common';
 
 const updateCleanup = async () => {};
 const getUpdateDestinationFilePath = async () => {};

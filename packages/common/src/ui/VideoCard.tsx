@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import moment from 'moment';
-import {Recording} from 'open-polito-api/course';
+import {Recording} from 'open-polito-api/lib/course';
 import React from 'react';
 import {Dimensions, Image, View} from 'react-native';
 import colors from '../colors';

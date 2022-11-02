@@ -9,7 +9,7 @@ import {resetConfig, setConfig, setToast} from '../store/sessionSlice';
 import {DeviceContext} from '../context/Device';
 import {Configuration} from '../defaultConfig';
 import Config from 'react-native-config';
-import {sendTestPushNotification} from 'open-polito-api/notifications';
+import {sendTestPushNotification} from 'open-polito-api/lib/notifications';
 import Analytics from 'appcenter-analytics';
 import version from '../../../../version.json';
 import Screen from '../ui/Screen';
@@ -138,7 +138,7 @@ export default function Settings() {
         </Section> */}
 
         {/* Debug options */}
-        {parseInt(Config.ENABLE_DEBUG_OPTIONS) ? (
+        {parseInt(Config.ENABLE_DEBUG_OPTIONS!) ? (
           <Section dark={dark} title={t('debugSettings')}>
             <View style={{marginTop: -8 * p}}>
               {debugSettingsItems.map(item => buildSettingsItem(item))}

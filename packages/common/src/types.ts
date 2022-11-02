@@ -1,5 +1,5 @@
-import {Notice} from 'open-polito-api/course';
-import {File} from 'open-polito-api/material';
+import {Notice} from 'open-polito-api/lib/course';
+import {File} from 'open-polito-api/lib/material';
 
 /**
  * Extends the API's File type by adding some course data

@@ -1,0 +1,8 @@
+{
+  "name": "@open-polito/desktop",
+  "version": "0.5.1",
+  "private": true,
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.1.1"
+  }
+}

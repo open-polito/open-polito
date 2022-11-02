@@ -1,4 +1,4 @@
-import {Directory, MaterialItem} from 'open-polito-api/material';
+import {Directory, MaterialItem} from 'open-polito-api/lib/material';
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {useSelector} from 'react-redux';

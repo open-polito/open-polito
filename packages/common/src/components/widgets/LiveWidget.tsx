@@ -1,6 +1,6 @@
 import moment from 'moment';
-import {getLessonURL, LiveLesson} from 'open-polito-api/course';
-import {Device} from 'open-polito-api/device';
+import {getLessonURL, LiveLesson} from 'open-polito-api/lib/course';
+import {Device} from 'open-polito-api/lib/device';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Linking, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';

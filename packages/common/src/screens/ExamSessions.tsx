@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FlatList, RefreshControl, TouchableOpacity, View} from 'react-native';
-import {ExamSession} from 'open-polito-api/exam_sessions';
+import {ExamSession} from 'open-polito-api/lib/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
 import * as RNLocalize from 'react-native-localize';

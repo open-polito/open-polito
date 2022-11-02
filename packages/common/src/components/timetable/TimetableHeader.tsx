@@ -1,7 +1,7 @@
 import React, {useContext, useMemo} from 'react';
 import {Pressable, View} from 'react-native';
 import colors from '../../colors';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import Toggles from '../../ui/HorizontalIconSelector';

@@ -7,7 +7,7 @@ import {p} from '../../scaling';
 import {DeviceContext} from '../../context/Device';
 import Text from '../../ui/core/Text';
 import ModalBase from './ModalBase';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 
 const TimetableEventModal: FC<{slot: TimetableSlot}> = ({slot}) => {
   const {dark} = useContext(DeviceContext);

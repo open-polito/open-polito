@@ -1,5 +1,3 @@
-import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import colors from '../colors';
 import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';
@@ -80,8 +78,8 @@ const FILE_TYPES = [
   },
 ];
 
-export default function getFileIcon(filename, dark) {
-  const ext = filename.split('.').pop().toLowerCase();
+export default function getFileIcon(filename: string, dark: boolean) {
+  const ext = filename.split('.').pop()!.toLowerCase();
   for (let i = 0; i < FILE_TYPES.length; i++) {
     const {icon, extensions} = FILE_TYPES[i];
     if (extensions.includes(ext)) {

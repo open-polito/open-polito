@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-import {Entry} from 'open-polito-api/device';
+import {Entry} from 'open-polito-api/lib/device';
 import Config from 'react-native-config';
 import DeviceInfo from 'react-native-device-info';
 import defaultConfig from '../defaultConfig';
@@ -108,7 +108,7 @@ export default class Logger {
   static async logRequest(entry: Entry) {
     await Logger.logBasicDeviceInfo();
     // Don't log if debug options not enabled
-    if (!parseInt(Config.ENABLE_DEBUG_OPTIONS, 10)) return;
+    if (!parseInt(Config.ENABLE_DEBUG_OPTIONS!, 10)) return;
     // Don't log if login endpoint
     if (entry.endpoint.includes('login')) return;
     await Logger.writeToFile({

@@ -1,30 +1,14 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  Linking,
-  Pressable,
-  StatusBar,
-  View,
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {ActivityIndicator, View} from 'react-native';
+import {useDispatch} from 'react-redux';
 import colors from '../colors';
-import {TextN, TextS} from '../components/Text';
-import styles from '../styles';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTranslation} from 'react-i18next';
-import ScreenContainer from '../components/ScreenContainer';
 import {DeviceContext} from '../context/Device';
-import {AppDispatch, RootState} from '../store/store';
+import {AppDispatch} from '../store/store';
 import WebView, {WebViewNavigation} from 'react-native-webview';
-import {getUnreadEmailCount, UserState} from '../store/userSlice';
-import {Configuration} from '../defaultConfig';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import {emailUrl, PersonalData} from 'open-polito-api/user';
+import {getUnreadEmailCount} from '../store/userSlice';
+import Animated from 'react-native-reanimated';
+import {emailUrl} from 'open-polito-api/lib/user';
 import Screen from '../ui/Screen';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import {p} from '../scaling';

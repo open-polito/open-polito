@@ -7,7 +7,7 @@ import DirectoryItem from '../ui/DirectoryItem';
 import {AppDispatch, RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
 import {DropdownItem, ExtendedFile} from '../types';
-import {MaterialItem} from 'open-polito-api/material';
+import {MaterialItem} from 'open-polito-api/lib/material';
 import Screen from '../ui/Screen';
 import {p} from '../scaling';
 import PressableBase from '../ui/core/PressableBase';

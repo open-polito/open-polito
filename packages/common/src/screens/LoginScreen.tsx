@@ -5,7 +5,7 @@ import {DeviceContext} from '../context/Device';
 import {LoginData, login, setToast} from '../store/sessionSlice';
 import 'react-native-get-random-values';
 import {v4 as UUIDv4} from 'uuid';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import Screen from '../ui/Screen';
 import {StyleSheet, View, ToastAndroid, Alert} from 'react-native';
 import Text from '../ui/core/Text';
