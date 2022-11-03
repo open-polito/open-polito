@@ -1,3 +1,5 @@
+import {Platform} from 'react-native';
+
 /**
  * Get scaling factor for current device
  *
@@ -5,6 +7,9 @@
  * @returns scaling factor
  */
 export const getScalingFactor = () => {
+  if (Platform.OS === 'web') {
+    return 1.25;
+  }
   return 1.15;
 };
 

@@ -1,9 +1,17 @@
 import {Device} from 'open-polito-api/lib/device';
-import React, {createContext, ReactNode, useMemo, useState} from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {ColorSchemeName, useColorScheme} from 'react-native';
 import {useSelector} from 'react-redux';
+import {Configuration} from '../defaultConfig';
 import {RootState} from '../store/store';
 import {createDevice} from '../utils/api-utils';
+import Logger from '../utils/Logger';
 
 export type DeviceProviderProps = {
   chosenTheme: string;
@@ -47,15 +55,24 @@ const DeviceProvider = ({
   device: Device;
 }) => {
   const [_device, _setDevice] = useState(device);
-  const _chosenTheme = useSelector<RootState, string>(
-    state => state.session.config.theme,
+
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
   );
+
+  /**
+   * Set request logger when config or device change
+   */
+  useEffect(() => {
+    device.request_logger = config.logging ? Logger.logRequestSync : () => {};
+  }, [config, device]);
+
   const _colorScheme = useColorScheme();
   const _dark = useMemo<boolean>(() => {
-    return _chosenTheme === 'system'
+    return config.theme === 'system'
       ? _colorScheme === 'dark'
-      : _chosenTheme === 'dark';
-  }, [_chosenTheme, _colorScheme]);
+      : config.theme === 'dark';
+  }, [config.theme, _colorScheme]);
 
   return (
     <DeviceContext.Provider
@@ -65,7 +82,7 @@ const DeviceProvider = ({
           _setDevice(d);
         },
 
-        chosenTheme: _chosenTheme,
+        chosenTheme: config.theme,
         colorScheme: _colorScheme,
         dark: _dark,
       }}>

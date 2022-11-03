@@ -7,10 +7,12 @@ const {
   addWebpackResolve,
   addWebpackAlias,
   addWebpackPlugin,
+  addBabelPlugin,
+  addBabelPlugins,
 } = require('customize-cra');
 const webpack = require('webpack');
 
-const platforms = [...(PLATFORM == 'DESKTOP' ? ['.desktop'] : []), '.web', ''];
+const platforms = [...(PLATFORM === 'DESKTOP' ? ['.desktop'] : []), '.web', ''];
 const exts = ['.tsx', '.ts', '.jsx', '.js', '.cjs'];
 
 const resolveExtensions = [
@@ -58,6 +60,10 @@ module.exports = function (config, env) {
           ],
         },
       }),
+      addWebpackModuleRule({
+        test: /\.ttf$/,
+        type: 'asset/resource',
+      }),
       addWebpackResolve({
         extensions: resolveExtensions,
       }),
@@ -70,6 +76,7 @@ module.exports = function (config, env) {
           __DEV__: JSON.stringify(env.mode !== 'production'),
         }),
       ),
+      // addBabelPlugin('react-native-reanimated/plugin'),
       // addBabelPlugin('@babel/plugin-syntax-jsx'),
       // addBabelPlugins(
       //   '@babel/plugin-proposal-class-properties',
@@ -80,6 +87,39 @@ module.exports = function (config, env) {
       // addBabelPresets('@babel/preset-env', '@babel/preset-react'),
     )(config, env),
   );
+
+  config.entry = ['@babel/polyfill', config.entry];
+  config.plugins.push(new webpack.EnvironmentPlugin({JEST_WORKER_ID: null}));
+  config.plugins.push(new webpack.DefinePlugin({process: {env: {}}}));
+
+  config.module.rules.push({
+    test: /\.js$/,
+    include: [resolve('../../node_modules/react-native-reanimated')],
+    use: {
+      loader: 'babel-loader',
+      options: {
+        presets: [
+          [
+            'module:metro-react-native-babel-preset',
+            {useTransformReactJSXExperimental: true},
+          ],
+        ],
+        plugins: [
+          'react-native-web',
+          'react-native-reanimated/plugin',
+          [
+            '@babel/plugin-transform-react-jsx',
+            {
+              runtime: 'automatic',
+            },
+          ],
+          '@babel/plugin-proposal-export-namespace-from',
+        ],
+      },
+    },
+  });
+
+  console.log('CONF', JSON.stringify(conf, null, 4));
 
   return conf;
 };

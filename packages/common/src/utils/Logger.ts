@@ -1,9 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import {Entry} from 'open-polito-api/lib/device';
 import Config from 'react-native-config';
 import DeviceInfo from 'react-native-device-info';
-import defaultConfig from '../defaultConfig';
 import store from '../store/store';
 import version from '../../../../version.json';
 import {appendFile, getDocumentsPath} from './fs';
@@ -44,26 +42,6 @@ export default class Logger {
     '.txt';
 
   public static hasLoggedBasicDeviceInfo: boolean = false;
-
-  /**
-   * Returns whether or not logging is enabled in settings
-   * @returns boolean
-   */
-  static async isLoggingEnabled(): Promise<boolean> {
-    let loggingEnabled = false;
-    try {
-      const loggingConfig = await AsyncStorage.getItem('@config');
-      if (loggingConfig == null) {
-        await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
-        loggingEnabled = defaultConfig.logging;
-      } else {
-        loggingEnabled = JSON.parse(loggingConfig).logging;
-      }
-    } catch (e) {
-    } finally {
-      return loggingEnabled;
-    }
-  }
 
   /**
    * Writes log entry to log file

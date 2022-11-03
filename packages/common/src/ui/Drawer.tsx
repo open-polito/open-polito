@@ -2,7 +2,7 @@ import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
 } from '@react-navigation/drawer';
-import React, {FC, useContext, useMemo, useState} from 'react';
+import React, {FC, useCallback, useContext, useMemo, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import colors from '../colors';
 import Text from './core/Text';
@@ -15,11 +15,8 @@ import TablerIcon from './core/TablerIcon';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store/store';
 import {PersonalData} from 'open-polito-api/lib/user';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {logout} from '../store/sessionSlice';
-import {Device} from 'open-polito-api/lib/device';
 import {DeviceContext} from '../context/Device';
-import Logger from '../utils/Logger';
 
 // TODO remove when sections completed
 const isSectionUnavailable = (name: string) => {
@@ -124,29 +121,9 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
     ));
   };
 
-  // Copied from legacy settings screen
-  // TODO separation of logic
-  const handleLogout = () => {
-    (async () => {
-      try {
-        await AsyncStorage.multiRemove(['@config']);
-      } catch (e) {}
-      // We create another Device because we need to reset current device from context
-      dispatch(
-        logout(
-          new Device(
-            deviceContext.device.uuid,
-            10000,
-            (await Logger.isLoggingEnabled())
-              ? Logger.logRequestSync
-              : () => {},
-          ),
-        ),
-      );
-      // Reset context device
-      deviceContext.setDevice(new Device(''));
-    })();
-  };
+  const handleLogout = useCallback(() => {
+    dispatch(logout(deviceContext.device));
+  }, [dispatch, deviceContext]);
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -209,7 +186,10 @@ const Drawer: FC<DrawerParams> = ({dark, ...props}) => {
               {shortDegreeName}
             </Text>
           </View>
-          <PressableBase onPress={handleLogout}>
+          <PressableBase
+            onPress={() => {
+              handleLogout();
+            }}>
             <TablerIcon name="logout" size={24 * p} color={colors.accent300} />
           </PressableBase>
         </View>

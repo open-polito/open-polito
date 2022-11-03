@@ -31,7 +31,11 @@ const Text: FC<TextParams> = ({
         color: c,
         fontSize: s,
         fontFamily:
-          w == 'r' ? 'Inter-Regular' : w == 'm' ? 'Inter-Medium' : 'Inter-Bold',
+          w === 'r'
+            ? 'Inter-Regular'
+            : w === 'm'
+            ? 'Inter-Medium'
+            : 'Inter-Bold',
       },
       textHref: href
         ? {
@@ -42,7 +46,7 @@ const Text: FC<TextParams> = ({
           }
         : {},
     });
-  }, [c, s, w]);
+  }, [c, s, w, href]);
 
   return (
     <RNText

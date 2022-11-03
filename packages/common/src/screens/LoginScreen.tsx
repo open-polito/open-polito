@@ -2,23 +2,18 @@ import React, {useState, useContext, useMemo, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
-import {LoginData, login, setToast} from '../store/sessionSlice';
+import {login, setToast} from '../store/sessionSlice';
 import 'react-native-get-random-values';
-import {v4 as UUIDv4} from 'uuid';
-import {Device} from 'open-polito-api/lib/device';
 import Screen from '../ui/Screen';
-import {StyleSheet, View, ToastAndroid, Alert} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Text from '../ui/core/Text';
 import colors from '../colors';
-import TablerIcon from '../ui/core/TablerIcon';
 import TextInput from '../ui/core/TextInput';
 import Button from '../ui/core/Button';
 import {p} from '../scaling';
-import {AuthStatus, STATUS, Status} from '../store/status';
+import {STATUS, Status} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
-import Svg, {SvgFromUri, SvgUri} from 'react-native-svg';
 import {LoginValidationResult, validateLoginInput} from '../utils/auth';
-import Logger from '../utils/Logger';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -37,6 +32,10 @@ export default function LoginScreen() {
    * Login with password
    */
   const loginWithPassword = async () => {
+    /**
+     * Validate fields
+     */
+
     const validationResult = validateLoginInput(username, password);
 
     switch (validationResult) {
@@ -71,50 +70,41 @@ export default function LoginScreen() {
         return;
     }
 
-    const uuid = UUIDv4();
-
-    const loggingEnabled = await Logger.isLoggingEnabled();
-
-    const device = new Device(
-      uuid,
-      10000,
-      loggingEnabled ? Logger.logRequestSync : () => {},
-    );
-
-    // Set device instance
-    deviceContext.setDevice(device);
+    /**
+     * Actually login
+     */
 
     await dispatch(
       login({
         method: 'password',
         username: username,
-        token: password,
-        device: device,
+        password: password,
+        device: deviceContext.device,
       }),
     );
   };
 
-  const fields = [
-    ['brand-open-source', t('title1'), t('desc1')],
-    ['bolt', t('title2'), t('desc2')],
-    ['apps', t('title3'), t('desc3')],
-  ];
+  // const fields = [
+  //   ['brand-open-source', t('title1'), t('desc1')],
+  //   ['bolt', t('title2'), t('desc2')],
+  //   ['apps', t('title3'), t('desc3')],
+  // ];
 
   /**
    * Show toast notification based on login result
    */
-  useEffect(() => {
-    if (loginStatus.code === STATUS.ERROR) {
-      dispatch(
-        setToast({
-          type: 'err',
-          message: loginStatus.error?.message ?? '',
-          visible: true,
-          icon: '',
-        }),
-      );
-    }
-  }, [loginStatus, dispatch]);
+  // useEffect(() => {
+  //   if (loginStatus.code === STATUS.ERROR) {
+  //     dispatch(
+  //       setToast({
+  //         type: 'err',
+  //         message: loginStatus.error?.message ?? '',
+  //         visible: true,
+  //         icon: '',
+  //       }),
+  //     );
+  //   }
+  // }, []);
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -231,9 +221,7 @@ export default function LoginScreen() {
             text={t('login')}
             style={{marginBottom: 16 * p}}
             onPress={() => {
-              (async () => {
-                loginWithPassword();
-              })();
+              loginWithPassword();
             }}
           />
           {/* <View style={_styles.or}>
