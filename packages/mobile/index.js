@@ -1,15 +1,13 @@
 import Analytics from 'appcenter-analytics';
-import {AppRegistry, Platform} from 'react-native';
 import Config from 'react-native-config';
-import App from '@open-polito/common/src/App';
-import {name as appName} from '../../app.json';
+import App from './src/App';
 import CodePush from 'react-native-code-push';
+import {registerRootComponent} from 'expo';
+import {Platform} from 'react-native';
 
 const VARIANT = Config.VARIANT;
-const ENABLE_CODEPUSH = VARIANT != 'debug'; // disable CodePush in debug mode
+const ENABLE_CODEPUSH = Platform.OS === 'android' && VARIANT != 'debug'; // disable CodePush in debug mode
 
 if (ENABLE_CODEPUSH) Analytics.setEnabled(true);
 
-AppRegistry.registerComponent(appName, () =>
-  ENABLE_CODEPUSH ? CodePush(App) : App,
-);
+registerRootComponent(ENABLE_CODEPUSH ? CodePush(App) : App);

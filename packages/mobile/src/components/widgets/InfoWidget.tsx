@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {LinearGradient} from 'expo-linear-gradient';
 import WidgetBase from './WidgetBase';
 import Icon from 'react-native-vector-icons/Ionicons';
 import styles from '../../styles';

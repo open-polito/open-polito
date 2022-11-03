@@ -69,3 +69,5 @@ buck-out/
 
 # vscode
 .vscode/
+
+.expo/

@@ -3,7 +3,7 @@ import {getLessonURL, LiveLesson} from 'open-polito-api/lib/course';
 import {Device} from 'open-polito-api/lib/device';
 import React, {FC, useEffect, useRef, useState} from 'react';
 import {Linking, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {LinearGradient} from 'expo-linear-gradient';
 import colors from '../../colors';
 import {p} from '../../scaling';
 import styles from '../../styles';
