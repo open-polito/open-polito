@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {PermanentMark} from 'open-polito-api/lib/courses';
-import {useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useWindowDimensions, View} from 'react-native';
 import LineChart, {

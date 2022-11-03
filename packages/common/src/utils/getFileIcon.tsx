@@ -1,3 +1,4 @@
+import React from 'react';
 import colors from '../colors';
 import {p} from '../scaling';
 import TablerIcon from '../ui/core/TablerIcon';

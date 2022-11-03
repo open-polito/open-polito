@@ -37,15 +37,15 @@ allprojects {
     repositories {
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-            url("$rootDir/../node_modules/react-native/android")
+            url("$rootDir/../../../node_modules/react-native/android")
         }
         maven {
             // Android JSC is installed from npm
-            url("$rootDir/../node_modules/jsc-android/dist")
+            url("$rootDir/../../../node_modules/jsc-android/dist")
         }
         maven {
             // Notifee
-            url "$rootDir/../node_modules/@notifee/react-native/android/libs"
+            url "$rootDir/../../../node_modules/@notifee/react-native/android/libs"
         }
         mavenCentral {
             // We don't want to fetch react-native from Maven Central as there are

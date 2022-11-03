@@ -3,10 +3,10 @@
   "version": "0.5.1",
   "private": true,
   "scripts": {
-    "android:debug": "cross-env ENVFILE=.env.debug react-native run-android --variant debugFlavorDebug --appIdSuffix debug",
-    "android:dev": "cross-env ENVFILE=.env.dev react-native run-android --variant devFlavorRelease --appIdSuffix dev",
-    "android:beta": "cross-env ENVFILE=.env.beta react-native run-android --variant betaFlavorRelease",
-    "android:release": "cross-env ENVFILE=.env.release react-native run-android --variant releaseFlavorRelease",
+    "android:debug": "cross-env ENVFILE=../../.env.debug react-native run-android --variant debugFlavorDebug --appIdSuffix debug",
+    "android:dev": "cross-env ENVFILE=../../.env.dev react-native run-android --variant devFlavorRelease --appIdSuffix dev",
+    "android:beta": "cross-env ENVFILE=../../.env.beta react-native run-android --variant betaFlavorRelease",
+    "android:release": "cross-env ENVFILE=../../.env.release react-native run-android --variant releaseFlavorRelease",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
@@ -58,6 +58,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.20.1",
     "@types/react-native-svg-animated-linear-gradient": "^0.4.0"
   }
 }

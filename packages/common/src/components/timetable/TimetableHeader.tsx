@@ -16,18 +16,17 @@ import {DeviceContext} from '../../context/Device';
 import {p} from '../../scaling';
 import Button from '../../ui/core/Button';
 import TablerIcon from '../../ui/core/TablerIcon';
-// import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
+import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ModalContext} from '../../context/ModalProvider';
 import TimetableOptionsModal from '../modals/TimetableOptionsModal';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
-  // TODO UNCOMMENT
-  // DateTimePickerAndroid.open({
-  //   mode: 'date',
-  //   value: new Date(),
-  //   onChange: date => callback(date.nativeEvent.timestamp),
-  // });
+  DateTimePickerAndroid.open({
+    mode: 'date',
+    value: new Date(),
+    onChange: date => callback(date.nativeEvent.timestamp),
+  });
 };
 
 const TimetableHeader = ({
