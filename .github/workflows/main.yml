@@ -16,7 +16,7 @@ jobs:
         run: |
           yarn
       - name: Run Jest
-        run: yarn run test
+        run: yarn workspace @open-polito/mobile run test
       - name: Cache Gradle Wrapper
         uses: actions/cache@v2
         with:
