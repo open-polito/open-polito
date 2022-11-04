@@ -1,8 +1,8 @@
 name: react-native-android-build-apk
 on:
   push:
-    branches:
-      - master
+    # branches:
+    # - master
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
-      - name: Run  pre-build script
+      - name: Run pre-build script
         env:
           DEV_KEYSTORE: ${{ secrets.DEV_KEYSTORE }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
@@ -40,7 +40,7 @@ jobs:
         env:
           ENVFILE: .env.dev
         run:
-          cd android/ && ./gradlew clean && ./gradlew assembleDevFlavorRelease --no-daemon
+          cd packages/mobile/android/ && ./gradlew clean && ./gradlew assembleDevFlavorRelease --no-daemon
           -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/dev-key-store.jks
           -Pandroid.injected.signing.store.password="${{ secrets.DEV_KEYSTORE_PASSWD }}"
           -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}"
@@ -53,14 +53,14 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: arm64
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-arm64-v8a-release.apk
+          path: packages/mobile/android/app/build/outputs/apk/devFlavor/release/app-devFlavor-arm64-v8a-release.apk
       - name: Upload ARMEABI binary
         uses: actions/upload-artifact@v1
         with:
           name: armeabi-v7a
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-armeabi-v7a-release.apk
+          path: packages/mobile/android/app/build/outputs/apk/devFlavor/release/app-devFlavor-armeabi-v7a-release.apk
       - name: Upload universal binary
         uses: actions/upload-artifact@v1
         with:
           name: universal
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-universal-release.apk
+          path: packages/mobile/android/app/build/outputs/apk/devFlavor/release/app-devFlavor-universal-release.apk
