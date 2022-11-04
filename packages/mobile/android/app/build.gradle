@@ -80,6 +80,7 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     cliPath: "../../../../node_modules/react-native/cli.js",
+    hermesCommand: "../../../../node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc",
     entryFile: "index.js",
     enableHermes: true,  // clean and rebuild if changing
 ]
