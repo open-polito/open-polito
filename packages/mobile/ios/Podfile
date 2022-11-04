@@ -1,5 +1,5 @@
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../../../node_modules/react-native/scripts/react_native_pods'
+require_relative '../../../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 platform :ios, '12.4'
 install! 'cocoapods', :deterministic_uuids => false
@@ -7,6 +7,15 @@ install! 'cocoapods', :deterministic_uuids => false
 production = ENV["PRODUCTION"] == "1"
 
 target 'OpenPoliTo' do
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+  	rescue => e
+  	  Pod::UI.warn e
+  	end
+  end
+  
   config = use_native_modules!
 
   # Flags change depending on the env values.
@@ -23,17 +32,17 @@ target 'OpenPoliTo' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'RNKeychain', :path => '../node_modules/react-native-keychain'
+  pod 'RNKeychain', :path => '../../../node_modules/react-native-keychain'
 
-  pod 'RNSVG', :path => '../node_modules/react-native-svg'
+  pod 'RNSVG', :path => '../../../node_modules/react-native-svg'
 
-  pod 'react-native-video', :path => '../node_modules/react-native-video'
+  pod 'react-native-video', :path => '../../../node_modules/react-native-video'
 
-  pod 'react-native-config', :path => '../node_modules/react-native-config'
+  pod 'react-native-config', :path => '../../../node_modules/react-native-config'
 
-  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
+  pod 'react-native-webview', :path => '../../../node_modules/react-native-webview'
 
-  pod 'CodePush', :path => '../node_modules/react-native-code-push'
+  pod 'CodePush', :path => '../../../node_modules/react-native-code-push'
 
   target 'OpenPoliToTests' do
     inherit! :complete

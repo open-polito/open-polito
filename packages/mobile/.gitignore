@@ -71,3 +71,4 @@ buck-out/
 .vscode/
 
 .expo/
+web-build/

@@ -25,7 +25,7 @@ const AnimatedGradientBase = ({
       x2={'125%'}>
       {children}
     </SvgAnimatedLinearGradient>
-  // );
+  );
 };
 
 export default AnimatedGradientBase;

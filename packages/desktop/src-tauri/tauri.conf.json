@@ -4,11 +4,11 @@
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
     "devPath": "http://localhost:19006",
-    "distDir": "."
+    "distDir": "../../mobile/web-build"
   },
   "package": {
     "productName": "Open PoliTo",
-    "version": "0.1.0"
+    "version": "0.5.1"
   },
   "tauri": {
     "allowlist": {
@@ -29,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "org.openpolito.app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
