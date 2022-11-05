@@ -1,56 +1,89 @@
 name: new-release
 on:
   push:
-    tags-ignore:
-      - v*-alpha*
+    # tags-ignore:
+    #   - v*-alpha*
 jobs:
-  release-android-linux:
-    name: 'Release: Android, Linux'
-    runs-on: ubuntu-latest
+  # release-android-linux:
+  #   name: 'Release: Android, Linux'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 16
+  #         cache: 'yarn'
+  #     - name: Install npm dependencies
+  #       run: |
+  #         yarn
+  #     - name: Cache Gradle Wrapper
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ~/.gradle/wrapper
+  #         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+  #     - name: Cache Gradle dependencies
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ~/.gradle/caches
+  #         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-gradle-caches-
+  #     - name: Run pre-build script
+  #       env:
+  #         RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+  #         APP_SECRET: ${{ secrets.APP_SECRET }}
+  #         GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
+  #       run: ./scripts/pre_build_release.sh
+  #     - name: Build Android app
+  #       env:
+  #         ENVFILE: .env.release
+  #       run:
+  #         cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
+  #         -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
+  #         -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
+  #         -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
+  #         -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
+  #         -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
+  #     - name: Run post-build script
+  #       if: always()
+  #       run: ./scripts/post_build_release.sh
+  release-desktop:
+    name: 'Release: Desktop'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           cache: 'yarn'
-      - name: Install npm dependencies
+      - name: Rust setup
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
         run: |
-          yarn
-      - name: Cache Gradle Wrapper
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-caches-
-      - name: Run pre-build script
-        env:
-          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
-          APP_SECRET: ${{ secrets.APP_SECRET }}
-          GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: ./scripts/pre_build_release.sh
-      - name: Build Android app
-        env:
-          ENVFILE: .env.release
-        run:
-          cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
-          -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
-          -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
-          -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
-          -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
-          -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
-      - name: Run post-build script
-        if: always()
-        run: ./scripts/post_build_release.sh
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: Install npm dependencies
+        run: yarn
       - name: Generate web bundle
         run: yarn run build:web
-      - name: Build Linux app
-        run: yarn tauri build
+      - name: Build the app
+        uses: tauri-apps/tauri-action@v0
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'v__VERSION__'
+          releaseBody: ''
+          releaseDraft: true
+          prerelease: false
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
