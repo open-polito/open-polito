@@ -1,10 +1,6 @@
 name: new-release
 on:
   push:
-    branches:
-      - master
-    tags:
-      - v*
     tags-ignore:
       - v*-alpha*
 jobs:
@@ -38,7 +34,7 @@ jobs:
           APP_SECRET: ${{ secrets.APP_SECRET }}
           GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: ./scripts/pre_build_release.sh
-      - name: Build release
+      - name: Build Android app
         env:
           ENVFILE: .env.release
         run:
@@ -51,6 +47,10 @@ jobs:
       - name: Run post-build script
         if: always()
         run: ./scripts/post_build_release.sh
+      - name: Generate web bundle
+        run: yarn run build:web
+      - name: Build Linux app
+        run: yarn tauri build
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
