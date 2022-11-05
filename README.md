@@ -3,9 +3,30 @@
 
 <div align="center">
 
-[![Github All Contributors](https://img.shields.io/github/all-contributors/open-polito/open-polito)](#contributors)
-![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=flat)
-![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=flat)
+[![Android Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=ANDROID&color=3DDC84&style=for-the-badge&logo=android)](#download-url)
+
+<!-- [![iOS Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=iOS&color=000000&style=for-the-badge&logo=apple)](#download-url) -->
+
+</div>
+
+<div align="center">
+
+[![Windows Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Windows&color=0078D6&style=for-the-badge&logo=windows)](#download-url)
+[![MacOS Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=MacOS&color=000000&style=for-the-badge&logo=apple)](#download-url)
+[![Linux Debian Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20.deb&color=A81D33&style=for-the-badge&logo=debian)](#download-url)
+[![Linux AppImage Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20AppImage&color=FCC624&style=for-the-badge&logo=linux)](#download-url)
+
+<!-- [![Linux Flathub Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20Flathub&color=4A86CF&style=for-the-badge&logo=flathub&logoColor=white)](#download-url)
+[![Linux Snapcraft Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20Snapcraft&color=0078D6&style=for-the-badge&logo=snapcraft)](#download-url) -->
+
+</div>
+<hr>
+<div align="center">
+
+[![Github All Contributors](https://img.shields.io/github/all-contributors/open-polito/open-polito?style=for-the-badge)](#contributors)
+![GitHub all releases](https://img.shields.io/github/downloads/open-polito/open-polito/total?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=for-the-badge)
 
 </div>
 

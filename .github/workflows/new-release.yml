@@ -1,10 +1,15 @@
-name: react-native-android-build-apk
+name: new-release
 on:
   push:
-    # branches:
-    # - master
+    branches:
+      - master
+    tags:
+      - v*
+    tags-ignore:
+      - v*-alpha*
 jobs:
-  build-android:
+  release-android-linux:
+    name: 'Release: Android, Linux'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -15,14 +20,11 @@ jobs:
       - name: Install npm dependencies
         run: |
           yarn
-      - name: Run Jest
-        run: yarn workspace @open-polito/mobile run test
       - name: Cache Gradle Wrapper
         uses: actions/cache@v2
         with:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-
       - name: Cache Gradle dependencies
         uses: actions/cache@v2
         with:
@@ -32,35 +34,35 @@ jobs:
             ${{ runner.os }}-gradle-caches-
       - name: Run pre-build script
         env:
-          DEV_KEYSTORE: ${{ secrets.DEV_KEYSTORE }}
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
           APP_SECRET: ${{ secrets.APP_SECRET }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: ./scripts/pre_build_dev.sh
-      - name: Build dev release variant
+          GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: ./scripts/pre_build_release.sh
+      - name: Build release
         env:
-          ENVFILE: .env.dev
+          ENVFILE: .env.release
         run:
-          cd android/ && ./gradlew clean && ./gradlew assembleDevFlavorRelease --no-daemon
-          -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/dev-key-store.jks
-          -Pandroid.injected.signing.store.password="${{ secrets.DEV_KEYSTORE_PASSWD }}"
-          -Pandroid.injected.signing.key.alias="${{ secrets.DEV_KEYSTORE_ALIAS }}"
-          -Pandroid.injected.signing.key.password="${{ secrets.DEV_KEY_PASSWD }}"
-          -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_DEV }}"
+          cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
+          -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
+          -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
+          -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
+          -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
+          -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
       - name: Run post-build script
         if: always()
-        run: ./scripts/post_build_dev.sh
+        run: ./scripts/post_build_release.sh
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
           name: arm64
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-arm64-v8a-release.apk
+          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-arm64-v8a-release.apk
       - name: Upload ARMEABI binary
         uses: actions/upload-artifact@v1
         with:
           name: armeabi-v7a
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-armeabi-v7a-release.apk
+          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-armeabi-v7a-release.apk
       - name: Upload universal binary
         uses: actions/upload-artifact@v1
         with:
           name: universal
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-universal-release.apk
+          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-universal-release.apk
