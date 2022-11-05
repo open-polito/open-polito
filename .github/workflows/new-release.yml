@@ -84,18 +84,18 @@ jobs:
           releaseBody: ''
           releaseDraft: true
           prerelease: false
-      - name: Upload ARM64 binary
-        uses: actions/upload-artifact@v1
-        with:
-          name: arm64
-          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-arm64-v8a-release.apk
-      - name: Upload ARMEABI binary
-        uses: actions/upload-artifact@v1
-        with:
-          name: armeabi-v7a
-          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-armeabi-v7a-release.apk
-      - name: Upload universal binary
-        uses: actions/upload-artifact@v1
-        with:
-          name: universal
-          path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-universal-release.apk
+      # - name: Upload ARM64 binary
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: arm64
+      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-arm64-v8a-release.apk
+      # - name: Upload ARMEABI binary
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: armeabi-v7a
+      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-armeabi-v7a-release.apk
+      # - name: Upload universal binary
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: universal
+      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-universal-release.apk
