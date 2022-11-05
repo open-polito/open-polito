@@ -66,9 +66,6 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-# ttf fonts
-*.ttf
-
 # vscode
 .vscode/
 
