@@ -46,7 +46,12 @@ if __name__ == "__main__":
     final_data = []
     if arg == "final":
         for platform in PLATFORMS:
-            with open(f"assets_{platform}.json", "rt") as f:
+            identifier = f"assets_{platform}.json"
+            # actions/download-artifact@v3 creates a directory with file's name
+            # for each downloaded artifact.
+            # E.g. artifact my_file.json will be downloaded to my_file.json/my_file.json
+            path = os.path.join(identifier, identifier)
+            with open(path, "rt") as f:
                 data = json.load(f)
                 final_data.extend(data)
     elif arg == "android":
@@ -82,7 +87,7 @@ if __name__ == "__main__":
                 if res is not None:
                     arch = res.group(1)
                     ext = res.group(2)
-                    new_filename = f"open-polito_linux_{git_tag}_{arch}.{ext}"
+                    new_filename = f"open-polito_{arg}_{git_tag}_{arch}.{ext}"
                     sha256 = get_checksum(os.path.join(base, dir, file))
                     final_data.append(create_asset_entry(
                         "linux", arch, new_filename, sha256))
