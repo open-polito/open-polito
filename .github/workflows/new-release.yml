@@ -1,8 +1,8 @@
 name: new-release
 on:
   push:
-    # tags-ignore:
-    #   - v*-alpha*
+    tags:
+      - v**
 jobs:
   release-android:
     name: 'Release: Android'
@@ -47,16 +47,22 @@ jobs:
       - name: Run post-build script
         if: always()
         run: ./scripts/post_build_release.sh
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - name: Generate partial assets.json (Android)
-        run: python scripts/create-assets-json.py android $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py android ${{ github.ref_name }}
       - name: Upload partial assets.json (Android)
         uses: actions/upload-artifact@v3
         with:
           name: assets_android.json
           path: assets_android.json
+      # This is also the first time the new release is set up
       - name: Upload release assets (Android)
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           files: |
             android/app/build/outputs/apk/releaseFlavor/release/**.apk
   release-desktop:
@@ -90,15 +96,19 @@ jobs:
         run: yarn run build:desktop
       - name: Build the app
         run: yarn tauri build
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - name: Generate partial assets.json (Linux)
         if: matrix.platform == 'ubuntu-latest'
-        run: python scripts/create-assets-json.py linux $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py linux ${{ github.ref_name }}
       - name: Generate partial assets.json (Windows)
         if: matrix.platform == 'windows-latest'
-        run: python scripts/create-assets-json.py windows $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py windows ${{ github.ref_name }}
       - name: Generate partial assets.json (MacOS)
         if: matrix.platform == 'macos-latest'
-        run: python scripts/create-assets-json.py macos $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py macos ${{ github.ref_name }}
       - name: Upload partial assets.json (Linux)
         if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
@@ -120,18 +130,25 @@ jobs:
       - name: Upload release assets (desktop)
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           files: |
             tauri-out-app/**
   finalize-release:
     needs: [release-android, release-desktop]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Download all partial assets.json artifacts
         uses: actions/download-artifact@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
       - name: Generate final assets.json
-        run: python scripts/create-assets-json.py final $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py final ${{ github.ref_name }}
       - name: Upload final assets.json to release
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           files: |
             assets.json
