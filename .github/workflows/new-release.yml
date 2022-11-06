@@ -4,49 +4,61 @@ on:
     # tags-ignore:
     #   - v*-alpha*
 jobs:
-  # release-android-linux:
-  #   name: 'Release: Android, Linux'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-  #         cache: 'yarn'
-  #     - name: Install npm dependencies
-  #       run: |
-  #         yarn
-  #     - name: Cache Gradle Wrapper
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: ~/.gradle/wrapper
-  #         key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-  #     - name: Cache Gradle dependencies
-  #       uses: actions/cache@v2
-  #       with:
-  #         path: ~/.gradle/caches
-  #         key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-gradle-caches-
-  #     - name: Run pre-build script
-  #       env:
-  #         RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
-  #         APP_SECRET: ${{ secrets.APP_SECRET }}
-  #         GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
-  #       run: ./scripts/pre_build_release.sh
-  #     - name: Build Android app
-  #       env:
-  #         ENVFILE: .env.release
-  #       run:
-  #         cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
-  #         -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
-  #         -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
-  #         -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
-  #         -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
-  #         -PdeploymentKeyDev="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
-  #     - name: Run post-build script
-  #       if: always()
-  #       run: ./scripts/post_build_release.sh
+  release-android:
+    name: 'Release: Android'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Install npm dependencies
+        run: |
+          yarn
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Run pre-build script
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: ./scripts/pre_build_release.sh
+      - name: Build Android app
+        env:
+          ENVFILE: .env.release
+        run:
+          cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
+          -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
+          -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
+          -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
+          -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
+          -PdeploymentKeyProd="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
+      - name: Run post-build script
+        if: always()
+        run: ./scripts/post_build_release.sh
+      - name: Generate partial assets.json (Android)
+        run: python scripts/create-assets-json.py android $GITHUB_REF_NAME
+      - name: Upload partial assets.json (Android)
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_android.json
+          path: assets_android.json
+      - name: Upload release assets (Android)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            android/app/build/outputs/apk/releaseFlavor/release/**.apk
   release-desktop:
     name: 'Release: Desktop'
     strategy:
@@ -74,28 +86,49 @@ jobs:
       - name: Generate web bundle
         run: yarn run build:web
       - name: Build the app
-        uses: tauri-apps/tauri-action@v0
-
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn tauri build
+      - name: Generate partial assets.json (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        run: python scripts/create-assets-json.py linux $GITHUB_REF_NAME
+      - name: Generate partial assets.json (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: python scripts/create-assets-json.py windows $GITHUB_REF_NAME
+      - name: Generate partial assets.json (MacOS)
+        if: matrix.platform == 'macos-latest'
+        run: python scripts/create-assets-json.py macos $GITHUB_REF_NAME
+      - name: Upload partial assets.json (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        uses: actions/upload-artifact@v3
         with:
-          tagName: v__VERSION__
-          releaseName: 'v__VERSION__'
-          releaseBody: ''
-          releaseDraft: true
-          prerelease: false
-      # - name: Upload ARM64 binary
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: arm64
-      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-arm64-v8a-release.apk
-      # - name: Upload ARMEABI binary
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: armeabi-v7a
-      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-armeabi-v7a-release.apk
-      # - name: Upload universal binary
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: universal
-      #     path: android/app/build/outputs/apk/releaseFlavor/release/app-releaseFlavor-universal-release.apk
+          name: assets_linux.json
+          path: assets_linux.json
+      - name: Upload partial assets.json (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_windows.json
+          path: assets_windows.json
+      - name: Upload partial assets.json (MacOS)
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_macos.json
+          path: assets_macos.json
+      - name: Upload release assets (desktop)
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            tauri-out-app/**
+  finalize-release:
+    needs: [release-android, release-desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all partial assets.json artifacts
+        uses: actions/download-artifact@v3
+      - name: Generate final assets.json
+        run: python scripts/create-assets-json.py final $GITHUB_REF_NAME
+      - name: Upload final assets.json to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            assets.json

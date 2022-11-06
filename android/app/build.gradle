@@ -310,7 +310,10 @@ android {
                 output.versionCodeOverride =
                         defaultConfig.versionCode * 1000 + versionCodes.get(abi)
             }
-
+            if (abi == null) {
+                abi = "universal" // Otherwise the filename will contain "null" for the universal build
+            }
+            output.outputFileName = "open-polito_android_v${defaultConfig.versionName}_${abi}.apk"
         }
     }
 }
