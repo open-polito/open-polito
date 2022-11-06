@@ -48,7 +48,7 @@ jobs:
         if: always()
         run: ./scripts/post_build_release.sh
       - name: Generate partial assets.json (Android)
-        run: python scripts/create-assets-json.py android $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py android $GITHUB_REF_NAME
       - name: Upload partial assets.json (Android)
         uses: actions/upload-artifact@v3
         with:
@@ -92,13 +92,13 @@ jobs:
         run: yarn tauri build
       - name: Generate partial assets.json (Linux)
         if: matrix.platform == 'ubuntu-latest'
-        run: python scripts/create-assets-json.py linux $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py linux $GITHUB_REF_NAME
       - name: Generate partial assets.json (Windows)
         if: matrix.platform == 'windows-latest'
-        run: python scripts/create-assets-json.py windows $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py windows $GITHUB_REF_NAME
       - name: Generate partial assets.json (MacOS)
         if: matrix.platform == 'macos-latest'
-        run: python scripts/create-assets-json.py macos $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py macos $GITHUB_REF_NAME
       - name: Upload partial assets.json (Linux)
         if: matrix.platform == 'ubuntu-latest'
         uses: actions/upload-artifact@v3
@@ -129,7 +129,7 @@ jobs:
       - name: Download all partial assets.json artifacts
         uses: actions/download-artifact@v3
       - name: Generate final assets.json
-        run: python scripts/create-assets-json.py final $GITHUB_REF_NAME
+        run: python scripts/create_assets_json.py final $GITHUB_REF_NAME
       - name: Upload final assets.json to release
         uses: softprops/action-gh-release@v1
         with:
