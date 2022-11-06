@@ -17,7 +17,7 @@ def create_asset_entry(os: str, arch: str, name: str, sha256: str) -> dict:
     return res
 
 
-def get_checksum(path: str) -> None:
+def get_checksum(path: str) -> str:
     block_size = 2 ** 16
     sha256 = hashlib.sha256()
     with open(path, "rb") as f:
@@ -90,7 +90,7 @@ if __name__ == "__main__":
                     new_filename = f"open-polito_{arg}_{git_tag}_{arch}.{ext}"
                     sha256 = get_checksum(os.path.join(base, dir, file))
                     final_data.append(create_asset_entry(
-                        "linux", arch, new_filename, sha256))
+                        arg, arch, new_filename, sha256))
                     os.renames(os.path.join(base, dir, file),
                                os.path.join(new_base, new_filename))
 
