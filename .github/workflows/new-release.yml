@@ -1,8 +1,8 @@
 name: new-release
 on:
   push:
-    # tags-ignore:
-    #   - v*-alpha*
+    tags:
+      - v**
 jobs:
   release-android:
     name: 'Release: Android'
@@ -54,9 +54,11 @@ jobs:
         with:
           name: assets_android.json
           path: assets_android.json
+      # This is also the first time the new release is set up
       - name: Upload release assets (Android)
         uses: softprops/action-gh-release@v1
         with:
+          draft: true
           files: |
             android/app/build/outputs/apk/releaseFlavor/release/**.apk
   release-desktop:
