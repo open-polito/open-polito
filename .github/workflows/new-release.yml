@@ -86,8 +86,8 @@ jobs:
       # I need expo-cli because the new expo breaks the web build for some reason...
       - name: Install expo-cli
         run: npm install -g expo-cli
-      - name: Generate web bundle
-        run: yarn run build:web
+      - name: Generate web bundle (desktop)
+        run: yarn run build:desktop
       - name: Build the app
         run: yarn tauri build
       - name: Generate partial assets.json (Linux)
