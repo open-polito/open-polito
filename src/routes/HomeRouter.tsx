@@ -60,8 +60,6 @@ export default function HomeRouter() {
 
   const dimensions = useWindowDimensions();
 
-  useEffect(() => console.log(dimensions), [dimensions]);
-
   const {getNotificationsStatus} = useSelector<RootState, UserState>(
     state => state.user,
   );

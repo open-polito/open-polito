@@ -1,13 +1,7 @@
 import {PermanentMark, ProvisionalMark} from 'open-polito-api/lib/courses';
 import React, {useContext, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {
-  FlatList,
-  Linking,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import colors from '../colors';
 import {RootState} from '../store/store';
@@ -25,9 +19,8 @@ import TablerIcon from '../ui/core/TablerIcon';
 import moment from 'moment';
 import i18next from 'i18next';
 import ProgressCircle from '../ui/ProgressCircle';
-import {LineChart} from 'react-native-chart-kit';
-import {LineChartData} from 'react-native-chart-kit/dist/line-chart/LineChart';
 import Progress from '../components/exams/Progress';
+import openURL from '../utils/openUrl';
 
 const tabs = ['overview', 'permanentMarks', 'provisionalMarks'];
 
@@ -96,9 +89,7 @@ const Exams = () => {
           <View style={styles.paddingHorizontal}>
             <TouchableOpacity
               onPress={async () =>
-                await Linking.openURL(
-                  'https://didattica.polito.it/img/RE_stati.jpg',
-                )
+                await openURL('https://didattica.polito.it/img/RE_stati.jpg')
               }
               style={{
                 flexDirection: 'row',

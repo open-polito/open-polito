@@ -1,12 +1,7 @@
 import React, {FC, useMemo} from 'react';
-import {
-  Linking,
-  StyleSheet,
-  Text as RNText,
-  TextProps,
-  TextStyle,
-} from 'react-native';
+import {StyleSheet, Text as RNText, TextProps, TextStyle} from 'react-native';
 import colors, {Color} from '../../colors';
+import openURL from '../../utils/openUrl';
 
 export type TextParams = {
   s: number;
@@ -54,7 +49,7 @@ const Text: FC<TextParams> = ({
       onPress={
         href
           ? () => {
-              Linking.openURL(href);
+              openURL(href);
             }
           : undefined
       }
