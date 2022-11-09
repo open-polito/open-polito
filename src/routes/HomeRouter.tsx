@@ -1,9 +1,8 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import Home from '../screens/Home';
 import Email from '../screens/Email';
 import Settings from '../screens/Settings';
 import {useDispatch, useSelector} from 'react-redux';
-import {useTranslation} from 'react-i18next';
 import Material from '../screens/Material';
 import {AppDispatch, RootState} from '../store/store';
 import {
@@ -19,12 +18,10 @@ import {
   getUnreadEmailCount,
   UserState,
 } from '../store/userSlice';
-import {registerPushNotifications} from 'open-polito-api/notifications';
-
+import {registerPushNotifications} from 'open-polito-api/lib/notifications';
 import {NativeModules, Platform} from 'react-native';
 import Config from 'react-native-config';
 import {pendingStatus, STATUS, successStatus} from '../store/status';
-import Analytics from 'appcenter-analytics';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import Drawer from '../ui/Drawer';
 import {login, SessionState} from '../store/sessionSlice';
@@ -36,10 +33,9 @@ import Maps from '../screens/Maps';
 import Classrooms from '../screens/Classrooms';
 import People from '../screens/People';
 import Courses from '../screens/Courses';
-import Keychain from 'react-native-keychain';
-import {Device} from 'open-polito-api/device';
-import Logger from '../utils/Logger';
 import Notifications from '../screens/Notifications';
+import {DrawerContentComponentProps} from '@react-navigation/drawer';
+import {DeviceSize} from '../types';
 
 export type DrawerStackParamList = {
   Home: undefined;
@@ -60,21 +56,30 @@ export type DrawerStackParamList = {
 const DrawerStack = createDrawerNavigator<DrawerStackParamList>();
 
 export default function HomeRouter() {
-  const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
-  const {dark, device, setDevice} = useContext(DeviceContext);
+  const {dark, device, size} = useContext(DeviceContext);
 
-  const {unreadEmailCount, getNotificationsStatus} = useSelector<
-    RootState,
-    UserState
-  >(state => state.user);
+  const {getNotificationsStatus} = useSelector<RootState, UserState>(
+    state => state.user,
+  );
 
   const {loginStatus} = useSelector<RootState, SessionState>(
     state => state.session,
   );
 
-  const {courses, recentMaterial, getRecentMaterialStatus, loadCoursesStatus} =
-    useSelector<RootState, CoursesState>(state => state.courses);
+  const {courses, getRecentMaterialStatus, loadCoursesStatus} = useSelector<
+    RootState,
+    CoursesState
+  >(state => state.courses);
+
+  /**
+   * Login with token
+   */
+  useEffect(() => {
+    if (loginStatus.code === STATUS.IDLE) {
+      dispatch(login({method: 'token', device}));
+    }
+  }, [loginStatus, device, dispatch]);
 
   /**
    * Whenever notifications status is set to IDLE,
@@ -82,58 +87,21 @@ export default function HomeRouter() {
    */
   useEffect(() => {
     if (
-      getNotificationsStatus.code != STATUS.IDLE ||
-      loginStatus.code != STATUS.SUCCESS
-    )
+      getNotificationsStatus.code !== STATUS.IDLE ||
+      loginStatus.code !== STATUS.SUCCESS
+    ) {
       return;
+    }
     dispatch(getNotificationList(device));
   }, [getNotificationsStatus, loginStatus]);
-
-  /**
-   * Load initial data
-   */
-  useEffect(() => {
-    (async () => {
-      // Try to access with Keychain credentials, if present
-      const keychainCredentials = await Keychain.getGenericPassword();
-
-      if (keychainCredentials) {
-        const {username, password} = keychainCredentials;
-        const {uuid, token} = JSON.parse(password);
-
-        const _loggingEnabled = await Logger.isLoggingEnabled();
-
-        // Up to this point the global Device is just a placeholder, therefore
-        // we create the actual instance, set it globally, and use it to login
-        const device = new Device(
-          uuid,
-          10000,
-          _loggingEnabled ? Logger.logRequestSync : () => {},
-        );
-
-        // Set device instance
-        setDevice(device);
-
-        dispatch(
-          login({
-            method: 'token',
-            username: keychainCredentials.username,
-            token: token,
-            device: device,
-          }),
-        );
-      } else {
-      }
-
-      return () => {};
-    })();
-  }, []);
 
   /**
    * Load everything else only after login successful
    */
   useEffect(() => {
-    if (loginStatus.code != STATUS.SUCCESS) return;
+    if (loginStatus.code !== STATUS.SUCCESS) {
+      return;
+    }
     dispatch(loadCoursesData(device));
     dispatch(getUnreadEmailCount(device));
 
@@ -143,7 +111,7 @@ export default function HomeRouter() {
      * TODO iOS support.
      */
     (async () => {
-      if (Platform.OS == 'android' && Config.VARIANT != 'debug') {
+      if (Platform.OS === 'android' && Config.VARIANT !== 'debug') {
         const FCMToken = await NativeModules.NotificationModule.getToken();
         await registerPushNotifications(device, FCMToken);
       }
@@ -156,10 +124,12 @@ export default function HomeRouter() {
    */
   useEffect(() => {
     (async () => {
-      if (loadCoursesStatus.code != STATUS.SUCCESS) return; // Cancel if basic data not loaded
+      if (loadCoursesStatus.code !== STATUS.SUCCESS) {
+        return; // Cancel if basic data not loaded
+      }
       dispatch(setLoadExtendedCourseInfoStatus(pendingStatus())); // Pending
       courses.forEach(course => {
-        if (course.status.code == STATUS.IDLE) {
+        if (course.status.code === STATUS.IDLE) {
           dispatch(loadCourse({basicCourseInfo: course.basicInfo, device}));
         }
       });
@@ -171,13 +141,16 @@ export default function HomeRouter() {
    */
   useEffect(() => {
     if (
-      getRecentMaterialStatus.code != STATUS.IDLE ||
-      loadCoursesStatus.code != STATUS.SUCCESS
-    )
+      getRecentMaterialStatus.code !== STATUS.IDLE ||
+      loadCoursesStatus.code !== STATUS.SUCCESS
+    ) {
       return; // Cancel if already computed/computing or basic data not even loaded
+    }
     let allLoaded = true;
     courses.forEach(course => {
-      if (course.status.code != STATUS.SUCCESS) allLoaded = false;
+      if (course.status.code !== STATUS.SUCCESS) {
+        allLoaded = false;
+      }
     });
     if (allLoaded) {
       dispatch(setLoadExtendedCourseInfoStatus(successStatus())); // Success
@@ -185,12 +158,19 @@ export default function HomeRouter() {
     }
   }, [courses, getRecentMaterialStatus]);
 
+  const getDrawerComponent = useCallback(
+    (props: DrawerContentComponentProps) => <Drawer dark={dark} {...props} />,
+    [dark],
+  );
+
   return (
     <DrawerStack.Navigator
       screenOptions={{
         headerShown: false,
+        drawerType: size >= DeviceSize.lg ? 'permanent' : 'front',
       }}
-      drawerContent={props => <Drawer dark={dark} {...props} />}>
+      useLegacyImplementation
+      drawerContent={props => getDrawerComponent(props)}>
       <DrawerStack.Screen name="Home" component={Home} />
       <DrawerStack.Screen name="Email" component={Email} />
       <DrawerStack.Screen name="Notifications" component={Notifications} />

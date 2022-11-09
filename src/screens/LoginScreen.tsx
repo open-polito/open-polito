@@ -2,23 +2,25 @@ import React, {useState, useContext, useMemo, useEffect} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useDispatch, useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
-import {LoginData, login, setToast} from '../store/sessionSlice';
+import {login, setToast} from '../store/sessionSlice';
 import 'react-native-get-random-values';
-import {v4 as UUIDv4} from 'uuid';
-import {Device} from 'open-polito-api/device';
 import Screen from '../ui/Screen';
-import {StyleSheet, View, ToastAndroid, Alert} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import Text from '../ui/core/Text';
 import colors from '../colors';
-import TablerIcon from '../ui/core/TablerIcon';
 import TextInput from '../ui/core/TextInput';
 import Button from '../ui/core/Button';
 import {p} from '../scaling';
-import {AuthStatus, STATUS, Status} from '../store/status';
+import {STATUS, Status} from '../store/status';
 import {AppDispatch, RootState} from '../store/store';
-import Svg, {SvgFromUri, SvgUri} from 'react-native-svg';
 import {LoginValidationResult, validateLoginInput} from '../utils/auth';
-import Logger from '../utils/Logger';
+import {
+  genericPlatform,
+  getOSIdentifier,
+  OSIdentifier,
+  platform,
+  Platform,
+} from '../utils/platform';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -33,10 +35,27 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const shouldShowAlternativeLayout = useMemo(
+    () => genericPlatform === 'web',
+    [],
+  );
+
+  const [osIdentifier, setOSIdentifier] = useState<OSIdentifier>();
+  const [devicePlatform, setDevicePlatform] = useState<Platform>();
+
+  useEffect(() => {
+    getOSIdentifier().then(res => setOSIdentifier(res));
+    platform?.then(res => setDevicePlatform(res));
+  }, []);
+
   /**
    * Login with password
    */
   const loginWithPassword = async () => {
+    /**
+     * Validate fields
+     */
+
     const validationResult = validateLoginInput(username, password);
 
     switch (validationResult) {
@@ -71,50 +90,41 @@ export default function LoginScreen() {
         return;
     }
 
-    const uuid = UUIDv4();
-
-    const loggingEnabled = await Logger.isLoggingEnabled();
-
-    const device = new Device(
-      uuid,
-      10000,
-      loggingEnabled ? Logger.logRequestSync : () => {},
-    );
-
-    // Set device instance
-    deviceContext.setDevice(device);
+    /**
+     * Actually login
+     */
 
     await dispatch(
       login({
         method: 'password',
         username: username,
-        token: password,
-        device: device,
+        password: password,
+        device: deviceContext.device,
       }),
     );
   };
 
-  const fields = [
-    ['brand-open-source', t('title1'), t('desc1')],
-    ['bolt', t('title2'), t('desc2')],
-    ['apps', t('title3'), t('desc3')],
-  ];
+  // const fields = [
+  //   ['brand-open-source', t('title1'), t('desc1')],
+  //   ['bolt', t('title2'), t('desc2')],
+  //   ['apps', t('title3'), t('desc3')],
+  // ];
 
   /**
    * Show toast notification based on login result
    */
-  useEffect(() => {
-    if (loginStatus.code === STATUS.ERROR) {
-      dispatch(
-        setToast({
-          type: 'err',
-          message: loginStatus.error?.message ?? '',
-          visible: true,
-          icon: '',
-        }),
-      );
-    }
-  }, [loginStatus, dispatch]);
+  // useEffect(() => {
+  //   if (loginStatus.code === STATUS.ERROR) {
+  //     dispatch(
+  //       setToast({
+  //         type: 'err',
+  //         message: loginStatus.error?.message ?? '',
+  //         visible: true,
+  //         icon: '',
+  //       }),
+  //     );
+  //   }
+  // }, []);
 
   const _styles = useMemo(() => {
     return StyleSheet.create({
@@ -125,9 +135,13 @@ export default function LoginScreen() {
       },
       container: {
         flex: 1,
+        flexDirection: shouldShowAlternativeLayout ? 'row' : 'column',
         marginTop: 80 * p,
         paddingHorizontal: 16 * p,
         paddingBottom: 16 * p,
+      },
+      flex1: {
+        flex: 1,
       },
       field: {
         flexDirection: 'row',
@@ -143,6 +157,9 @@ export default function LoginScreen() {
         flexDirection: 'column',
         justifyContent: 'center',
       },
+      loginTitle: {
+        marginBottom: 32 * p,
+      },
       or: {
         flexDirection: 'row',
         justifyContent: 'center',
@@ -154,29 +171,77 @@ export default function LoginScreen() {
         height: 1,
         backgroundColor: deviceContext.dark ? colors.gray100 : colors.gray800,
       },
+      lineVerticalWithMargin: {
+        width: 1,
+        marginHorizontal: 32 * p,
+        backgroundColor: deviceContext.dark ? colors.gray300 : colors.gray600,
+      },
       orText: {
         marginHorizontal: 8 * p,
       },
     });
-  }, [deviceContext.dark]);
+  }, [deviceContext.dark, shouldShowAlternativeLayout]);
 
   return (
     <Screen>
       <View style={_styles.backgroundContainer} />
       <View style={_styles.container}>
-        <Text
-          c={deviceContext.dark ? colors.gray100 : colors.gray800}
-          w="b"
-          s={24 * p}
-          style={{marginBottom: 16 * p}}>
-          Welcome to {'\n'}Open PoliTo
-        </Text>
-        <Text
-          c={deviceContext.dark ? colors.gray200 : colors.gray700}
-          w="m"
-          s={16 * p}>
-          {t('caption')}
-        </Text>
+        <View style={[_styles.flex1]}>
+          <Text
+            c={deviceContext.dark ? colors.gray100 : colors.gray800}
+            w="b"
+            s={24 * p}
+            style={{marginBottom: 16 * p}}>
+            Welcome to {'\n'}Open PoliTo
+          </Text>
+          <Text
+            c={deviceContext.dark ? colors.gray200 : colors.gray700}
+            w="m"
+            s={16 * p}>
+            {t('caption')}
+          </Text>
+          {shouldShowAlternativeLayout && (
+            <View
+              style={[
+                _styles.flex1,
+                {flexDirection: 'column', justifyContent: 'center'},
+              ]}>
+              <View style={{alignItems: 'flex-start'}}>
+                <View style={{alignItems: 'stretch'}}>
+                  <View style={{alignItems: 'flex-start'}}>
+                    <Text
+                      c={deviceContext.dark ? colors.gray100 : colors.gray800}
+                      w="b"
+                      s={24 * p}
+                      style={{marginBottom: 8 * p}}>
+                      {t('downloadNativeApp')}
+                    </Text>
+                    <Text
+                      c={deviceContext.dark ? colors.gray200 : colors.gray700}
+                      w="m"
+                      s={16 * p}
+                      style={{marginBottom: 16 * p}}>
+                      {t('downloadNativeAppDescription')}
+                    </Text>
+                  </View>
+                  <Button>
+                    <View style={{flex: 1}}>
+                      <Text s={12 * p} w="b" c={colors.gray50}>
+                        DOWNLOAD
+                      </Text>
+                      <Text s={12 * p} w="r" c={colors.gray50}>
+                        {`9MB - ${devicePlatform?.os}`}
+                      </Text>
+                    </View>
+                  </Button>
+                </View>
+              </View>
+            </View>
+          )}
+        </View>
+        {shouldShowAlternativeLayout && (
+          <View style={_styles.lineVerticalWithMargin} />
+        )}
         {/* <View style={{marginTop: 48 * p}}>
           {fields.map(part => (
             <View style={_styles.field}>
@@ -199,8 +264,19 @@ export default function LoginScreen() {
             </View>
           ))}
         </View> */}
-        <View style={_styles.loginSection}>
+        <View style={[_styles.loginSection, _styles.flex1]}>
           {/* TODO proper behavior when keyboard shows up */}
+          {shouldShowAlternativeLayout && (
+            <View style={_styles.loginTitle}>
+              <Text
+                c={deviceContext.dark ? colors.gray100 : colors.gray800}
+                w="b"
+                s={24 * p}
+                style={{marginBottom: 16 * p}}>
+                {t('login')}
+              </Text>
+            </View>
+          )}
           <TextInput
             dark={deviceContext.dark}
             textContentType="emailAddress"
@@ -231,9 +307,7 @@ export default function LoginScreen() {
             text={t('login')}
             style={{marginBottom: 16 * p}}
             onPress={() => {
-              (async () => {
-                loginWithPassword();
-              })();
+              loginWithPassword();
             }}
           />
           {/* <View style={_styles.or}>
@@ -264,7 +338,7 @@ export default function LoginScreen() {
               c={colors.accent300}>
               {t('tos')}
             </Text>
-            {' e '}
+            {` ${t('and')} `}
             <Text
               href="https://example.com/"
               w="r"

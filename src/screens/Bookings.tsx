@@ -6,7 +6,7 @@ import {
   BookingContext,
   BookingSlot,
   BookingSubcontext,
-} from 'open-polito-api/booking';
+} from 'open-polito-api/lib/booking';
 import React, {
   FC,
   useCallback,

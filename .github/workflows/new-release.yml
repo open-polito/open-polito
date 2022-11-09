@@ -1,0 +1,156 @@
+name: new-release
+on:
+  push:
+    tags:
+      - v**
+jobs:
+  release-android:
+    name: 'Release: Android'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Install npm dependencies
+        run: |
+          yarn
+      - name: Cache Gradle Wrapper
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-caches-
+      - name: Run pre-build script
+        env:
+          RELEASE_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE }}
+          APP_SECRET: ${{ secrets.APP_SECRET }}
+          GOOGLE_SERVICES_JSON_RELEASE: ${{ secrets.GOOGLE_SERVICES_JSON_RELEASE }}
+        run: ./scripts/pre_build_release.sh
+      - name: Build Android app
+        env:
+          ENVFILE: .env.release
+        run:
+          cd android/ && ./gradlew clean && ./gradlew assembleReleaseFlavorRelease --no-daemon
+          -Pandroid.injected.signing.store.file=$GITHUB_WORKSPACE/key-store.jks
+          -Pandroid.injected.signing.store.password="${{ secrets.RELEASE_KEYSTORE_PASSWD }}"
+          -Pandroid.injected.signing.key.alias="${{ secrets.RELEASE_KEYSTORE_ALIAS }}"
+          -Pandroid.injected.signing.key.password="${{ secrets.RELEASE_KEY_PASSWD }}"
+          -PdeploymentKeyProd="${{ secrets.DEPLOYMENT_KEY_PRODUCTION }}"
+      - name: Run post-build script
+        if: always()
+        run: ./scripts/post_build_release.sh
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Generate partial assets.json (Android)
+        run: python scripts/create_assets_json.py android ${{ github.ref_name }}
+      - name: Upload partial assets.json (Android)
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_android.json
+          path: assets_android.json
+      # This is also the first time the new release is set up
+      - name: Upload release assets (Android)
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            android/app/build/outputs/apk/releaseFlavor/release/**.apk
+  release-desktop:
+    name: 'Release: Desktop'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - name: Rust setup
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
+      - name: Install npm dependencies
+        run: yarn
+      # I need expo-cli because the new expo breaks the web build for some reason...
+      # Update: see https://github.com/meliorence/react-native-render-html/issues/589
+      # As a temporary fix, use expo-cli@5.4.12
+      - name: Install expo-cli
+        run: npm install -g expo-cli@5.4.12
+      - name: Generate web bundle (desktop)
+        run: yarn run build:desktop
+      - name: Build the app
+        run: yarn tauri build
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Generate partial assets.json (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        run: python scripts/create_assets_json.py linux ${{ github.ref_name }}
+      - name: Generate partial assets.json (Windows)
+        if: matrix.platform == 'windows-latest'
+        run: python scripts/create_assets_json.py windows ${{ github.ref_name }}
+      - name: Generate partial assets.json (macOS)
+        if: matrix.platform == 'macos-latest'
+        run: python scripts/create_assets_json.py macos ${{ github.ref_name }}
+      - name: Upload partial assets.json (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_linux.json
+          path: assets_linux.json
+      - name: Upload partial assets.json (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_windows.json
+          path: assets_windows.json
+      - name: Upload partial assets.json (MacOS)
+        if: matrix.platform == 'macos-latest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: assets_macos.json
+          path: assets_macos.json
+      - name: Upload release assets (desktop)
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            tauri-out-app/**
+  finalize-release:
+    needs: [release-android, release-desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download all partial assets.json artifacts
+        uses: actions/download-artifact@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Generate final assets.json
+        run: python scripts/create_assets_json.py final ${{ github.ref_name }}
+      - name: Upload final assets.json to release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: |
+            assets.json

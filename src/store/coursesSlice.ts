@@ -3,12 +3,12 @@
  */
 
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import {
   CourseInfo,
   BasicCourseInfo,
   getExtendedCourseInfo,
-} from 'open-polito-api/course';
+} from 'open-polito-api/lib/course';
 import {
   errorStatus,
   initialStatus,
@@ -18,12 +18,12 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
-import {MaterialItem} from 'open-polito-api/material';
+import {MaterialItem} from 'open-polito-api/lib/material';
 import {
   getCoursesInfo,
   PermanentMark,
   ProvisionalMark,
-} from 'open-polito-api/courses';
+} from 'open-polito-api/lib/courses';
 import {ExtendedFile} from '../types';
 
 export type CourseState = {

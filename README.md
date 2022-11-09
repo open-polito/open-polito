@@ -3,9 +3,31 @@
 
 <div align="center">
 
-[![Github All Contributors](https://img.shields.io/github/all-contributors/open-polito/open-polito)](#contributors)
-![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=flat)
-![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=flat)
+[![Try online](https://img.shields.io/badge/Web_app-lightblue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGNsYXNzPSJpY29uIGljb24tdGFibGVyIGljb24tdGFibGVyLXdvcmxkIiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICA8cGF0aCBzdHJva2U9Im5vbmUiIGQ9Ik0wIDBoMjR2MjRIMHoiIGZpbGw9Im5vbmUiLz4KICA8Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSI5IiAvPgogIDxsaW5lIHgxPSIzLjYiIHkxPSI5IiB4Mj0iMjAuNCIgeTI9IjkiIC8+CiAgPGxpbmUgeDE9IjMuNiIgeTE9IjE1IiB4Mj0iMjAuNCIgeTI9IjE1IiAvPgogIDxwYXRoIGQ9Ik0xMS41IDNhMTcgMTcgMCAwIDAgMCAxOCIgLz4KICA8cGF0aCBkPSJNMTIuNSAzYTE3IDE3IDAgMCAxIDAgMTgiIC8+Cjwvc3ZnPgoKCg==&logoColor=black)](#download-url)
+[![Android app](https://img.shields.io/badge/Android_app-3DDC84?style=for-the-badge&logo=android&logoColor=white)](#download-url)
+
+<!-- [![iOS app](https://img.shields.io/badge/iOS_app-black?style=for-the-badge&logo=apple&logoColor=white)](#download-url) -->
+
+</div>
+
+<div align="center">
+
+[![Windows app](https://img.shields.io/badge/Windows_app-0078D6?style=for-the-badge&logo=windows&logoColor=white)](#download-url)
+[![macOS app](https://img.shields.io/badge/macOS_app-black?style=for-the-badge&logo=apple&logoColor=white)](#download-url)
+[![Linux deb](https://img.shields.io/badge/Linux_.deb-A81D33?style=for-the-badge&logo=debian)](#download-url)
+[![Linux AppImage](https://img.shields.io/badge/Linux_AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](#download-url)
+
+<!-- [![Linux Flathub Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20Flathub&color=4A86CF&style=for-the-badge&logo=flathub&logoColor=white)](#download-url)
+[![Linux Snapcraft Download](https://img.shields.io/static/v1?label=DOWNLOAD&message=Linux%20Snapcraft&color=0078D6&style=for-the-badge&logo=snapcraft)](#download-url) -->
+
+</div>
+<hr>
+<div align="center">
+
+[![Github All Contributors](https://img.shields.io/github/all-contributors/open-polito/open-polito?style=for-the-badge)](#contributors)
+![GitHub all releases](https://img.shields.io/github/downloads/open-polito/open-polito/total?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/open-polito/open-polito?style=for-the-badge)
+![GitHub](https://img.shields.io/github/license/open-polito/open-polito?style=for-the-badge)
 
 </div>
 

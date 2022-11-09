@@ -8,10 +8,13 @@ import {
   BookingContext,
   getBookings,
   getContexts,
-} from 'open-polito-api/booking';
-import {Device} from 'open-polito-api/device';
-import {getNotifications, Notification} from 'open-polito-api/notifications';
-import {getUnreadMail, PersonalData} from 'open-polito-api/user';
+} from 'open-polito-api/lib/booking';
+import {Device} from 'open-polito-api/lib/device';
+import {
+  getNotifications,
+  Notification,
+} from 'open-polito-api/lib/notifications';
+import {getUnreadMail, PersonalData} from 'open-polito-api/lib/user';
 import {
   errorStatus,
   initialStatus,

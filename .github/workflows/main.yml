@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
-      - name: Run  pre-build script
+      - name: Run pre-build script
         env:
           DEV_KEYSTORE: ${{ secrets.DEV_KEYSTORE }}
           APP_SECRET: ${{ secrets.APP_SECRET }}

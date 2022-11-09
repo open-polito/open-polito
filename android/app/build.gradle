@@ -79,6 +79,8 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
+    cliPath: "../../node_modules/react-native/cli.js",
+    hermesCommand: "../../node_modules/react-native/sdks/hermesc/%OS-BIN%/hermesc",
     entryFile: "index.js",
     enableHermes: true,  // clean and rebuild if changing
 ]
@@ -308,7 +310,10 @@ android {
                 output.versionCodeOverride =
                         defaultConfig.versionCode * 1000 + versionCodes.get(abi)
             }
-
+            if (abi == null) {
+                abi = "universal" // Otherwise the filename will contain "null" for the universal build
+            }
+            output.outputFileName = "open-polito_android_v${defaultConfig.versionName}_${abi}.apk"
         }
     }
 }

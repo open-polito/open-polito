@@ -1,8 +1,9 @@
-import React, {FC} from 'react';
+import React from 'react';
 import {createIconSetFromIcoMoon} from 'react-native-vector-icons';
 import {IconProps} from 'react-native-vector-icons/Icon';
-import icoMoonConfig from '../../../assets/fonts/selection.json';
+import icoMoonConfig from '../../../assets/fonts/selection-final.json';
 import {p} from '../../scaling';
+import {genericPlatform} from '../../utils/platform';
 
 const GeneratedIconSet = createIconSetFromIcoMoon(
   icoMoonConfig,
@@ -10,12 +11,20 @@ const GeneratedIconSet = createIconSetFromIcoMoon(
   'tabler-icons.ttf',
 );
 
-const TablerIcon: FC<IconProps> = ({...props}: IconProps) => {
-  if (!props.size) props.size = 24 * p;
+const TablerIcon = ({...props}: IconProps) => {
+  if (!props.size) {
+    props.size = 24 * p;
+  }
+
   return (
     <GeneratedIconSet
       {...props}
-      style={{...(props.style as Object), lineHeight: props.size * 1.25}} // Fix excessive bottom padding
+      style={[
+        {
+          ...(props.style as Object),
+          lineHeight: props.size * 1.25, // Fix excessive bottom padding
+        },
+      ]}
     />
   );
 };

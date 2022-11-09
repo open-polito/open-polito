@@ -71,6 +71,9 @@ const EN = {
   noUsernameProvided: 'No username provided',
   noPasswordProvided: 'No password provided',
   invalidUsernameProvided: 'Username is not valid',
+  downloadNativeApp: 'Download the app',
+  downloadNativeAppDescription:
+    'Download the app to get access to all features.\nAvailable for Android, Windows, macOS and Linux',
 
   // Home screen
   home: 'Home',
@@ -94,7 +97,8 @@ const EN = {
   unreadEmail: '{{count}} unread email',
   unreadEmail_plural: '{{count}} unread emails',
   noEmailAccess: 'E-mail access is not available yet.',
-  openBrowser: 'Tap to open in browser',
+  emailCannotBeShownDesktop: "The desktop version can't show e-mail here",
+  openBrowser: 'Open in browser',
 
   // Settings screen
   settings: 'Settings',

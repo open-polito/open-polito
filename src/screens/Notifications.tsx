@@ -13,7 +13,7 @@ import {
   markNotificationRead,
   Notification,
   NotificationType,
-} from 'open-polito-api/notifications';
+} from 'open-polito-api/lib/notifications';
 import {
   ActivityIndicator,
   BackHandler,

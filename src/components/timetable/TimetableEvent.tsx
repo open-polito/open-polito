@@ -1,12 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import colors, {courseColors} from '../../colors';
-import {TextXS} from '../Text';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import moment from 'moment';
 import {TouchableOpacity, View} from 'react-native';
 import {p} from '../../scaling';
@@ -116,11 +115,9 @@ const TimetableEvent = ({
         }}>
         {width >= 25 ? (
           <Animated.View style={[animTextSectionStyle]}>
-            <TextXS
-              text={slot.course_name}
-              color={colors.white}
-              numberOfLines={2}
-            />
+            <Text w={'r'} s={8 * p} c={colors.white} numberOfLines={2}>
+              {slot.course_name}
+            </Text>
           </Animated.View>
         ) : null}
         {width >= 60 ? (

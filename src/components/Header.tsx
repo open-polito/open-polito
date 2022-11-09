@@ -2,7 +2,6 @@ import React from 'react';
 import {Pressable, View} from 'react-native';
 import colors, {Color} from '../colors';
 import styles from '../styles';
-import NotificationButton from './NotificationButton';
 import {TextTitle} from './Text';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import IconBadge from './IconBadge';

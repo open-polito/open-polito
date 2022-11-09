@@ -1,12 +1,8 @@
 import React, {FC, useMemo} from 'react';
-import {
-  Linking,
-  StyleSheet,
-  Text as RNText,
-  TextProps,
-  TextStyle,
-} from 'react-native';
+import {StyleSheet, Text as RNText, TextProps, TextStyle} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import colors, {Color} from '../../colors';
+import openURL from '../../utils/openUrl';
 
 export type TextParams = {
   s: number;
@@ -31,7 +27,11 @@ const Text: FC<TextParams> = ({
         color: c,
         fontSize: s,
         fontFamily:
-          w == 'r' ? 'Inter-Regular' : w == 'm' ? 'Inter-Medium' : 'Inter-Bold',
+          w === 'r'
+            ? 'Inter-Regular'
+            : w === 'm'
+            ? 'Inter-Medium'
+            : 'Inter-Bold',
       },
       textHref: href
         ? {
@@ -42,21 +42,25 @@ const Text: FC<TextParams> = ({
           }
         : {},
     });
-  }, [c, s, w]);
+  }, [c, s, w, href]);
 
-  return (
-    <RNText
-      style={{..._styles.text, ..._styles.textHref, ...(style as Object)}}
-      onPress={
-        href
-          ? () => {
-              Linking.openURL(href);
-            }
-          : undefined
-      }
-      {...props}>
-      {children}
-    </RNText>
+  const textComponent = useMemo(
+    () => (
+      <RNText
+        style={{..._styles.text, ..._styles.textHref, ...(style as Object)}}
+        {...props}>
+        {children}
+      </RNText>
+    ),
+    [_styles, children, props, style],
+  );
+
+  return href ? (
+    <TouchableOpacity onPress={() => openURL(href)}>
+      {textComponent}
+    </TouchableOpacity>
+  ) : (
+    textComponent
   );
 };
 

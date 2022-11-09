@@ -3,8 +3,8 @@
  */
 
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {Device} from 'open-polito-api/device';
-import {ExamSession, getExamSessions} from 'open-polito-api/exam_sessions';
+import {Device} from 'open-polito-api/lib/device';
+import {ExamSession, getExamSessions} from 'open-polito-api/lib/exam_sessions';
 import {
   errorStatus,
   initialStatus,

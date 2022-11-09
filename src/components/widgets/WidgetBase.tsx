@@ -1,9 +1,10 @@
-import React, {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {Pressable, View, ViewStyle} from 'react-native';
 import colors from '../../colors';
 import styles from '../../styles';
-import {TextN, TextS} from '../Text';
 import {useTranslation} from 'react-i18next';
+import Text from '../../ui/core/Text';
+import {p} from '../../scaling';
 
 export type WidgetBaseProps = {
   name?: string;
@@ -13,6 +14,8 @@ export type WidgetBaseProps = {
   withPadding?: boolean;
   fullHeight?: boolean;
   style?: ViewStyle;
+  dark?: boolean;
+  children: ReactNode;
 };
 
 const WidgetBase: FC<WidgetBaseProps> = ({
@@ -23,6 +26,7 @@ const WidgetBase: FC<WidgetBaseProps> = ({
   withPadding = true,
   fullHeight = false,
   children,
+  dark,
   style,
 }) => {
   const {t} = useTranslation();
@@ -54,7 +58,11 @@ const WidgetBase: FC<WidgetBaseProps> = ({
             justifyContent: 'space-between',
             flex: 1,
           }}>
-          {name ? <TextN text={name} weight="medium" /> : null}
+          {name ? (
+            <Text w="m" s={12 * p} c={dark ? colors.gray100 : colors.gray800}>
+              {name}
+            </Text>
+          ) : null}
           {children}
 
           {withButton && (
@@ -68,7 +76,9 @@ const WidgetBase: FC<WidgetBaseProps> = ({
                 flexDirection: 'row',
                 justifyContent: 'center',
               }}>
-              <TextS text={t('open')} color={colors.black} weight="medium" />
+              <Text w="m" s={10 * p} c={dark ? colors.gray100 : colors.gray800}>
+                {t('open')}
+              </Text>
             </View>
           )}
         </View>

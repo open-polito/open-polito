@@ -1,23 +1,12 @@
-import React, {FC, useContext, useEffect, useMemo, useState} from 'react';
+import React, {FC, useContext, useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
-import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  View,
-} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {DeviceContext} from '../context/Device';
 import {RootState} from '../store/store';
-import styles from '../styles';
 import {getRecentCourseMaterial} from '../utils/material';
-import AlertWidget from '../components/widgets/AlertWidget';
-import CourseInfo from '../components/CourseInfo';
 import LiveWidget from '../components/widgets/LiveWidget';
-import MaterialWidget from '../components/widgets/MaterialWidget';
-import TextWidget from '../components/TextWidget';
 import {CourseState} from '../store/coursesSlice';
-import {MaterialItem} from 'open-polito-api/material';
 import Section from './Section';
 import TablerIcon from './core/TablerIcon';
 import {p} from '../scaling';
@@ -26,7 +15,7 @@ import Text from './core/Text';
 import {STATUS} from '../store/status';
 import DirectoryItem from './DirectoryItem';
 import Notification from './Notification';
-import {NotificationType} from 'open-polito-api/notifications';
+import {NotificationType} from 'open-polito-api/lib/notifications';
 
 // TODO "Exam is taken?" feature
 

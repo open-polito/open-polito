@@ -1,18 +1,22 @@
 import {useNavigation} from '@react-navigation/native';
-import {Notification} from 'open-polito-api/notifications';
-import React, {FC, useContext, useMemo} from 'react';
+import {Notification} from 'open-polito-api/lib/notifications';
+import React, {FC, useCallback, useContext, useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
-import {RootState} from '../store/store';
+import {AppDispatch, RootState} from '../store/store';
 import BadgeContainer from './core/BadgeContainer';
 import PressableBase from './core/PressableBase';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
+import {DrawerActions} from '@react-navigation/native';
+import {genericPlatform} from '../utils/platform';
+import {setConfig} from '../store/sessionSlice';
+import {Configuration} from '../defaultConfig';
 
-// TODO navigation to notifications, downloads
+// TODO navigation to downloads
 
 export enum HEADER_TYPE {
   MAIN = 0,
@@ -29,11 +33,26 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
   const notifications = useSelector<RootState, Notification[]>(
     state => state.user.notifications,
   );
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
+  );
+
+  const dispatch = useDispatch<AppDispatch>();
+
   const notificationCount = useMemo<number>(() => {
     return notifications.filter(n => !n.is_read).length;
   }, [notifications]);
 
   const navigation = useNavigation();
+
+  const themeToggleIconName = useMemo(
+    () => (dark ? 'moon-stars' : 'sun'),
+    [dark],
+  );
+
+  const toggleTheme = useCallback(() => {
+    dispatch(setConfig({...config, theme: dark ? 'light' : 'dark'}));
+  }, [dark, config, dispatch]);
 
   // TODO drawer notification count
 
@@ -59,17 +78,17 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
         justifyContent: 'flex-end',
       },
     });
-  }, [dark]);
+  }, []);
 
   return (
     <View style={_styles.header}>
-      {headerType == HEADER_TYPE.MAIN ? (
+      {headerType === HEADER_TYPE.MAIN ? (
         <>
           <View style={_styles.headerSection}>
             {/* TODO add logic for badge number*/}
             <PressableBase
               onPress={() => {
-                navigation.toggleDrawer();
+                navigation.dispatch(DrawerActions.toggleDrawer());
               }}>
               <BadgeContainer number={0} style={{marginRight: 16 * p}}>
                 <TablerIcon
@@ -100,6 +119,16 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
             </Text>
           </View>
           <View style={{..._styles.headerSection, ..._styles.headerEnd}}>
+            {genericPlatform !== 'mobile' && (
+              <PressableBase onPress={toggleTheme}>
+                <TablerIcon
+                  name={themeToggleIconName}
+                  size={24 * p}
+                  color={dark ? colors.gray100 : colors.gray800}
+                  style={{marginRight: 16 * p}}
+                />
+              </PressableBase>
+            )}
             <PressableBase onPress={() => navigation.navigate('Search')}>
               <TablerIcon
                 name="search"
@@ -119,7 +148,7 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
             </PressableBase>
           </View>
         </>
-      ) : headerType == HEADER_TYPE.SECONDARY ? (
+      ) : headerType === HEADER_TYPE.SECONDARY ? (
         <>
           <PressableBase onPress={navigation.goBack}>
             <TablerIcon

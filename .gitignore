@@ -1,3 +1,5 @@
+.DS_Store
+
 # OSX
 #
 .DS_Store
@@ -31,10 +33,10 @@ release/
 local.properties
 *.iml
 *.hprof
-./android/.settings/
+android/app/.settings/
+android/app/.project
 
 # node.js
-#
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -64,8 +66,12 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
-# ttf fonts
-*.ttf
-
 # vscode
 .vscode/
+
+# Expo
+.expo/
+web-build/
+
+# Python
+**/__pycache__/

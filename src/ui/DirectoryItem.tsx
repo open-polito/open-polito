@@ -1,17 +1,16 @@
 import moment from 'moment';
-import {File, getDownloadURL, MaterialItem} from 'open-polito-api/material';
-import React, {FC, ReactNode, useContext, useMemo, useState} from 'react';
-import {Linking, Pressable, View} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import {File, getDownloadURL, MaterialItem} from 'open-polito-api/lib/material';
+import React, {FC, ReactNode, useContext, useMemo} from 'react';
+import {Pressable, View} from 'react-native';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import getFileIcon from '../utils/getFileIcon';
-import {TextS} from '../components/Text';
 import TablerIcon from './core/TablerIcon';
 import {p} from '../scaling';
 import Text from './core/Text';
 import PressableBase from './core/PressableBase';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
+import openURL from '../utils/openUrl';
 
 export type DirectoryItemProps = {
   item: MaterialItem;
@@ -19,7 +18,7 @@ export type DirectoryItemProps = {
   dark: boolean;
   course?: string;
   onPress?: Function;
-  children: ReactNode;
+  children?: ReactNode;
 };
 
 const sizes = ['B', 'kB', 'MB', 'GB', 'TB'];
@@ -36,7 +35,7 @@ export const computeSizeLabel = (size: number) => {
 };
 
 const downloadFile = (device: Device, item: File) => {
-  getDownloadURL(device, item).then(url => Linking.openURL(url));
+  getDownloadURL(device, item).then(url => openURL(url));
 };
 
 const DirectoryItem: FC<DirectoryItemProps> = ({
@@ -55,7 +54,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
 
   const iconComponent = useMemo(() => {
     return item.type === 'file' ? (
-      getFileIcon(item.filename)
+      getFileIcon(item.filename, dark)
     ) : (
       <TablerIcon
         name="folder"

@@ -1,4 +1,5 @@
 import React, {ReactNode} from 'react';
+import {View} from 'react-native';
 import SvgAnimatedLinearGradient from 'react-native-svg-animated-linear-gradient';
 import colors from '../../colors';
 

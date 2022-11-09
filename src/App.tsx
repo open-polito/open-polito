@@ -1,27 +1,27 @@
 import React, {Suspense, useEffect} from 'react';
-import FlashMessage from 'react-native-flash-message';
 import {Provider} from 'react-redux';
-import Router from './src/routes/Router';
+import Router from './routes/Router';
 
 import i18n from 'i18next';
 import {initReactI18next} from 'react-i18next';
-import EN from './src/locales/en';
-import IT from './src/locales/it';
+import EN from './locales/en';
+import IT from './locales/it';
 import * as RNLocalize from 'react-native-localize';
 
 import 'moment/locale/it';
 
-import store from './src/store/store';
+import store from './store/store';
 import moment from 'moment';
-import {Device} from 'open-polito-api/device';
-import DeviceProvider from './src/context/Device';
+import {Device} from 'open-polito-api/lib/device';
+import DeviceProvider from './context/Device';
 import {
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
 } from 'react-native-render-html';
-import Toast from './src/ui/Toast';
-import {ModalProvivder} from './src/context/ModalProvider';
-import ModalComponent from './src/components/modals/ModalComponent';
+import Toast from './ui/Toast';
+import {ModalProvivder} from './context/ModalProvider';
+import ModalComponent from './components/modals/ModalComponent';
+import Fallback from './ui/Fallback';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -65,7 +65,7 @@ export default function App() {
   };
 
   return (
-    <Suspense fallback="Loading...">
+    <Suspense fallback={<Fallback />}>
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
           <ModalProvivder>
@@ -83,7 +83,6 @@ export default function App() {
             </TRenderEngineProvider>
           </ModalProvivder>
         </DeviceProvider>
-        <FlashMessage position="top" />
       </Provider>
     </Suspense>
   );

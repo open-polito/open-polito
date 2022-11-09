@@ -14,7 +14,7 @@ import TablerIcon from './TablerIcon';
 import Text from './Text';
 
 type ButtonParams = {
-  text: string;
+  text?: string;
   icon?: string;
   secondary?: boolean;
   color?: Color;
@@ -62,26 +62,29 @@ const Button: FC<ButtonParams> = ({
             ...(secondary ? _styles.containerSecondary : {}),
             ...(style as Object),
           }}>
-          {loading ? (
-            <ActivityIndicator
-              size={(small ? 10 : 18) * p}
-              color={color || (secondary ? colors.accent300 : colors.gray50)}
-              style={{marginRight: (small ? 4 : 8) * p}}
-            />
-          ) : icon ? (
-            <TablerIcon
-              name={icon}
-              color={color || (secondary ? colors.accent300 : colors.gray50)}
-              size={(small ? 14 : 18) * p}
-              style={{marginRight: (small ? 4 : 8) * p}}
-            />
-          ) : null}
-          <Text
-            s={small ? 10 : 12}
-            w="m"
-            c={secondary ? color || colors.accent300 : colors.gray50}>
-            {text.toUpperCase()}
-          </Text>
+          <>
+            {loading ? (
+              <ActivityIndicator
+                size={(small ? 10 : 18) * p}
+                color={color || (secondary ? colors.accent300 : colors.gray50)}
+                style={{marginRight: (small ? 4 : 8) * p}}
+              />
+            ) : icon ? (
+              <TablerIcon
+                name={icon}
+                color={color || (secondary ? colors.accent300 : colors.gray50)}
+                size={(small ? 14 : 18) * p}
+                style={{marginRight: (small ? 4 : 8) * p}}
+              />
+            ) : null}
+            <Text
+              s={small ? 10 : 12}
+              w="m"
+              c={secondary ? color || colors.accent300 : colors.gray50}>
+              {text?.toUpperCase()}
+            </Text>
+            {props.children}
+          </>
         </View>
       </Pressable>
     </PressableBase>

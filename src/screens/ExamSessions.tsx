@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FlatList, RefreshControl, TouchableOpacity, View} from 'react-native';
-import {ExamSession} from 'open-polito-api/exam_sessions';
+import {ExamSession} from 'open-polito-api/lib/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
 import * as RNLocalize from 'react-native-localize';
@@ -33,19 +33,9 @@ const isExamUnavailable = (examSession: ExamSession): boolean => {
   return !examSession.user_is_signed_up && examSession.error.id !== 0;
 };
 
-const getExamStatusString = (
-  examSession: ExamSession,
-): 'BOOKED' | 'AVAILABLE' | 'UNAVAILABLE' | 'UNKNOWN' => {
-  if (isExamBooked(examSession)) return 'BOOKED';
-  if (isExamAvailable(examSession)) return 'AVAILABLE';
-  if (isExamUnavailable(examSession)) return 'UNAVAILABLE';
-
-  return 'UNKNOWN';
-};
-
 const tabs = ['allExams', 'myBookings', 'availableToBook', 'unavailableExams'];
 
-export default function ExamSessions({navigation}) {
+export default function ExamSessions() {
   const {t} = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -87,11 +77,11 @@ export default function ExamSessions({navigation}) {
   /**
    * Refresh exams
    */
-  const refresh = () => {
+  const refresh = useMemo(() => {
     if (getExamsStatus.code !== STATUS.PENDING) {
       dispatch(getExams(device));
     }
-  };
+  }, [getExamsStatus, device, dispatch]);
 
   // If tab or exams change, re-filter the exam sessions based on the active tab
   const filteredSessions = useMemo(() => {
