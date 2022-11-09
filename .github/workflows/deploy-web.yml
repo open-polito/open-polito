@@ -4,7 +4,7 @@ on:
   workflow_call:
 jobs:
   call-tests:
-    if: ${{ env.TESTS_RUNNING }} == 'no'
+    if: env.TESTS_RUNNING == 'no'
     uses: ./.github/workflows/tests.yml
   release-web:
     needs: [call-tests]
