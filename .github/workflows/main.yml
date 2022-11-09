@@ -30,6 +30,12 @@ jobs:
           key: ${{ runner.os }}-gradle-caches-${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-caches-
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Build helper (pre)
+        run: yarn run prebuild
       - name: Run pre-build script
         env:
           DEV_KEYSTORE: ${{ secrets.DEV_KEYSTORE }}
@@ -49,6 +55,9 @@ jobs:
       - name: Run post-build script
         if: always()
         run: ./scripts/post_build_dev.sh
+      - name: Build helper (post)
+        if: always()
+        run: yarn run postbuild
       - name: Upload ARM64 binary
         uses: actions/upload-artifact@v1
         with:
