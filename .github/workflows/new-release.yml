@@ -8,8 +8,6 @@ jobs:
   call-tests:
     uses: ./.github/workflows/tests.yml
   call-deploy-web:
-    with:
-      tests_running: 'yes'
     uses: ./.github/workflows/deploy-web.yml
   release-android:
     needs: [call-tests]
