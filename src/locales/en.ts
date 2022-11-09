@@ -3,7 +3,7 @@ import Config from 'react-native-config';
 const EN = {
   // General
   appName:
-    Config.VARIANT == 'release'
+    Config.VARIANT === 'release'
       ? 'Open PoliTo'
       : `Open PoliTo\n[${Config.VARIANT}]`,
   search: 'Search',
@@ -74,6 +74,7 @@ const EN = {
   downloadNativeApp: 'Download the app',
   downloadNativeAppDescription:
     'Download the app to get access to all features.\nAvailable for Android, Windows, macOS and Linux',
+  loginWebSpecificDescription: 'Try the web version, no download required',
 
   // Home screen
   home: 'Home',
