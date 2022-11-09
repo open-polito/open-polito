@@ -3,11 +3,7 @@ on:
   workflow_dispatch:
   workflow_call:
 jobs:
-  call-tests:
-    if: env.TESTS_RUNNING == 'no'
-    uses: ./.github/workflows/tests.yml
   release-web:
-    needs: [call-tests]
     name: 'Release: Web'
     runs-on: ubuntu-latest
     steps:
