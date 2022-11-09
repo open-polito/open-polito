@@ -21,6 +21,8 @@ import {
   platform,
   Platform,
 } from '../utils/platform';
+import {DeviceSize} from '../types';
+import openURL from '../utils/openUrl';
 
 export default function LoginScreen() {
   const {t} = useTranslation();
@@ -135,7 +137,10 @@ export default function LoginScreen() {
       },
       container: {
         flex: 1,
-        flexDirection: shouldShowAlternativeLayout ? 'row' : 'column',
+        flexDirection:
+          shouldShowAlternativeLayout && deviceContext.size >= DeviceSize.lg
+            ? 'row'
+            : 'column',
         marginTop: 80 * p,
         paddingHorizontal: 16 * p,
         paddingBottom: 16 * p,
@@ -180,7 +185,7 @@ export default function LoginScreen() {
         marginHorizontal: 8 * p,
       },
     });
-  }, [deviceContext.dark, shouldShowAlternativeLayout]);
+  }, [deviceContext.dark, deviceContext.size, shouldShowAlternativeLayout]);
 
   return (
     <Screen>
@@ -204,33 +209,52 @@ export default function LoginScreen() {
             <View
               style={[
                 _styles.flex1,
-                {flexDirection: 'column', justifyContent: 'center'},
+                {
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                },
               ]}>
               <View style={{alignItems: 'flex-start'}}>
-                <View style={{alignItems: 'stretch'}}>
-                  <View style={{alignItems: 'flex-start'}}>
+                <View
+                  style={{
+                    alignItems: 'stretch',
+                    backgroundColor: deviceContext.dark
+                      ? colors.gray700
+                      : colors.gray200,
+                    padding: 16 * p,
+                    borderRadius: 8 * p,
+                  }}>
+                  <View
+                    style={{
+                      alignItems: 'flex-start',
+                    }}>
                     <Text
                       c={deviceContext.dark ? colors.gray100 : colors.gray800}
                       w="b"
-                      s={24 * p}
+                      s={(deviceContext.size >= DeviceSize.lg ? 24 : 14) * p}
                       style={{marginBottom: 8 * p}}>
                       {t('downloadNativeApp')}
                     </Text>
                     <Text
                       c={deviceContext.dark ? colors.gray200 : colors.gray700}
                       w="m"
-                      s={16 * p}
+                      s={(deviceContext.size >= DeviceSize.lg ? 16 : 12) * p}
                       style={{marginBottom: 16 * p}}>
                       {t('downloadNativeAppDescription')}
                     </Text>
                   </View>
-                  <Button>
+                  <Button
+                    onPress={() => {
+                      openURL(
+                        'https://github.com/open-polito/open-polito/releases/latest',
+                      );
+                    }}>
                     <View style={{flex: 1}}>
                       <Text s={12 * p} w="b" c={colors.gray50}>
                         DOWNLOAD
                       </Text>
                       <Text s={12 * p} w="r" c={colors.gray50}>
-                        {`9MB - ${devicePlatform?.os}`}
+                        {devicePlatform?.os?.toString()}
                       </Text>
                     </View>
                   </Button>
@@ -272,8 +296,15 @@ export default function LoginScreen() {
                 c={deviceContext.dark ? colors.gray100 : colors.gray800}
                 w="b"
                 s={24 * p}
-                style={{marginBottom: 16 * p}}>
+                style={{marginBottom: 8 * p}}>
                 {t('login')}
+              </Text>
+              <Text
+                c={deviceContext.dark ? colors.gray200 : colors.gray700}
+                w="m"
+                s={12 * p}
+                style={{marginBottom: 16 * p}}>
+                {t('loginWebSpecificDescription')}
               </Text>
             </View>
           )}
