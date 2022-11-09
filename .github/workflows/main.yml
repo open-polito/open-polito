@@ -1,5 +1,6 @@
 name: react-native-android-build-apk
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
