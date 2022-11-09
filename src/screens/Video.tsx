@@ -1,32 +1,20 @@
 import {useNavigation} from '@react-navigation/core';
 import React, {useContext, useMemo, useState} from 'react';
-import {
-  Dimensions,
-  FlatList,
-  Pressable,
-  SectionList,
-  StyleSheet,
-  View,
-} from 'react-native';
-import ScreenContainer from '../components/ScreenContainer';
-import styles from '../styles';
+import {Dimensions, FlatList, StyleSheet, View} from 'react-native';
 import colors from '../colors';
-import {TextL, TextN, TextS} from '../components/Text';
 import {useTranslation} from 'react-i18next';
-import RNVideoPlayer from 'react-native-video-controls';
-import {Recording} from 'open-polito-api/course';
+import {Recording} from 'open-polito-api/lib/course';
 import {DeviceContext} from '../context/Device';
 import {p} from '../scaling';
 import Screen from '../ui/Screen';
 import Text from '../ui/core/Text';
-import Button from '../ui/core/Button';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/store';
 import {CourseState} from '../store/coursesSlice';
-import Section from '../ui/Section';
 import VideoCard from '../ui/VideoCard';
 import moment from 'moment';
 import VideoPlayer from '../ui/VideoPlayer';
+import Header, {HEADER_TYPE} from '../ui/Header';
 
 // TODO fullscreen mode
 // TODO custom video controls design
@@ -42,7 +30,8 @@ export default function Video({route}) {
 
   const courseData = useSelector<RootState, CourseState | undefined>(state =>
     state.courses.courses.find(
-      course => course.basicInfo.code + course.basicInfo.name == video.courseId,
+      course =>
+        course.basicInfo.code + course.basicInfo.name === video.courseId,
     ),
   );
 
@@ -50,11 +39,9 @@ export default function Video({route}) {
     return [...(courseData?.extendedInfo?.vc_recordings.current || [])].sort(
       (a, b) => b.date - a.date,
     );
-  }, [currentVideo, courseData]);
+  }, [courseData]);
 
-  const {dark, device} = useContext(DeviceContext);
-
-  const navigation = useNavigation();
+  const {dark} = useContext(DeviceContext);
 
   const w = Dimensions.get('window').width;
 
@@ -65,10 +52,11 @@ export default function Video({route}) {
         paddingTop: 24 * p,
       },
     });
-  }, [dark]);
+  }, []);
 
   return (
     <Screen>
+      <Header title={video.video.title} headerType={HEADER_TYPE.SECONDARY} />
       <View
         style={{
           height: w / 1.78,
@@ -87,7 +75,7 @@ export default function Video({route}) {
         renderItem={({item}) => (
           <View
             style={[
-              item.url == currentVideo.url
+              item.url === currentVideo.url
                 ? {backgroundColor: dark ? colors.gray600 : colors.gray300}
                 : {},
             ]}>

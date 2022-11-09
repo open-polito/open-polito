@@ -19,7 +19,7 @@ import {CoursesState} from '../store/coursesSlice';
 import DirectoryItem from '../ui/DirectoryItem';
 import {STATUS} from '../store/status';
 import Notification from '../ui/Notification';
-import {NotificationType} from 'open-polito-api/notifications';
+import {NotificationType} from 'open-polito-api/lib/notifications';
 import {ExtendedAlert} from '../types';
 
 // TODO "quick access" section using recently opened sections

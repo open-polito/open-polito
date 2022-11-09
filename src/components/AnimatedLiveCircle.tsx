@@ -2,7 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import {Animated, View} from 'react-native';
 import colors from '../colors';
 
-export default function AnimatedLiveCircle({width}) {
+export default function AnimatedLiveCircle({width}: {width: number}) {
   const coeff = useRef(new Animated.Value(0)).current;
 
   const animate = () => {

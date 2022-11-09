@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {getTimetable, TimetableSlot} from 'open-polito-api/timetable';
+import {getTimetable, TimetableSlot} from 'open-polito-api/lib/timetable';
 import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ScrollView, View} from 'react-native';

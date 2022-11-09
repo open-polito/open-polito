@@ -1,12 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-import {Entry} from 'open-polito-api/device';
+import {Entry} from 'open-polito-api/lib/device';
 import Config from 'react-native-config';
 import DeviceInfo from 'react-native-device-info';
-import RNFS from 'react-native-fs';
-import defaultConfig from '../defaultConfig';
 import store from '../store/store';
-import {version} from '../version.json';
+import version from '../../version.json';
+import {appendFile, getDocumentsPath} from './fs';
 
 export type BasicDeviceInfoLogEntry = {
   type: 'DEVICE_INFO';
@@ -34,8 +32,7 @@ export type LogEntry =
   | ErrorLogEntry;
 
 export default class Logger {
-  public static logsDirectoryPath =
-    RNFS.ExternalDirectoryPath || RNFS.DocumentDirectoryPath;
+  public static logsDirectoryPath = getDocumentsPath();
 
   public static logFilePath =
     Logger.logsDirectoryPath +
@@ -47,26 +44,6 @@ export default class Logger {
   public static hasLoggedBasicDeviceInfo: boolean = false;
 
   /**
-   * Returns whether or not logging is enabled in settings
-   * @returns boolean
-   */
-  static async isLoggingEnabled(): Promise<boolean> {
-    let loggingEnabled = false;
-    try {
-      const loggingConfig = await AsyncStorage.getItem('@config');
-      if (loggingConfig == null) {
-        await AsyncStorage.setItem('@config', JSON.stringify(defaultConfig));
-        loggingEnabled = defaultConfig.logging;
-      } else {
-        loggingEnabled = JSON.parse(loggingConfig).logging;
-      }
-    } catch (e) {
-    } finally {
-      return loggingEnabled;
-    }
-  }
-
-  /**
    * Writes log entry to log file
    * @param entry
    *
@@ -75,10 +52,9 @@ export default class Logger {
    * DocumentDirectoryPath on iOS
    */
   static async writeToFile(entry: LogEntry) {
-    await RNFS.appendFile(
-      Logger.logFilePath,
-      JSON.stringify(entry) + '\n',
-    ).catch(err => console.log(err));
+    await appendFile(Logger.logFilePath, JSON.stringify(entry) + '\n').catch(
+      err => console.log(err),
+    );
   }
 
   /**
@@ -89,8 +65,8 @@ export default class Logger {
     const entry: BasicDeviceInfoLogEntry = {
       type: 'DEVICE_INFO',
       appBuildNumber: DeviceInfo.getBuildNumber(),
-      appBuildVariant: Config.VARIANT,
-      appVersion: version,
+      appBuildVariant: Config.VARIANT || '',
+      appVersion: version.version,
       appVersionBinary: DeviceInfo.getVersion(),
       osApiLevel: DeviceInfo.getApiLevelSync(),
       osName: DeviceInfo.getSystemName() || DeviceInfo.getBaseOsSync(),
@@ -110,7 +86,7 @@ export default class Logger {
   static async logRequest(entry: Entry) {
     await Logger.logBasicDeviceInfo();
     // Don't log if debug options not enabled
-    if (!parseInt(Config.ENABLE_DEBUG_OPTIONS, 10)) return;
+    if (!parseInt(Config.ENABLE_DEBUG_OPTIONS!, 10)) return;
     // Don't log if login endpoint
     if (entry.endpoint.includes('login')) return;
     await Logger.writeToFile({

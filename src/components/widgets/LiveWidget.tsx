@@ -1,14 +1,16 @@
 import moment from 'moment';
-import {getLessonURL, LiveLesson} from 'open-polito-api/course';
-import {Device} from 'open-polito-api/device';
+import {getLessonURL, LiveLesson} from 'open-polito-api/lib/course';
+import {Device} from 'open-polito-api/lib/device';
 import React, {FC, useEffect, useRef, useState} from 'react';
-import {Linking, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {View} from 'react-native';
+import {LinearGradient} from 'expo-linear-gradient';
 import colors from '../../colors';
+import {p} from '../../scaling';
 import styles from '../../styles';
-import AnimatedLiveCircle from './../AnimatedLiveCircle';
-import {TextN, TextS, TextXS} from './../Text';
+import Text from '../../ui/core/Text';
+import AnimatedLiveCircle from '../AnimatedLiveCircle';
 import WidgetBase from './WidgetBase';
+import openURL from '../../utils/openUrl';
 
 export type LiveWidgetProps = {
   liveClass: LiveLesson;
@@ -29,7 +31,7 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
 
   const gotoLiveClass = () => {
     (async () => {
-      await Linking.openURL((await getLessonURL(device, liveClass)).url || '');
+      await openURL((await getLessonURL(device, liveClass)).url || '');
     })();
   };
 
@@ -78,8 +80,12 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
               flexDirection: 'column',
               justifyContent: 'flex-start',
             }}>
-            <TextN color={colors.white} weight="bold" text="LIVE" />
-            <TextN color={colors.white} weight="bold" text={calculateTime()} />
+            <Text s={12 * p} w="b" c={colors.white}>
+              LIVE
+            </Text>
+            <Text s={12 * p} w="b" c={colors.white}>
+              {calculateTime()}
+            </Text>
           </View>
         </View>
         <View
@@ -89,18 +95,12 @@ const LiveWidget: FC<LiveWidgetProps> = ({liveClass, courseName, device}) => {
             justifyContent: 'center',
             alignItems: 'flex-end',
           }}>
-          <TextS
-            numberOfLines={1}
-            color={colors.white}
-            weight="bold"
-            text={liveClass.title}
-          />
-          <TextXS
-            numberOfLines={1}
-            color={colors.white}
-            weight="medium"
-            text={courseName}
-          />
+          <Text s={10 * p} w="b" c={colors.white}>
+            {liveClass.title}
+          </Text>
+          <Text s={10 * p} w="b" c={colors.white}>
+            {courseName}
+          </Text>
         </View>
       </LinearGradient>
     </WidgetBase>

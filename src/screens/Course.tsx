@@ -1,26 +1,10 @@
 import React, {useContext, useEffect, useMemo, useState} from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import colors from '../colors';
-import ArrowHeader from '../components/ArrowHeader';
-import ScreenContainer from '../components/ScreenContainer';
-import {TextL, TextS, TextXL} from '../components/Text';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import IconC from 'react-native-vector-icons/MaterialCommunityIcons';
+import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import CourseVideos from '../ui/CourseVideos';
-import styles from '../styles';
 import {useTranslation} from 'react-i18next';
 import CourseOverview from '../ui/CourseOverview';
 import MaterialExplorer from '../ui/MaterialExplorer';
 import {useDispatch, useSelector} from 'react-redux';
-import RecentItemsLoader from '../components/loaders/RecentItemsLoader';
-import CourseLoader from '../components/loaders/CourseLoader';
 import CourseAlerts from '../ui/CourseAlerts';
 import {DeviceContext} from '../context/Device';
 import {AppDispatch, RootState} from '../store/store';

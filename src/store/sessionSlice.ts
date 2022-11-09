@@ -14,12 +14,13 @@ import {
   successStatus,
 } from './status';
 import {RootState} from './store';
-import * as Keychain from 'react-native-keychain';
-import {Device} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
 import defaultConfig, {Configuration} from '../defaultConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ping} from 'open-polito-api/utils';
+import {ping} from 'open-polito-api/lib/utils';
+import {v4 as UUIDv4} from 'uuid';
 import {setUserInfo} from './userSlice';
+import {clearCredentials, getCredentials, saveCredentials} from '../utils/fs';
 
 export type ToastData = {
   visible: boolean;
@@ -28,13 +29,9 @@ export type ToastData = {
   icon?: string;
 };
 
-export type DeviceInfo = {
-  uuid: string;
-};
-
 export type LoginData = {
   user: string;
-  token: string;
+  uuid: string;
 };
 
 export type SessionState = {
@@ -43,7 +40,7 @@ export type SessionState = {
   deviceRegisterStatus: Status;
 
   loginStatus: Status;
-  loginData: LoginData | null;
+  loginData?: LoginData;
 
   logoutStatus: Status;
 
@@ -58,7 +55,7 @@ const initialState: SessionState = {
   deviceRegisterStatus: initialStatus(),
 
   loginStatus: initialStatus(),
-  loginData: null,
+  loginData: undefined,
 
   logoutStatus: initialStatus(),
 
@@ -88,7 +85,9 @@ export const registerDevice = createAsyncThunk<
 });
 
 /**
- * Logs in, either with token or with password.
+ * Logs in, with token or password.
+ * If with token, fetches credentials from Keychain/AsyncStorage.
+ * If with password, uses provided username and password.
  *
  * @remarks
  * When given "password" as login method, dispatches {@link registerDevice}.
@@ -98,37 +97,55 @@ export const registerDevice = createAsyncThunk<
  */
 export const login = createAsyncThunk<
   LoginData,
-  {
-    method: 'token' | 'password';
-    username: string;
-    token: string;
-    device: Device;
-  },
+  (
+    | {method: 'token'}
+    | {
+        method: 'password';
+        username: string;
+        password: string;
+      }
+  ) & {device: Device},
   {state: RootState}
 >('session/login', async (args, {dispatch, rejectWithValue}) => {
   try {
-    await ping();
-  } catch (e) {
-    dispatch(setAuthStatus(AUTH_STATUS.OFFLINE));
-    return rejectWithValue('offline');
-  }
-  let response = null;
-  if (args.method === 'token') {
-    response = await args.device.loginWithToken(args.username, args.token);
-  } else {
-    await dispatch(registerDevice(args.device));
-    response = await args.device.loginWithCredentials(
-      args.username,
-      args.token,
+    let response;
+    switch (args.method) {
+      case 'token':
+        const savedCredentials = await getCredentials();
+        if (!savedCredentials) {
+          throw new Error();
+        }
+        const {username, password} = savedCredentials;
+        const {uuid, token} = JSON.parse(password);
+        args.device.uuid = uuid;
+        response = await args.device.loginWithToken(username, token);
+        break;
+      case 'password':
+        const new_uuid = UUIDv4();
+        args.device.uuid = new_uuid;
+        await dispatch(registerDevice(args.device));
+        response = await args.device.loginWithCredentials(
+          args.username,
+          args.password,
+        );
+        break;
+    }
+    const username = 'S' + response.data.current_id;
+    dispatch(setUserInfo(response.data));
+    await saveCredentials(
+      username,
+      JSON.stringify({uuid: args.device.uuid, token: response.token}),
     );
+    return {user: username, uuid: args.device.uuid};
+  } catch (e) {
+    // There has been an error, check if we're offline
+    try {
+      await ping();
+    } catch (e2) {
+      return rejectWithValue('offline');
+    }
   }
-  const username = 'S' + response.data.current_id;
-  dispatch(setUserInfo(response.data));
-  await Keychain.setGenericPassword(
-    username,
-    JSON.stringify({uuid: args.device.uuid, token: response.token}),
-  );
-  return {user: username, token: response.token};
+  throw new Error();
 });
 
 /**
@@ -138,7 +155,7 @@ export const login = createAsyncThunk<
 export const logout = createAsyncThunk<void, Device, {state: RootState}>(
   'session/logout',
   async (device, {dispatch}) => {
-    await Keychain.resetGenericPassword();
+    await clearCredentials();
     try {
       await device.logout();
     } finally {
@@ -165,10 +182,8 @@ export const setConfig = createAsyncThunk<
  */
 export const resetConfig = createAsyncThunk<void, void, {state: RootState}>(
   'session/resetConfig',
-  async (_, {dispatch, getState}) => {
-    await dispatch(
-      setConfig({...defaultConfig, login: getState().session.config.login}),
-    );
+  async (_, {dispatch}) => {
+    await dispatch(setConfig(defaultConfig));
   },
 );
 
@@ -206,8 +221,8 @@ export const sessionSlice = createSlice({
         state.loginStatus = successStatus();
         state.authStatus = AUTH_STATUS.VALID;
         state.loginData = {
-          user: action.payload?.user,
-          token: action.payload?.token,
+          user: action.payload.user,
+          uuid: action.payload.uuid,
         };
       })
       .addCase(login.rejected, (state, action) => {

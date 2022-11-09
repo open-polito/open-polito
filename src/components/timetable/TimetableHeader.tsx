@@ -1,7 +1,7 @@
 import React, {useContext, useMemo} from 'react';
-import {Pressable, View} from 'react-native';
+import {Platform, Pressable, View} from 'react-native';
 import colors from '../../colors';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import moment from 'moment';
 import {useTranslation} from 'react-i18next';
 import Toggles from '../../ui/HorizontalIconSelector';
@@ -98,18 +98,22 @@ const TimetableHeader = ({
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
-        <Button
-          secondary
-          small
-          text={t('jumpToDate')}
-          icon="chevrons-right"
-          onPress={() =>
-            showDatePicker(date => {
-              if (!date) return;
-              _onWeekStartDateChanged(new Date(date));
-            })
-          }
-        />
+        {Platform.OS === 'android' ? (
+          <Button
+            secondary
+            small
+            text={t('jumpToDate')}
+            icon="chevrons-right"
+            onPress={() =>
+              showDatePicker(date => {
+                if (!date) return;
+                _onWeekStartDateChanged(new Date(date));
+              })
+            }
+          />
+        ) : (
+          <View />
+        )}
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Toggles
             defaultValue="week"

@@ -1,4 +1,4 @@
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Dimensions, View} from 'react-native';
 import TimetableDay from './TimetableDay';
@@ -55,13 +55,18 @@ const TimetableSlots = ({
   useEffect(() => {
     if (!config.timetableOverlap || !config.timetablePriority) return;
     let _list: string[] = [...config.timetablePriority];
+    let changed = false;
     courseNames.forEach(courseName => {
-      if (!config.timetablePriority.includes(courseName)) {
+      if (
+        courseName.trim() !== '' &&
+        !config.timetablePriority.includes(courseName)
+      ) {
         _list.push(courseName);
+        changed = true;
       }
     });
-    dispatch(setConfig({...config, timetablePriority: _list}));
-  }, [days, courseNames]);
+    changed && dispatch(setConfig({...config, timetablePriority: _list}));
+  }, [days, courseNames, config, dispatch]);
 
   return (
     <View

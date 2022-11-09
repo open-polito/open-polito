@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Recording} from 'open-polito-api/course';
+import {Recording} from 'open-polito-api/lib/course';
 import RNVideo from 'react-native-video';
 import Video from 'react-native-video';
 import {View} from 'react-native';

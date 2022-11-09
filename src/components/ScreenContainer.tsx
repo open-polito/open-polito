@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, ReactNode} from 'react';
 import {SafeAreaView, StatusBar, View, ViewStyle} from 'react-native';
 import colors from '../colors';
 import styles from '../styles';
@@ -6,6 +6,7 @@ import styles from '../styles';
 export type ScreenContainerProps = {
   style?: ViewStyle;
   barStyle?: 'light-content' | 'dark-content';
+  children: ReactNode;
 };
 
 const ScreenContainer: FC<ScreenContainerProps> = ({

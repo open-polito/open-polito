@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import DirectoryItem from '../ui/DirectoryItem';
 import DirectoryItemLoader from './loaders/DirectoryItemLoader';
 import {useSelector} from 'react-redux';
 import {getRecentCourseMaterial} from '../utils/material';
 import {RootState} from '../store/store';
-import {File, MaterialItem} from 'open-polito-api/material';
+import {File, MaterialItem} from 'open-polito-api/lib/material';
+import {DeviceContext} from '../context/Device';
 
 export default function RecentItems({
   courseID = '',
@@ -13,18 +14,18 @@ export default function RecentItems({
   relativeDate = false,
 }) {
   const [recent, setRecent] = useState<File[]>([]);
+  const {dark} = useContext(DeviceContext);
+
+  const material = useSelector<RootState, MaterialItem[] | undefined>(
+    state =>
+      state.courses.courses.find(
+        course => courseID == course.basicInfo.code + course.basicInfo.name,
+      )?.extendedInfo?.material,
+  );
 
   const recentMaterial = courseID
     ? []
     : useSelector<RootState, File[]>(state => state.courses.recentMaterial);
-  const material =
-    courseID &&
-    useSelector<RootState, MaterialItem[] | undefined>(
-      state =>
-        state.courses.courses.find(
-          course => courseID == course.basicInfo.code + course.basicInfo.name,
-        )?.extendedInfo?.material,
-    );
 
   useEffect(() => {
     if (courseID) {
@@ -45,7 +46,7 @@ export default function RecentItems({
           <DirectoryItem
             key={item.code}
             item={item}
-            compact={compact}
+            dark={dark}
             relativeDate={relativeDate}
             course=""
           />

@@ -3,13 +3,14 @@
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "jsx": "react-native",
-    "lib": ["es2017"],
+    "lib": ["es2017", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
     "target": "esnext",
+    "module": "esnext",
     "typeRoots": ["node_modules/@types"],
     "resolveJsonModule": true
   },
@@ -18,5 +19,6 @@
     "babel.config.js",
     "metro.config.js",
     "jest.config.js"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

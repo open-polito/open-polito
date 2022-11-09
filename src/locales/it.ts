@@ -71,6 +71,9 @@ const IT = {
   noUsernameProvided: 'Nessun nome utente inserito',
   noPasswordProvided: 'Nessuna password inserita',
   invalidUsernameProvided: 'Nome utente non valido',
+  downloadNativeApp: "Scarica l'app",
+  downloadNativeAppDescription:
+    "Scarica l'app per accedere a tutte le funzionalità.\nDisponibile per Android, Windows, macOS e Linux",
 
   // Home screen
   home: 'Home',
@@ -94,7 +97,9 @@ const IT = {
   unreadEmail: '{{count}} e-mail non letta',
   unreadEmail_plural: '{{count}} e-mail non lette',
   noEmailAccess: "L'accesso alle e-mail non è ancora disponibile.",
-  openBrowser: 'Tocca per aprire nel browser',
+  emailCannotBeShownDesktop:
+    'La versione desktop non può mostrare le email qui',
+  openBrowser: 'Apri nel browser',
 
   // Settings screen
   settings: 'Impostazioni',

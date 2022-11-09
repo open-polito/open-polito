@@ -2,8 +2,8 @@
  * @file Functions to simplify interaction with open-polito-api
  */
 
-import {Device} from 'open-polito-api/device';
-import {DeviceData} from 'open-polito-api/device';
+import {Device} from 'open-polito-api/lib/device';
+import {DeviceData} from 'open-polito-api/lib/device';
 import {Platform} from 'react-native';
 
 /**

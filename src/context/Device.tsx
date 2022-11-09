@@ -1,9 +1,22 @@
-import {Device} from 'open-polito-api/device';
-import React, {createContext, ReactNode, useMemo, useState} from 'react';
-import {ColorSchemeName, useColorScheme} from 'react-native';
+import {Device} from 'open-polito-api/lib/device';
+import React, {
+  createContext,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  ColorSchemeName,
+  useColorScheme,
+  useWindowDimensions,
+} from 'react-native';
 import {useSelector} from 'react-redux';
+import {Configuration} from '../defaultConfig';
 import {RootState} from '../store/store';
+import {DeviceSize} from '../types';
 import {createDevice} from '../utils/api-utils';
+import Logger from '../utils/Logger';
 
 export type DeviceProviderProps = {
   chosenTheme: string;
@@ -13,6 +26,7 @@ export type DeviceProviderProps = {
 
   colorScheme: ColorSchemeName;
   dark: boolean;
+  size: DeviceSize;
 };
 
 export type DeviceProviderFunctionProps = {
@@ -31,6 +45,8 @@ export const DeviceContext = createContext<DeviceProviderProps>({
 
   colorScheme: 'dark',
   dark: true,
+
+  size: DeviceSize.normal,
 });
 
 /**
@@ -47,15 +63,30 @@ const DeviceProvider = ({
   device: Device;
 }) => {
   const [_device, _setDevice] = useState(device);
-  const _chosenTheme = useSelector<RootState, string>(
-    state => state.session.config.theme,
+
+  const config = useSelector<RootState, Configuration>(
+    state => state.session.config,
   );
+
+  /**
+   * Set request logger when config or device change
+   */
+  useEffect(() => {
+    device.request_logger = config.logging ? Logger.logRequestSync : () => {};
+  }, [config, device]);
+
+  const {width} = useWindowDimensions();
+
   const _colorScheme = useColorScheme();
   const _dark = useMemo<boolean>(() => {
-    return _chosenTheme === 'system'
+    return config.theme === 'system'
       ? _colorScheme === 'dark'
-      : _chosenTheme === 'dark';
-  }, [_chosenTheme, _colorScheme]);
+      : config.theme === 'dark';
+  }, [config.theme, _colorScheme]);
+  const size = useMemo<DeviceSize>(
+    () => (width >= 1000 ? DeviceSize.lg : DeviceSize.normal),
+    [width],
+  );
 
   return (
     <DeviceContext.Provider
@@ -65,9 +96,10 @@ const DeviceProvider = ({
           _setDevice(d);
         },
 
-        chosenTheme: _chosenTheme,
+        chosenTheme: config.theme,
         colorScheme: _colorScheme,
         dark: _dark,
+        size,
       }}>
       {children}
     </DeviceContext.Provider>

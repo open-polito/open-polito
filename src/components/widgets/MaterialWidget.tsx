@@ -4,8 +4,8 @@ import {View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {STATUS, Status} from '../../store/status';
 import {RootState} from '../../store/store';
-import RecentItems from './../RecentItems';
-import {TextS} from './../Text';
+import RecentItems from '../RecentItems';
+import {TextS} from '../Text';
 import WidgetBase, {WidgetBaseProps} from './WidgetBase';
 
 export type MaterialWidgetProps = {

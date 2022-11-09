@@ -1,7 +1,7 @@
 import {faker} from '@faker-js/faker';
 import moment from 'moment';
-import {Directory, File, MaterialItem} from 'open-polito-api/material';
-import {TimetableSlot} from 'open-polito-api/timetable';
+import {Directory, File, MaterialItem} from 'open-polito-api/lib/material';
+import {TimetableSlot} from 'open-polito-api/lib/timetable';
 
 export default class FakeData {
   /**
