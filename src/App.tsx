@@ -1,4 +1,10 @@
-import React, {Suspense, useEffect} from 'react';
+import React, {
+  ReactNode,
+  Suspense,
+  useContext,
+  useEffect,
+  useMemo,
+} from 'react';
 import {Provider} from 'react-redux';
 import Router from './routes/Router';
 
@@ -13,7 +19,7 @@ import 'moment/locale/it';
 import store from './store/store';
 import moment from 'moment';
 import {Device} from 'open-polito-api/lib/device';
-import DeviceProvider from './context/Device';
+import DeviceProvider, {DeviceContext} from './context/Device';
 import {
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
@@ -22,6 +28,8 @@ import Toast from './ui/Toast';
 import {ModalProvivder} from './context/ModalProvider';
 import ModalComponent from './components/modals/ModalComponent';
 import Fallback from './ui/Fallback';
+import colors, {Color} from './colors';
+import {p} from './scaling';
 
 let lng = '';
 if (RNLocalize.getLocales()[0].languageCode === 'it') {
@@ -69,21 +77,35 @@ export default function App() {
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
           <ModalProvivder>
-            <TRenderEngineProvider
-              tagsStyles={{
-                p: {
-                  marginTop: 0,
-                },
-              }}>
-              <RenderHTMLConfigProvider>
-                <Router />
-                <Toast />
-                <ModalComponent />
-              </RenderHTMLConfigProvider>
-            </TRenderEngineProvider>
+            <HTMLRenderEngineProvider>
+              <Router />
+              <Toast />
+              <ModalComponent />
+            </HTMLRenderEngineProvider>
           </ModalProvivder>
         </DeviceProvider>
       </Provider>
     </Suspense>
   );
 }
+
+const HTMLRenderEngineProvider = ({children}: {children: ReactNode}) => {
+  const {dark} = useContext(DeviceContext);
+
+  const color = useMemo<Color | undefined>(
+    () => (dark ? colors.gray200 : undefined),
+    [dark],
+  );
+
+  return (
+    <TRenderEngineProvider
+      tagsStyles={{
+        p: {
+          marginVertical: 4 * p,
+          color,
+        },
+      }}>
+      <RenderHTMLConfigProvider>{children}</RenderHTMLConfigProvider>
+    </TRenderEngineProvider>
+  );
+};
