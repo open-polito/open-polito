@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useMemo} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
 import {ActivityIndicator, ScrollView, StyleSheet, View} from 'react-native';
 import colors from '../colors';
@@ -8,13 +8,12 @@ import TablerIcon from '../ui/core/TablerIcon';
 import TextInput from '../ui/core/TextInput';
 import Header, {HEADER_TYPE} from '../ui/Header';
 import Screen from '../ui/Screen';
-import sections from '../sections';
 import PressableBase from '../ui/core/PressableBase';
 import Text from '../ui/core/Text';
 import {useNavigation} from '@react-navigation/native';
 import Section from '../ui/Section';
-import {useDispatch, useSelector} from 'react-redux';
-import {AppDispatch, RootState} from '../store/store';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/store';
 import {CoursesState} from '../store/coursesSlice';
 import DirectoryItem from '../ui/DirectoryItem';
 import {STATUS} from '../store/status';
@@ -37,17 +36,13 @@ const sectionColors = [colors.accent300, colors.red, '#9b51e0', '#f2c94c'];
 
 const Home = () => {
   const {t} = useTranslation();
-  const {dark, device} = useContext(DeviceContext);
+  const {dark} = useContext(DeviceContext);
   const navigation = useNavigation();
-  const dispatch = useDispatch<AppDispatch>();
 
-  const {
-    courses,
-    recentMaterial,
-    getRecentMaterialStatus,
-    loadCoursesStatus,
-    loadExtendedCourseInfoStatus,
-  } = useSelector<RootState, CoursesState>(state => state.courses);
+  const {courses, recentMaterial, loadExtendedCourseInfoStatus} = useSelector<
+    RootState,
+    CoursesState
+  >(state => state.courses);
 
   const latestAlert = useMemo<ExtendedAlert>(() => {
     return courses
@@ -112,7 +107,6 @@ const Home = () => {
               style={{marginBottom: 32 * p}}
             />
           </PressableBase>
-
           {/* Top sections */}
           <View style={_styles.topSections}>
             {sectionsData.map((btn, i) => (

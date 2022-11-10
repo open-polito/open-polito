@@ -1,4 +1,3 @@
-import {decode} from 'html-entities';
 import moment from 'moment';
 import {Notification} from 'open-polito-api/lib/notifications';
 import {NotificationType} from 'open-polito-api/lib/notifications';
@@ -13,6 +12,7 @@ import {RenderHTMLSource} from 'react-native-render-html';
 import colors from '../colors';
 import {p} from '../scaling';
 import {ExtendedAlert} from '../types';
+import {stripHTML} from '../utils/html';
 import TablerIcon from './core/TablerIcon';
 import Text from './core/Text';
 
@@ -27,6 +27,7 @@ export type NotificationParams = {
 const isCourseAlert = (n: ExtendedAlert | Notification): n is ExtendedAlert => {
   return (n as Notification).topic === undefined;
 };
+
 const NotificationComponent: FC<NotificationParams> = ({
   type,
   notification,
@@ -34,8 +35,6 @@ const NotificationComponent: FC<NotificationParams> = ({
   read = true,
   courseName = '',
 }) => {
-  const htmlTags = /[<][/]?[^/>]+[/]?[>]+/g;
-
   const icon = useMemo(() => {
     switch (type) {
       case NotificationType.TEST:
@@ -51,17 +50,18 @@ const NotificationComponent: FC<NotificationParams> = ({
     }
   }, [type]);
 
-  const text = useMemo(() => {
-    return decode(
-      (isCourseAlert(notification)
-        ? notification.text
-        : notification.body || ''
-      )
-        .replace('\n', ' \n')
-        .replace(htmlTags, '')
-        .trim(),
-    );
-  }, [notification]);
+  const title = useMemo<string>(
+    () =>
+      isCourseAlert(notification)
+        ? stripHTML(notification.text)
+        : notification.title,
+    [notification],
+  );
+
+  const body = useMemo<string | null>(
+    () => (isCourseAlert(notification) ? notification.text : notification.body),
+    [notification],
+  );
 
   const dateString = useMemo(() => {
     return moment(
@@ -119,7 +119,7 @@ const NotificationComponent: FC<NotificationParams> = ({
             c={dark ? colors.gray100 : colors.gray800}
             w="r"
             numberOfLines={isCourseAlert(notification) ? 1 : 2}>
-            {isCourseAlert(notification) ? text : notification.title}
+            {title}
           </Text>
           <Text
             s={10 * p}
@@ -133,7 +133,7 @@ const NotificationComponent: FC<NotificationParams> = ({
           </Text>
         </View>
       </View>
-      {text !== '' && (
+      {!!body && (
         <View
           style={{
             marginTop: 12 * p,
@@ -143,7 +143,7 @@ const NotificationComponent: FC<NotificationParams> = ({
           }}>
           <RenderHTMLSource
             source={{
-              html: text,
+              html: body,
             }}
           />
         </View>
