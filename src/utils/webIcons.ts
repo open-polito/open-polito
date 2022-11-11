@@ -63,10 +63,9 @@ import {
   IconUserCircle,
   IconWriting,
   IconX,
+  TablerIcon,
 } from '@tabler/icons';
-import {FC} from 'react';
-
-const webIcons: {[key: string]: FC} = {
+const webIcons: {[key: string]: TablerIcon} = {
   adjustments: IconAdjustments,
   'alert-triangle': IconAlertTriangle,
   'align-justified': IconAlignJustified,
