@@ -2,14 +2,21 @@ const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-const analyzeBundle = process.env.ANALYZE_BUNDLE === '1';
-
 module.exports = async function (env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
 
-  if (analyzeBundle) {
-    config.plugins.push(new BundleAnalyzerPlugin());
+  if (env.mode === 'production' || process.env.ANALYZE_BUNDLE === '1') {
+    config.plugins.push(
+      new BundleAnalyzerPlugin({
+        path: 'web-report',
+      }),
+    );
   }
+
+  // Enable tree-shaking
+  config.optimization = {
+    usedExports: true,
+  };
 
   return config;
 };

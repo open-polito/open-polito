@@ -1,111 +1,134 @@
-import React, {
-  ReactNode,
-  Suspense,
-  useContext,
-  useEffect,
-  useMemo,
-} from 'react';
-import {Provider} from 'react-redux';
-import Router from './routes/Router';
-
-import i18n from 'i18next';
-import {initReactI18next} from 'react-i18next';
-import EN from './locales/en';
-import IT from './locales/it';
-import * as RNLocalize from 'react-native-localize';
-
-import 'moment/locale/it';
-
-import store from './store/store';
-import moment from 'moment';
-import {Device} from 'open-polito-api/lib/device';
-import DeviceProvider, {DeviceContext} from './context/Device';
-import {
-  RenderHTMLConfigProvider,
-  TRenderEngineProvider,
-} from 'react-native-render-html';
-import Toast from './ui/Toast';
-import {ModalProvivder} from './context/ModalProvider';
-import ModalComponent from './components/modals/ModalComponent';
+import React, {Suspense, useEffect, useState} from 'react';
+import {Provider, useDispatch, useSelector} from 'react-redux';
+import store, {AppDispatch, RootState} from './store/store';
 import Fallback from './ui/Fallback';
-import colors, {Color} from './colors';
-import {p} from './scaling';
-
-let lng = '';
-if (RNLocalize.getLocales()[0].languageCode === 'it') {
-  lng = 'it';
-} else {
-  lng = 'en';
-}
-
-i18n.use(initReactI18next).init({
-  resources: {
-    en: {translation: EN},
-    it: {translation: IT},
-  },
-  lng: lng,
-  fallbackLng: 'en',
-  interpolation: {escapeValue: false},
-  debug: false,
-});
-
-moment.locale(lng);
+import {initI18n, languageChangeEventHandler} from './utils/l10n';
+import {addEventListener, removeEventListener} from 'react-native-localize';
+import DeviceProvider from './context/Device';
+import {ModalProvivder} from './context/ModalProvider';
+import {Device} from 'open-polito-api/lib/device';
+import Toast from './ui/Toast';
+import ModalComponent from './components/modals/ModalComponent';
+import {SessionState, setConfig, setConfigState} from './store/sessionSlice';
+import LoginScreen from './screens/LoginScreen';
+import {genericPlatform} from './utils/platform';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import defaultConfig, {
+  Configuration,
+  CONFIG_SCHEMA_VERSION,
+} from './defaultConfig';
 
 // Device instance to pass to Context API for global use
 const defaultDevice = new Device('', 10000, () => {});
 
-export default function App() {
+const Router = React.lazy(() => import('./routes/Router'));
+
+const HTMLRenderEngineProvider = React.lazy(
+  () => import('./context/HTMLRenderEngineProvider'),
+);
+
+/**
+ * Initialize i18n
+ */
+initI18n();
+
+/**
+ * Has access to all providers defined in {@link App}
+ */
+const InnerApp = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {config} = useSelector<RootState, SessionState>(state => state.session);
+
+  const [setupDone, setSetupDone] = useState(false);
+
+  /**
+   * Initial config setup
+   */
   useEffect(() => {
-    RNLocalize.addEventListener('change', setNewLocale);
+    (async () => {
+      // Set config in store
+      let loadedConfig = (JSON.parse(
+        (await AsyncStorage.getItem('@config')) || '{}',
+      ) || defaultConfig) as Configuration;
+
+      /**
+       * Check for old schema and/or new default settings items.
+       */
+      if (
+        !loadedConfig.schemaVersion ||
+        loadedConfig.schemaVersion !== CONFIG_SCHEMA_VERSION
+      ) {
+        const currentSettingsKeys = Object.keys(loadedConfig);
+        const defaultSettingsKeys = Object.keys(defaultConfig);
+
+        // Delete settings that have been deleted in default config
+        const toDelete = currentSettingsKeys.filter(
+          k => !defaultSettingsKeys.includes(k),
+        );
+        toDelete.forEach(k => delete (loadedConfig as any)[k]);
+
+        // Add missing new settings with their default value
+        dispatch(
+          setConfig({
+            ...loadedConfig,
+            ...defaultConfig,
+          }),
+        );
+      } else {
+        dispatch(setConfigState(loadedConfig));
+      }
+
+      // Setup complete
+      setSetupDone(true);
+    })();
+
     return () => {
-      RNLocalize.removeEventListener('change', setNewLocale);
+      // Cleanup
+    };
+  }, [dispatch]);
+
+  if (!setupDone) {
+    return null;
+  }
+
+  return (
+    <>
+      {config.login ? <Router /> : <LoginScreen />}
+      <Toast />
+      <ModalComponent />
+    </>
+  );
+};
+
+const App = () => {
+  useEffect(() => {
+    addEventListener('change', languageChangeEventHandler);
+    return () => {
+      removeEventListener('change', languageChangeEventHandler);
     };
   }, []);
 
-  const setNewLocale = () => {
-    if (RNLocalize.getLocales()[0].languageCode === 'it') {
-      i18n.changeLanguage('it');
-      moment.locale('it');
-    } else {
-      i18n.changeLanguage('en');
-      moment.locale('en');
-    }
-  };
-
+  /**
+   * If on web, {@link HTMLRenderEngineProvider} will be provided in the Route
+   * component, to save initial loading time.
+   */
   return (
     <Suspense fallback={<Fallback />}>
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
           <ModalProvivder>
-            <HTMLRenderEngineProvider>
-              <Router />
-              <Toast />
-              <ModalComponent />
-            </HTMLRenderEngineProvider>
+            {genericPlatform === 'web' ? (
+              <InnerApp />
+            ) : (
+              <HTMLRenderEngineProvider>
+                <InnerApp />
+              </HTMLRenderEngineProvider>
+            )}
           </ModalProvivder>
         </DeviceProvider>
       </Provider>
     </Suspense>
   );
-}
-
-const HTMLRenderEngineProvider = ({children}: {children: ReactNode}) => {
-  const {dark} = useContext(DeviceContext);
-
-  const color = useMemo<Color | undefined>(
-    () => (dark ? colors.gray200 : undefined),
-    [dark],
-  );
-
-  return (
-    <TRenderEngineProvider
-      tagsStyles={{
-        p: {
-          marginVertical: 4 * p,
-          color,
-        },
-      }}>
-      <RenderHTMLConfigProvider>{children}</RenderHTMLConfigProvider>
-    </TRenderEngineProvider>
-  );
 };
+
+export default App;

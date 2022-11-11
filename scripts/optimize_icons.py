@@ -9,6 +9,7 @@ TXT_PATH = "assets/tabler-selected.txt"
 FINAL_PATH = "assets/fonts/selection-final.json"
 WEB_ICONS_TS_PATH = "src/utils/webIcons.ts"
 
+
 def optimize_icons() -> None:
     """Optimize the icons json file, then generate the imports.
     react-native-vector-icons only needs, for each icon,
@@ -48,11 +49,11 @@ def optimize_icons() -> None:
                            for part in x.split("-")]))
         imports.append("TablerIcon")
         f.write(
-            f"import {{{', '.join(imports)}}} from \"@tabler/icons\";\n\n")
+            f"import {{{', '.join(imports)}}} from '@tabler/icons';\n")
 
         f.write("const webIcons: {[key: string]: TablerIcon} = { ")
 
-        f.write(", ".join([f"\"{x}\": {imports[i]}"
+        f.write(", ".join([f"'{x}': {imports[i]}"
                 for i, x in enumerate(selection_txt)]))
 
         f.write(" }\n\n")

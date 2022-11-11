@@ -4,7 +4,6 @@ import {FlatList, RefreshControl, TouchableOpacity, View} from 'react-native';
 import {ExamSession} from 'open-polito-api/lib/exam_sessions';
 import colors from '../colors';
 import moment from 'moment';
-import * as RNLocalize from 'react-native-localize';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, RootState} from '../store/store';
 import {ExamsState, getExams} from '../store/examsSlice';
@@ -20,6 +19,7 @@ import NoContent from '../ui/NoContent';
 import ExamsBookExamModal from '../components/modals/ExamsBookExamModal';
 import ExamsCancelExamModal from '../components/modals/ExamsCancelExamModal';
 import {ModalContext} from '../context/ModalProvider';
+import {getLanguageCode} from '../utils/l10n';
 
 const isExamBooked = (examSession: ExamSession): boolean => {
   return examSession.user_is_signed_up;
@@ -60,7 +60,7 @@ export default function ExamSessions() {
     }
     (async () => {
       // Set language for error messages
-      switch (RNLocalize.getLocales()[0].languageCode) {
+      switch (getLanguageCode()) {
         case 'en':
           setErrorMsgLanguage('en');
           break;

@@ -31,7 +31,9 @@ grid-pattern
 headphones
 help
 info-circle
+layout-columns
 layout-dashboard
+layout-rows
 list
 lock
 logout
