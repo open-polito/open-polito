@@ -1,24 +1,19 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {View} from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import colors from '../colors';
 import {useTranslation} from 'react-i18next';
 
-import {useSelector, useDispatch} from 'react-redux';
-import {
-  SessionState,
-  setAuthStatus,
-  setConfig,
-  setConfigState,
-} from '../store/sessionSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import defaultConfig, {
-  Configuration,
-  CONFIG_SCHEMA_VERSION,
-} from '../defaultConfig';
+import {useSelector} from 'react-redux';
+import {SessionState} from '../store/sessionSlice';
+import {Configuration} from '../defaultConfig';
 import {AUTH_STATUS} from '../store/status';
-import {AppDispatch, RootState} from '../store/store';
+import {RootState} from '../store/store';
 import {
   checkForUpdates,
   ReleaseJsonEntry,
@@ -30,8 +25,12 @@ import Text from '../ui/core/Text';
 import {p} from '../scaling';
 import {DeviceContext} from '../context/Device';
 import {getLocales} from 'react-native-localize';
-import Updater from '../screens/Updater';
 import {RenderHTMLSource} from 'react-native-render-html';
+import Updater from '../screens/Updater';
+import AppStackNavigator from './AppStackNavigator';
+import {getLanguageCode, setMomentLocale} from '../utils/l10n';
+import {genericPlatform} from '../utils/platform';
+import HTMLRenderEngineProvider from '../context/HTMLRenderEngineProvider';
 
 /**
  * Types for React Navigation
@@ -54,25 +53,19 @@ export type UpdaterState = {
 };
 
 /**
- * Stack navigators
- */
-const AuthStack = createNativeStackNavigator<AuthStackParamList>();
-const AppStack = createNativeStackNavigator<AppStackParamList>();
-
-const Search = React.lazy(() => import('../screens/Search'));
-const Course = React.lazy(() => import('../screens/Course'));
-const Video = React.lazy(() => import('../screens/Video'));
-const LoginScreen = React.lazy(() => import('../screens/LoginScreen'));
-const HomeRouter = React.lazy(() => import('../routes/HomeRouter'));
-
-/**
  * Main routing component. Manages login and access to {@link AuthStack} and {@link AppStack}.
  */
 export default function Router() {
   const {t} = useTranslation();
-  const dispatch = useDispatch<AppDispatch>();
   const {setModal} = useContext(ModalContext);
   const {dark} = useContext(DeviceContext);
+
+  // Setup moment locale.
+  // WARNING: Moment shouldn't be called by Router's parent components!
+  // Reason: Initial load time will be slower for new users on web
+  useEffect(() => {
+    setMomentLocale(getLanguageCode());
+  }, []);
 
   // Update checking-related stuff
   const [updaterState, setUpdaterState] = useState<UpdaterState>({
@@ -136,69 +129,17 @@ export default function Router() {
   );
 
   // Logging-related stuff
-  const {logging, login} = useSelector<RootState, Configuration>(
+  const {logging} = useSelector<RootState, Configuration>(
     state => state.session.config,
   );
 
-  const [message, setMessage] = useState(<View></View>);
-
-  const [setupDone, setSetupDone] = useState(false);
-  // Initial setup
-  useEffect(() => {
-    (async () => {
-      // If login is set to false (first load or never logged in),
-      // set auth status as not valid, so that we'll skip to the login section.
-      // This saves data on web.
-      if (!login) {
-        setAuthStatus(AUTH_STATUS.NOT_VALID);
-      }
-
-      // Set config in store
-      let loadedConfig = (JSON.parse(
-        (await AsyncStorage.getItem('@config')) || '{}',
-      ) || defaultConfig) as Configuration;
-
-      /**
-       * Check for old schema and/or new default settings items.
-       */
-      if (
-        !loadedConfig.schemaVersion ||
-        loadedConfig.schemaVersion !== CONFIG_SCHEMA_VERSION
-      ) {
-        const currentSettingsKeys = Object.keys(loadedConfig);
-        const defaultSettingsKeys = Object.keys(defaultConfig);
-
-        // Delete settings that have been deleted in default config
-        const toDelete = currentSettingsKeys.filter(
-          k => !defaultSettingsKeys.includes(k),
-        );
-        toDelete.forEach(k => delete (loadedConfig as any)[k]);
-
-        // Add missing new settings with their default value
-        dispatch(
-          setConfig({
-            ...loadedConfig,
-            ...defaultConfig,
-          }),
-        );
-      } else {
-        dispatch(setConfigState(loadedConfig));
-      }
-
-      // Setup complete
-      setSetupDone(true);
-    })();
-
-    return () => {
-      // Cleanup
-    };
-  }, []);
+  const [message, setMessage] = useState<ReactNode>(null);
 
   // If loggingEnabled changes, set whether to show top message
   useEffect(() => {
     logging
       ? setMessage(buildMessage({text: t('Logging enabled'), type: 'warn'}))
-      : setMessage(<View></View>);
+      : setMessage(null);
   }, [logging, t]);
 
   // Returns message component
@@ -218,38 +159,27 @@ export default function Router() {
     );
   };
 
-  if (!setupDone) {
-    return null;
-  }
+  const children = useMemo(
+    () => (
+      <>
+        {message}
+        {updaterState.acceptedUpdate ? (
+          <Updater releaseData={updaterState.releaseData!} />
+        ) : authStatus !== AUTH_STATUS.NOT_VALID ? (
+          <AppStackNavigator />
+        ) : null}
+      </>
+    ),
+    [authStatus, message, updaterState],
+  );
 
-  if (updaterState.acceptedUpdate) {
-    return <Updater releaseData={updaterState.releaseData!} />;
-  }
-
-  if (authStatus !== AUTH_STATUS.NOT_VALID) {
-    return (
-      <NavigationContainer>
-        <AppStack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <AppStack.Screen name="HomeRouter" component={HomeRouter} />
-          <AppStack.Screen name="Search" component={Search} />
-          <AppStack.Screen name="Course" component={Course} />
-          <AppStack.Screen name="Video" component={Video} />
-        </AppStack.Navigator>
-      </NavigationContainer>
-    );
-  }
-
-  return (
-    <NavigationContainer>
-      <AuthStack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}>
-        <AuthStack.Screen name="Login" component={LoginScreen} />
-      </AuthStack.Navigator>
-    </NavigationContainer>
+  /**
+   * If on web, {@link HTMLRenderEngineProvider} has not been created
+   * in the parent App component. We need to insert it now.
+   */
+  return genericPlatform === 'web' ? (
+    <HTMLRenderEngineProvider>{children}</HTMLRenderEngineProvider>
+  ) : (
+    children
   );
 }

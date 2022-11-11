@@ -1,6 +1,6 @@
 import React, {FC, useMemo} from 'react';
 import {StyleSheet, Text as RNText, TextProps, TextStyle} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native';
 import colors, {Color} from '../../colors';
 import openURL from '../../utils/openUrl';
 

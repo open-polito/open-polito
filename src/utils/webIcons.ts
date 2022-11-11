@@ -32,7 +32,9 @@ import {
   IconHeadphones,
   IconHelp,
   IconInfoCircle,
+  IconLayoutColumns,
   IconLayoutDashboard,
+  IconLayoutRows,
   IconList,
   IconLock,
   IconLogout,
@@ -61,10 +63,10 @@ import {
   IconUserCircle,
   IconWriting,
   IconX,
-  TablerIcon,
 } from '@tabler/icons';
+import {FC} from 'react';
 
-const webIcons: {[key: string]: TablerIcon} = {
+const webIcons: {[key: string]: FC} = {
   adjustments: IconAdjustments,
   'alert-triangle': IconAlertTriangle,
   'align-justified': IconAlignJustified,
@@ -98,7 +100,9 @@ const webIcons: {[key: string]: TablerIcon} = {
   headphones: IconHeadphones,
   help: IconHelp,
   'info-circle': IconInfoCircle,
+  'layout-columns': IconLayoutColumns,
   'layout-dashboard': IconLayoutDashboard,
+  'layout-rows': IconLayoutRows,
   list: IconList,
   lock: IconLock,
   logout: IconLogout,

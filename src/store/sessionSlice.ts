@@ -106,7 +106,7 @@ export const login = createAsyncThunk<
       }
   ) & {device: Device},
   {state: RootState}
->('session/login', async (args, {dispatch, rejectWithValue}) => {
+>('session/login', async (args, {dispatch, getState, rejectWithValue}) => {
   try {
     let response;
     switch (args.method) {
@@ -136,6 +136,7 @@ export const login = createAsyncThunk<
       username,
       JSON.stringify({uuid: args.device.uuid, token: response.token}),
     );
+    dispatch(setConfig({...getState().session.config, login: true}));
     return {user: username, uuid: args.device.uuid};
   } catch (e) {
     // There has been an error, check if we're offline
@@ -154,12 +155,13 @@ export const login = createAsyncThunk<
  */
 export const logout = createAsyncThunk<void, Device, {state: RootState}>(
   'session/logout',
-  async (device, {dispatch}) => {
+  async (device, {dispatch, getState}) => {
     await clearCredentials();
     try {
       await device.logout();
     } finally {
       dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
+      dispatch(setConfig({...getState().session.config, login: false}));
     }
   },
 );

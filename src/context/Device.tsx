@@ -16,7 +16,8 @@ import {Configuration} from '../defaultConfig';
 import {RootState} from '../store/store';
 import {DeviceSize} from '../types';
 import {createDevice} from '../utils/api-utils';
-import Logger from '../utils/Logger';
+
+const getLogger = () => import('../utils/Logger');
 
 export type DeviceProviderProps = {
   chosenTheme: string;
@@ -72,7 +73,13 @@ const DeviceProvider = ({
    * Set request logger when config or device change
    */
   useEffect(() => {
-    device.request_logger = config.logging ? Logger.logRequestSync : () => {};
+    if (config.logging) {
+      getLogger().then(({default: Logger}) => {
+        device.request_logger = Logger.logRequestSync;
+      });
+    } else {
+      device.request_logger = () => {};
+    }
   }, [config, device]);
 
   const {width} = useWindowDimensions();

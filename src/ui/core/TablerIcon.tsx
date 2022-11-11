@@ -3,7 +3,6 @@ import {createIconSetFromIcoMoon} from 'react-native-vector-icons';
 import {IconProps} from 'react-native-vector-icons/Icon';
 import icoMoonConfig from '../../../assets/fonts/selection-final.json';
 import {p} from '../../scaling';
-import {genericPlatform} from '../../utils/platform';
 
 const GeneratedIconSet = createIconSetFromIcoMoon(
   icoMoonConfig,
