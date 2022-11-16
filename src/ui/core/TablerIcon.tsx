@@ -1,22 +1,18 @@
 import React from 'react';
-import {createIconSetFromIcoMoon} from 'react-native-vector-icons';
-import {IconProps} from 'react-native-vector-icons/Icon';
-import icoMoonConfig from '../../../assets/fonts/selection-final.json';
+import {createIconSet} from '@expo/vector-icons';
+import {IconProps} from '@expo/vector-icons/build/createIconSet';
 import {p} from '../../scaling';
+import {GlyphName, glyphMap} from '../../utils/glyph-map';
 
-const GeneratedIconSet = createIconSetFromIcoMoon(
-  icoMoonConfig,
-  'tabler-icons',
-  'tabler-icons.ttf',
-);
+const Icon = createIconSet(glyphMap, 'tabler-icons', 'tabler-icons.ttf');
 
-const TablerIcon = ({...props}: IconProps) => {
+const TablerIcon = ({...props}: IconProps<GlyphName>) => {
   if (!props.size) {
     props.size = 24 * p;
   }
 
   return (
-    <GeneratedIconSet
+    <Icon
       {...props}
       style={[
         {

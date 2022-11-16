@@ -73,7 +73,9 @@ export default function Email() {
                 w="m"
                 c={dark ? colors.gray100 : colors.gray800}
                 style={{marginRight: 16 * p}}>
-                {t('emailCannotBeShownDesktop')}
+                {t('emailCannotBeShownWeb', {
+                  genericPlatform,
+                })}
               </Text>
               <Text
                 href={webMailUrl}

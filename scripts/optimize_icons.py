@@ -26,15 +26,10 @@ def optimize_icons() -> None:
     final_icons = [x for x in selection_full["icons"]
                    if x["properties"]["name"] in selection_txt]
 
-    final_out = {"icons": []}
+    final_out = {}
 
     for icon in final_icons:
-        final_out["icons"].append({
-            "properties": {
-                "name": icon["properties"]["name"],
-                "code": icon["properties"]["code"]
-            }
-        })
+        final_out[icon["properties"]["name"]] = icon["properties"]["code"]
 
     with open(FINAL_PATH, "w+") as f:
         json.dump(final_out, f)
@@ -46,15 +41,17 @@ def optimize_icons() -> None:
         imports = []
         for x in selection_txt:
             imports.append("Icon" + "".join([part.capitalize()
-                           for part in x.split("-")]))
+                                             for part in x.split("-")]))
         imports.append("TablerIcon")
         f.write(
             f"import {{{', '.join(imports)}}} from '@tabler/icons';\n")
 
-        f.write("const webIcons: {[key: string]: TablerIcon} = { ")
+        f.write("import {GlyphName} from './glyph-map';\n\n")
+
+        f.write("const webIcons: {[key in GlyphName]: TablerIcon} = { ")
 
         f.write(", ".join([f"'{x}': {imports[i]}"
-                for i, x in enumerate(selection_txt)]))
+                           for i, x in enumerate(selection_txt)]))
 
         f.write(" }\n\n")
         f.write("export default webIcons;")

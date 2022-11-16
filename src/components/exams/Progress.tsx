@@ -1,18 +1,24 @@
 import moment from 'moment';
 import {PermanentMark} from 'open-polito-api/lib/courses';
-import React, {useMemo} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useWindowDimensions, View} from 'react-native';
 import LineChart, {
   LineChartData,
 } from 'react-native-chart-kit/dist/line-chart/LineChart';
 import colors from '../../colors';
+import {DeviceContext} from '../../context/Device';
 import {p} from '../../scaling';
+import {DeviceSize} from '../../types';
 import Text from '../../ui/core/Text';
 
 const Progress = ({marks, dark}: {marks: PermanentMark[]; dark: boolean}) => {
   const {t} = useTranslation();
-  const width = useWindowDimensions().width;
+  const {width} = useWindowDimensions();
+  const {size} = useContext(DeviceContext);
+
+  const addedSpace = (size >= DeviceSize.lg ? 300 : 32) * p;
+  const chartWidth = width - addedSpace;
 
   /**
    * Marks sorted by date ascending and filtered to be at most 1 year ago
@@ -35,7 +41,7 @@ const Progress = ({marks, dark}: {marks: PermanentMark[]; dark: boolean}) => {
     let weights = 0; // Cumulative weight counter
 
     for (let i = 0; i < sorted_marks.length; i++) {
-      if (i == 0) {
+      if (i === 0) {
         weights += sorted_marks[i].num_credits;
         _avgs[i] = parseInt(sorted_marks[i].mark) || 0;
       } else {
@@ -69,39 +75,45 @@ const Progress = ({marks, dark}: {marks: PermanentMark[]; dark: boolean}) => {
     [sorted_marks, avgs, t],
   );
 
-  return sorted_marks.length == 0 ? (
-    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-      <Text s={12} w="m" c={dark ? colors.gray200 : colors.gray700}>
-        You'll see your progress when you get at least 1 permament mark.
-      </Text>
-    </View>
-  ) : (
-    <LineChart
-      data={data}
-      width={width}
-      height={220}
-      yAxisInterval={1}
-      chartConfig={{
-        backgroundColor: '#e26a00',
-        backgroundGradientFrom: colors.gray900,
-        backgroundGradientTo: colors.gray700,
-        decimalPlaces: 2,
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style: {
-          borderRadius: 16,
-        },
-        propsForDots: {
-          r: '6',
-          strokeWidth: '2',
-          stroke: colors.accent300,
-        },
-      }}
+  return (
+    <View
       style={{
-        borderRadius: 4 * p,
-        transform: [{translateX: -16 * p}],
-      }}
-    />
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      {sorted_marks.length === 0 ? (
+        <Text s={12} w="m" c={dark ? colors.gray200 : colors.gray700}>
+          You'll see your progress when you get at least 1 permament mark.
+        </Text>
+      ) : (
+        <LineChart
+          data={data}
+          width={chartWidth}
+          height={220}
+          yAxisInterval={1}
+          chartConfig={{
+            backgroundColor: '#e26a00',
+            backgroundGradientFrom: colors.gray900,
+            backgroundGradientTo: colors.gray700,
+            decimalPlaces: 2,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16,
+            },
+            propsForDots: {
+              r: '6',
+              strokeWidth: '2',
+              stroke: colors.accent300,
+            },
+          }}
+          style={{
+            borderRadius: 4 * p,
+          }}
+        />
+      )}
+    </View>
   );
 };
 

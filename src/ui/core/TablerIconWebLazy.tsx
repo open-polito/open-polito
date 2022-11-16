@@ -1,10 +1,11 @@
 import React, {CSSProperties, useMemo} from 'react';
-import {IconProps} from 'react-native-vector-icons/Icon';
+import {IconProps} from '@expo/vector-icons/build/createIconSet';
 import {View} from 'react-native';
 import webIcons from '../../utils/webIcons';
 import {p} from '../../scaling';
+import {GlyphName} from '../../utils/glyph-map';
 
-const TablerIconWebLazy = (props: IconProps) => {
+const TablerIconWebLazy = (props: IconProps<GlyphName>) => {
   const Component = useMemo(() => {
     const component = webIcons[props.name];
     if (component) {

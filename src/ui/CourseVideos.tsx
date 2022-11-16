@@ -43,7 +43,7 @@ const CourseVideos = ({
   }, [courseData, selectedYear]);
 
   return (
-    <View>
+    <View style={{flex: 1}}>
       <FlatList
         data={videos}
         ListEmptyComponent={<NoContent />}
@@ -60,10 +60,8 @@ const CourseVideos = ({
             dark={dark}
             onPress={() => {
               navigation.navigate('Video', {
-                video: {
-                  video: item,
-                  courseId: courseId,
-                }, // Directly convert Date to localized date string because react-navigation wants serialized data
+                video: item,
+                courseId: courseId,
               });
             }}
           />

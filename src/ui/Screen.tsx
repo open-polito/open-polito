@@ -19,7 +19,7 @@ const Screen = ({children}: {children: ReactNode}) => {
     <View style={{flex: 1}}>
       <StatusBar
         barStyle={
-          chosenTheme == 'system'
+          chosenTheme === 'system'
             ? 'default'
             : dark
             ? 'dark-content'
