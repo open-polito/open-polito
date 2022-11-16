@@ -21,6 +21,7 @@ import i18next from 'i18next';
 import ProgressCircle from '../ui/ProgressCircle';
 import Progress from '../components/exams/Progress';
 import openURL from '../utils/openUrl';
+import {GlyphName} from '../utils/glyph-map';
 
 const tabs = ['overview', 'permanentMarks', 'provisionalMarks'];
 
@@ -85,7 +86,7 @@ const Exams = () => {
       />
 
       <View style={styles.container}>
-        {tab == tabs[2] ? (
+        {tab === tabs[2] ? (
           <View style={styles.paddingHorizontal}>
             <TouchableOpacity
               onPress={async () =>
@@ -108,7 +109,7 @@ const Exams = () => {
             </TouchableOpacity>
           </View>
         ) : null}
-        {tab == tabs[0] ? (
+        {tab === tabs[0] ? (
           <View style={styles.list}>
             <AvgWidget avg={avg} dark={dark} />
             <View
@@ -299,7 +300,7 @@ const getFields = (
 
   const fields = provisional ? prov_fields : perm_fields;
 
-  let icons: string[] = [];
+  let icons: (GlyphName | null)[] = [];
   let values: string[] = [];
 
   fields.forEach(name => {
@@ -319,7 +320,7 @@ const getFields = (
         values.push((mark as ProvisionalMark).message || '');
         break;
       default:
-        icons.push('');
+        icons.push(null);
         values.push('');
         break;
     }
@@ -335,12 +336,14 @@ const getFields = (
         },
         provisional && i > 0 ? {marginTop: 8 * p} : {},
       ]}>
-      <TablerIcon
-        name={icons[i]}
-        size={16 * p}
-        color={dark ? colors.gray200 : colors.gray700}
-        style={{marginRight: 8 * p}}
-      />
+      {icons[i] !== null && (
+        <TablerIcon
+          name={icons[i]!}
+          size={16 * p}
+          color={dark ? colors.gray200 : colors.gray700}
+          style={{marginRight: 8 * p}}
+        />
+      )}
       <Text
         style={{marginRight: 8 * p}}
         s={10 * p}

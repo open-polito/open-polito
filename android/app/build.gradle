@@ -85,12 +85,6 @@ project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
 ]
 
-// Icons with react-native-vector-icons
-project.ext.vectoricons = [
-    iconFontNames: [ 'tabler-icons.ttf' ]
-]
-apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
-
 apply from: "../../node_modules/react-native/react.gradle"
 apply from: "../../node_modules/react-native-code-push/android/codepush.gradle"
 

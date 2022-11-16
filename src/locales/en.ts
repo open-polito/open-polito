@@ -98,7 +98,8 @@ const EN = {
   unreadEmail: '{{count}} unread email',
   unreadEmail_plural: '{{count}} unread emails',
   noEmailAccess: 'E-mail access is not available yet.',
-  emailCannotBeShownDesktop: "The desktop version can't show e-mail here",
+  emailCannotBeShownWeb:
+    "The {{genericPlatform}} version can't show e-mail here.",
   openBrowser: 'Open in browser',
 
   // Settings screen

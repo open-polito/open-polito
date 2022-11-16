@@ -1,4 +1,10 @@
-import React, {useContext, useEffect, useMemo, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {RefreshControl, ScrollView, StyleSheet, View} from 'react-native';
 import CourseVideos from '../ui/CourseVideos';
 import {useTranslation} from 'react-i18next';
@@ -34,14 +40,14 @@ export default function Course({navigation, route}) {
 
   const tabs = useMemo(() => {
     return ['overview', 'material', 'alerts', 'videos'];
-  }, [courseData]);
+  }, []);
 
   // Populate course data if empty
   useEffect(() => {
     if (
       courseData &&
-      courseData?.status.code != STATUS.PENDING &&
-      courseData?.status.code != STATUS.SUCCESS
+      courseData?.status.code !== STATUS.PENDING &&
+      courseData?.status.code !== STATUS.SUCCESS
     ) {
       dispatch(
         loadCourse({
@@ -50,19 +56,19 @@ export default function Course({navigation, route}) {
         }),
       );
     }
-  }, []);
+  }, [courseData, device, dispatch]);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     dispatch(
       loadCourse({
         basicCourseInfo: courseData!.basicInfo,
         device: device,
       }),
     );
-  };
+  }, [courseData, device, dispatch]);
 
   const refreshing = useMemo(() => {
-    return courseData?.status.code == STATUS.PENDING;
+    return courseData?.status.code === STATUS.PENDING;
   }, [courseData]);
 
   const _styles = useMemo(() => {
@@ -72,7 +78,7 @@ export default function Course({navigation, route}) {
         paddingBottom: 16 * p,
       },
     });
-  }, [dark]);
+  }, []);
 
   const section = useMemo(() => {
     switch (tabs[currentTab]) {
@@ -129,7 +135,18 @@ export default function Course({navigation, route}) {
           />
         );
     }
-  }, [currentTab]);
+  }, [
+    _styles.container,
+    code,
+    courseData?.basicInfo.code,
+    courseData?.basicInfo.name,
+    courseData?.extendedInfo?.notices,
+    currentTab,
+    dark,
+    refresh,
+    refreshing,
+    tabs,
+  ]);
 
   return (
     <Screen>

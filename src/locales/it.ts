@@ -99,8 +99,8 @@ const IT = {
   unreadEmail: '{{count}} e-mail non letta',
   unreadEmail_plural: '{{count}} e-mail non lette',
   noEmailAccess: "L'accesso alle e-mail non è ancora disponibile.",
-  emailCannotBeShownDesktop:
-    'La versione desktop non può mostrare le email qui',
+  emailCannotBeShownWeb:
+    'La versione {{genericPlatform}} non può mostrare le email qui.',
   openBrowser: 'Apri nel browser',
 
   // Settings screen

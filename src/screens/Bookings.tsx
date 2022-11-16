@@ -40,6 +40,7 @@ import Header, {HEADER_TYPE} from '../ui/Header';
 import NoContent from '../ui/NoContent';
 import Screen from '../ui/Screen';
 import Tabs from '../ui/Tabs';
+import {GlyphName} from '../utils/glyph-map';
 
 // TODO add booking capabilities
 
@@ -155,7 +156,9 @@ interface BookingCardProps {
 const BookingCard: FC<BookingCardProps> = ({dark, booking, barcodeUrl}) => {
   const [expanded, setExpanded] = useState(false);
 
-  const sections = useMemo(() => {
+  const sections = useMemo<
+    {type: string; label: string; icon: GlyphName}[]
+  >(() => {
     return [
       {
         type: 'date',

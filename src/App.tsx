@@ -13,6 +13,7 @@ import {SessionState, setConfig, setConfigState} from './store/sessionSlice';
 import LoginScreen from './screens/LoginScreen';
 import {genericPlatform} from './utils/platform';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useFonts} from 'expo-font';
 import defaultConfig, {
   Configuration,
   CONFIG_SCHEMA_VERSION,
@@ -40,6 +41,14 @@ const InnerApp = () => {
   const {config} = useSelector<RootState, SessionState>(state => state.session);
 
   const [setupDone, setSetupDone] = useState(false);
+
+  const [fontsLoaded] = useFonts(
+    genericPlatform === 'mobile'
+      ? {
+          'tabler-icons': require('../assets/fonts/tabler-icons.ttf'),
+        }
+      : {},
+  );
 
   /**
    * Initial config setup
@@ -87,7 +96,7 @@ const InnerApp = () => {
     };
   }, [dispatch]);
 
-  if (!setupDone) {
+  if (!setupDone || !fontsLoaded) {
     return null;
   }
 

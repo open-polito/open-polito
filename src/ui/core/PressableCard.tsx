@@ -1,5 +1,12 @@
-import React, {FC, ReactNode, useEffect, useMemo} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {LayoutChangeEvent, StyleSheet, View} from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -33,18 +40,83 @@ const PressableCard: FC<PressableCardProps> = ({
   children,
 }) => {
   const rotation = useSharedValue(0);
-  const scale = useSharedValue(0);
-  const expandedElementOpacity = useSharedValue(0);
+
+  /**
+   * Opacity of the whole component
+   */
+  const opacity = useSharedValue(0);
+
   const sideElementOpacity = useSharedValue(1);
 
+  const [computedHeight, setComputedHeight] = useState<number | null>(null);
+  const expandedElementHeight = useSharedValue(0);
+  const expandedElementOpacity = useSharedValue(0);
+
+  const animCardStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  /**
+   * Element that will actually be rendered in the expanded section
+   */
+  const [expandedToRender, setExpandedToRender] = useState<ReactNode | null>(
+    expandedElement,
+  );
+
+  /**
+   * Update expanded element, giving time to complete the animation
+   */
   useEffect(() => {
+    let result: ReactNode | undefined;
+    if (expanded || !computedHeight) {
+      result = expandedElement;
+    } else {
+      result = <View />;
+    }
+    result &&
+      setTimeout(
+        () => {
+          setExpandedToRender(result);
+        },
+        expanded ? 0 : 200,
+      );
+  }, [expanded, expandedElement, computedHeight]);
+
+  /**
+   * Callback used when the height of the expanded element has been computed
+   */
+  const onExpandedElementLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      // Only execute once, i.e. when the computedHeight is still null
+      if (computedHeight !== null) {
+        return;
+      }
+      // Make component visible again
+      opacity.value = withTiming(1, {
+        duration: 200,
+      });
+      // Set computed height
+      setComputedHeight(e.nativeEvent.layout.height);
+    },
+    [computedHeight, opacity],
+  );
+
+  useEffect(() => {
+    if (computedHeight === 0) {
+      return;
+    }
     const condition = expanded && expandedElement;
     rotation.value = withTiming(condition ? 90 : 0, {duration: 200});
-    scale.value = withTiming(condition ? 1 : 0, {duration: 200});
-    expandedElementOpacity.value = withTiming(condition ? 1 : 0, {
+    expandedElementOpacity.value = withTiming(condition ? 1 : 1, {
       duration: 400,
     });
-  }, [expanded, rotation, scale, expandedElementOpacity, expandedElement]);
+  }, [
+    expanded,
+    rotation,
+    expandedElementOpacity,
+    expandedElement,
+    computedHeight,
+  ]);
 
   useEffect(() => {
     sideElementOpacity.value = withTiming(sideElement ? 1 : 0, {duration: 400});
@@ -58,9 +130,26 @@ const PressableCard: FC<PressableCardProps> = ({
     ],
   }));
 
+  /**
+   * When computed height is set, change the height
+   */
+  useEffect(() => {
+    if (computedHeight) {
+      expandedElementHeight.value = withTiming(expanded ? computedHeight : 0, {
+        duration: 200,
+      });
+    }
+  }, [computedHeight, expandedElementHeight, expanded]);
+
   const expandedElementStyle = useAnimatedStyle(() => ({
-    opacity: expandedElementOpacity.value,
-    maxHeight: `${scale.value * 100}%`,
+    ...(computedHeight !== null
+      ? {
+          height: expandedElementHeight.value,
+        }
+      : {}),
+    opacity: withTiming(expanded && computedHeight !== null ? 1 : 0, {
+      duration: 200,
+    }),
   }));
 
   const sideElementStyle = useAnimatedStyle(() => ({
@@ -81,127 +170,69 @@ const PressableCard: FC<PressableCardProps> = ({
   }, [dark]);
 
   return (
-    <PressableBase
-      onPress={onPress}
-      android_ripple={{color: dark ? colors.gray400 : colors.gray500}}
-      style={styles.button}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: expandedElement ? 'flex-start' : 'center',
-        }}>
-        <View style={{flex: 1}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{flex: 4}}>
-              {title && (
-                <Text
-                  s={12 * p}
-                  c={dark ? colors.gray200 : colors.gray700}
-                  w="m">
-                  {title}
-                </Text>
-              )}
-              {description && (
-                <Text
-                  s={10 * p}
-                  c={dark ? colors.gray300 : colors.gray600}
-                  w="r">
-                  {description}
-                </Text>
-              )}
-            </View>
-            <Animated.View
-              style={[sideElementStyle, {flex: sideElement ? 1 : 0}]}>
-              {sideElement}
-            </Animated.View>
-            <View
-              style={{
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-              }}>
-              <View>
-                <Animated.View style={[animChevronStyle]}>
-                  <TablerIcon
-                    name="chevron-right"
-                    color={dark ? colors.gray200 : colors.gray700}
-                    size={24 * p}
-                  />
-                </Animated.View>
-              </View>
-            </View>
-          </View>
-          <View style={{paddingRight: 8 * p}}>
-            {children}
-            <Animated.View style={[expandedElementStyle]}>
-              <View>{expandedElement}</View>
-            </Animated.View>
-          </View>
-        </View>
-      </View>
-    </PressableBase>
-  );
-
-  return (
-    <PressableBase
-      onPress={onPress}
-      android_ripple={{color: dark ? colors.gray400 : colors.gray500}}
-      style={styles.button}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: expandedElement ? 'flex-start' : 'center',
-        }}>
-        <View style={{flex: 1, backgroundColor: 'red'}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={{flex: 4}}>
-              {title && (
-                <Text
-                  s={12 * p}
-                  c={dark ? colors.gray200 : colors.gray700}
-                  w="m">
-                  {title}
-                </Text>
-              )}
-              {description && (
-                <Text
-                  s={10 * p}
-                  c={dark ? colors.gray300 : colors.gray600}
-                  w="r">
-                  {description}
-                </Text>
-              )}
-            </View>
-            <Animated.View
-              style={[sideElementStyle, {flex: sideElement ? 1 : 0}]}>
-              {sideElement}
-            </Animated.View>
-          </View>
-          <View>
-            {children}
-            <Animated.View style={[expandedElementStyle]}>
-              <View>{expandedElement}</View>
-            </Animated.View>
-          </View>
-        </View>
+    <Animated.View style={[animCardStyle]}>
+      <PressableBase
+        onPress={onPress}
+        android_ripple={{color: dark ? colors.gray400 : colors.gray500}}
+        style={styles.button}>
         <View
           style={{
-            justifyContent: 'flex-start',
-            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: expandedElement ? 'flex-start' : 'center',
           }}>
-          <View>
-            <Animated.View style={[animChevronStyle]}>
-              <TablerIcon
-                name="chevron-right"
-                color={dark ? colors.gray200 : colors.gray700}
-                size={24 * p}
-              />
-            </Animated.View>
+          <View style={{flex: 1}}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={{flex: 4}}>
+                {title && (
+                  <Text
+                    s={12 * p}
+                    c={dark ? colors.gray200 : colors.gray700}
+                    w="m">
+                    {title}
+                  </Text>
+                )}
+                {description && (
+                  <Text
+                    s={10 * p}
+                    c={dark ? colors.gray300 : colors.gray600}
+                    w="r">
+                    {description}
+                  </Text>
+                )}
+              </View>
+              <Animated.View
+                style={[sideElementStyle, {flex: sideElement ? 1 : 0}]}>
+                {sideElement}
+              </Animated.View>
+              <View
+                style={{
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                }}>
+                <View>
+                  <Animated.View style={[animChevronStyle]}>
+                    <TablerIcon
+                      name="chevron-right"
+                      color={dark ? colors.gray200 : colors.gray700}
+                      size={24 * p}
+                    />
+                  </Animated.View>
+                </View>
+              </View>
+            </View>
+            <View style={{paddingRight: 8 * p}}>
+              {children}
+              <Animated.View
+                onLayout={e => onExpandedElementLayout(e)}
+                style={[expandedElementStyle]}>
+                {expandedToRender}
+              </Animated.View>
+            </View>
           </View>
         </View>
-      </View>
-    </PressableBase>
+      </PressableBase>
+    </Animated.View>
   );
 };
 

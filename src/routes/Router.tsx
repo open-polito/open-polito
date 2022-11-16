@@ -39,13 +39,6 @@ export type AuthStackParamList = {
   Login: undefined;
 };
 
-export type AppStackParamList = {
-  HomeRouter: undefined;
-  Search: undefined;
-  Course: undefined;
-  Video: undefined;
-};
-
 export type UpdaterState = {
   checked: boolean;
   acceptedUpdate: boolean;

@@ -1,5 +1,6 @@
 import React, {ReactNode, useContext, useMemo} from 'react';
 import {
+  MixedStyleDeclaration,
   RenderHTMLConfigProvider,
   TRenderEngineProvider,
 } from 'react-native-render-html';
@@ -15,14 +16,18 @@ const HTMLRenderEngineProvider = ({children}: {children: ReactNode}) => {
     [dark],
   );
 
+  const tagsStyles = useMemo<Readonly<Record<string, MixedStyleDeclaration>>>(
+    () => ({
+      p: {
+        marginVertical: 4 * p,
+        color,
+      },
+    }),
+    [color],
+  );
+
   return (
-    <TRenderEngineProvider
-      tagsStyles={{
-        p: {
-          marginVertical: 4 * p,
-          color,
-        },
-      }}>
+    <TRenderEngineProvider tagsStyles={tagsStyles}>
       <RenderHTMLConfigProvider>{children}</RenderHTMLConfigProvider>
     </TRenderEngineProvider>
   );

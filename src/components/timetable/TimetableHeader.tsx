@@ -20,6 +20,8 @@ import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ModalContext} from '../../context/ModalProvider';
 import TimetableOptionsModal from '../modals/TimetableOptionsModal';
+import ExamsBookExamModal from '../modals/ExamsBookExamModal';
+import SettingsEnableLoggingModal from '../modals/SettingsEnableLoggingModal';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
   DateTimePickerAndroid.open({
@@ -127,9 +129,10 @@ const TimetableHeader = ({
             ]}
             dark={dark}
           />
-          <TouchableOpacity style={{marginLeft: 24 * p}}>
+          <TouchableOpacity
+            style={{marginLeft: 24 * p}}
+            onPress={() => setModal(<TimetableOptionsModal />)}>
             <TablerIcon
-              onPress={() => setModal(<TimetableOptionsModal />)}
               name="settings"
               size={20 * p}
               color={dark ? colors.gray100 : colors.gray800}
