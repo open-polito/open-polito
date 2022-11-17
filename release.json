@@ -1,15 +1,39 @@
 [
   {
     "type": "release",
+    "tag": "v0.6.0",
+    "versionCode": 4,
+    "format": "text",
+    "notes": [
+      {
+        "language": "en",
+        "content": [
+          "💻 Now available for PC and web",
+          "🔔 Fixed rendering of course notices",
+          "Better UI for large screens",
+          "Various improvements & optimizations"
+        ]
+      },
+      {
+        "language": "it",
+        "content": [
+          "💻 L'app è ora disponibile per PC e web",
+          "🔔 Corretta la visualizzazione degli avvisi",
+          "Interfaccia migliorata per schermi grandi",
+          "Vari miglioramenti e ottimizzazioni"
+        ]
+      }
+    ]
+  },
+  {
+    "type": "release",
     "tag": "v0.5.1",
     "versionCode": 3,
     "format": "text",
     "notes": [
       {
         "language": "en",
-        "content": [
-          "🔔 Fixed bug that caused push notifications not to work"
-        ]
+        "content": ["🔔 Fixed bug that caused push notifications not to work"]
       },
       {
         "language": "it",

@@ -8,7 +8,7 @@
   },
   "package": {
     "productName": "Open PoliTo",
-    "version": "0.5.1"
+    "version": "0.6.0"
   },
   "tauri": {
     "allowlist": {
@@ -16,7 +16,7 @@
     },
     "bundle": {
       "active": true,
-      "category": "DeveloperTool",
+      "category": "Education",
       "copyright": "",
       "deb": {
         "depends": []
@@ -39,7 +39,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "Unofficial, open-source app for your PoliTo account",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
