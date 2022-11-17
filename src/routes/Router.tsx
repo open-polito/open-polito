@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {View} from 'react-native';
+import {Platform, View} from 'react-native';
 import colors from '../colors';
 import {useTranslation} from 'react-i18next';
 
@@ -31,6 +31,7 @@ import AppStackNavigator from './AppStackNavigator';
 import {getLanguageCode, setMomentLocale} from '../utils/l10n';
 import {genericPlatform} from '../utils/platform';
 import HTMLRenderEngineProvider from '../context/HTMLRenderEngineProvider';
+import openURL from '../utils/openUrl';
 
 /**
  * Types for React Navigation
@@ -77,6 +78,21 @@ export default function Router() {
     }
     updateCleanup();
   }, [updaterState.checked]);
+
+  /**
+   * If on desktop, redirect to download page when update is accepted
+   */
+  useEffect(() => {
+    (async () => {
+      if (updaterState.acceptedUpdate && genericPlatform === 'desktop') {
+        const {exit} = await import('@tauri-apps/api/process');
+        await openURL(
+          'https://github.com/open-polito/open-polito/releases/latest',
+        );
+        exit(0);
+      }
+    })();
+  }, [updaterState.acceptedUpdate]);
 
   // Show modal if update available
   useEffect(() => {
@@ -156,7 +172,7 @@ export default function Router() {
     () => (
       <>
         {message}
-        {updaterState.acceptedUpdate ? (
+        {updaterState.acceptedUpdate && Platform.OS === 'android' ? (
           <Updater releaseData={updaterState.releaseData!} />
         ) : authStatus !== AUTH_STATUS.NOT_VALID ? (
           <AppStackNavigator />

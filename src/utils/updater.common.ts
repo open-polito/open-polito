@@ -1,6 +1,7 @@
 import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import version from '../../version.json';
+import {genericPlatform} from './platform';
 
 /**
  * Structure of one array item found in "release.json",
@@ -83,19 +84,22 @@ export const fetchReleaseByTag = async (
 export const checkForUpdates = async (): Promise<
   ReleaseJsonEntry | undefined
 > => {
-  if (Platform.OS === 'android' && !['PLAY_STORE'].includes(version.from)) {
-    (async () => {
-      const reachable = await isGitHubOnline();
-      if (!reachable) {
-        return undefined;
-      }
-      try {
-        const releaseData = (await fetchReleaseJson()).find(
-          r => r.type === Config.VARIANT && r.versionCode > version.versionCode,
-        );
-        return releaseData;
-      } catch (e) {}
-    })();
+  if (
+    (Platform.OS === 'android' && !['PLAY_STORE'].includes(version.from)) ||
+    genericPlatform === 'desktop'
+  ) {
+    const reachable = await isGitHubOnline();
+    if (!reachable) {
+      return undefined;
+    }
+    try {
+      const releaseData = (await fetchReleaseJson()).find(
+        r =>
+          (Config.VARIANT === undefined ? true : r.type === Config.VARIANT) &&
+          r.versionCode > version.versionCode,
+      );
+      return releaseData;
+    } catch (e) {}
   }
   return undefined;
 };
