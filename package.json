@@ -1,6 +1,6 @@
 {
   "name": "open-polito",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "private": true,
   "repository": "https://github.com/open-polito/open-polito",
   "sideEffects": false,
