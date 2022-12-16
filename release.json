@@ -1,8 +1,8 @@
 [
   {
     "type": "release",
-    "tag": "v0.6.0",
-    "versionCode": 0,
+    "tag": "v0.6.1",
+    "versionCode": 5,
     "format": "text",
     "notes": [
       {
@@ -33,7 +33,9 @@
     "notes": [
       {
         "language": "en",
-        "content": ["🔔 Fixed bug that caused push notifications not to work"]
+        "content": [
+          "🔔 Fixed bug that caused push notifications not to work"
+        ]
       },
       {
         "language": "it",
