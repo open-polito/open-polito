@@ -126,13 +126,9 @@ const App = () => {
       <Provider store={store}>
         <DeviceProvider device={defaultDevice}>
           <ModalProvivder>
-            {genericPlatform === 'web' ? (
+            <HTMLRenderEngineProvider>
               <InnerApp />
-            ) : (
-              <HTMLRenderEngineProvider>
-                <InnerApp />
-              </HTMLRenderEngineProvider>
-            )}
+            </HTMLRenderEngineProvider>
           </ModalProvivder>
         </DeviceProvider>
       </Provider>
