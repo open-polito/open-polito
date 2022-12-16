@@ -4,7 +4,8 @@ import {getLocales} from 'react-native-localize';
 import EN from '../locales/en';
 import IT from '../locales/it';
 
-const getMoment = () => import('moment');
+import moment from 'moment';
+import 'moment/locale/it';
 
 export type LanguageCode = 'it' | 'en';
 
@@ -35,5 +36,5 @@ export const languageChangeEventHandler = () => {
 };
 
 export const setMomentLocale = (code: LanguageCode) => {
-  getMoment().then(moment => moment.locale(code));
+  moment.locale(code);
 };
