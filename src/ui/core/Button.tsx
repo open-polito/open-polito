@@ -1,7 +1,6 @@
 import React, {FC, useMemo} from 'react';
 import {
   ActivityIndicator,
-  Pressable,
   PressableProps,
   StyleSheet,
   View,
@@ -54,39 +53,37 @@ const Button: FC<ButtonParams> = ({
   }, [color, secondary, small]);
 
   return (
-    <PressableBase>
-      <Pressable {...props}>
-        <View
-          style={{
-            ..._styles.container,
-            ...(secondary ? _styles.containerSecondary : {}),
-            ...(style as Object),
-          }}>
-          <>
-            {loading ? (
-              <ActivityIndicator
-                size={(small ? 10 : 18) * p}
-                color={color || (secondary ? colors.accent300 : colors.gray50)}
-                style={{marginRight: (small ? 4 : 8) * p}}
-              />
-            ) : icon ? (
-              <TablerIcon
-                name={icon}
-                color={color || (secondary ? colors.accent300 : colors.gray50)}
-                size={(small ? 14 : 18) * p}
-                style={{marginRight: (small ? 4 : 8) * p}}
-              />
-            ) : null}
-            <Text
-              s={small ? 10 : 12}
-              w="m"
-              c={secondary ? color || colors.accent300 : colors.gray50}>
-              {text?.toUpperCase()}
-            </Text>
-            {props.children}
-          </>
-        </View>
-      </Pressable>
+    <PressableBase {...props}>
+      <View
+        style={{
+          ..._styles.container,
+          ...(secondary ? _styles.containerSecondary : {}),
+          ...(style as Object),
+        }}>
+        <>
+          {loading ? (
+            <ActivityIndicator
+              size={(small ? 10 : 18) * p}
+              color={color || (secondary ? colors.accent300 : colors.gray50)}
+              style={{marginRight: (small ? 4 : 8) * p}}
+            />
+          ) : icon ? (
+            <TablerIcon
+              name={icon}
+              color={color || (secondary ? colors.accent300 : colors.gray50)}
+              size={(small ? 14 : 18) * p}
+              style={{marginRight: (small ? 4 : 8) * p}}
+            />
+          ) : null}
+          <Text
+            s={small ? 10 : 12}
+            w="m"
+            c={secondary ? color || colors.accent300 : colors.gray50}>
+            {text?.toUpperCase()}
+          </Text>
+          {props.children}
+        </>
+      </View>
     </PressableBase>
   );
 };
