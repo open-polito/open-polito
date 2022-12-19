@@ -165,7 +165,7 @@ const EN = {
   confirmExamBookingDialogMessage: `<p>Do you want to book this exam?</p>
   <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
   cancelExamBooking: 'Cancel exam booking',
-  cancelExamBookingDialogMessage: `<p>Do you really want to <b><cancel</b> this exam booking?</p>
+  cancelExamBookingDialogMessage: `<p>Do you really want to <b>cancel</b> this exam booking?</p>
   <ul><li>{{code}} - {{name}}</li><li>{{date}}</li><li>{{rooms}}</li></ul>`,
 
   // Exams screen (Libretto)
