@@ -21,6 +21,7 @@ import {ping} from 'open-polito-api/lib/utils';
 import {v4 as UUIDv4} from 'uuid';
 import {setUserInfo} from './userSlice';
 import {clearCredentials, getCredentials, saveCredentials} from '../utils/fs';
+import {genericPlatform} from '../utils/platform';
 
 export type ToastData = {
   visible: boolean;
@@ -162,6 +163,10 @@ export const logout = createAsyncThunk<void, Device, {state: RootState}>(
     } finally {
       dispatch(setAuthStatus(AUTH_STATUS.NOT_VALID));
       dispatch(setConfig({...getState().session.config, login: false}));
+
+      if (genericPlatform === 'web' || genericPlatform === 'desktop') {
+        localStorage.clear();
+      }
     }
   },
 );
