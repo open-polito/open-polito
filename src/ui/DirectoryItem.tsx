@@ -69,22 +69,21 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
       style={{
         flexDirection: 'column',
       }}>
-      <PressableBase
-        android_ripple={{color: colors.lightGray}}
-        onPress={() => {
-          item.type === 'file' ? () => downloadFile(device, item) : onPress();
-        }} // download file if file, otherwise use onPress prop
+      <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingVertical: 8,
         }}>
-        <View
+        <PressableBase
+          android_ripple={{color: colors.lightGray}}
+          onPress={() => {
+            item.type === 'file' ? downloadFile(device, item) : onPress();
+          }} // download file if file, otherwise use onPress prop
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            flex: 1,
           }}>
           {iconComponent}
           <View
@@ -115,7 +114,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
               </View>
             )}
           </View>
-        </View>
+        </PressableBase>
 
         {item.type === 'file' ? (
           <Pressable
@@ -128,7 +127,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
             />
           </Pressable>
         ) : null}
-      </PressableBase>
+      </View>
       {item.type === 'dir' ? (
         <View style={{flexDirection: 'row'}}>
           <View
