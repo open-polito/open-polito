@@ -9,7 +9,7 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.microsoft.codepush.react.CodePush;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.lugg.RNCConfig.RNCConfigPackage;
 import com.brentvatne.react.ReactVideoPackage;
 import com.horcrux.svg.SvgPackage;
 import com.oblador.keychain.KeychainPackage;

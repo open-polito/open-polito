@@ -33,6 +33,7 @@ release/
 local.properties
 *.iml
 *.hprof
+.cxx/
 android/app/.settings/
 android/app/.project
 
