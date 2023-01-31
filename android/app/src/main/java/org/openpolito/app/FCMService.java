@@ -4,18 +4,20 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.facebook.react.HeadlessJsTaskService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
-import java.util.Objects;
 
 public class FCMService extends FirebaseMessagingService {
 
@@ -83,6 +85,21 @@ public class FCMService extends FirebaseMessagingService {
 
         Log.d(TAG, "Displayed notification");
 
-    }
+        // Open headless JS notification task
 
+        Context context = getApplicationContext();
+        Intent intent = new Intent(context, NotificationHandlerService.class);
+        Bundle bundle = new Bundle();
+        for (Map.Entry<String, String> entry : data.entrySet()) {
+            try {
+                bundle.putString(entry.getKey(), entry.getValue());
+            } catch (IllegalStateException e) {}
+        }
+        bundle.putString("channelId", getString(channelDetails.id));
+        bundle.putString("channelName", getString(channelDetails.title));
+        bundle.putString("channelDescription", getString(channelDetails.description));
+        intent.putExtras(bundle);
+        context.startService(intent);
+        HeadlessJsTaskService.acquireWakeLockNow(context);
+    }
 }

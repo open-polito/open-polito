@@ -19,7 +19,7 @@ import {
   UserState,
 } from '../store/userSlice';
 import {registerPushNotifications} from 'open-polito-api/lib/notifications';
-import {NativeModules, Platform} from 'react-native';
+import {Platform} from 'react-native';
 import Config from 'react-native-config';
 import {pendingStatus, STATUS, successStatus} from '../store/status';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -36,6 +36,7 @@ import Courses from '../screens/Courses';
 import Notifications from '../screens/Notifications';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
 import {DeviceSize} from '../types';
+import {NotificationModule} from '../utils/native-modules';
 
 export type DrawerStackParamList = {
   Home: undefined;
@@ -112,7 +113,7 @@ export default function HomeRouter() {
      */
     (async () => {
       if (Platform.OS === 'android' && Config.VARIANT !== 'debug') {
-        const FCMToken = await NativeModules.NotificationModule.getToken();
+        const FCMToken = await NotificationModule.getToken();
         await registerPushNotifications(device, FCMToken);
       }
     })();
