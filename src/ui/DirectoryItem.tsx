@@ -1,7 +1,7 @@
 import moment from 'moment';
 import {File, getDownloadURL, MaterialItem} from 'open-polito-api/lib/material';
 import React, {FC, ReactNode, useContext, useMemo} from 'react';
-import {Pressable, View} from 'react-native';
+import {View} from 'react-native';
 import colors from '../colors';
 import {DeviceContext} from '../context/Device';
 import getFileIcon from '../utils/getFileIcon';

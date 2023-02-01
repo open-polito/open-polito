@@ -1,7 +1,10 @@
 import notifee, {AndroidCategory} from '@notifee/react-native';
 import {buildNotificationActionId, NotificationData} from '../notifications';
+import Analytics from 'appcenter-analytics';
 
 module.exports = async (data: NotificationData) => {
+  Analytics.trackEvent('NOTIFICATION_RECEIVE');
+
   const channelId = await notifee.createChannel({
     id: data.channelId || 'general',
     name: data.channelName || 'General',
