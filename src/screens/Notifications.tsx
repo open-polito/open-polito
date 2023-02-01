@@ -109,7 +109,9 @@ const _SelectableNotification = ({
               onChange={sel => onSelectionChange(n.id, sel)}
             />
           </Animated.View>
-          <PressableBase style={{flex: 1}} onPress={() => handlePress(n.id)}>
+          <PressableBase
+            parentStyle={{flex: 1}}
+            onPress={() => handlePress(n.id)}>
             <NotificationComponent
               type={n.topic}
               notification={n}
