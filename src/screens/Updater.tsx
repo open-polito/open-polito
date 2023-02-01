@@ -24,7 +24,7 @@ import Text from '../ui/core/Text';
 import {computeSizeLabel} from '../ui/DirectoryItem';
 import ProgressCircle from '../ui/ProgressCircle';
 import Screen from '../ui/Screen';
-import {installUpdate} from '../utils/native-modules';
+import {UpdaterModule} from '../utils/native-modules';
 import {
   AssetsJsonEntry,
   checkFileMatchesSHA256,
@@ -197,7 +197,7 @@ const useUpdateProcess = (releaseData: ReleaseJsonEntry) => {
             ...prev,
             progress: 100,
           }));
-          installUpdate();
+          UpdaterModule.installUpdate();
           await trackInstallReached();
           return; // Finish here
         }
@@ -249,7 +249,7 @@ const useUpdateProcess = (releaseData: ReleaseJsonEntry) => {
         chosenAsset.sha256,
       );
       if (matches) {
-        installUpdate();
+        UpdaterModule.installUpdate();
         await trackInstallReached();
       } else {
         setError('NO_MATCH_CHECKSUMS');
@@ -382,7 +382,9 @@ const Updater: FC<UpdaterScreenProps> = ({releaseData}) => {
                   text={t(state === 'ERROR' ? 'tryAgain' : 'reopenInstallMenu')}
                   color={state === 'ERROR' ? colors.red : colors.accent300}
                   onPress={
-                    state === 'ERROR' ? startUpdateProcess : installUpdate
+                    state === 'ERROR'
+                      ? startUpdateProcess
+                      : UpdaterModule.installUpdate
                   }
                 />
               </View>

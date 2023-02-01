@@ -32,6 +32,7 @@ import {getLanguageCode, setMomentLocale} from '../utils/l10n';
 import {genericPlatform} from '../utils/platform';
 import HTMLRenderEngineProvider from '../context/HTMLRenderEngineProvider';
 import openURL from '../utils/openUrl';
+import {_globalTauri} from '../utils/tauri-wrap';
 
 /**
  * Types for React Navigation
@@ -85,7 +86,7 @@ export default function Router() {
   useEffect(() => {
     (async () => {
       if (updaterState.acceptedUpdate && genericPlatform === 'desktop') {
-        const {exit} = await import('@tauri-apps/api/process');
+        const {exit} = await _globalTauri.process;
         await openURL(
           'https://github.com/open-polito/open-polito/releases/latest',
         );
