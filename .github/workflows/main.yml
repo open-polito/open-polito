@@ -61,17 +61,17 @@ jobs:
         if: always()
         run: yarn run postbuild
       - name: Upload ARM64 binary
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: arm64
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-arm64-v8a-release.apk
+          path: android/app/build/outputs/apk/devFlavor/release/*_arm64-v8a.apk
       - name: Upload ARMEABI binary
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: armeabi-v7a
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-armeabi-v7a-release.apk
+          path: android/app/build/outputs/apk/devFlavor/release/*_armeabi-v7a.apk
       - name: Upload universal binary
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: universal
-          path: android/app/build/outputs/apk/devFlavor/release/app-devFlavor-universal-release.apk
+          path: android/app/build/outputs/apk/devFlavor/release/*_universal.apk
