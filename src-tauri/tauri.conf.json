@@ -4,7 +4,8 @@
     "beforeBuildCommand": "",
     "beforeDevCommand": "",
     "devPath": "http://localhost:19006",
-    "distDir": "../web-build"
+    "distDir": "../web-build",
+    "withGlobalTauri": true
   },
   "package": {
     "productName": "Open PoliTo",

@@ -1,10 +1,10 @@
-import {open} from '@tauri-apps/api/shell';
 import {Linking} from 'react-native';
 import {genericPlatform} from './platform';
+import {_globalTauri} from './tauri-wrap';
 
 const openURL = async (url: string): Promise<void> => {
   if (genericPlatform === 'desktop') {
-    await open(url);
+    await _globalTauri.shell.open(url);
   } else {
     await Linking.openURL(url);
   }
