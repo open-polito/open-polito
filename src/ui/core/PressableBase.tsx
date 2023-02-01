@@ -1,6 +1,7 @@
 import React, {FC} from 'react';
-import {Pressable, PressableProps} from 'react-native';
+import {Pressable, PressableProps, ViewProps} from 'react-native';
 import Animated, {
+  AnimateProps,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -12,7 +13,11 @@ import Animated, {
  * @param param0
  * @returns
  */
-const PressableBase: FC<PressableProps> = ({children, ...props}) => {
+const PressableBase: FC<
+  PressableProps & {
+    parentStyle?: AnimateProps<ViewProps>['style'];
+  }
+> = ({children, ...props}) => {
   const offset = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(
@@ -31,7 +36,7 @@ const PressableBase: FC<PressableProps> = ({children, ...props}) => {
   };
 
   return (
-    <Animated.View style={[animStyle]}>
+    <Animated.View style={[animStyle, props.parentStyle]}>
       <Pressable
         onPressIn={() => setPressed(true)}
         onPressOut={() => setPressed(false)}

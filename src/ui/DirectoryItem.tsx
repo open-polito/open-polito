@@ -11,6 +11,7 @@ import Text from './core/Text';
 import PressableBase from './core/PressableBase';
 import {Device} from 'open-polito-api/lib/device';
 import openURL from '../utils/openUrl';
+import {genericPlatform} from '../utils/platform';
 
 export type DirectoryItemProps = {
   item: MaterialItem;
@@ -75,9 +76,16 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           paddingVertical: 8,
+          flex: 1,
         }}>
         <PressableBase
-          android_ripple={{color: colors.lightGray}}
+          parentStyle={[
+            {
+              flexDirection: 'row',
+              marginRight: 0 * p,
+            },
+            genericPlatform === 'mobile' && {flex: 1},
+          ]}
           onPress={() => {
             item.type === 'file' ? downloadFile(device, item) : onPress();
           }} // download file if file, otherwise use onPress prop
@@ -89,11 +97,11 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
           <View
             style={{
               flexDirection: 'column',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               marginLeft: 10 * p,
               flex: 1,
             }}>
-            <View style={{marginRight: 10 * p}}>
+            <View style={{marginRight: 10 * p, overflow: 'hidden'}}>
               <Text
                 c={dark ? colors.gray100 : colors.gray800}
                 w="m"
@@ -117,7 +125,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
         </PressableBase>
 
         {item.type === 'file' ? (
-          <Pressable
+          <PressableBase
             android_ripple={{color: colors.lightGray}}
             onPress={() => downloadFile(device, item)}>
             <TablerIcon
@@ -125,7 +133,7 @@ const DirectoryItem: FC<DirectoryItemProps> = ({
               size={24 * p}
               color={colors.accent300}
             />
-          </Pressable>
+          </PressableBase>
         ) : null}
       </View>
       {item.type === 'dir' ? (
