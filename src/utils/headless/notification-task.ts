@@ -13,7 +13,6 @@ module.exports = async (data: NotificationData) => {
     android: {
       channelId,
       smallIcon: 'ic_tablericons_school',
-      largeIcon: 'ic_tablericons_school',
       category: AndroidCategory.SOCIAL,
       pressAction: {
         id: buildNotificationActionId(data),
