@@ -53,37 +53,37 @@ public class FCMService extends FirebaseMessagingService {
 
 
         // Create notification channel for API level >= 26
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel =
-                    new NotificationChannel(getString(channelDetails.id), getString(channelDetails.title), NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setDescription(getString(channelDetails.description));
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel notificationChannel =
+//                    new NotificationChannel(getString(channelDetails.id), getString(channelDetails.title), NotificationManager.IMPORTANCE_DEFAULT);
+//            notificationChannel.setDescription(getString(channelDetails.description));
+//            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//            notificationManager.createNotificationChannel(notificationChannel);
+//        }
 
         // Notification
-        Notification notification = new NotificationCompat.Builder(this, getString(channelDetails.id))
-                .setContentTitle(data.get("title") != null ? data.get("title") : "")
-                .setContentText(data.get("message") != null ? data.get("message") : "")
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(data.get("message") != null ? data.get("message") : ""))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setAutoCancel(true)
-                .setColor(getResources().getColor(R.color.accent_300))
-                .setSmallIcon(R.drawable.ic_tablericons_school)
-                .build();
-
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
-        int notificationId;
-        try {
-            String idString = data.get("polito_id_notifica");
-            if (idString == null) idString = "1";
-            notificationId = Integer.parseInt(idString);
-        } catch (NumberFormatException e) {
-            notificationId = 1;
-        }
-        notificationManagerCompat.notify(notificationId, notification);
-
-        Log.d(TAG, "Displayed notification");
+//        Notification notification = new NotificationCompat.Builder(this, getString(channelDetails.id))
+//                .setContentTitle(data.get("title") != null ? data.get("title") : "")
+//                .setContentText(data.get("message") != null ? data.get("message") : "")
+//                .setStyle(new NotificationCompat.BigTextStyle().bigText(data.get("message") != null ? data.get("message") : ""))
+//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//                .setAutoCancel(true)
+//                .setColor(getResources().getColor(R.color.accent_300))
+//                .setSmallIcon(R.drawable.ic_tablericons_school)
+//                .build();
+//
+//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+//        int notificationId;
+//        try {
+//            String idString = data.get("polito_id_notifica");
+//            if (idString == null) idString = "1";
+//            notificationId = Integer.parseInt(idString);
+//        } catch (NumberFormatException e) {
+//            notificationId = 1;
+//        }
+//        notificationManagerCompat.notify(notificationId, notification);
+//
+//        Log.d(TAG, "Displayed notification");
 
         // Open headless JS notification task
 
