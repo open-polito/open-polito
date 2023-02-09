@@ -1,5 +1,6 @@
 package org.openpolito.app;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,12 +13,19 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.work.BackoffPolicy;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.OutOfQuotaPolicy;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import com.facebook.react.HeadlessJsTaskService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class FCMService extends FirebaseMessagingService {
 
@@ -87,19 +95,31 @@ public class FCMService extends FirebaseMessagingService {
 
         // Open headless JS notification task
 
+        Log.d(TAG, "Creating work");
+
         Context context = getApplicationContext();
-        Intent intent = new Intent(context, NotificationHandlerService.class);
-        Bundle bundle = new Bundle();
+
+        Data.Builder workDataBuilder = new Data.Builder();
         for (Map.Entry<String, String> entry : data.entrySet()) {
             try {
-                bundle.putString(entry.getKey(), entry.getValue());
+                workDataBuilder.putString(entry.getKey(), entry.getValue());
             } catch (IllegalStateException e) {}
         }
-        bundle.putString("channelId", getString(channelDetails.id));
-        bundle.putString("channelName", getString(channelDetails.title));
-        bundle.putString("channelDescription", getString(channelDetails.description));
-        intent.putExtras(bundle);
-        context.startService(intent);
-        HeadlessJsTaskService.acquireWakeLockNow(context);
+
+        workDataBuilder.putString("channelId", getString(channelDetails.id));
+        workDataBuilder.putString("channelName", getString(channelDetails.title));
+        workDataBuilder.putString("channelDescription", getString(channelDetails.description));
+
+        Data workData = workDataBuilder.build();
+
+        WorkRequest workRequest = new OneTimeWorkRequest.Builder(NotificationHandlerWork.class)
+                .setInputData(workData)
+                .setBackoffCriteria(BackoffPolicy.LINEAR, OneTimeWorkRequest.MIN_BACKOFF_MILLIS, TimeUnit.MILLISECONDS)
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build();
+
+        WorkManager.getInstance(context).enqueue(workRequest);
+
+        Log.d(TAG, "Enqueued work!");
     }
 }
