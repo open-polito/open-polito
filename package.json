@@ -44,6 +44,7 @@
     "appcenter-crashes": "^4.4.4",
     "expo": "^47.0.0",
     "expo-constants": "~14.0.2",
+    "expo-file-system": "~15.1.1",
     "expo-linear-gradient": "~12.0.1",
     "html-entities": "^2.3.3",
     "i18next": "^21.8.14",

@@ -99,11 +99,16 @@ const Header: FC<HeaderParams> = ({title, headerType}) => {
               </BadgeContainer>
             </PressableBase>
             {/* TODO download manager */}
-            {/* <TablerIcon
-              name="download"
-              size={24 * p}
-              color={dark ? colors.gray100 : colors.gray800}
-            /> */}
+            <PressableBase
+              onPress={() => {
+                navigation.navigate('Downloads');
+              }}>
+              <TablerIcon
+                name="download"
+                size={24 * p}
+                color={dark ? colors.gray100 : colors.gray800}
+              />
+            </PressableBase>
           </View>
           <View
             style={{

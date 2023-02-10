@@ -9,4 +9,9 @@ module.exports = {
   transform: {
     ...tsjPreset.transform,
   },
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
 };

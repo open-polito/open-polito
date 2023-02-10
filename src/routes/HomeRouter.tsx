@@ -37,12 +37,14 @@ import Notifications from '../screens/Notifications';
 import {DrawerContentComponentProps} from '@react-navigation/drawer';
 import {DeviceSize} from '../types';
 import {NotificationModule} from '../utils/native-modules';
+import Downloads from '../screens/Downloads';
 
 export type DrawerStackParamList = {
   Home: undefined;
   Material: undefined;
   Email: undefined;
   Notifications: undefined;
+  Downloads: undefined;
   Settings: undefined;
   ExamSessions: undefined;
   Timetable: undefined;
@@ -174,6 +176,7 @@ export default function HomeRouter() {
       drawerContent={props => getDrawerComponent(props)}>
       <DrawerStack.Screen name="Home" component={Home} />
       <DrawerStack.Screen name="Email" component={Email} />
+      <DrawerStack.Screen name="Downloads" component={Downloads} />
       <DrawerStack.Screen name="Notifications" component={Notifications} />
       <DrawerStack.Screen name="Settings" component={Settings} />
       <DrawerStack.Screen name="Courses" component={Courses} />
