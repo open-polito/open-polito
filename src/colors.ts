@@ -36,7 +36,18 @@ const colors = {
   green: '#6FCF97',
 };
 
-const courseColors = ['#0E13B0', '#C2272C', '#E09326', '#6903AD', '#1E91D6'];
+const courseColors = [
+  '#0E13B0',
+  '#C2272C',
+  '#FF9505',
+  '#6903AD',
+  '#60D394',
+  '#1E91D6',
+  '#F7567C',
+  '#5D576B',
+  '#72A1E5',
+  '#340068',
+];
 
 export default colors;
 export {courseColors};

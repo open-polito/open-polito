@@ -20,8 +20,6 @@ import {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {ModalContext} from '../../context/ModalProvider';
 import TimetableOptionsModal from '../modals/TimetableOptionsModal';
-import ExamsBookExamModal from '../modals/ExamsBookExamModal';
-import SettingsEnableLoggingModal from '../modals/SettingsEnableLoggingModal';
 
 const showDatePicker = (callback: (date: number | undefined) => any) => {
   DateTimePickerAndroid.open({
