@@ -1,0 +1,4738 @@
+openapi: 3.0.3
+info:
+  title: Polito Students API
+  version: 1.0.0-ALPHA.34
+servers:
+  - url: https://app.didattica.polito.it/api
+    description: Production server (uses live data)
+  - url: https://app.didattica.polito.it/mock/api
+    description: Mock server (uses example data)
+security:
+  - bearerAuth: [ ]
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      security: [ ]
+      summary: Login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Identity'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/switch-career:
+    post:
+      tags:
+        - Auth
+      summary: Switch career | Cambia carriera
+      operationId: switchCareer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: s290683
+                client:
+                  type: string
+                  nullable: true
+                  example: 'Students app'
+                device:
+                  $ref: '#/components/schemas/Device'
+              required: [ username ]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Identity'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /auth/logout:
+    delete:
+      tags:
+        - Auth
+      summary: Logout
+      description: Invalidates the provided token
+      operationId: logout
+      responses:
+        200:
+          description: Success
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /me:
+    get:
+      tags:
+        - Student
+      summary: Retrieve student profile | Recupera il profilo studente
+      operationId: getStudent
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Student'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /deadlines:
+    get:
+      tags:
+        - Student
+      parameters:
+        - name: fromDate
+          in: query
+          description: First day - defaults to 7 days before today
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Last day - defaults to 7 days after today
+          required: false
+          schema:
+            type: string
+            format: date
+      summary: List deadlines | Elenca scadenze
+      operationId: getDeadlines
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Deadline'
+                required: [ data ]
+              example:
+                data:
+                  - name: Termine per l'iscrizione e pagamento della prima rata, per gli studenti di anni successivi al primo
+                    type: Iscrizioni e pagamento tasse
+                    date: "2022-10-11"
+                    url: null
+                  - name: Trasferimento da altri Atenei italiani
+                    type: Trasferimenti e valutazioni carriere precedenti
+                    date: "2022-10-14"
+                    url: null
+                  - name: Termine per superare gli esami
+                    type: Sessioni esami di laurea
+                    date: "2022-11-12"
+                    url: null
+                  - name: Termine iscrizione esame finale
+                    type: Sessioni esami di laurea
+                    date: "2022-11-14"
+                    url: null
+                  - name: Periodo per la compilazione del piano carriera / carico didattico
+                    type: Iscrizioni e pagamento tasse
+                    date: "2022-11-25"
+                    url: null
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /grades:
+    get:
+      tags:
+        - Student
+      summary: Retrieve student grades | Recupera i voti dello studente
+      operationId: getStudentGrades
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ExamGrade'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /booking-topics:
+    get:
+      tags:
+        - Bookings
+      summary: List booking topics | Elenca ambiti di prenotazione
+      operationId: getBookingTopics
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookingTopic'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /booking-topics/{bookingTopicId}/slots:
+    get:
+      tags:
+        - Bookings
+      summary: Show booking slots | Mostra turni prenotabili
+      operationId: getBookingTopic
+      parameters:
+        - name: bookingTopicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: fromDate
+          in: query
+          description: First day - defaults to monday of current week
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Last day - defaults to sunday of current week
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookingSlot'
+                required: [ data ]
+        404:
+          description: Booking topic not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /booking-topics/{bookingTopicId}/slots/{bookingSlotId}/seats:
+    get:
+      tags:
+        - Bookings
+      summary: Show seats for a booking slots | Mostra posti prenotabili
+      operationId: getBookingSeats
+      parameters:
+        - name: bookingTopicId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: bookingSlotId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BookingSeats'
+                required: [ data ]
+        404:
+          description: Booking topic|slot not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /bookings:
+    get:
+      tags:
+        - Bookings
+      summary: List bookings | Elenca prenotazioni
+      operationId: getBookings
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Booking'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - Bookings
+      summary: Create booking | Crea prenotazione
+      operationId: createBooking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                slotId:
+                  type: integer
+                  example: 226439
+                seatId:
+                  type: integer
+                  example: 20018
+              required: [ slotId ]
+      responses:
+        200:
+          description: Success
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /bookings/{bookingId}:
+    patch:
+      tags:
+        - Bookings
+      summary: Update booking | Aggiorna prenotazione
+      operationId: updateBooking
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                isLocationChecked:
+                  type: boolean
+                  example: true
+              required: [ isLocationChecked ]
+      responses:
+        200:
+          description: Success
+        404:
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags:
+        - Bookings
+      summary: Delete booking | Cancella prenotazione
+      operationId: deleteBooking
+      parameters:
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+        404:
+          description: Booking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /courses:
+    get:
+      tags:
+        - Courses
+      summary: List courses | Elenca corsi
+      operationId: getCourses
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseOverview'
+                required: [ data ]
+              example:
+                data:
+                  - id: 251007
+                    name: System and device programming
+                    shortcode: 01NYHOV
+                    cfu: 10
+                    teachingPeriod: 2-2
+                    teacherId: 2893
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252121
+                    name: Web Applications II
+                    shortcode: 01TXSOV
+                    cfu: 6
+                    teachingPeriod: 2-2
+                    teacherId: 2235
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252126
+                    name: Security verification and testing
+                    shortcode: 01TYAOV
+                    cfu: 6
+                    teachingPeriod: 1-1
+                    teacherId: 1943
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252138
+                    name: Information systems security
+                    shortcode: 01TYMOV
+                    cfu: 6
+                    teachingPeriod: 1-1
+                    teacherId: 1847
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252258
+                    name: Cybersecurity
+                    shortcode: 01UDROV
+                    cfu: 6
+                    teachingPeriod: 2-2
+                    teacherId: 1847
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252788
+                    name: Architetture dei sistemi di elaborazione
+                    shortcode: 02GOLOV
+                    cfu: 10
+                    teachingPeriod: 1-1
+                    teacherId: 12684
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 252842
+                    name: Human Computer Interaction
+                    shortcode: 02JSKOV
+                    cfu: 6
+                    teachingPeriod: 1-1
+                    teacherId: 25734
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: 253378
+                    name: Cryptography
+                    shortcode: 03LPYOV
+                    cfu: 6
+                    teachingPeriod: 2-2
+                    teacherId: 13461
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+                  - id: null
+                    name: Tesi
+                    shortcode: 29EBHOV
+                    cfu: 30
+                    teachingPeriod: null
+                    teacherId: null
+                    isOverBooking: false
+                    isInPersonalStudyPlan: true
+                    isModule: false
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}:
+    get:
+      tags:
+        - Courses
+      summary: Show course | Mostra corso
+      operationId: getCourse
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Course'
+                required: [ data ]
+              example:
+                data:
+                  id: 252842
+                  name: Human Computer Interaction
+                  shortcode: 01NYHOV
+                  cfu: 6
+                  teachingPeriod: 1-1
+                  teacherId: 25734
+                  isOverBooking: false
+                  isInPersonalStudyPlan: true
+                  year: '2022'
+                  vcPreviousYears:
+                    - year: 2020
+                      id: 24343324
+                  vcOtherCourses:
+                    - year: 2020
+                      name: Fisica II
+                      id: 24343325
+                  notifications:
+                    avvisidoc: true
+                    matdid: true
+                    videolezioni: true
+                  staff:
+                    - role: 'Titolare'
+                      id: 025734
+                    - role: 'Docente'
+                      id: 002154
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /courses/{courseId}/files:
+    get:
+      tags:
+        - Courses
+      summary: List files | Elenca file
+      operationId: getCourseFiles
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CourseDirectoryContent'
+                required: [ data ]
+              example:
+                data:
+                  - id: "33248655"
+                    type: "directory"
+                    name: "videolectures"
+                    files:
+                      - id: "33248890"
+                        type: "file"
+                        name: "HCI2021-L01 2021-09-28 13-06-26.m4v"
+                        sizeInKiloBytes: 123428
+                        mimeType: "video/x-m4v"
+                        createdAt: "2021-09-28T16:31:43Z"
+                      - id: "33251708"
+                        type: "file"
+                        name: "HCI2021-L02 2021-09-30 08-34-32.mp4"
+                        sizeInKiloBytes: 248172
+                        mimeType: "video/mp4"
+                        createdAt: "2021-09-30T10:20:50Z"
+                      - id: "33256476"
+                        type: "file"
+                        name: "HCI2021-L03 2021-10-05 13-06-47.mp4"
+                        sizeInKiloBytes: 243792
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-05T15:00:15Z"
+                      - id: "33257988"
+                        type: "file"
+                        name: "HCI2021-L04 2021-10-07 08-35-46.mp4"
+                        sizeInKiloBytes: 244993
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-07T11:12:25Z"
+                      - id: "33262287"
+                        type: "file"
+                        name: "HCI2021-L05 2021-10-12 13-05-46.mp4"
+                        sizeInKiloBytes: 298172
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-12T16:11:46Z"
+                      - id: "33265387"
+                        type: "file"
+                        name: "HCI2021-L06 2021-10-14 08-35-12.mp4"
+                        sizeInKiloBytes: 285926
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-14T11:25:20Z"
+                      - id: "33269079"
+                        type: "file"
+                        name: "HCI2021-L07 2021-10-19 13-10-40.mp4"
+                        sizeInKiloBytes: 234466
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-19T15:02:22Z"
+                      - id: "33270699"
+                        type: "file"
+                        name: "HCI2021-L08 2021-10-21 08-35-17.mp4"
+                        sizeInKiloBytes: 240828
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-21T10:44:22Z"
+                      - id: "33273765"
+                        type: "file"
+                        name: "HCI2021-L09 2021-10-26 13-08-27.mp4"
+                        sizeInKiloBytes: 321979
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-26T16:06:46Z"
+                      - id: "33275522"
+                        type: "file"
+                        name: "HCI2021-L10 2021-10-28 08-35-26.mp4"
+                        sizeInKiloBytes: 281542
+                        mimeType: "video/mp4"
+                        createdAt: "2021-10-28T10:59:56Z"
+                      - id: "33278303"
+                        type: "file"
+                        name: "HCI2021-L11 2021-11-02 13-07-13.mp4"
+                        sizeInKiloBytes: 259925
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-02T17:34:17Z"
+                      - id: "33280035"
+                        type: "file"
+                        name: "HCI2021-L12 2021-11-04 08-35-42.mp4"
+                        sizeInKiloBytes: 269000
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-04T15:18:00Z"
+                      - id: "33283202"
+                        type: "file"
+                        name: "HCI2021-L13 2021-11-09 13-05-21.mp4"
+                        sizeInKiloBytes: 124877
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-09T17:55:12Z"
+                      - id: "33285203"
+                        type: "file"
+                        name: "HCI2021-L14 2021-11-11 08-34-16.mp4"
+                        sizeInKiloBytes: 164749
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-11T18:54:08Z"
+                      - id: "33288841"
+                        type: "file"
+                        name: "HCI2021-L15 2021-11-16 13-08-31.mp4"
+                        sizeInKiloBytes: 413016
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-16T17:39:12Z"
+                      - id: "33290368"
+                        type: "file"
+                        name: "HCI2021-L16 2021-11-18 08-35-25.mp4"
+                        sizeInKiloBytes: 175214
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-18T16:32:30Z"
+                      - id: "33293068"
+                        type: "file"
+                        name: "HCI2021-L17 2021-11-23 13-07-21.mp4"
+                        sizeInKiloBytes: 167637
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-23T15:14:30Z"
+                      - id: "33294893"
+                        type: "file"
+                        name: "HCI2021-L18 2021-11-25 08-38-18.mp4"
+                        sizeInKiloBytes: 177894
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-25T19:07:01Z"
+                      - id: "33297785"
+                        type: "file"
+                        name: "HCI2021-L19 2021-11-30 13-05-06.mp4"
+                        sizeInKiloBytes: 204728
+                        mimeType: "video/mp4"
+                        createdAt: "2021-11-30T18:40:05Z"
+                      - id: "33298944"
+                        type: "file"
+                        name: "HCI2021-L20 2021-12-02 08-33-29.mp4"
+                        sizeInKiloBytes: 181211
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-02T14:28:22Z"
+                      - id: "33301586"
+                        type: "file"
+                        name: "HCI2021-L21 2021-12-07 13-10-43.mp4"
+                        sizeInKiloBytes: 161114
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-07T14:51:40Z"
+                      - id: "33302797"
+                        type: "file"
+                        name: "HCI2021-L22 2021-12-09 08-36-04.mp4"
+                        sizeInKiloBytes: 171358
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-09T18:13:39Z"
+                      - id: "33305668"
+                        type: "file"
+                        name: "HCI2021-L23 2021-12-14 13-04-34.mp4"
+                        sizeInKiloBytes: 236985
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-14T17:25:16Z"
+                      - id: "33307385"
+                        type: "file"
+                        name: "HCI2021-L24 2021-12-16 08-34-14.mp4"
+                        sizeInKiloBytes: 178860
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-16T19:18:25Z"
+                      - id: "33309925"
+                        type: "file"
+                        name: "HCI2021-L25 2021-12-21 13-04-41.mp4"
+                        sizeInKiloBytes: 166945
+                        mimeType: "video/mp4"
+                        createdAt: "2021-12-21T15:00:46Z"
+                      - id: "33314553"
+                        type: "file"
+                        name: "HCI2021-L26 2022-01-11 13-00-00.mp4"
+                        sizeInKiloBytes: 182258
+                        mimeType: "video/mp4"
+                        createdAt: "2022-01-11T14:49:59Z"
+                  - id: "33325555"
+                    type: "file"
+                    name: "2022-02-04-results-written-test.pdf"
+                    sizeInKiloBytes: 412
+                    mimeType: "application/pdf"
+                    createdAt: "2022-02-18T01:20:21Z"
+                  - id: "33357023"
+                    type: "file"
+                    name: "2022-02-23-results-written-test.pdf"
+                    sizeInKiloBytes: 404
+                    mimeType: "application/pdf"
+                    createdAt: "2022-03-18T22:29:45Z"
+                  - id: "33405431"
+                    type: "file"
+                    name: "2022-06-29-results-written-test.pdf"
+                    sizeInKiloBytes: 127
+                    mimeType: "application/pdf"
+                    createdAt: "2022-07-20T19:34:00Z"
+
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/files/{fileId}:
+    get:
+      tags:
+        - Courses
+      summary: Download file | Scarica file
+      operationId: getCourseFile
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        302:
+          description: Redirect to file download
+        404:
+          description: Course or file not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/assignments:
+    get:
+      tags:
+        - Courses
+      summary: List assignments | Elenca elaborati
+      operationId: getCourseAssignments
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseAssignment'
+                required: [ data ]
+              example:
+                data:
+                  - id: 1003948
+                    description: "extrapoints2"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "extrapoints2.zip"
+                    uploadedAt: "2022-01-21T14:38:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/1003948/S290683/14576f69df588d55b631c3c3c30de3f5/6305eae6"
+                    sizeInKiloBytes: 195
+                  - id: 993784
+                    description: "extrapoints1"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "extrapoints1.zip"
+                    uploadedAt: "2022-01-10T18:53:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/993784/S290683/15c275f7f7682c6acb5acd07d24590a9/6305eae6"
+                    sizeInKiloBytes: 401
+                  - id: 982517
+                    description: "lab_09"
+                    mimeType: "application/zip"
+                    filename: "lab_09.zip"
+                    uploadedAt: "2021-12-16T22:48:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/982517/S290683/29288344d27567de6ddf0fa718b980a5/6305eae6"
+                    sizeInKiloBytes: 126
+                  - id: 979076
+                    description: "lab_08"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "lab8.zip"
+                    uploadedAt: "2021-12-10T20:13:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/979076/S290683/3fecdf972707d6cbc439ed0fbbbe726a/6305eae6"
+                    sizeInKiloBytes: 136
+                  - id: 970722
+                    description: "lab_06"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "lab_06.zip"
+                    uploadedAt: "2021-11-26T12:11:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/970722/S290683/bc51c37cf1368917a24de8d571b069bd/6305eae6"
+                    sizeInKiloBytes: 169
+                  - id: 948012
+                    description: "lab_04"
+                    mimeType: "application/zip"
+                    filename: "lab_04.zip"
+                    uploadedAt: "2021-10-30T17:26:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/948012/S290683/ca52325301df0130d718c7a0525df288/6305eae6"
+                    sizeInKiloBytes: 259
+                  - id: 947503
+                    description: "lab_03"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "lab_03.zip"
+                    uploadedAt: "2021-10-29T12:33:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/947503/S290683/b829dada99af4b2576e551bd852e0a25/6305eae6"
+                    sizeInKiloBytes: 139
+                  - id: 941444
+                    description: "lab_02"
+                    mimeType: "application/zip"
+                    filename: "lab_02.zip"
+                    uploadedAt: "2021-10-22T12:12:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/941444/S290683/08ec123878543394393bd31719863eda/6305eae6"
+                    sizeInKiloBytes: 305
+                  - id: 934034
+                    description: "lab_01"
+                    mimeType: "application/x-zip-compressed"
+                    filename: "lab_01.zip"
+                    uploadedAt: "2021-10-13T11:20:00Z"
+                    deletedAt: null
+                    url: "https://file.didattica.polito.it/down/ELABORATI_PRE/934034/S290683/fd675d8a411d0747885b24e473a5d683/6305eae6"
+                    sizeInKiloBytes: 144
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags:
+        - Courses
+      summary: Upload assignment | Carica elaborato
+      operationId: uploadCourseAssignment
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CourseAssignmentUpload'
+        required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/assignments/{assignmentId}:
+    patch:
+      tags:
+        - Courses
+      summary: Update assignment | Aggiorna elaborato
+      operationId: updateAssignment
+      parameters:
+        - $ref: '#/components/parameters/courseIdParam'
+        - $ref: '#/components/parameters/assignmentIdParam'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssignmentRequest'
+      responses:
+        200:
+          description: Assignment successfully updated
+        404:
+          description: Course or assignment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/guide:
+    get:
+      tags:
+        - Courses
+      summary: Show guide | Mostra guida
+      operationId: getCourseGuide
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseGuideSection'
+                required: [ data ]
+              example:
+                data:
+                  - title: Presentazione
+                    content: 'Nowadays, computing devices are ubiquitously present and integrated in our daily life. Sensors and actuators are, indeed, embedded in home appliances, lights, or cars; wearable devices like smart watches provide information at glance and act as always-on and personal digital extensions; smartphones and tablets are widely spread. Moreover, most of such devices are Internet-connected and powered by Artificial Intelligence, and people communicate with them by using various interaction paradigms, ranging from "click", to touch, to gestures, speech, or tangible manipulation. As the technology improves, however, we are challenged of how to design suitable interfaces and interactions, so that people can use such technologies with "joy" rather than "frustration".\f\n\f\nThis course would provide a strong foundation to address this challenge. In addition, the course will give students hands-on practice to master this complexity and to develop innovative solutions by adopting a modern human-centered design process while building a web application to serve a set of target users. In the end, students will learn how to design and build technologies usable, useful, and used.'
+                  - title: Risultati attesi
+                    content: 'Knowledge:\f\n- Concepts of Usability, User Experience\f\n- User centered design processes and their application\f\n- Novel Interaction Technologies\f\n\f\nSkills:\f\n- Developing a working prototype according to a human-centered design process\f\n- Mastering some novel interaction technologies\f\n- Experience joint development of a project in a group of engineers'
+                  - title: Prerequisiti
+                    content: '- Programming skills\f\n- Knowledge on web and related technologies/languages (e.g., HTML, JS, client-server architectures, …)\f\n- Attitude towards working in teams\f\n'
+                  - title: Programma
+                    content: 'Course topics will cover three areas: \f\n\f\n
+                    - Introduction to Human-Computer Interaction: history, the human, the computer, vision of the future.\f\n\f\n
+                    - Building interactive applications with a human-centered process. The main tasks and methods to design, develop, and evaluate an interactive application: needfindings strategies, low- and high-fidelity prototypes, mental models and visual design, heuristic evaluation, and basic concepts and methods for controlled experiments (3 credits of lectures and exercises).\f\nThis part will focus, in general, on the design process. Such concepts will be applied to a specific application domain in the development of a group project, which will be carried on during the lab hours (2 credits). \f\n\f\n
+                    - "Beyond WIMP" paradigms: e.g., interaction with AI-powered systems, tangible interaction, voice user interfaces, wearables, gestures, and eye tracking. Selected paradigms will be discussed from different perspectives, ranging from rationale and vision, to contemporary examples and development tools (1 credit). Thematic seminars on emerging topics might also be included, as well as the illustration of specific "case studies".\f\n\f\nMost of the topics will have a theoretical (in-class) foundation plus hands-on (in-lab) experiences by using web technologies. Students projects will follow the proposed human-centered design process and will submit intermediate deliverables. Projects will consist of interactive prototypes as modern web applications, in which a "beyond WIMP" paradigm might be exploited for user interaction.\f\n\f\nDuring the course, communication within teams and with teachers as well as project development will adopt contemporary solutions and tools (e.g., Git and GitHub, Slack/Discord, …).'
+                  - title: Note
+                    content: ''
+                  - title: Organizzazione dell'insegnamento
+                    content: 'The learning method is both project-based (i.e., students learn by doing a project) and problem-based (i.e., the project work starts from real users’ needs), with teams of students working together towards a common goal. \f\n\f\nProject-related activities will start since the beginning of the course and teachers will provide support and guidance for the entire semester. The project will be accompanied by deliverables to be prepared before given deadlines. \f\n\f\nThe course may include live seminars by people from industry or other organizations.'
+                  - title: Bibliografia
+                    content: '* Course slides and related materials (e.g., links, readings, …)\f\n* Selected chapters of:\f\n
+                        - Alan Dix, Janet Finlay, Gregory Abowd, Russell Beale: Human Computer Interaction, 3rd Edition, Prentice Hall, 2004, ISBN 0-13-046109-1\f\n
+                        - Shneiderman, Plaisant, Cohen, Jacobs, Elmqvist & Diakopoulos: Designing the User Interface: Strategies for Effective Human-Computer Interaction, 6th Edition, Pearson, 2016, 013438038X / 9780134380384\f\n'
+                  - title: Regole d'esame
+                    content: 'The exam consists in a written test (in class) and in the evaluation of the group project. The two parts are mandatory and must be taken in the same academic year.\f\n\f\nThe written exam will be closed-note (no books nor notes) and on the topics covered during the lectures (i.e., no code or project-related questions). The duration will be 60 minutes, and will consist of a set of open questions. It will account for 40% of the score, with a minimum threshold.\f\n\f\nThe group project will be evaluated through an oral session, where all group components must be present.\f\nThe evaluation criteria for the group project include: effort invested in the project activity; originality, complexity, and richness of the solution; methodological and technical correctness; completeness and communication quality of the deliverables; presentation and oral discussion; individual contribution. It will account for 60% of the score'
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/notices:
+    get:
+      tags:
+        - Courses
+      summary: List notices | Elenca avvisi
+      operationId: getCourseNotices
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CourseNotices'
+                required: [ data ]
+              example:
+                data:
+                  - id: 332559
+                    publishedAt: '2021-09-22T14:00:00Z'
+                    expiresAt: null
+                    content: '<p>Dear students,</p>\r\r<p>welcome to the 2021 edition of the Human Computer Interaction course (<strong>HCI</strong>, for short)!</p>\r\r<p>Some useful information to get started...</p>\r\r<p>The <strong>first class</strong> will be on Tuesday, September 28, in Room 7T, from 13:00 to 14:30.<br />\rDon&#39;t forget to <em>book</em> a spot in the room, starting from tomorrow, on the Portale della Didattica: the rooms given to this course are currently bigger than the number of enrolled students, so there should be space for everybody!</p>\r\r<p>All teaching <strong>material</strong>, information, and course schedule will be posted on the page: <a href=\"http://bit.ly/polito-hci\">http://bit.ly/polito-hci</a> (we will <u>not</u>&nbsp;use the Portale della Didattica).</p>\r\r<p>All messages and communications with the teachers, and among students, will be on <strong>Slack</strong>. We will <u>completely</u>&nbsp;avoid email communications.<br />\rPlease, join the <em>HCI Slack workspace</em> at the address:<br />\r&nbsp; <a href=\"https://join.slack.com/t/polito-hci-2021/signup\">https://join.slack.com/t/polito-hci-2021/signup</a><br />\rPlease note: to have access to the workspace, you must use your<em> @studenti.polito.it </em>email address. You are free to choose your nickname as you prefer.&nbsp;</p>\r\r<p>Finally, all lectures &mdash; not labs &mdash; will be <strong>video-recorded</strong> and made available both on YouTube and on the Portale della Didattica. The YouTube playlist is:<br />\r&nbsp; <a href=\"https://www.youtube.com/playlist?list=PLs7DWGc_wmwT-1N2vbRkLWrM6LIker9A-\">https://www.youtube.com/playlist?list=PLs7DWGc_wmwT-1N2vbRkLWrM6LIker9A-</a></p>\r\r<p>See you on Tuesday!</p>\r\r<p>Thanks,</p>\r\r<p>Luigi and Fulvio</p>\r'
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/virtual-classrooms:
+    get:
+      tags:
+        - Courses
+      summary: List virtual classrooms | Elenca virtual classroom
+      operationId: getCourseVirtualClassrooms
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: live
+          in: query
+          description: Filter virtual classrooms by their live status
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      anyOf:
+                        - $ref: '#/components/schemas/VirtualClassroomLive'
+                        - $ref: '#/components/schemas/VirtualClassroom'
+                required: [ data ]
+              example:
+                data:
+                  - id: 149336
+                    title: "CYB / lecture 28.09.2021 (TLS, slides 1-40)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/BE7C779FC37D50996EE1FF32B6BC7FAE/6305E087/vc2021/252258/64cdcfc29ac1cd827d20ff1fa62c512eade6b3c0-1632832182985.mp4"
+                    createdAt: "2021-09-28T14:29:00Z"
+                    duration: "02h 56m"
+                    isLive: false
+                  - id: 150397
+                    title: "CYB / lecture 01.10.2021 (TLS, slides 41-55)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/0BC53A27F4776D8A6809D28EB4CB3C9F/6305E087/vc2021/252258/e5e7a53da68cebd5cff1a585659092fcfeca651a-1633074845891.mp4"
+                    createdAt: "2021-10-01T09:54:00Z"
+                    duration: "01h 31m"
+                    isLive: false
+                  - id: 151650
+                    title: "CYB / lecture 5.10.2021 (TLS, slides 56-end, + SSH all slides)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/56DA5556ECD96ED30EC6F8CBAB704285/6305E087/vc2021/252258/c30092cca256f522f64774e19538d43909ce558b-1633437688385.mp4"
+                    createdAt: "2021-10-05T14:41:00Z"
+                    duration: "02h 43m"
+                    isLive: false
+                  - id: 152904
+                    title: "CYB / exercises 8.10.2021 (TLS, SSH, and laboratory introduction)"
+                    teacherId: 12066
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/B738FA2018D0CEDAD999B09E88A0A5BC/6305E087/vc2021/252258/6d7e5ddb4c6accf0ee0ac2f5694ff57b03452a33-1633680044979.mp4"
+                    createdAt: "2021-10-08T10:00:00Z"
+                    duration: "01h 29m"
+                    isLive: false
+                  - id: 154120
+                    title: "CYB / lecture 12.10.2021 (X.509-PKI slides 1-37)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/59B0F46ACE7A752394D15CFA7ABE1D04/6305E087/vc2021/252258/7ed626fec39372a49de2789c02a30d42e4ed9550-1634041964568.mp4"
+                    createdAt: "2021-10-12T14:32:00Z"
+                    duration: "02h 49m"
+                    isLive: false
+                  - id: 155289
+                    title: "CYB / lecture 15.10.2021 (X.509-PKI slides 38-50)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/26673F1C1E978DD6EF3A936453977414/6305E087/vc2021/252258/80a41d52d94c236e8d076c959bdd6594df4c640d-1634287717877.mp4"
+                    createdAt: "2021-10-15T10:48:00Z"
+                    duration: "00h 29m"
+                    isLive: false
+                  - id: 156556
+                    title: "CYB / lecture 18.10.2021 (X.509-PKI slides 51-87)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/683EC58FC3F66A232F871CE9AF6EC41F/6305E087/vc2021/252258/26a670587a538805ca101505347c1f6b95945c7a-1634646791043.mp4"
+                    createdAt: "2021-10-19T14:33:00Z"
+                    duration: "02h 46m"
+                    isLive: false
+                  - id: 157810
+                    title: "CYB / lecture 22.10.2021 (X.509-PKI slides 88-113)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/E46149A506697BABF2D1F1F7D3BD93C4/6305E087/vc2021/252258/54879788014d7f876efa3e37eb0ab41b28ed5ec7-1634889548847.mp4"
+                    createdAt: "2021-10-22T09:59:00Z"
+                    duration: "01h 14m"
+                    isLive: false
+                  - id: 159051
+                    title: "CYB / lecture 26.10.2021 (PKCS#7 and XML dsig/enc, all slides)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/C8BC340269DC981A175B5532224C191A/6305E087/vc2021/252258/a3ca5092848ddcfc8e40856f4a7e0d5e806b6612-1635251947471.mp4"
+                    createdAt: "2021-10-26T14:39:00Z"
+                    duration: "02h 23m"
+                    isLive: false
+                  - id: 161152
+                    title: "CYB / lecture 2.11.2021 (Raccoon attack + WiFi slides 1-33)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/706BF0B4AEA847058A6D1C40FEA13C33/6305E087/vc2021/252258/a450be755938e9117692c396f27df27dfd17d1fc-1635859798379.mp4"
+                    createdAt: "2021-11-02T14:29:00Z"
+                    duration: "02h 58m"
+                    isLive: false
+                  - id: 162379
+                    title: "CYB / lecture 05.11.2021 (keypair attack + WiFi slides 34-end + e-identity slides 1-10)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/1AB78C6B65D67B72C5CCE0F933225A32/6305E087/vc2021/252258/9e0127b8b6723430d3f984697abc288be39f9422-1636102419696.mp4"
+                    createdAt: "2021-11-05T09:53:00Z"
+                    duration: "01h 20m"
+                    isLive: false
+                  - id: 163693
+                    title: "CYB / lecture 09.11.2021 (e-identity slides 11-91)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/521B033D824BC6FC0B4D2950CB431960/6305E087/vc2021/252258/548e5779bc1cfd66767c43aa610574c3c3a12dd9-1636464923945.mp4"
+                    createdAt: "2021-11-09T14:35:00Z"
+                    duration: "02h 48m"
+                    isLive: false
+                  - id: 166121
+                    title: "CYB / lecture 16.11.2021 (trusted computing - all slides)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/360E906166192D9BE6F6155D72E15F1E/6305E087/vc2021/252258/f3018da0ada1e0404dd3b35f5dd4b104bcfee8d3-1637069410236.mp4"
+                    createdAt: "2021-11-16T14:30:00Z"
+                    duration: "02h 46m"
+                    isLive: false
+                  - id: 168367
+                    title: "CYB / lecture 23.11.2021 (Intel SGX - all slides)"
+                    teacherId: 37572
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/4FF040DFCF3A479A980291C8C3CCE6CC/6305E087/vc2021/252258/180a6a764703deffc12b2dcee1a424949e325f9d-1637674185628.mp4"
+                    createdAt: "2021-11-23T14:29:00Z"
+                    duration: "02h 58m"
+                    isLive: false
+                  - id: 170812
+                    title: "CYB / lecture 30.11.2021 (forensics, slides 1-40)"
+                    teacherId: 12066
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/71B3E9CBDDB642AAA77908985245A885/6305E087/vc2021/252258/87968954515.mp4"
+                    createdAt: "2021-11-30T14:32:00Z"
+                    duration: "02h 45m"
+                    isLive: false
+                  - id: 172948
+                    title: "CYB / lecture 7.12.2021 (forensics slides 41-end)"
+                    teacherId: 12066
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/739FC4C2625A96DA19EFB05A3FE043CD/6305E087/vc2021/252258/81581203450.mp4"
+                    createdAt: "2021-12-07T14:34:00Z"
+                    duration: "01h 18m"
+                    isLive: false
+                  - id: 173056
+                    title: "CYB / lecture 7.12.2021 (ATT&CK + CRING + privacy slides 1-9)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/D039EE5B83A12581050ED2B6B0416F70/6305E087/vc2021/252258/099bf783f435456027c06065201a0eb2d38bd41a-1638889616600.mp4"
+                    createdAt: "2021-12-07T16:06:00Z"
+                    duration: "01h 19m"
+                    isLive: false
+                  - id: 174893
+                    title: "CYB / lecture 14.12.2021 (Detract + TPM_Win11 + privacy slides 10-end)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/436BD1306E68AFE95AF46B2D0BC1C8DB/6305E087/vc2021/252258/be095df91592bf86178f6bfbf1c9f5bb0d0d0c26-1639488630242.mp4"
+                    createdAt: "2021-12-14T14:30:00Z"
+                    duration: "02h 31m"
+                    isLive: false
+                  - id: 175951
+                    title: "CYB / lecture 17.12.2021 (thesis topics and exam example)"
+                    teacherId: 1847
+                    coverUrl: "https://lucapezzolla.com/cover.jpg"
+                    videoUrl: "https://video.polito.it/dl/1EAD6B130FC26060ABF998EF8CF805BA/6305E087/vc2021/252258/73e45093b2c0bc9c88d542d62c3fbe2639a7bd2b-1639731367509.mp4"
+                    createdAt: "2021-12-17T09:56:00Z"
+                    duration: "00h 50m"
+                    isLive: false
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /courses/{courseId}/videolectures:
+    get:
+      tags:
+        - Courses
+      summary: List videolectures | Elenca videolezioni
+      operationId: getCourseVideolectures
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VideoLecture'
+                required: [ data ]
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /exams:
+    get:
+      tags:
+        - Exams
+      summary: List exams | Elenca esami
+      operationId: getExams
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Exam'
+                required: [ data ]
+              example:
+                data:
+                  - id: 888137
+                    courseShortcode: 01UDROV
+                    courseName: Cybersecurity (AA-ZZ)
+                    teacherId: 1847
+                    type: Scritto
+                    classrooms: Aula 4P
+                    status: booked
+                    bookingStartsAt: null
+                    bookingEndsAt: '2022-08-23T14:00:00Z'
+                    examStartsAt: '2022-08-29T08:00:00Z'
+                    bookedCount: 12
+                    question: null
+                    feedback: Esiste già una prenotazione per l'esame in questione
+                  - id: 887981
+                    courseShortcode: 01NYHOV
+                    courseName: System and device programming (AA-ZZ)
+                    teacherId: 2893
+                    type: Esami scritti a risposta aperta o chiusa tramite PC
+                    classrooms: Aula R1
+                    status: available
+                    bookingStartsAt: null
+                    bookingEndsAt: '2022-09-02T14:00:00Z'
+                    examStartsAt: '2022-09-08T14:00:00Z'
+                    bookedCount: 42
+                    question: null
+                    feedback: null
+                  - id: 888212
+                    courseShortcode: 03LPYOV
+                    courseName: Cryptography (AA-ZZ)
+                    teacherId: 13461
+                    type: Esami scritti a risposta aperta o chiusa tramite PC
+                    classrooms: Aula R1
+                    status: booked
+                    bookingStartsAt: null
+                    bookingEndsAt: '2022-09-12T14:00:00Z'
+                    examStartsAt: '2022-09-16T11:00:00Z'
+                    bookedCount: 67
+                    question: null
+                    feedback: Esiste già una prenotazione per l'esame in questione
+                  - id: 888118
+                    courseShortcode: 01TYAOV
+                    courseName: Security verification and testing (AA-ZZ)
+                    teacherId: 1943
+                    type: Esami scritti a risposta aperta o chiusa tramite PC
+                    classrooms: Aula 1P
+                    status: booked
+                    bookingStartsAt: null
+                    bookingEndsAt: '2022-09-09T14:00:00Z'
+                    examStartsAt: '2022-09-15T14:00:00Z'
+                    bookedCount: 26
+                    question: null
+                    feedback: Esiste già una prenotazione per l'esame in questione
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /exams/{examId}/booking:
+    post:
+      tags:
+        - Exams
+      summary: Book exam | Prenota esame
+      operationId: bookExam
+      parameters:
+        - name: examId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 'Only needed if the exam you are booking includes a question'
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionId:
+                  type: integer
+                  description: The id of the question
+                  example: 123456
+                questionOption:
+                  type: integer
+                  description: The index of the chosen option (starting at 1)
+                  example: 1
+                requestReason:
+                  type: string
+                  description: The reason for the exam booking request
+                  example: "I'm not sure"
+              example: { }
+        required: false
+      responses:
+        200:
+          description: Success
+        400:
+          description: Missing parameter questionOption
+        404:
+          description: Exam not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags:
+        - Exams
+      summary: Delete exam booking | Annulla prenotazione esame
+      operationId: deleteExamBookingById
+      parameters:
+        - name: examId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Success
+        404:
+          description: Exam or booking not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /lectures:
+    get:
+      tags:
+        - Lectures
+      parameters:
+        - name: fromDate
+          in: query
+          description: First day - defaults to 7 days before today
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: toDate
+          in: query
+          description: Last day - defaults to 7 days after today
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: courseIds[]
+          in: query
+          description: Only include lectures belonging to these courses
+          required: false
+          schema:
+            type: array
+            items:
+              type: number
+      summary: List lectures | Elenca lezioni
+      operationId: getLectures
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Lecture'
+                required: [ data ]
+              example:
+                data:
+                  - id: 12131312
+                    startsAt: "2021-09-28T14:30:00Z"
+                    endsAt: "2021-09-28T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [
+                      {
+                        id: 149336,
+                        title: "CYB / lecture 28.09.2021 (TLS, slides 1-40)"
+                      }
+                    ]
+                  - id: 12131313
+                    startsAt: "2021-10-01T10:00:00Z"
+                    endsAt: "2021-10-01T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [
+                      {
+                        id: 150397,
+                        title: "CYB / lecture 01.10.2021 (TLS, slides 41-55)"
+                      }
+                    ]
+                  - id: 12131314
+                    startsAt: "2021-10-05T14:30:00Z"
+                    endsAt: "2021-10-05T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131315
+                    startsAt: "2021-10-08T10:00:00Z"
+                    endsAt: "2021-10-08T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione aula
+                    description: Demos about TLS and SSH. Introduction to the laboratory.
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131316
+                    startsAt: "2021-10-12T08:30:00Z"
+                    endsAt: "2021-10-12T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131317
+                    startsAt: "2021-10-12T10:00:00Z"
+                    endsAt: "2021-10-12T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131318
+                    startsAt: "2021-10-12T14:30:00Z"
+                    endsAt: "2021-10-12T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131319
+                    startsAt: "2021-10-15T10:00:00Z"
+                    endsAt: "2021-10-15T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131320
+                    startsAt: "2021-10-19T08:30:00Z"
+                    endsAt: "2021-10-19T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131321
+                    startsAt: "2021-10-19T10:00:00Z"
+                    endsAt: "2021-10-19T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131322
+                    startsAt: "2021-10-19T14:30:00Z"
+                    endsAt: "2021-10-19T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131323
+                    startsAt: "2021-10-22T10:00:00Z"
+                    endsAt: "2021-10-22T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131324
+                    startsAt: "2021-10-26T08:30:00Z"
+                    endsAt: "2021-10-26T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131325
+                    startsAt: "2021-10-26T10:00:00Z"
+                    endsAt: "2021-10-26T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131326
+                    startsAt: "2021-10-26T14:30:00Z"
+                    endsAt: "2021-10-26T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131327
+                    startsAt: "2021-11-02T08:30:00Z"
+                    endsAt: "2021-11-02T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131328
+                    startsAt: "2021-11-02T10:00:00Z"
+                    endsAt: "2021-11-02T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131329
+                    startsAt: "2021-11-02T14:30:00Z"
+                    endsAt: "2021-11-02T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131330
+                    startsAt: "2021-11-05T10:00:00Z"
+                    endsAt: "2021-11-05T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131331
+                    startsAt: "2021-11-09T08:30:00Z"
+                    endsAt: "2021-11-09T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio con titolo esageratamente lungo che poi boh
+                    description: "squadra 1"
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131332
+                    startsAt: "2021-11-09T10:00:00Z"
+                    endsAt: "2021-11-09T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description: "squadra 1"
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131333
+                    startsAt: "2021-11-09T14:30:00Z"
+                    endsAt: "2021-11-09T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131334
+                    startsAt: "2021-11-16T08:30:00Z"
+                    endsAt: "2021-11-16T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131335
+                    startsAt: "2021-11-16T10:00:00Z"
+                    endsAt: "2021-11-16T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131336
+                    startsAt: "2021-11-16T14:30:00Z"
+                    endsAt: "2021-11-16T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131337
+                    startsAt: "2021-11-23T08:30:00Z"
+                    endsAt: "2021-11-23T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131338
+                    startsAt: "2021-11-23T10:00:00Z"
+                    endsAt: "2021-11-23T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131339
+                    startsAt: "2021-11-23T14:30:00Z"
+                    endsAt: "2021-11-23T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131340
+                    startsAt: "2021-11-30T08:30:00Z"
+                    endsAt: "2021-11-30T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131341
+                    startsAt: "2021-11-30T10:00:00Z"
+                    endsAt: "2021-11-30T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione Laboratorio
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131342
+                    startsAt: "2021-11-30T14:30:00Z"
+                    endsAt: "2021-11-30T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Esercitazione aula
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131343
+                    startsAt: "2021-12-03T10:00:00Z"
+                    endsAt: "2021-12-03T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131344
+                    startsAt: "2021-12-07T08:30:00Z"
+                    endsAt: "2021-12-07T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131345
+                    startsAt: "2021-12-07T10:00:00Z"
+                    endsAt: "2021-12-07T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131346
+                    startsAt: "2021-12-07T14:30:00Z"
+                    endsAt: "2021-12-07T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131347
+                    startsAt: "2021-12-10T10:00:00Z"
+                    endsAt: "2021-12-10T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131348
+                    startsAt: "2021-12-14T08:30:00Z"
+                    endsAt: "2021-12-14T10:00:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131349
+                    startsAt: "2021-12-14T10:00:00Z"
+                    endsAt: "2021-12-14T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131350
+                    startsAt: "2021-12-14T14:30:00Z"
+                    endsAt: "2021-12-14T17:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+                  - id: 12131351
+                    startsAt: "2021-12-17T10:00:00Z"
+                    endsAt: "2021-12-17T11:30:00Z"
+                    place:
+                      buildingId: TO_CIT22
+                      floorId: XPTE
+                      name: Aula 1P
+                      roomId: 036
+                      siteId: TO_CIT
+                    type: Lezione / Esercitazione
+                    description:
+                    courseId: 252258
+                    courseName: Human Computer Interaction
+                    teacherId: 1847
+                    virtualClassrooms: [ ]
+
+  /news:
+    get:
+      tags:
+        - News
+      summary: List news | Lista news
+      operationId: getNews
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NewsItemOverview'
+                required: [ data ]
+
+  /news/{newsItemId}:
+    get:
+      tags:
+        - News
+      summary: Show news | Mostra news
+      operationId: getNewsItem
+      parameters:
+        - name: newsItemId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NewsItem'
+                required: [ data ]
+
+  /people:
+    get:
+      tags:
+        - People
+      summary: Search people | Cerca persone
+      operationId: getPeople
+      parameters:
+        - name: search
+          in: query
+          description: Filter people containing 'search' in their full name
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PersonOverview'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /people/{personId}:
+    get:
+      tags:
+        - People
+      summary: Show person | Mostra persona
+      operationId: getPerson
+      parameters:
+        - name: personId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Person'
+                required: [ data ]
+        404:
+          description: Person not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /place-categories:
+    get:
+      tags:
+        - Places
+      summary: List place categories | Elenca categorie luoghi
+      operationId: getPlaceCategories
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RootPlaceCategory'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /sites:
+    get:
+      tags:
+        - Places
+      summary: List sites | Elenca sedi
+      operationId: getSites
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Site'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /sites/{siteId}/buildings:
+    get:
+      tags:
+        - Places
+      summary: List buildings | Elenca edifici
+      operationId: getBuildings
+      parameters:
+        - $ref: '#/components/parameters/pathSiteId'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                required: [ data ]
+        404:
+          description: Site not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /places:
+    get:
+      tags:
+        - Places
+      summary: Search places | Cerca luoghi
+      operationId: getPlaces
+      parameters:
+        - name: search
+          in: query
+          description: Filter places containing 'search' in their name
+          schema:
+            type: string
+        - $ref: '#/components/parameters/queryPlaceCategoryId'
+        - $ref: '#/components/parameters/queryPlaceSubCategoryId'
+        - $ref: '#/components/parameters/querySiteId'
+        - $ref: '#/components/parameters/queryBuildingId'
+        - $ref: '#/components/parameters/queryFloorId'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PlaceOverview'
+                required: [ data ]
+        404:
+          description: Site|Building|Floor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /places/{placeId}:
+    get:
+      tags:
+        - Places
+      summary: Show place | Mostra luogo
+      operationId: getPlace
+      parameters:
+        - $ref: '#/components/parameters/pathPlaceId'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Place'
+                required: [ data ]
+  /messages:
+    get:
+      tags:
+        - Student
+      summary: List messages | Elenca messaggi
+      operationId: getMessages
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                required: [ data ]
+              example:
+                data:
+                  - id: 63775600
+                    title: "Nuovo messaggio dalla Segreteria Studenti"
+                    message: "Puoi venire a ritirare la tua smartcard"
+                    type: "secretariat"
+                    isRead: false
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /messages/{messageId}:
+    delete:
+      tags:
+        - Student
+      summary: Delete a message | Cancella un messaggio
+      operationId: deleteMessage
+      parameters:
+        - $ref: '#/components/parameters/messageIdParam'
+      responses:
+        200:
+          description: Success
+        404:
+          description: Message not found
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /messages/{messageId}/read:
+    put:
+      tags:
+        - Student
+      summary: Mark a message as read | Segna un messaggio come letto
+      operationId: markMessageAsRead
+      parameters:
+        - $ref: '#/components/parameters/messageIdParam'
+      responses:
+        200:
+          description: Success
+        404:
+          description: Message not found
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /preferences:
+    patch:
+      tags:
+        - Student
+      summary: Update device preferences | Aggiorna preferenze del dispositivo
+      operationId: updateDevicePreferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePreferencesRequest'
+      responses:
+        200:
+          description: Success
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /ticket-faqs:
+    get:
+      tags:
+        - Tickets
+      summary: Search ticket FAQs | Ricerca FAQ ticket
+      operationId: searchTicketFAQs
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguageHeader'
+        - name: search
+          in: query
+          description: Find FAQs containing 'search' in the question
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketFAQ'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /ticket-topics:
+    get:
+      tags:
+        - Tickets
+      summary: List ticket topics | Elenca ambiti ticket
+      operationId: getTicketTopics
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketTopic'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets:
+    get:
+      tags:
+        - Tickets
+      summary: List tickets | Elenca ticket
+      operationId: getTickets
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TicketOverview'
+                required: [ data ]
+    post:
+      tags:
+        - Tickets
+      summary: Create ticket | Crea ticket
+      operationId: createTicket
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreateTicketRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TicketOverview'
+                required: [ data ]
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}:
+    get:
+      tags:
+        - Tickets
+      summary: Show a ticket | Mostra un ticket
+      operationId: getTicket
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Ticket'
+                required: [ data ]
+        404:
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}/read:
+    put:
+      tags:
+        - Tickets
+      summary: Mark a ticket as read | Segna un ticket come letto
+      operationId: markTicketAsRead
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+      responses:
+        200:
+          description: Success
+        404:
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}/close:
+    put:
+      tags:
+        - Tickets
+      summary: Mark a ticket as closed | Segna un ticket come chiuso
+      operationId: markTicketAsClosed
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+      responses:
+        200:
+          description: Success
+        404:
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}/attachments/{attachmentId}:
+    get:
+      tags:
+        - Tickets
+      summary: Download ticket attachment | Scarica allegato del ticket
+      operationId: getTicketAttachment
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+        - $ref: '#/components/parameters/ticketAttachmentIdParam'
+      responses:
+        200:
+          description: Attachment
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        302:
+          description: Redirect to attachment download
+        404:
+          description: Ticket or attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}/replies:
+    post:
+      tags:
+        - Tickets
+      summary: Reply to a ticket | Rispondi ad un ticket
+      operationId: replyToTicket
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReplyTicketRequest'
+        required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: Ticket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+  /tickets/{ticketId}/replies/{replyId}/attachments/{attachmentId}:
+    get:
+      tags:
+        - Tickets
+      summary: Download ticket reply attachment | Scarica allegato di una risposta al ticket
+      operationId: getTicketReplyAttachment
+      parameters:
+        - $ref: '#/components/parameters/ticketIdParam'
+        - $ref: '#/components/parameters/ticketReplyIdParam'
+        - $ref: '#/components/parameters/ticketAttachmentIdParam'
+      responses:
+        200:
+          description: Attachment
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        302:
+          description: Redirect to attachment download
+        404:
+          description: Ticket or attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /job-offers:
+    get:
+      tags:
+        - Job offers
+      summary: List job offers | Elenca offerte di lavoro
+      operationId: getJobOffers
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobOfferOverview'
+                required: [ data ]
+  /job-offers/{jobOfferId}:
+    get:
+      tags:
+        - Job offers
+      parameters:
+        - $ref: '#/components/parameters/jobOfferIdParam'
+      summary: Show a job offer | Mostra un'offerta di lavoro
+      operationId: getJobOffer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/JobOffer'
+                required: [ data ]
+        404:
+          description: Job offer not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /offering:
+    get:
+      tags:
+        - Offering
+      summary: Get offering | Mostra offerta formativa
+      operationId: getOffering
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      bachelor:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OfferingClass'
+                      master:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/OfferingClass'
+                required: [data]
+
+  /offering/degrees/{degreeId}:
+    get:
+      tags:
+        - Offering
+      parameters:
+        - $ref: '#/components/parameters/degreeIdParam'
+        - $ref: '#/components/parameters/yearQueryParam'
+      summary: Show a degree | Mostra un corso di laurea
+      operationId: getOfferingDegree
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Degree'
+                required: [data]
+        404:
+          description: Degree not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /offering/courses/{courseShortcode}:
+    get:
+      tags:
+        - Offering
+      parameters:
+        - $ref: '#/components/parameters/courseShortcodeParam'
+        - $ref: '#/components/parameters/yearQueryParam'
+      summary: Show offering course | Mostra corso dell'offerta formativa
+      operationId: getOfferingCourse
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/OfferingCourse'
+                required: [data]
+        404:
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          $ref: '#/components/responses/ErrorResponse'
+components:
+  parameters:
+    bookingIdParam:
+      name: bookingId
+      in: path
+      required: true
+      schema:
+        type: integer
+    bookingTopicIdParam:
+      name: bookingTopicId
+      in: path
+      required: true
+      schema:
+        type: integer
+    courseIdParam:
+      name: courseId
+      in: path
+      required: true
+      schema:
+        type: integer
+    examIdParam:
+      name: examId
+      in: path
+      required: true
+      schema:
+        type: integer
+    assignmentIdParam:
+      name: assignmentId
+      in: path
+      required: true
+      schema:
+        type: integer
+    fileIdParam:
+      name: fileId
+      in: path
+      required: true
+      schema:
+        type: string
+    lectureIdParam:
+      name: lectureId
+      in: path
+      required: true
+      schema:
+        type: integer
+    messageIdParam:
+      name: messageId
+      in: path
+      required: true
+      schema:
+        type: integer
+    personIdParam:
+      name: personId
+      in: path
+      required: true
+      schema:
+        type: string
+    pathSiteId:
+      name: siteId
+      in: path
+      required: true
+      schema:
+        type: string
+    queryPlaceCategoryId:
+      name: placeCategoryId
+      in: query
+      required: false
+      schema:
+        type: string
+    queryPlaceSubCategoryId:
+      name: placeSubCategoryId[]
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    querySiteId:
+      name: siteId
+      in: query
+      required: false
+      schema:
+        type: string
+    queryBuildingId:
+      name: buildingId
+      in: query
+      required: false
+      schema:
+        type: string
+    queryFloorId:
+      name: floorId
+      in: query
+      required: false
+      schema:
+        type: string
+
+
+    pathPlaceId:
+      name: placeId
+      in: path
+      required: true
+      schema:
+        type: string
+    ticketIdParam:
+      name: ticketId
+      in: path
+      required: true
+      schema:
+        type: integer
+    ticketReplyIdParam:
+      name: replyId
+      in: path
+      required: true
+      schema:
+        type: integer
+    ticketAttachmentIdParam:
+      name: attachmentId
+      in: path
+      required: true
+      schema:
+        type: integer
+    acceptLanguageHeader:
+      name: Accept-Language
+      in: header
+      schema:
+        type: string
+        enum: [ it, en ]
+        default: it
+    jobOfferIdParam:
+      name: jobOfferId
+      in: path
+      required: true
+      schema:
+        type: integer
+    degreeIdParam:
+      name: degreeId
+      in: path
+      required: true
+      schema:
+        type: string
+      example: '81-6'
+    courseShortcodeParam:
+      name: courseShortcode
+      in: path
+      required: true
+      schema:
+        type: string
+    yearQueryParam:
+      name: year
+      in: query
+      required: false
+      schema:
+        type: string
+        example: 2022
+  responses:
+    ErrorResponse:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    Identity:
+      type: object
+      properties:
+        username:
+          type: string
+          example: 's290683'
+        type:
+          type: string
+          example: 'student'
+        clientId:
+          type: string
+          example: '5a54f626-4b7e-488e-a0e3-300f54051510'
+        token:
+          type: string
+          example: c679fa38ff665df6a676acd833194385
+      required: [ username, type, clientId, token ]
+    Student:
+      type: object
+      properties:
+        username:
+          type: string
+          example: 's290683'
+        firstName:
+          type: string
+          example: Luca
+        lastName:
+          type: string
+          example: Pezzolla
+        status:
+          type: string
+          enum:
+            - active
+            - closed
+            - cancelled
+            - graduated
+            - career_closed
+        allCareerIds:
+          description: All the ids related to this student
+          type: array
+          items:
+            type: string
+            example: "213956"
+          example: [ "290683", "213956" ]
+        degreeCode:
+          type: string
+          example: LM-32
+        degreeLevel:
+          type: string
+          example: Corso di Laurea Magistrale in
+        degreeName:
+          type: string
+          example: INGEGNERIA INFORMATICA (COMPUTER ENGINEERING)
+        firstEnrollmentYear:
+          type: integer
+          example: 2021
+        lastEnrollmentYear:
+          type: integer
+          example: 2022
+        isCurrentlyEnrolled:
+          type: boolean
+          example: false
+        averageGrade:
+          type: number
+          nullable: true
+          example: 18.42
+        estimatedFinalGrade:
+          type: number
+          nullable: true
+          example: 99.99
+        averageGradePurged:
+          description: Purged grade is only available for bachelor degree students
+          type: number
+          nullable: true
+          example: null
+        estimatedFinalGradePurged:
+          description: Purged grade is only available for bachelor degree students
+          type: number
+          nullable: true
+          example: null
+        mastersAdmissionAverageGrade:
+          description: Master's admission grade is only available for bachelor degree students
+          type: number
+          nullable: true
+          example: null
+        totalCredits:
+          type: integer
+          example: 126
+        totalAttendedCredits:
+          type: integer
+          example: 126
+        totalAcquiredCredits:
+          type: integer
+          example: 68
+        enrollmentCredits:
+          type: integer
+          example: 86
+        enrollmentAttendedCredits:
+          type: integer
+          example: 86
+        enrollmentAcquiredCredits:
+          type: integer
+          example: 28
+        smartCardPicture:
+          type: string
+          example: https://
+      required:
+        - username
+        - firstName
+        - lastName
+        - status
+        - allCareerIds
+        - degreeCode
+        - degreeLevel
+        - degreeName
+        - firstEnrollmentYear
+        - lastEnrollmentYear
+        - isCurrentlyEnrolled
+        - averageGrade
+        - estimatedFinalGrade
+        - averageGradePurged
+        - estimatedFinalGradePurged
+        - mastersAdmissionAverageGrade
+        - totalCredits
+        - totalAttendedCredits
+        - totalAcquiredCredits
+        - enrollmentCredits
+        - enrollmentAttendedCredits
+        - enrollmentAcquiredCredits
+        - smartCardPicture
+
+    Deadline:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Chiusura del periodo per cambio di ordinamento e/o corso di studi
+        type:
+          type: string
+          example: Trasferimenti e valutazioni carriere precedenti
+        url:
+          type: string
+          nullable: true
+          example: https://didattica.polito.it/guida/2021/it/passaggi_interni_su_corsi_di_laurea_magistrale?cds=28&sdu=32
+        date:
+          type: string
+          format: date
+          example: '2022-08-31'
+      required: [ name, type, url, date ]
+
+    ExamGrade:
+      type: object
+      properties:
+        courseName:
+          type: string
+          example: Human Computer Interaction
+        credits:
+          type: integer
+          example: 6
+        grade:
+          type: string
+          example: "27"
+        isProvisional:
+          type: boolean
+          example: false
+        date:
+          type: string
+          format: date
+          example: '2022-05-15'
+      required: [ courseName, credits, grade, isProvisional, date ]
+
+    BookingTopic:
+      type: object
+      properties:
+        id:
+          type: string
+          example: DIDATTICA_ING
+        title:
+          type: string
+          example: Segreteria Didattica Ingegneria
+        description:
+          type: string
+          example: Servizi della Segreteria Didattica Ingegneria
+        type:
+          type: string
+          example: 'Ufficio'
+        isEnabled:
+          type: boolean
+          example: true
+        subtopics:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingSubtopic'
+    BookingSubtopic:
+      type: object
+      properties:
+        id:
+          type: string
+          example: DID_ING_VC_EN
+        title:
+          type: string
+          example: Aspetti didattici di carriera - Sportello virtuale in inglese
+        description:
+          type: string
+          example: ''
+        disclaimer:
+          type: string
+          example: ''
+        isEnabled:
+          type: boolean
+          example: true
+        showCalendar:
+          type: boolean
+        slotLength:
+          type: integer
+          example: 15
+        slotsPerHour:
+          type: integer
+          example: 4
+        startDate:
+          type: string
+          format: date
+          example: 2022-05-15
+        startHour:
+          type: integer
+          example: 9
+        endHour:
+          type: integer
+          example: 18
+        requirements:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: Informativa Emergenza COVID-19
+              url:
+                type: string
+                example: https://didattica.polito.it/pdf/informativa_covid.pdf
+        maxBookingsPerDay:
+          type: integer
+          example: 1
+        canBeCancelled:
+          type: boolean
+          example: true
+    BookingSlot:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 103051
+        isBooked:
+          type: boolean
+          example: false
+        canBeBooked:
+          type: boolean
+          example: false
+        hasSeats:
+          type: boolean
+          example: false
+        places:
+          type: integer
+          example: 2
+        bookedPlaces:
+          type: integer
+          example: 2
+        feedback:
+          type: string
+          example: Il turno è pieno
+        location:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Virtual Classroom della Segreteria Generale Studenti
+            description:
+              type: string
+              example: ''
+            type:
+              type: string
+              example: VC
+            address:
+              type: string
+              example: https://didattica.polito.it/pls/portal30/sviluppo.bbb_corsi.queueRoom?id=SEGRETERIA_GENERALE&p_tipo=SEGRETERIA_GENERALE
+        startsAt:
+          type: string
+          format: date-time
+          example: '2021-10-05T10:00:00Z'
+        endsAt:
+          type: string
+          format: date-time
+          example: '2021-10-05T10:15:00Z'
+        bookingStartsAt:
+          type: string
+          format: date-time
+          example: '2021-09-30T00:00:00Z'
+        bookingEndsAt:
+          type: string
+          format: date-time
+          example: '2021-10-04T16:00:00Z'
+    BookingSeats:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          example: 140
+        availableCount:
+          type: integer
+          example: 42
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingSeatsRow'
+    BookingSeatsRow:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        label:
+          type: string
+          example: B
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/BookingSeat'
+    BookingSeat:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 42
+        status:
+          type: string
+          enum:
+            - available
+            - booked
+            - unavailable
+        label:
+          type: string
+          example: B12
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 258674
+        topic:
+          type: object
+          properties:
+            id:
+              type: string
+              example: DIDATTICA_ING
+            title:
+              type: string
+              example: Segreteria Didattica Ingegneria
+            description:
+              type: string
+              example: Servizi della Segreteria Didattica Ingegneria
+            type:
+              type: string
+              example: 'Ufficio'
+          required: [ id, title, description, type ]
+        subtopic:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: string
+              example: DID_ING_VC_EN
+            title:
+              type: string
+              example: Aspetti didattici di carriera - Sportello virtuale in inglese
+            description:
+              type: string
+              example: ''
+          required: [ id, title, description ]
+          example: null
+        startsAt:
+          type: string
+          format: date-time
+          example: '2021-10-05T10:00:00Z'
+        endsAt:
+          type: string
+          format: date-time
+          example: '2021-10-05T10:15:00Z'
+        seat:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+              example: 20018
+            row:
+              type: string
+              example: A
+            column:
+              type: string
+              example: 05
+          example: null
+        canBeCancelled:
+          type: boolean
+          example: true
+        hasLocationCheck:
+          type: boolean
+          example: true
+        isLocationChecked:
+          type: boolean
+          example: false
+        location:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Virtual Classroom della Segreteria Generale Studenti
+            description:
+              type: string
+              example: ''
+            type:
+              type: string
+              example: VC
+            address:
+              type: string
+              example: https://didattica.polito.it/pls/portal30/sviluppo.bbb_corsi.queueRoom?id=SEGRETERIA_GENERALE&p_tipo=SEGRETERIA_GENERALE
+            latitude:
+              type: string
+              example: '45.0626340000000000'
+            longitude:
+              type: string
+              example: '7.6605410000000000'
+            radiusInKm:
+              type: number
+              example: 0.1
+      required: [ id, topic, subtopic, startsAt, endsAt, seat, canBeCancelled, hasLocationCheck, isLocationChecked, location ]
+
+    CourseOverview:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: true
+          description: The identifier for the current instance of this course. If null this is not a teaching (such as thesis), it won't have a course page
+          example: 258674
+        name:
+          type: string
+          example: System and device programming
+        shortcode:
+          type: string
+          example: 01NYHOV
+        cfu:
+          type: integer
+          example: 10
+        teachingPeriod:
+          type: string
+          description: The semester(s) this course belongs to
+          example: 2-2
+        teacherId:
+          type: integer
+          nullable: true
+          example: 2893
+        previousEditions:
+          description: Previous editions of this course that were part of the student's PSP
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: string
+                example: '2021'
+              id:
+                type: integer
+                example: 244577
+            required: [ year, id ]
+        isOverBooking:
+          type: boolean
+          example: false
+        isInPersonalStudyPlan:
+          type: boolean
+          description: Included in the PSP | Incluso nel carico didattico
+          example: true
+        isModule:
+          type: boolean
+          description: If true, this course is actually a module
+          example: true
+      required: [ id, name, shortcode, cfu, teachingPeriod, teacherId, previousEditions, isOverBooking, isInPersonalStudyPlan, isModule ]
+    Course:
+      type: object
+      properties:
+        id:
+          type: integer
+          nullable: true
+          description: The identifier for the current instance of this course. If null this is not a teaching (such as thesis), it won't have a course page
+          example: 258674
+        name:
+          type: string
+          example: System and device programming
+        shortcode:
+          type: string
+          example: 01NYHOV
+        cfu:
+          type: integer
+          example: 10
+        teachingPeriod:
+          type: string
+          description: The semester(s) this course belongs to
+          example: 2-2
+        teacherId:
+          type: integer
+          nullable: true
+          example: 2893
+        isOverBooking:
+          type: boolean
+          example: false
+        isInPersonalStudyPlan:
+          type: boolean
+          description: Included in the PSP | Incluso nel carico didattico
+          example: true
+        isModule:
+          type: boolean
+          description: If true, this course is actually a module
+          example: true
+        year:
+          type: string
+          example: '2022'
+        vcPreviousYears:
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: string
+                example: '2021'
+              id:
+                type: integer
+                example: 244577
+            required: [ year, id ]
+        vcOtherCourses:
+          description: Other editions/courses to be included in virtual classrooms
+          type: array
+          items:
+            type: object
+            properties:
+              year:
+                type: string
+                example: '2021'
+              name:
+                type: string
+                example: Fisica II
+              id:
+                type: integer
+                example: 247431
+            required: [ year, name, id ]
+        notifications:
+          type: object
+          properties:
+            avvisidoc:
+              type: boolean
+              example: true
+            matdid:
+              type: boolean
+              example: true
+            videolezioni:
+              type: boolean
+              example: true
+          required: [ avvisidoc, matdid, videolezioni ]
+        staff:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              id:
+                type: number
+                example: 244577
+            required: [ role, id ]
+      required: [ id, name, shortcode, cfu, teachingPeriod, teacherId, isOverBooking, isInPersonalStudyPlan, isModule, year, vcPreviousYears, vcOtherCourses, notifications, staff ]
+    CourseAssignment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 947503
+        description:
+          type: string
+          example: laboratorio 3
+        mimeType:
+          type: string
+          example: application/x-zip-compressed
+        filename:
+          type: string
+          example: lab_03.zip
+        uploadedAt:
+          type: string
+          format: date-time
+          example: 2022-09-02T14:00:00Z
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+        url:
+          type: string
+          example: https://file.didattica.polito.it/down/ELABORATI_PRE/1003948/S290683/6791f0016c78599138828211522fa84d/62cebc94
+        sizeInKiloBytes:
+          type: integer
+          example: 305
+      required: [ id, description, mimeType, filename, uploadedAt, deletedAt, url, sizeInKiloBytes ]
+    CourseAssignmentUpload:
+      type: object
+      properties:
+        description:
+          type: string
+          example: laboratorio 3
+        file:
+          type: string
+          format: binary
+      required: [ description, file ]
+    UpdateAssignmentRequest:
+      type: object
+      properties:
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2022-07-03T14:00:00Z
+      required: [ deletedAt ]
+    CourseNotices:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 360724
+        publishedAt:
+          type: string
+          format: date-time
+          example: 2022-07-03T14:00:00Z
+        expiresAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2022-08-31T14:00:00Z
+        content:
+          type: string
+          example: <p>Conferma spostamento orario esame:</p><p><b>Ore 15</b></p>
+      required: [ id, publishedAt, expiresAt, content ]
+    CourseGuideSection:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Presentazione
+        content:
+          type: string
+          example: The course will cover the design and implementation of server-side
+            architectures...
+      required: [ title, content ]
+    CourseDirectory:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '33352562'
+        type:
+          type: string
+          example: 'directory'
+        name:
+          type: string
+          example: Laboratori
+        files:
+          $ref: '#/components/schemas/CourseDirectoryContent'
+      required: [ id, type, name, files ]
+    CourseDirectoryContent:
+      type: array
+      items:
+        oneOf:
+          - $ref: '#/components/schemas/CourseDirectory'
+          - $ref: '#/components/schemas/CourseFileOverview'
+        discriminator:
+          propertyName: type
+          mapping:
+            directory: '#/components/schemas/CourseDirectory'
+            file: '#/components/schemas/CourseFileOverview'
+    CourseFileOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '33352562'
+        type:
+          type: string
+          example: 'file'
+        name:
+          type: string
+          example: sebc-lab2.pdf
+        sizeInKiloBytes:
+          type: integer
+          example: 305
+        mimeType:
+          type: string
+          example: application/x-zip-compressed
+        createdAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+      required: [ id, type, name, sizeInKiloBytes, mimeType, createdAt ]
+
+    Exam:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 888122
+        courseId:
+          type: number
+          example: 262147
+        courseShortcode:
+          type: string
+          example: 02JSKOV
+        courseName:
+          type: string
+          example: Human Computer Interaction
+        teacherId:
+          type: integer
+          example: 2154
+        type:
+          type: string
+          example: Esami scritti a risposta aperta o chiusa tramite PC
+        classrooms:
+          type: string
+          example: Aula 12; Aula 14
+        status:
+          type: string
+          example: available
+          enum:
+            - available
+            - booked
+            - requestable
+            - requested
+            - requestAccepted
+            - requestRejected
+            - unavailable
+        bookingStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+        bookingEndsAt:
+          type: string
+          format: date-time
+          example: '2022-08-31T14:00:00Z'
+        examStartsAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2022-09-02T14:00:00Z'
+        examEndsAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2022-09-02T17:00:00Z'
+        bookedCount:
+          type: integer
+          example: 42
+        question:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+              example: 1
+            statement:
+              type: string
+              example: Do you have a laptop to bring at the exam?
+            options:
+              type: array
+              items:
+                type: string
+              example: [ Yes, No ]
+          required: [ id, statement, options ]
+          example: null
+        feedback:
+          type: string
+          nullable: true
+          example: null
+        notes:
+          type: string
+          nullable: true
+          example: null
+      required:
+        - id
+        - courseId
+        - courseShortcode
+        - courseName
+        - teacherId
+        - type
+        - classrooms
+        - status
+        - bookingStartsAt
+        - bookingEndsAt
+        - examStartsAt
+        - examEndsAt
+        - bookedCount
+        - question
+        - feedback
+        - notes
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 2
+        message:
+          type: string
+          example: Error message
+
+    PersonOverview:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2154
+        firstName:
+          type: string
+          example: Fulvio
+        lastName:
+          type: string
+          example: Corno
+        picture:
+          type: string
+          nullable: true
+          example: https://www.swas.polito.it/_library/image_pub.asp?matricola=002154
+        role:
+          type: string
+          example: Docente
+      required: [ id, firstName, lastName, picture, role ]
+    Person:
+      allOf:
+        - $ref: '#/components/schemas/PersonOverview'
+        - type: object
+          properties:
+            email:
+              type: string
+              example: fulvio.corno@polito.it
+            phoneNumbers:
+              type: array
+              items:
+                $ref: '#/components/schemas/PhoneNumber'
+            facilityShortName:
+              type: string
+              nullable: true
+              example: DAUIN
+            profileUrl:
+              type: string
+              example: https://www.dauin.polito.it/personale/scheda/(matricola)/002154
+            courses:
+              type: array
+              nullable: true
+              items:
+                $ref: "#/components/schemas/PersonCourse"
+          required: [ email, phoneNumbers, facilityShortName, profileUrl, courses ]
+    PersonCourse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: The identifier for this course
+          example: 258674
+        shortcode:
+          type: string
+          description: The shortcode for this course
+          example: 01NYHOV
+        name:
+          type: string
+          description: The name of the course
+          example: Computer sciences
+        role:
+          type: string
+          description: The role of the person in this course
+          example: Collaboratore
+        year:
+          type: number
+          description: The year this course was given in
+          example: 2021
+      required: [ id, year, role, name ]
+    GeoLocation:
+      type: object
+      properties:
+        latitude:
+          type: number
+          example: 45.064254
+        longitude:
+          type: number
+          example: 7.657823
+      required: [ latitude, longitude ]
+    RoomOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '088'
+        name:
+          type: string
+          example: Aula 1D
+      required: [ id, name ]
+    SiteOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          example: TO_CIT
+        name:
+          type: string
+          example: Sede Centrale - Cittadella Politecnica
+      required: [ id, name ]
+    Site:
+      allOf:
+        - $ref: '#/components/schemas/SiteOverview'
+        - type: object
+          properties:
+            floors:
+              type: array
+              items:
+                $ref: '#/components/schemas/Floor'
+            extent:
+              type: number
+              example: 0.0015
+              description: A delta in degrees that applied to the centroid coordinates of the site determines its extent
+          required: [ floors, extent ]
+        - $ref: '#/components/schemas/GeoLocation'
+    BuildingOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          example: TO_CIT09
+        name:
+          type: string
+          example: Aule T
+      required: [ id, name ]
+    Building:
+      allOf:
+        - $ref: '#/components/schemas/BuildingOverview'
+        - $ref: '#/components/schemas/GeoLocation'
+    Floor:
+      type: object
+      properties:
+        id:
+          type: string
+          example: XPTE
+        name:
+          type: string
+          example: Piano Terra
+        level:
+          type: integer
+          example: 0
+      required: [ id, name, level ]
+    PlaceCategory:
+      type: object
+      properties:
+        id:
+          type: string
+          example: AULA
+        name:
+          type: string
+          example: Aula
+      required: [ id, name ]
+    RootPlaceCategory:
+      allOf:
+        - $ref: '#/components/schemas/PlaceCategory'
+        - type: object
+          properties:
+            subCategories:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlaceCategory'
+          required: [ subCategories ]
+
+    PlaceCategoryOverview:
+      allOf:
+        - $ref: '#/components/schemas/PlaceCategory'
+        - type: object
+          properties:
+            subCategory:
+              $ref: '#/components/schemas/PlaceCategory'
+          required: [ subCategory ]
+    PlaceOverview:
+      allOf:
+        - type: object
+          properties:
+            id:
+                type: string
+                example: 'TO_CIT09_XPTE_088'
+            room:
+              $ref: '#/components/schemas/RoomOverview'
+            category:
+              $ref: '#/components/schemas/PlaceCategoryOverview'
+            site:
+              $ref: '#/components/schemas/SiteOverview'
+            building:
+              $ref: '#/components/schemas/BuildingOverview'
+            floor:
+              $ref: '#/components/schemas/Floor'
+          required: [ id, room, name, category, site, building, floor ]
+        - $ref: '#/components/schemas/GeoLocation'
+    Place:
+      allOf:
+        - $ref: '#/components/schemas/PlaceOverview'
+        - type: object
+          properties:
+            geoJson:
+              # $ref: 'https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml#/components/schemas/Feature'
+              # --- BEGIN EDIT ---
+              type: object
+              # --- END EDIT ---
+            capacity:
+              type: integer
+              example: 300
+            structure:
+              type: object
+              nullable: true
+              properties:
+                name:
+                  type: string
+                  example: Dipartimento di Ingegneria Strutturale, Edile e Geotecnica
+                shortName:
+                  type: string
+                  example: DISEG
+                email:
+                  type: string
+                  nullable: true
+                  example: null
+                phone:
+                  type: string
+                  nullable: true
+                  example: null
+              required: [ name, shortName, email, phone ]
+            resources:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: Personal Computer
+                    description:
+                      type: string
+                      example: Computer fisso da tavolo cablato per la proiezione
+                    category:
+                      type: string
+                      example: Technology
+                  required: [ name, description, category ]
+          required: [ capacity, structure, resources, geoJson ]
+
+    VideoLecture:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 888122
+        title:
+          type: string
+          example: Lecture 1
+        teacherId:
+          type: integer
+          example: 888122
+        abstract:
+          type: string
+          example: Lecture 1
+        coverUrl:
+          type: string
+          example: https://
+        videoUrl:
+          type: string
+          example: https://
+        audioUrl:
+          type: string
+          example: https://
+        createdAt:
+          type: string
+          format: date-time
+          example: '2022-08-31T14:00:00Z'
+        duration:
+          type: string
+          example: 00h 46m
+      required: [ id, title, teacherId, abstract, coverUrl, videoUrl, audioUrl, createdAt, duration ]
+    RelatedVirtualClassroom:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 150157
+        title:
+          type: string
+          example: Lecture 1
+      required: [ id, title ]
+    VirtualClassroom:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 150157
+        title:
+          type: string
+          example: Lecture 1
+        teacherId:
+          type: integer
+          example: 888122
+        coverUrl:
+          type: string
+          nullable: true
+          example: https://
+        videoUrl:
+          type: string
+          example: https://
+        createdAt:
+          type: string
+          format: date-time
+          example: '2022-08-31T14:00:00Z'
+        duration:
+          type: string
+          example: 00h 46m
+        isLive:
+          type: boolean
+          example: false
+      required: [ id, title, teacherId, coverUrl, videoUrl, createdAt, duration, isLive ]
+    VirtualClassroomLive:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 150157
+        title:
+          type: string
+          example: Lecture 1
+        teacherId:
+          type: integer
+          example: 888122
+        meetingUrl:
+          type: string
+          example: https://
+        createdAt:
+          type: string
+          format: date-time
+          example: '2022-08-31T14:00:00Z'
+        isLive:
+          type: boolean
+          example: true
+      required: [ id, title, teacherId, meetingUrl, createdAt, isLive ]
+    Lecture:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 150157
+        startsAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+        endsAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+        type:
+          type: string
+          example: Lezione / Esercitazione
+        virtualClassrooms:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelatedVirtualClassroom'
+        description:
+          type: string
+          nullable: true
+          example: Lezione / Esercitazione
+        courseId:
+          type: integer
+          example: 150157
+        courseName:
+          type: string
+          example: Human Computer Interaction
+        teacherId:
+          type: integer
+          example: 150157
+        place:
+          $ref: '#/components/schemas/LecturePlace'
+      required: [ id, startsAt, endsAt, type, virtualClassrooms, description, courseId, courseName, teacherId, place ]
+    LecturePlace:
+      type: object
+      nullable: true
+      properties:
+        buildingId:
+          type: string
+          example: TO_CIT22
+        floorId:
+          type: string
+          example: XPTE
+        name:
+          type: string
+          example: Aula 1P
+        roomId:
+          type: string
+          example: 036
+        siteId:
+          type: string
+          example: TO_CIT
+      required: [ buildingId, floorId, name, roomId, siteId ]
+
+    Device:
+      type: object
+      properties:
+        name:
+          type: string
+          example: S10+ di Luca
+        platform:
+          type: string
+          example: Android
+        version:
+          type: string
+          example: 12
+        model:
+          type: string
+          example: S10
+        manufacturer:
+          type: string
+          example: Samsung
+      required: [ platform ]
+
+    Client:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Students app
+        id:
+          type: string
+          example: '5a54f626-4b7e-488e-a0e3-300f54051510'
+      required: [ name ]
+
+    PhoneNumber:
+      type: object
+      properties:
+        full:
+          type: string
+          example: "0110907053"
+        internal:
+          type: string
+          example: "7053"
+      required: [ full, internal ]
+
+    MessageType:
+      type: string
+      enum:
+        - emergency
+        - event
+        - personal
+        - teacher
+        - secretariat
+      example: secretariat
+    Message:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 63775600
+        title:
+          type: string
+          example: Nuovo messaggio dalla Segreteria Studenti
+        message:
+          type: string
+          nullable: true
+          example: Puoi venire a ritirare la tua smartcard
+        type:
+          $ref: '#/components/schemas/MessageType'
+        senderId:
+          type: number
+          example: 150157
+          nullable: true
+        sentAt:
+          type: string
+          format: date-time
+          example: '2021-10-05T10:00:00Z'
+        isRead:
+          type: boolean
+          example: true
+      required: [ id, title, message, type, senderId, sentAt, isRead ]
+
+    TicketSubtopic:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 103
+        name:
+          type: string
+          example: Accesso studenti esterni
+      required: [ id, name ]
+    TicketTopic:
+      allOf:
+        - $ref: '#/components/schemas/TicketSubtopic'
+        - type: object
+          properties:
+            subtopics:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketSubtopic'
+          example:
+            id: 61
+            name: ACCESSO LAUREE MAGISTRALI
+            subtopics:
+              - id: 103
+                name: Accesso studenti esterni
+          required: [ subtopics ]
+    TicketFAQ:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 3623
+        question:
+          type: string
+          example: Ho dimenticato il mio nome utente e/o la password e non riesco più ad accedere ad Apply@Polito. Come posso fare?
+        answer:
+          type: string
+          example: Clicca sul link &quot;<u>Codice e/o Password dimenticata</u>?&quot; presente sulla pagina di <a href=\"https://didattica.polito.it/pls/portal30/sviluppo.pkg_apply.login?p_lang=IT\">Log-in</a>&nbsp;e segui le istruzioni.
+      required: [ id, question, answer ]
+    TicketStatus:
+      type: string
+      enum:
+        - new
+        - pending
+        - closed
+    TicketOverview:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1145890
+        subject:
+          type: string
+          example: Sostituzione esame in piano carriera
+        message:
+          type: string
+          example: Buongiorno, vi contatto per sostituire A con B
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        hasAttachments:
+          type: boolean
+          example: true
+        isFromAgent:
+          type: boolean
+          description: If true, this ticket was opened by an agent (not by the student)
+          example: false
+        agentId:
+          type: number
+          example: null
+          nullable: true
+        unreadCount:
+          type: number
+          example: 2
+        createdAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+      required: [ id, subject, message, status, hasAttachments, isFromAgent, agentId, unreadCount, createdAt, updatedAt ]
+    Ticket:
+      allOf:
+        - $ref: '#/components/schemas/TicketOverview'
+        - type: object
+          properties:
+            replies:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketReply'
+            attachments:
+              type: array
+              items:
+                $ref: '#/components/schemas/TicketAttachment'
+          required: [ id, subject, message, status, hasAttachments, isFromAgent, unreadCount, createdAt, updatedAt, replies, attachments ]
+    TicketReply:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1145890
+        message:
+          type: string
+          example: Non si può fare.
+        isFromAgent:
+          type: boolean
+          description: If true, this reply was sent by an agent (not by the student)
+          example: true
+        agentId:
+          type: number
+          example: 351
+          nullable: true
+        isRead:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketAttachment'
+      required: [ id, message, senderId, isFromAgent, agentId, isRead, createdAt, attachments ]
+    TicketAttachment:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 0
+        filename:
+          type: string
+          example: screenshot.png
+        mimeType:
+          type: string
+          example: image/png
+        sizeInKiloBytes:
+          type: integer
+          example: 305
+      required: [ id, filename, mimeType, sizeInKiloBytes ]
+    ReplyTicketRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Ok scusa
+        attachment:
+          type: string
+          format: binary
+      required: [ message ]
+    CreateTicketRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+          example: Sostituzione esame in piano carriera
+        message:
+          type: string
+          example: Buongiorno, vi contatto per sostituire A con B
+        subtopicId:
+          type: number
+          example: 103
+        attachment:
+          type: string
+          format: binary
+      required: [ subject, message, subtopicId ]
+    NewsItemOverview:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 123
+        title:
+          type: string
+          example: Partecipazione, co-progettazione e impatto sociale. Sfide e opportunità per l'inclusione sociale
+        isEvent:
+          type: boolean
+          example: false
+        shortDescription:
+          type: string
+          example: Seminario di presentazione del progetto
+        eventStartTime:
+          type: string
+          example: Dal 30 agosto 2023
+          nullable: true
+        eventEndTime:
+            type: string
+            example: Al 30 agosto 2023
+            nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          example: 2022-08-31T14:00:00Z
+      required: [ id, title, isEvent, shortDescription, eventStartTime, eventEndTime, createdAt ]
+    NewsItem:
+      allOf:
+        - $ref: '#/components/schemas/NewsItemOverview'
+        - type: object
+          properties:
+            location:
+              type: string
+              example: Energy Center - Via Paolo Borsellino 38, Torino
+            htmlContent:
+              type: string
+              example: Martedì <strong>18 aprile 2023 - </strong>presso l'<strong>Auditorium dell'Energy Center del Politecnico</strong>...
+            extras:
+              type: array
+              items:
+                $ref: '#/components/schemas/NewsItemExtra'
+          required: [ id, title, isEvent, shortDescription, eventStartTime, eventEndTime, createdAt, location, htmlContent, extras ]
+    NewsItemExtra:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://
+        description:
+          type: string
+          example: Bando
+        type:
+          type: string
+          enum:
+            - link
+            - file
+            - image
+          example: image
+        sizeInKiloBytes:
+          type: integer
+          example: 305
+          nullable: true
+      required: [ url, description, type, sizeInKiloBytes ]
+
+    UpdatePreferencesRequest:
+      type: object
+      properties:
+        fcmRegistrationToken:
+          type: string
+          example: a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4
+        language:
+          type: string
+          enum: [ it, en ]
+          example: it
+
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: s290683
+        password:
+          type: string
+          example: moreSecret
+        client:
+          $ref: '#/components/schemas/Client'
+        device:
+          $ref: '#/components/schemas/Device'
+        preferences:
+          $ref: '#/components/schemas/UpdatePreferencesRequest'
+      required: [ username, password, preferences ]
+
+    JobOfferOverview:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 43834
+        title:
+          type: string
+          example: "Progettista"
+        location:
+          type: string
+          example: "BOLLENGO (TO),IVREA (TO)"
+        companyId:
+          type: number
+          example: 3243
+        companyName:
+          type: string
+          example: "Synergie Italia spa"
+        createdAtDate:
+          type: string
+          format: date
+          example: 2022-08-31
+        endsAtDate:
+          type: string
+          format: date
+          example: 2022-08-31
+      required: [ id, title, location, companyId, companyName, createdAtDate, endsAtDate ]
+    JobOffer:
+      allOf:
+        - $ref: '#/components/schemas/JobOfferOverview'
+        - type: object
+          properties:
+            companyLocation:
+              type: string
+              example: "Torino 10152 TORINO (TO)"
+            companyMission:
+              type: string
+              example: "Synergie Agenzia per il lavoro ricerca per importante azienda metalmeccanica produttrice di articoli elettronici"
+            description:
+              type: string
+              example: "Il candidato, in affiancamento al tutor, parteciperà alla progettazione e allo sviluppo di sistemi meccatronici avanzati utilizzando LabVIEW, svolgere attività di test e debug dei sistemi meccatronici progettati."
+            requirements:
+              type: string
+              example: "Preferibile conoscenza di LabVIEW, Matlab, Python e dei motori elettrici in particolare motori step."
+            contractType:
+              type: string
+              example: "Contratto a tempo determinato di 6 mesi\nOrario di lavoro: dal Lunedì al Venerdì dalle 8 alle 17\nSede di lavoro: Ivrea"
+            salary:
+              type: string
+              example: "1200"
+            contactInformation:
+              type: string
+              example: "Pinco Pallo - 0111111111"
+              nullable: true
+            url:
+              type: string
+              example: "https://..."
+              nullable: true
+            email:
+              type: string
+              example: "anyone@example.com"
+              nullable: true
+            freePositions:
+              type: number
+              example: 2
+          required: [ id, title, location, companyId, companyName, createdAtDate, endsAtDate, companyLocation, companyMission, description, requirements, contractType, salary, contactInformation, url, email, freePositions ]
+
+    DegreeOverview:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '81-6'
+        name:
+          type: string
+          example: 'Design e comunicazione'
+      required: [id, name]
+
+    OfferingClass:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Disegno industriale"
+        code:
+          type: string
+          example: 'L-4'
+        degrees:
+          type: array
+          items:
+            $ref: '#/components/schemas/DegreeOverview'
+      required: [name, code, degrees]
+
+    Degree:
+      allOf:
+        - $ref: '#/components/schemas/DegreeOverview'
+        - type: object
+          properties:
+            level:
+              type: string
+              example: Corso di laurea di 1°livello
+            department:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Dipartimento di Architettura e Design
+              required: [name]
+            faculty:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: 'CL002'
+                name:
+                  type: string
+                  example: Design e comunicazione
+            location:
+              type: string
+              example: Torino
+            duration:
+              type: string
+              example: 3 anni
+            class:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: 'L-4'
+                name:
+                  type: string
+                  example: Disegno industriale
+              required: [code, name]
+            year:
+              type: string
+              example: '2022'
+            editions:
+              description: All the available editions of this degree
+              type: array
+              items:
+                type: string
+                example: '2021'
+            notes:
+              type: array
+              items:
+                type: string
+                example: Corso tenuto in italiano
+            objectives:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Objettivi formativi
+                content:
+                  type: string
+                  example: 'Il Corso di Laurea in Design e Comunicazione forma un \"designer laureato di primo livello\" ...'
+              required: [title, content]
+            jobOpportunities:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Sbocchi occupazionali e professionali
+                content:
+                  type: string
+                  example: 'Il Corso di Laurea in Design e Comunicazione forma un \"designer laureato di primo livello\" ...'
+              required: [ title, content ]
+            tracks:
+              type: array
+              items:
+                $ref: '#/components/schemas/Track'
+
+          required: [level, department, faculty, location, duration, class, year, editions, notes, objectives, jobOpportunities, tracks]
+
+
+    Track:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 2060
+        name:
+          type: string
+          example: Design per la comunicazione
+        courses:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfferingCourseOverview'
+      required: [id, name, courses]
+
+    OfferingCourseOverview:
+      type: object
+      properties:
+        name:
+          type: string
+          example: System and device programming
+        shortcode:
+          type: string
+          example: 01NYHOV
+        cfu:
+          type: integer
+          example: 10
+        teachingYear:
+          type: integer
+          description: The year this course belongs to in this degree
+          example: 1
+        language:
+          type: string
+          enum: [it, en]
+        group:
+          type: string
+          example: Insegnamento a scelta 1
+          nullable: true
+      required: [name, shortcode, cfu, teachingYear, language, group]
+
+    CourseHours:
+      type: object
+      properties:
+        lecture:
+          type: integer
+          example: 48
+        tutoring:
+          type: integer
+          example: 12
+        classroomExercise:
+          type: integer
+          example: 24
+        labExercise:
+          type: integer
+          example: 24
+      required: []
+
+    OfferingCourse:
+      type: object
+      properties:
+        name:
+          type: string
+          example: System and device programming
+        shortcode:
+          type: string
+          example: 01NYHOV
+        cfu:
+          type: integer
+          example: 10
+        teachingPeriod:
+          type: string
+          description: The semester(s) this course belongs to
+          example: 2-2
+        year:
+          type: string
+          example: '2022'
+        examMode:
+          type: string
+          example: 'Prova scritta (in aula) ed elaborato Progettuale in gruppo'
+        hours:
+          $ref: '#/components/schemas/CourseHours'
+        editions:
+          description: All the available editions of this course
+          type: array
+          items:
+            type: string
+            example: '2021'
+        staff:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              id:
+                type: number
+                example: 244577
+            required: [ role, id ]
+        guide:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseGuideSection'
+      required: [name, shortcode, cfu, teachingPeriod, year, examMode, hours, editions, staff, guide]

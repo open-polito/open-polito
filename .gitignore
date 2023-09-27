@@ -42,3 +42,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Generated packages
+/packages/polito_api
+
+# Generated code
+*.freezed.dart
+*.g.dart
