@@ -1,2 +1,2 @@
-#/usr/bin/sh
+#!/usr/bin/sh
 dart run build_runner build --delete-conflicting-outputs
