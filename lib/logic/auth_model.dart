@@ -14,4 +14,5 @@ enum LoginErrorType {
   general,
   validation,
   userTypeNotSupported,
+  termsAndPrivacyNotAccepted,
 }

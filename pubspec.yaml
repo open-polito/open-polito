@@ -52,6 +52,7 @@ dependencies:
   get_it: ^7.6.4
   device_info_plus: ^9.0.3
   dio: ^5.3.3
+  shared_preferences: ^2.2.1
 
 dev_dependencies:
   flutter_test:

@@ -13,6 +13,7 @@ class AuthState with _$AuthState {
     @Default(false) bool isLoggedIn,
     LoginErrorType? loginErrorType,
     @Default(LoginStatus.idle) LoginStatus loginStatus,
+    @Default(false) bool acceptedTermsAndPrivacy,
   }) = _AuthState;
   factory AuthState.fromJson(Map<String, Object?> json) =>
       _$AuthStateFromJson(json);
@@ -31,7 +32,11 @@ class AuthBloc extends Cubit<AuthState> {
       loginErrorType: null,
     ));
 
-    final loginResult = await authService.login(username, password);
+    final loginResult = await authService.login(
+      username,
+      password,
+      acceptedTermsAndPrivacy: state.acceptedTermsAndPrivacy,
+    );
     final err = loginResult.err;
     if (err == null) {
       emit(state.copyWith(loginStatus: LoginStatus.ok));

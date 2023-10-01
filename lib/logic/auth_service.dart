@@ -17,7 +17,11 @@ class LoginResult {
 
 abstract class IAuthService {
   Future<void> onTokenInvalid();
-  Future<LoginResult> login(String username, String password);
+  Future<LoginResult> login(
+    String username,
+    String password, {
+    required bool acceptedTermsAndPrivacy,
+  });
   Future<void> logout();
 }
 
@@ -36,8 +40,27 @@ class AuthService implements IAuthService {
 
   AuthService();
 
+  /// Perform log in.
   @override
-  Future<LoginResult> login(String username, String password) async {
+  Future<LoginResult> login(
+    String username,
+    String password, {
+    required bool acceptedTermsAndPrivacy,
+  }) async {
+    // If ToS/Privacy not accepted, refuse to log in.
+    if (!acceptedTermsAndPrivacy) {
+      return const LoginResult(err: LoginErrorType.termsAndPrivacyNotAccepted);
+    } else {
+      await GetIt.I
+          .get<IDataRepository>()
+          .setAcceptedTermsAndPrivacy(acceptedTermsAndPrivacy);
+    }
+
+    // Username/password validation
+    if (username == "" || password == "") {
+      return const LoginResult(err: LoginErrorType.validation);
+    }
+
     final req = (LoginRequestBuilder()
           ..username = username
           ..password = password
