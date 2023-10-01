@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:open_polito/init.dart';
 import 'package:open_polito/router.dart';
 
 void main() async {
-  await configureDependencies();
-
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
