@@ -21,7 +21,6 @@ class DeviceInfoService implements IDeviceInfoService {
 
   // TODO: iOS info
   // TODO: MacOS info
-  // TODO: Windows info
 
   static final HashMap<DeviceInfoKey, InfoFinder> map = HashMap.of({
     DeviceInfoKey.manufacturer: InfoFinder(
@@ -47,7 +46,7 @@ class DeviceInfoService implements IDeviceInfoService {
       ios: (a) => null,
       linux: (a) => a.prettyName,
       macos: (a) => null,
-      windows: (a) => null,
+      windows: (a) => a.productName,
       web: (a) => null,
       other: (a) => null,
     ),
@@ -65,7 +64,7 @@ class DeviceInfoService implements IDeviceInfoService {
       ios: (a) => null,
       linux: (a) => a.versionId,
       macos: (a) => null,
-      windows: (a) => null,
+      windows: (a) => a.buildNumber.toString(),
       web: (a) => null,
       other: (a) => null,
     ),
