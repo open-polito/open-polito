@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 
 enum DeviceInfoKey {
   manufacturer,
@@ -18,9 +19,7 @@ abstract class IDeviceInfoService {
 class DeviceInfoService implements IDeviceInfoService {
   static final DeviceInfoPlugin plugin = DeviceInfoPlugin();
 
-  // TODO: Android info
   // TODO: iOS info
-  // TODO: Linux info
   // TODO: MacOS info
   // TODO: Windows info
 
@@ -28,41 +27,51 @@ class DeviceInfoService implements IDeviceInfoService {
     DeviceInfoKey.manufacturer: InfoFinder(
       android: (a) => a.manufacturer,
       ios: (a) => "Apple",
-      linux: (a) => "",
-      macos: (a) => "",
-      windows: (a) => "",
+      linux: (a) => null,
+      macos: (a) => null,
+      windows: (a) => null,
+      web: (a) => null,
+      other: (a) => null,
     ),
     DeviceInfoKey.model: InfoFinder(
       android: (a) => a.model,
       ios: (a) => a.model,
-      linux: (a) => "",
-      macos: (a) => a.model,
-      windows: (a) => "",
+      linux: (a) => null,
+      macos: (a) => null,
+      windows: (a) => null,
+      web: (a) => null,
+      other: (a) => null,
     ),
     DeviceInfoKey.name: InfoFinder(
-      android: (a) => "",
-      ios: (a) => "",
-      linux: (a) => "",
-      macos: (a) => "",
-      windows: (a) => "",
+      android: (a) => null,
+      ios: (a) => null,
+      linux: (a) => a.prettyName,
+      macos: (a) => null,
+      windows: (a) => null,
+      web: (a) => null,
+      other: (a) => null,
     ),
     DeviceInfoKey.platform: InfoFinder(
       android: (a) => "Android",
       ios: (a) => "iOS",
-      linux: (a) => "Linux",
+      linux: (a) => a.id,
       macos: (a) => "MacOS",
       windows: (a) => "Windows",
+      web: (a) => "Web",
+      other: (a) => "unknown",
     ),
     DeviceInfoKey.version: InfoFinder(
       android: (a) => a.version.release,
-      ios: (a) => a.systemVersion,
-      linux: (a) => a.version ?? "",
-      macos: (a) => "",
-      windows: (a) => a.displayVersion,
+      ios: (a) => null,
+      linux: (a) => a.versionId,
+      macos: (a) => null,
+      windows: (a) => null,
+      web: (a) => null,
+      other: (a) => null,
     ),
   });
 
-  static Future<String> getItem(DeviceInfoKey key) async {
+  static Future<String?> getItem(DeviceInfoKey key) async {
     final finder = map[key];
     if (finder == null) {
       return "";
@@ -71,6 +80,9 @@ class DeviceInfoService implements IDeviceInfoService {
     try {
       final plugin = DeviceInfoPlugin();
 
+      if (kIsWeb) {
+        return finder.web(await plugin.webBrowserInfo);
+      }
       if (Platform.isAndroid) {
         return finder.android(await plugin.androidInfo);
       }
@@ -86,27 +98,34 @@ class DeviceInfoService implements IDeviceInfoService {
       if (Platform.isWindows) {
         return finder.windows(await plugin.windowsInfo);
       }
+
+      // Return generic data
+      return finder.other(null);
     } catch (e) {}
 
     return "";
   }
 }
 
-typedef PlatformGet<T> = String Function(T a);
+typedef PlatformGet<T> = String? Function(T a);
 
 /// Describes how to get a device info item on each platform
 class InfoFinder {
   final PlatformGet<AndroidDeviceInfo> android;
   final PlatformGet<IosDeviceInfo> ios;
-  final PlatformGet<WindowsDeviceInfo> windows;
-  final PlatformGet<MacOsDeviceInfo> macos;
   final PlatformGet<LinuxDeviceInfo> linux;
+  final PlatformGet<MacOsDeviceInfo> macos;
+  final PlatformGet<WindowsDeviceInfo> windows;
+  final PlatformGet<WebBrowserInfo> web;
+  final PlatformGet other;
 
   const InfoFinder({
     required this.android,
     required this.ios,
-    required this.windows,
-    required this.macos,
     required this.linux,
+    required this.macos,
+    required this.windows,
+    required this.web,
+    required this.other,
   });
 }
