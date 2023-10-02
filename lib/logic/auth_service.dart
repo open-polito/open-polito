@@ -1,13 +1,18 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
 import 'package:open_polito/data/data_repository.dart';
 import 'package:open_polito/init.dart';
 import 'package:open_polito/logic/auth_model.dart';
 import 'package:open_polito/logic/deviceinfo_service.dart';
 import 'package:polito_api/polito_api.dart';
+
+part 'auth_service.freezed.dart';
+part 'auth_service.g.dart';
 
 class LoginResult {
   final LoginErrorType? err;
@@ -25,9 +30,21 @@ abstract class IAuthService {
   Future<void> logout();
 }
 
+@freezed
+class AuthServiceState with _$AuthServiceState {
+  const factory AuthServiceState({
+    @Default(false) bool isLoggedIn,
+  }) = _AuthServiceState;
+  factory AuthServiceState.fromJson(Map<String, Object?> json) =>
+      _$AuthServiceStateFromJson(json);
+}
+
 class AuthService implements IAuthService {
   final PolitoApi api = GetIt.I.get<PolitoApi>();
   final AuthBloc authBloc = GetIt.I.get<AuthBloc>();
+
+  final authServiceState =
+      BehaviorSubject<AuthServiceState>.seeded(const AuthServiceState());
 
   /// When the token is invalid:
   /// 1. Clear credentials from storage
@@ -94,6 +111,9 @@ class AuthService implements IAuthService {
           .get<IDataRepository>()
           .saveLoginInfo(clientID: data.clientId, token: data.token);
 
+      authServiceState.sink
+          .add(authServiceState.value.copyWith(isLoggedIn: true));
+
       return const LoginResult(err: null);
     } catch (e) {
       if (e is DioException) {}
@@ -107,5 +127,8 @@ class AuthService implements IAuthService {
     final dataRepository = GetIt.I.get<IDataRepository>();
     await Future.wait(
         [api.getAuthApi().logout(), dataRepository.clearLoginInfo()]);
+
+    authServiceState.sink
+        .add(authServiceState.value.copyWith(isLoggedIn: false));
   }
 }
