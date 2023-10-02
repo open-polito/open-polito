@@ -49,3 +49,6 @@ app.*.map.json
 # Generated code
 *.freezed.dart
 *.g.dart
+
+# API spec
+/api/openapi.yaml
