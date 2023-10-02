@@ -585,7 +585,7 @@ packages:
     source: hosted
     version: "4.13.1"
   openapi_generator_annotations:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: openapi_generator_annotations
       sha256: "46f1fb675029d78e19ce9143e70ce414d738b0f6c45c49c004b4b3afdb405a5c"

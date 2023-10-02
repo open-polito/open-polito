@@ -104,7 +104,8 @@ class AuthService implements IAuthService {
 
   @override
   Future<void> logout() async {
-    // TODO: implement logout
-    throw UnimplementedError();
+    final dataRepository = GetIt.I.get<IDataRepository>();
+    await Future.wait(
+        [api.getAuthApi().logout(), dataRepository.clearLoginInfo()]);
   }
 }

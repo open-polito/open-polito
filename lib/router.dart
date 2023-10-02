@@ -16,9 +16,6 @@ class HomeRouteData extends GoRouteData {
   const HomeRouteData();
 
   @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) {}
-
-  @override
   Widget build(BuildContext context, GoRouterState state) {
     return Container(
       color: Colors.amber.shade700,
