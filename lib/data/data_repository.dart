@@ -1,48 +1,71 @@
-import 'package:open_polito/data/secure_store.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class IDataRepository {
+  Future<String?> secureRead(SecureStoreKey key);
+  Future<void> secureWrite(SecureStoreKey key, String? value);
+  Future<void> secureDelete(SecureStoreKey key);
+
   Future<void> saveLoginInfo({
     required String clientID,
     required String token,
   });
 
   Future<void> clearLoginInfo();
-
-  Future<void> setAcceptedTermsAndPrivacy(bool accepted);
 }
 
-enum SharedPrefsKey { acceptedTermsAndPrivacy }
+enum SecureStoreKey {
+  /// API token
+  politoApiToken,
 
-String sharedPrefsKeyToStr(SharedPrefsKey k) {
-  switch (k) {
-    case SharedPrefsKey.acceptedTermsAndPrivacy:
-      return "acceptedTermsAndPrivacy";
+  /// Client ID used by PoliTo API
+  politoClientId,
+}
+
+/// Returns the key string to access a secure store value
+String _secureKeyStr(SecureStoreKey key) {
+  switch (key) {
+    case SecureStoreKey.politoApiToken:
+      return "politoApiToken";
+    case SecureStoreKey.politoClientId:
+      return "politoClientId";
   }
 }
 
 class DataRepository implements IDataRepository {
-  final ISecureStore _secureStore;
+  final FlutterSecureStorage _secureStore;
 
-  const DataRepository(this._secureStore);
+  const DataRepository._(this._secureStore);
+
+  static Future<DataRepository> init() async {
+    const secureStore = FlutterSecureStorage();
+    return const DataRepository._(secureStore);
+  }
+
+  @override
+  Future<String?> secureRead(SecureStoreKey key) async {
+    return await _secureStore.read(key: _secureKeyStr(key));
+  }
+
+  @override
+  Future<void> secureWrite(SecureStoreKey key, String? value) async {
+    await _secureStore.write(key: _secureKeyStr(key), value: value);
+  }
+
+  @override
+  Future<void> secureDelete(SecureStoreKey key) async {
+    await _secureStore.delete(key: _secureKeyStr(key));
+  }
 
   @override
   Future<void> saveLoginInfo(
       {required String clientID, required String token}) async {
-    await _secureStore.write(StoreKey.politoClientID, clientID);
-    await _secureStore.write(StoreKey.token, token);
+    await secureWrite(SecureStoreKey.politoClientId, clientID);
+    await secureWrite(SecureStoreKey.politoApiToken, token);
   }
 
   @override
   Future<void> clearLoginInfo() async {
-    await _secureStore.delete(StoreKey.politoClientID);
-    await _secureStore.delete(StoreKey.token);
-  }
-
-  @override
-  Future<void> setAcceptedTermsAndPrivacy(bool accepted) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final key = sharedPrefsKeyToStr(SharedPrefsKey.acceptedTermsAndPrivacy);
-    await prefs.setBool(key, accepted);
+    await secureDelete(SecureStoreKey.politoClientId);
+    await secureDelete(SecureStoreKey.politoApiToken);
   }
 }

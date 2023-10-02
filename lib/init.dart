@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
 import 'package:open_polito/data/data_repository.dart';
-import 'package:open_polito/data/secure_store.dart';
+import 'package:open_polito/data/key_value_store.dart';
 import 'package:open_polito/logic/auth_service.dart';
 import 'package:polito_api/polito_api.dart';
 
@@ -21,8 +21,10 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton<AuthBloc>(authBloc);
 
   // Repositories
-  final dataRepository = DataRepository(SecureStore.init());
+  final dataRepository = await DataRepository.init();
   getIt.registerSingleton<IDataRepository>(dataRepository);
+  final keyValueStore = await KeyValueStore.init();
+  getIt.registerSingleton<KeyValueStore>(keyValueStore);
 
   // Services
   final authService = AuthService();

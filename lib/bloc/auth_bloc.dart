@@ -1,22 +1,20 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:open_polito/data/key_value_store.dart';
 import 'package:open_polito/logic/auth_model.dart';
 import 'package:open_polito/logic/auth_service.dart';
 
 part 'auth_bloc.freezed.dart';
-part 'auth_bloc.g.dart';
 
 @freezed
 class AuthState with _$AuthState {
   const factory AuthState({
-    @Default(false) bool isLoggedIn,
+    KeyValueStoreData? data,
     LoginErrorType? loginErrorType,
     @Default(LoginStatus.idle) LoginStatus loginStatus,
     @Default(false) bool acceptedTermsAndPrivacy,
   }) = _AuthState;
-  factory AuthState.fromJson(Map<String, Object?> json) =>
-      _$AuthStateFromJson(json);
 }
 
 class AuthBloc extends Cubit<AuthState> {
@@ -24,6 +22,13 @@ class AuthBloc extends Cubit<AuthState> {
       : super(
           const AuthState(),
         );
+
+  Future<void> init() async {
+    final data = GetIt.I.get<KeyValueStore>().data;
+    data.listen((event) {
+      emit(state.copyWith(data: event));
+    });
+  }
 
   Future<void> login(String username, String password) async {
     final authService = GetIt.I.get<IAuthService>();

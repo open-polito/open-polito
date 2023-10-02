@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:open_polito/data/key_value_store.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
 import 'package:open_polito/data/data_repository.dart';
@@ -68,8 +69,8 @@ class AuthService implements IAuthService {
     if (!acceptedTermsAndPrivacy) {
       return const LoginResult(err: LoginErrorType.termsAndPrivacyNotAccepted);
     } else {
-      await GetIt.I
-          .get<IDataRepository>()
+      GetIt.I
+          .get<KeyValueStore>()
           .setAcceptedTermsAndPrivacy(acceptedTermsAndPrivacy);
     }
 
