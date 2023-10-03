@@ -54,6 +54,8 @@ dependencies:
   dio: ^5.3.3
   shared_preferences: ^2.2.1
   rxdart: ^0.27.7
+  dio_cache_interceptor: ^3.4.4
+  dio_cache_interceptor_db_store: ^5.1.0
 
 dev_dependencies:
   flutter_test:

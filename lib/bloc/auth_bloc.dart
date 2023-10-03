@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/key_value_store.dart';
@@ -13,7 +14,6 @@ class AuthState with _$AuthState {
     KeyValueStoreData? data,
     LoginErrorType? loginErrorType,
     @Default(LoginStatus.idle) LoginStatus loginStatus,
-    @Default(false) bool acceptedTermsAndPrivacy,
   }) = _AuthState;
 }
 
@@ -30,7 +30,8 @@ class AuthBloc extends Cubit<AuthState> {
     });
   }
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(
+      String username, String password, bool acceptedTermsAndPrivacy) async {
     final authService = GetIt.I.get<IAuthService>();
     emit(state.copyWith(
       loginStatus: LoginStatus.pending,
@@ -40,7 +41,7 @@ class AuthBloc extends Cubit<AuthState> {
     final loginResult = await authService.login(
       username,
       password,
-      acceptedTermsAndPrivacy: state.acceptedTermsAndPrivacy,
+      acceptedTermsAndPrivacy: acceptedTermsAndPrivacy,
     );
     final err = loginResult.err;
     if (err == null) {

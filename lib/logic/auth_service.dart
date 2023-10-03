@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/key_value_store.dart';
@@ -33,9 +34,7 @@ abstract class IAuthService {
 
 @freezed
 class AuthServiceState with _$AuthServiceState {
-  const factory AuthServiceState({
-    @Default(false) bool isLoggedIn,
-  }) = _AuthServiceState;
+  const factory AuthServiceState() = _AuthServiceState;
   factory AuthServiceState.fromJson(Map<String, Object?> json) =>
       _$AuthServiceStateFromJson(json);
 }
@@ -43,6 +42,7 @@ class AuthServiceState with _$AuthServiceState {
 class AuthService implements IAuthService {
   final PolitoApi api = GetIt.I.get<PolitoApi>();
   final AuthBloc authBloc = GetIt.I.get<AuthBloc>();
+  final KeyValueStore keyValueStore = GetIt.I.get<KeyValueStore>();
 
   final authServiceState =
       BehaviorSubject<AuthServiceState>.seeded(const AuthServiceState());
@@ -53,6 +53,8 @@ class AuthService implements IAuthService {
   @override
   Future<void> onTokenInvalid() async {
     final dataRepository = getIt.get<IDataRepository>();
+    keyValueStore.setAcceptedTermsAndPrivacy(false);
+    keyValueStore.setLoggedIn(false);
     await Future.wait([dataRepository.clearLoginInfo(), authBloc.resetState()]);
   }
 
@@ -112,8 +114,7 @@ class AuthService implements IAuthService {
           .get<IDataRepository>()
           .saveLoginInfo(clientID: data.clientId, token: data.token);
 
-      authServiceState.sink
-          .add(authServiceState.value.copyWith(isLoggedIn: true));
+      keyValueStore.setLoggedIn(true);
 
       return const LoginResult(err: null);
     } catch (e) {
@@ -129,7 +130,6 @@ class AuthService implements IAuthService {
     await Future.wait(
         [api.getAuthApi().logout(), dataRepository.clearLoginInfo()]);
 
-    authServiceState.sink
-        .add(authServiceState.value.copyWith(isLoggedIn: false));
+    keyValueStore.setLoggedIn(false);
   }
 }
