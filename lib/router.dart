@@ -34,13 +34,17 @@ class MainShellRouteData extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
+      body: BlocConsumer<AuthBloc, AuthBlocState>(
         builder: (context, state) => navigator,
+        listenWhen: (previous, current) => previous != current,
         listener: (context, state) {
           if (state.data?.loggedIn == true) {
             const HomeRouteData().go(context);
           } else if (state.data?.loggedIn == null ||
               state.data?.loggedIn == false) {
+            if (kDebugMode) {
+              print("NOT LOGGED IN. Going to /login");
+            }
             const LoginRouteData().go(context);
           }
         },

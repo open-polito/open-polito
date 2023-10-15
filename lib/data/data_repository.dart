@@ -1,71 +1,84 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:async';
 
-abstract class IDataRepository {
-  Future<String?> secureRead(SecureStoreKey key);
-  Future<void> secureWrite(SecureStoreKey key, String? value);
-  Future<void> secureDelete(SecureStoreKey key);
+import 'package:dio/dio.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:open_polito/models/courses.dart';
+import 'package:polito_api/polito_api.dart' as api;
 
-  Future<void> saveLoginInfo({
-    required String clientID,
-    required String token,
-  });
+part 'data_repository.freezed.dart';
+part 'data_repository.g.dart';
 
-  Future<void> clearLoginInfo();
+@freezed
+class DataWrapper<T> with _$DataWrapper<T> {
+  const factory DataWrapper({
+    required T? data,
+    required Response<T>? res,
+    required int sent,
+    required int sentTotal,
+    required int recv,
+    required int recvTotal,
+  }) = _DataWrapper;
 }
 
-enum SecureStoreKey {
-  /// API token
-  politoApiToken,
+typedef WrapperStream<T> = Stream<DataWrapper<T>>;
+// typedef ApiFunction<T> = Future<Response<T>> Function({
+//   ProgressCallback? onSendProgress,
+//   ProgressCallback? onReceiveProgress,
+// });
 
-  /// Client ID used by PoliTo API
-  politoClientId,
+abstract class IDataRepository {}
+
+@freezed
+class DataRepositoryState with _$DataRepositoryState {
+  const factory DataRepositoryState({
+    required Map<String, CourseData> coursesById,
+  }) = _DataRepositoryState;
+  factory DataRepositoryState.fromJson(Map<String, Object?> json) =>
+      _$DataRepositoryStateFromJson(json);
 }
 
-/// Returns the key string to access a secure store value
-String _secureKeyStr(SecureStoreKey key) {
-  switch (key) {
-    case SecureStoreKey.politoApiToken:
-      return "politoApiToken";
-    case SecureStoreKey.politoClientId:
-      return "politoClientId";
-  }
-}
+class DataRepository extends IDataRepository {
+  api.PolitoApi get _api => GetIt.I.get<api.PolitoApi>();
 
-class DataRepository implements IDataRepository {
-  final FlutterSecureStorage _secureStore;
+  // final StreamController<DataRepositoryState> _controller
 
-  const DataRepository._(this._secureStore);
+  DataRepository();
 
-  static Future<DataRepository> init() async {
-    const secureStore = FlutterSecureStorage();
-    return const DataRepository._(secureStore);
+  Future<T?> _w<T>(Future<Response<T>> future) async {
+    try {
+      final res = await future;
+      return res.data;
+    } catch (e) {
+      return null;
+    }
   }
 
-  @override
-  Future<String?> secureRead(SecureStoreKey key) async {
-    return await _secureStore.read(key: _secureKeyStr(key));
-  }
+  // WrapperStream<T> _req<T>(ApiFunction<T> func) {
+  //   StreamController<DataWrapper<T>> controller = StreamController();
 
-  @override
-  Future<void> secureWrite(SecureStoreKey key, String? value) async {
-    await _secureStore.write(key: _secureKeyStr(key), value: value);
-  }
+  //   DataWrapper<T> wrapper = DataWrapper<T>(
+  //       data: null, res: null, sent: 0, sentTotal: 1, recv: 0, recvTotal: 1);
+  //   controller.add(wrapper);
 
-  @override
-  Future<void> secureDelete(SecureStoreKey key) async {
-    await _secureStore.delete(key: _secureKeyStr(key));
-  }
+  //   try {
+  //     func(
+  //       onSendProgress: (count, total) {
+  //         controller.add(wrapper.copyWith(sent: count, sentTotal: total));
+  //       },
+  //       onReceiveProgress: (count, total) {
+  //         controller.add(wrapper.copyWith(recv: count, recvTotal: total));
+  //       },
+  //     ).then((value) {
+  //       controller.add(wrapper.copyWith(res: value, data: value.));
+  //       controller.close();
+  //     });
+  //   } catch (e) {
+  //     //TODO
+  //   } finally {
+  //     controller.close();
+  //   }
 
-  @override
-  Future<void> saveLoginInfo(
-      {required String clientID, required String token}) async {
-    await secureWrite(SecureStoreKey.politoClientId, clientID);
-    await secureWrite(SecureStoreKey.politoApiToken, token);
-  }
-
-  @override
-  Future<void> clearLoginInfo() async {
-    await secureDelete(SecureStoreKey.politoClientId);
-    await secureDelete(SecureStoreKey.politoApiToken);
-  }
+  //   return controller.stream;
+  // }
 }

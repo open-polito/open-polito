@@ -3,24 +3,24 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/key_value_store.dart';
-import 'package:open_polito/logic/auth_model.dart';
-import 'package:open_polito/logic/auth_service.dart';
+import 'package:open_polito/logic/auth/auth_model.dart';
+import 'package:open_polito/logic/auth/auth_service.dart';
 
 part 'auth_bloc.freezed.dart';
 
 @freezed
-class AuthState with _$AuthState {
-  const factory AuthState({
+class AuthBlocState with _$AuthBlocState {
+  const factory AuthBlocState({
     KeyValueStoreData? data,
     LoginErrorType? loginErrorType,
     @Default(LoginStatus.idle) LoginStatus loginStatus,
   }) = _AuthState;
 }
 
-class AuthBloc extends Cubit<AuthState> {
+class AuthBloc extends Cubit<AuthBlocState> {
   AuthBloc()
       : super(
-          const AuthState(),
+          const AuthBlocState(),
         );
 
   Future<void> init() async {
@@ -57,6 +57,6 @@ class AuthBloc extends Cubit<AuthState> {
   }
 
   Future<void> resetState() async {
-    emit(const AuthState());
+    emit(const AuthBlocState());
   }
 }

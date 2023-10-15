@@ -1,0 +1,31 @@
+{
+  "screen_login": "Login",
+  "screen_home": "Overview",
+  "loginScreen_input_username": "Username",
+  "loginScreen_input_password": "Password",
+  "loginScreen_label_consent_part1": "I agree to the ",
+  "loginScreen_label_consent_part2": " and ",
+  "loginScreen_label_consent_tos": "Terms of Service",
+  "loginScreen_label_consent_privacy": "Privacy Policy",
+  "loginScreen_action_login": "Log in",
+  "loginScreen_label_usernameValidation": "Username must not be empty",
+  "loginScreen_label_passwordValidation": "Password must not be empty",
+  "loginScreen_label_loginError": "Incorrect username or password",
+  "loginScreen_label_studentOnly": "Only student accounts are supported",
+  "loginScreen_label_termsAndPrivacyNotAccepted": "You need to accept the Terms of Service and Privacy Policy to continue",
+  "loginScreen_label_demo": "Want to take a tour of the app's features without logging in?",
+  "loginScreen_action_demo": "Go to demo",
+  "loginScreen_label_unofficialNotice": "{appName} is an unofficial product. It is not affiliated with, nor endorsed by {uniName}",
+  "@loginScreen_label_unofficialNotice": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      },
+      "uniName": {
+        "type": "String"
+      }
+    }
+  },
+  "homeScreen_label_search": "Search for files, lectures, people...",
+  "homeScreen_section_liveClasses": "Live classes"
+}

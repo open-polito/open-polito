@@ -7,9 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 part 'key_value_store.freezed.dart';
 part 'key_value_store.g.dart';
 
-abstract class StoreKey {
-  static const acceptedTermsAndPrivacy = "acceptedTermsAndPrivacy";
-  static const loggedIn = "loggedIn";
+enum StoreKey {
+  acceptedTermsAndPrivacy("acceptedTermsAndPrivacy"),
+  loggedIn("loggedIn");
+
+  final String key;
+
+  const StoreKey(this.key);
 }
 
 @freezed
@@ -43,18 +47,25 @@ class KeyValueStore {
 
   static Future<KeyValueStoreData> _hydrate(SharedPreferences prefs) async {
     return KeyValueStoreData(
-      loggedIn: prefs.getBool(StoreKey.loggedIn),
-      acceptedTermsAndPrivacy: prefs.getBool(StoreKey.acceptedTermsAndPrivacy),
+      loggedIn: prefs.getBool(StoreKey.loggedIn.key),
+      acceptedTermsAndPrivacy:
+          prefs.getBool(StoreKey.acceptedTermsAndPrivacy.key),
     );
   }
 
   void setAcceptedTermsAndPrivacy(bool v) {
-    _prefs.setBool(StoreKey.acceptedTermsAndPrivacy, v);
+    _prefs.setBool(StoreKey.acceptedTermsAndPrivacy.key, v);
     _controller.add(_controller.value.copyWith(acceptedTermsAndPrivacy: v));
   }
 
   void setLoggedIn(bool v) {
-    _prefs.setBool(StoreKey.loggedIn, v);
+    _prefs.setBool(StoreKey.loggedIn.key, v);
     _controller.add(_controller.value.copyWith(loggedIn: v));
+  }
+
+  Future<void> clear() async {
+    await _prefs.clear();
+    _controller.add(
+        const KeyValueStoreData(loggedIn: null, acceptedTermsAndPrivacy: null));
   }
 }

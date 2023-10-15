@@ -45,6 +45,7 @@ app.*.map.json
 
 # Generated packages
 /packages/polito_api
+/.openapi-generator
 
 # Generated code
 *.freezed.dart

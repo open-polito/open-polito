@@ -13,7 +13,7 @@ enum DeviceInfoKey {
 }
 
 abstract class IDeviceInfoService {
-  static Future<String> getItem(DeviceInfoKey key) async => "";
+  static Future<String?> getItem(DeviceInfoKey key) async => "";
 }
 
 class DeviceInfoService implements IDeviceInfoService {

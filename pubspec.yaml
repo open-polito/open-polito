@@ -37,10 +37,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-  polito_api:
-    path: ./packages/polito_api
-
-  openapi_generator_annotations: ^4.13.1
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   flutter_secure_storage: ^9.0.0
@@ -51,17 +47,25 @@ dependencies:
   go_router: ^11.1.2
   get_it: ^7.6.4
   device_info_plus: ^9.0.3
-  dio: ^5.3.3
   shared_preferences: ^2.2.1
   rxdart: ^0.27.7
-  dio_cache_interceptor: ^3.4.4
-  dio_cache_interceptor_db_store: ^5.1.0
+  logger: any
+  retrofit: ^4.0.2
+  dio: ^5.3.3
+  pretty_dio_logger: ^1.3.1
+  url_launcher: ^6.1.14
+  openapi_generator_annotations: ^4.13.1
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.18.1
+
+  polito_api:
+    path: "packages/polito_api"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.4.6
-  openapi_generator: ^4.13.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,12 +73,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  # freezed: ^2.4.3
-  freezed:
+  freezed: ^2.4.5
   json_serializable: ^6.7.1
   drift_dev: ^2.12.1
   go_router_builder: ^2.3.3
   build_verify: ^3.1.0
+  retrofit_generator: ^8.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -85,6 +89,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Used for i18n
+  generate: true
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -97,22 +104,28 @@ flutter:
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
 
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: "DM Sans"
+      fonts:
+        - asset: "assets/fonts/DMSans-Thin.ttf"
+          weight: 100
+        - asset: "assets/fonts/DMSans-ExtraLight.ttf"
+          weight: 200
+        - asset: "assets/fonts/DMSans-Light.ttf"
+          weight: 300
+        - asset: "assets/fonts/DMSans-Regular.ttf"
+          weight: 400
+        - asset: "assets/fonts/DMSans-Medium.ttf"
+          weight: 500
+        - asset: "assets/fonts/DMSans-SemiBold.ttf"
+          weight: 600
+        - asset: "assets/fonts/DMSans-Bold.ttf"
+          weight: 700
+        - asset: "assets/fonts/DMSans-ExtraBold.ttf"
+          weight: 800
+        - asset: "assets/fonts/DMSans-Black.ttf"
+          weight: 900
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -1,16 +1,24 @@
-diff --git a/openapi.yaml b/openapi.yaml
-index 2efea17..4e32f1f 100644
 --- a/openapi.yaml
 +++ b/openapi.yaml
-@@ -3922,7 +3922,10 @@ components:
+@@ -3982,7 +3982,9 @@ components:
+         category:
+           $ref: '#/components/schemas/PlaceCategory'
+         geoJson:
+-          $ref: 'https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml#/components/schemas/Feature'
++          # $ref: 'https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml#/components/schemas/Feature'
++          # PATCHED
++          type: object
+       required: [ id, name, siteId, category ]
+     Building:
+       allOf:
+@@ -4069,7 +4071,9 @@ components:
          - type: object
            properties:
              geoJson:
 -              $ref: 'https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml#/components/schemas/Feature'
 +              # $ref: 'https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml#/components/schemas/Feature'
-+              # --- BEGIN EDIT ---
++              # PATCHED
 +              type: object
-+              # --- END EDIT ---
              capacity:
                type: integer
                example: 300
