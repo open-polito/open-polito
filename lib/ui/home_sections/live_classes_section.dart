@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:open_polito/api/models/courses.dart';
+import 'package:open_polito/models/courses.dart';
 import 'package:open_polito/styles/styles.dart';
 import 'package:open_polito/ui/home_sections/home_section_base.dart';
 
@@ -42,7 +42,7 @@ class LiveClassWidget extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_outward_rounded,
                       size: 30,
                       color: Colors.white,
@@ -62,7 +62,7 @@ class LiveClassWidget extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                       height: 16,
                       child: DecoratedBox(
@@ -106,24 +106,13 @@ class LiveClassesSection extends StatelessWidget {
     return HomeSectionBase(
       title: title,
       icon: Icons.live_tv_rounded,
-      child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            const SizedBox(
-              width: defaultHorizontalPadding,
-            ),
-            ...classes
-                .map((e) => LiveClassWidget(
-                    courseName: e.title,
-                    classTitle: e.title,
-                    elapsedSinceStart: e.createdAt,
-                    meetingUrl: e.meetingId))
-                .toList(),
-          ],
-        ),
-      ),
+      children: classes
+          .map((e) => LiveClassWidget(
+              courseName: e.title,
+              classTitle: e.title,
+              elapsedSinceStart: e.createdAt.toString(),
+              meetingUrl: e.meetingId))
+          .toList(),
     );
   }
 }

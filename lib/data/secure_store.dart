@@ -4,12 +4,6 @@ abstract class ISecureStoreRepository {
   Future<String?> secureRead(SecureStoreKey key);
   Future<void> secureWrite(SecureStoreKey key, String? value);
   Future<void> secureDelete(SecureStoreKey key);
-
-  Future<void> saveLoginInfo({
-    required String clientID,
-    required String token,
-  });
-
   Future<void> clear();
 }
 
@@ -30,7 +24,7 @@ class SecureStoreRepository implements ISecureStoreRepository {
 
   const SecureStoreRepository._(this._secureStore);
 
-  static Future<SecureStoreRepository> init() async {
+  static SecureStoreRepository init() {
     const secureStore = FlutterSecureStorage();
     return const SecureStoreRepository._(secureStore);
   }
@@ -48,13 +42,6 @@ class SecureStoreRepository implements ISecureStoreRepository {
   @override
   Future<void> secureDelete(SecureStoreKey key) async {
     await _secureStore.delete(key: key.key);
-  }
-
-  @override
-  Future<void> saveLoginInfo(
-      {required String clientID, required String token}) async {
-    await secureWrite(SecureStoreKey.politoClientId, clientID);
-    await secureWrite(SecureStoreKey.politoApiToken, token);
   }
 
   @override

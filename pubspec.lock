@@ -573,22 +573,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  one_of:
-    dependency: transitive
-    description:
-      name: one_of
-      sha256: "25fe0fcf181e761c6fcd604caf9d5fdf952321be17584ba81c72c06bdaa511f0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
-  one_of_serializer:
-    dependency: transitive
-    description:
-      name: one_of_serializer
-      sha256: "3f3dfb5c1578ba3afef1cb47fcc49e585e797af3f2b6c2cc7ed90aad0c5e7b83"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.5.0"
   openapi_generator_annotations:
     dependency: "direct main"
     description:
@@ -677,13 +661,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.6"
-  polito_api:
-    dependency: "direct main"
-    description:
-      path: "packages/polito_api"
-      relative: true
-    source: path
-    version: "1.0.0"
   pool:
     dependency: transitive
     description:
@@ -732,14 +709,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
-  quiver:
-    dependency: transitive
-    description:
-      name: quiver
-      sha256: b1c1ac5ce6688d77f65f3375a9abb9319b3cb32486bdc7a1e0fdf004d7ba4e47
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.2.1"
   recase:
     dependency: transitive
     description:

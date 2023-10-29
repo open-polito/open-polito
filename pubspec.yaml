@@ -59,8 +59,8 @@ dependencies:
     sdk: flutter
   intl: ^0.18.1
 
-  polito_api:
-    path: "packages/polito_api"
+  # polito_api:
+  #   path: "packages/polito_api"
 
 dev_dependencies:
   flutter_test:

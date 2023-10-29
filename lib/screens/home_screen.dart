@@ -2,9 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:open_polito/api/models/courses.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
-import 'package:open_polito/ui/home_sections/home_section_base.dart';
+import 'package:open_polito/router.dart';
 import 'package:open_polito/ui/home_sections/live_classes_section.dart';
 import 'package:open_polito/ui/layout.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
@@ -21,7 +20,7 @@ class HomeScreen extends StatelessWidget {
       isPrimaryScreen: true,
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => GetIt.I.get<HomeScreenBloc>()),
+          BlocProvider.value(value: GetIt.I.get<HomeScreenBloc>()..init()),
         ],
         child: BlocBuilder<HomeScreenBloc, HomeScreenBlocState>(
           builder: (context, state) => ListView(
@@ -40,23 +39,23 @@ class HomeScreen extends StatelessWidget {
                   if (kDebugMode)
                     TextButton(
                         onPressed: () {
-                          context.read<HomeScreenBloc>().debugLogAll();
+                          context.read<HomeScreenBloc>().resetAll(
+                              gotoLogin: () =>
+                                  const LoginRouteData().go(context));
                         },
-                        child: const Text("Debug log all")),
-                  LiveClassesSection(
-                    classes: [
-                      VirtualClassroomLive(
-                        id: 10,
-                        title: "Lezione del 14/10/2023",
-                        teacherId: 1,
-                        meetingId: "djnjefnfenfen",
-                        createdAt: "2023-10-14T09:54:00Z",
-                        type: VirtualClassroomType.live,
-                      ),
-                    ],
-                    title: AppLocalizations.of(context)!
-                        .homeScreen_section_liveClasses,
-                  ),
+                        child: const Text("Debug reset")),
+                  if (state.virtualClassrooms.isNotEmpty)
+                    LiveClassesSection(
+                      classes: state.virtualClassrooms,
+                      title: AppLocalizations.of(context)!
+                          .homeScreen_section_liveClasses,
+                    ),
+                  StreamBuilder(
+                    stream: state.data,
+                    builder: (context, snapshot) {
+                      return Text(snapshot.data?.toString() ?? "");
+                    },
+                  )
                 ],
               ),
             ],

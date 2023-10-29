@@ -31,4 +31,7 @@ abstract class ApiClient {
     @Path() int courseId, {
     @Query("live") bool? live,
   });
+
+  @GET("/courses/{courseId}/files")
+  Future<Res<GetCourseFiles200Response>> getCourseFiles(@Path() int courseId);
 }

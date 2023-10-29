@@ -7,8 +7,10 @@ import 'package:open_polito/bloc/login_screen_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/config.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
+import 'package:open_polito/router.dart';
 import 'package:open_polito/styles/colors.dart';
 import 'package:open_polito/styles/styles.dart';
+import 'package:open_polito/types.dart';
 import 'package:open_polito/ui/button.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -16,9 +18,9 @@ import 'package:open_polito/ui/text_field.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
 
-  static final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   static const maxWidth = 400.0;
 
@@ -30,9 +32,9 @@ class LoginScreen extends StatelessWidget {
       withPadding: true,
       child: MultiBlocProvider(
         providers: [
-          BlocProvider(create: (context) => GetIt.I.get<ThemeBloc>()),
-          BlocProvider(create: (context) => GetIt.I.get<AuthBloc>()),
-          BlocProvider(create: (context) => GetIt.I.get<LoginScreenBloc>()),
+          BlocProvider.value(value: GetIt.I.get<ThemeBloc>()),
+          BlocProvider.value(value: GetIt.I.get<AuthBloc>()),
+          BlocProvider(create: (context) => LoginScreenBloc()),
         ],
         child: BlocBuilder<ThemeBloc, ThemeBlocState>(
           builder: (context, themeState) =>
@@ -70,19 +72,24 @@ class LoginScreen extends StatelessWidget {
                             (() {
                               final appLocalizations =
                                   AppLocalizations.of(context)!;
-                              switch (authState.loginErrorType) {
-                                case LoginErrorType.general:
-                                  return appLocalizations
-                                      .loginScreen_label_loginError;
-                                case LoginErrorType.termsAndPrivacyNotAccepted:
-                                  return appLocalizations
-                                      .loginScreen_label_termsAndPrivacyNotAccepted;
-                                case LoginErrorType.userTypeNotSupported:
-                                  return appLocalizations
-                                      .loginScreen_label_studentOnly;
-                                default:
-                                  return "";
+                              final status = loginState.loginStatus;
+                              if (status case Err()) {
+                                switch (status.err) {
+                                  case LoginErrorType.general:
+                                    return appLocalizations
+                                        .loginScreen_label_loginError;
+                                  case LoginErrorType
+                                        .termsAndPrivacyNotAccepted:
+                                    return appLocalizations
+                                        .loginScreen_label_termsAndPrivacyNotAccepted;
+                                  case LoginErrorType.userTypeNotSupported:
+                                    return appLocalizations
+                                        .loginScreen_label_studentOnly;
+                                  default:
+                                    return "";
+                                }
                               }
+                              return "";
                             })(),
                             style: textStyle.copyWith(
                               fontSize: 16,
@@ -206,16 +213,19 @@ class LoginScreen extends StatelessWidget {
                                   label: AppLocalizations.of(context)!
                                       .loginScreen_action_login,
                                   type: MyButtonType.primary,
-                                  loading: authState.loginStatus ==
-                                      LoginStatus.pending,
+                                  loading: loginState.loginStatus is Pending,
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() ==
                                         true) {
-                                      final authBloc = context.read<AuthBloc>();
-                                      authBloc.login(
-                                          loginState.username,
-                                          loginState.password,
-                                          loginState.acceptedTermsAndPrivacy);
+                                      final loginBloc =
+                                          context.read<LoginScreenBloc>();
+                                      loginBloc.loginTrue(
+                                        loginState.username,
+                                        loginState.password,
+                                        loginState.acceptedTermsAndPrivacy,
+                                        gotoHome: () =>
+                                            const HomeRouteData().go(context),
+                                      );
                                     }
                                   },
                                 ),
@@ -239,7 +249,9 @@ class LoginScreen extends StatelessWidget {
                                         .loginScreen_action_demo,
                                     type: MyButtonType.secondary,
                                     onPressed: () {
-                                      // TODO: Demo action
+                                      context.read<LoginScreenBloc>().loginDemo(
+                                          gotoHome: () => const HomeRouteData()
+                                              .go(context));
                                     }),
                               ],
                             ),

@@ -1,99 +1,96 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:open_polito/api/api_client.dart';
+import 'package:open_polito/api/models/auth.dart';
 import 'package:open_polito/data/key_value_store.dart';
-import 'package:polito_api/polito_api.dart';
+import 'package:open_polito/logic/api.dart';
+import 'package:open_polito/types.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:open_polito/bloc/auth_bloc.dart';
-import 'package:open_polito/data/secure_store_repository.dart';
-import 'package:open_polito/init.dart';
+import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
 import 'package:open_polito/logic/deviceinfo_service.dart';
 
 part 'auth_service.freezed.dart';
-part 'auth_service.g.dart';
-
-class LoginResult {
-  final LoginErrorType? err;
-
-  const LoginResult({this.err});
-}
 
 abstract class IAuthService {
-  Future<void> onTokenInvalid();
-  Future<void> onNewToken(String newToken);
-  Future<LoginResult> login(
+  Stream<AuthServiceState> get stream;
+  AuthServiceState get state;
+
+  Future<Result<void, LoginErrorType>> login(
     String username,
     String password, {
     required bool acceptedTermsAndPrivacy,
   });
   Future<void> logout();
+  Future<void> invalidate();
 }
 
 @freezed
 class AuthServiceState with _$AuthServiceState {
-  const factory AuthServiceState() = _AuthServiceState;
-  factory AuthServiceState.fromJson(Map<String, Object?> json) =>
-      _$AuthServiceStateFromJson(json);
+  const factory AuthServiceState({
+    required Result<bool, void> loggedIn,
+    required Result<String?, void> token,
+  }) = _AuthServiceState;
 }
 
-typedef OnTokenChangedCallback = void Function(String token);
+typedef OnTokenChangedCallback = Future<void> Function(String? token);
+typedef OnTokenInvalidCallback = Future<void> Function();
 
 class AuthService implements IAuthService {
-  PolitoApi get _api => GetIt.I.get<PolitoApi>();
-  AuthBloc get _authBloc => GetIt.I.get<AuthBloc>();
-  KeyValueStore get _keyValueStore => GetIt.I.get<KeyValueStore>();
-  ISecureStoreRepository _secureStore;
+  AuthService._({
+    required this.dio,
+  });
 
-  String? _token;
+  Dio dio;
 
-  Future<void> setToken(String? t) async {
-    await _secureStore.secureWrite(SecureStoreKey.politoApiToken, t);
-    _token = t;
-  }
+  static AuthService init() {
+    final authService = AuthService._(dio: Dio());
+    final dio = setupDio(
+      onTokenInvalid: () async {
+        await authService.invalidate();
+      },
+    );
 
-  AuthService._(this._secureStore);
+    authService.dio = dio;
 
-  static Future<AuthService> init(
-      ISecureStoreRepository secureStoreRepository) async {
-    final token =
-        await secureStoreRepository.secureRead(SecureStoreKey.politoApiToken);
-    final authService = AuthService._(secureStoreRepository);
-    authService.setToken(token);
+    authService._getToken();
     return authService;
   }
 
-  final authServiceState =
-      BehaviorSubject<AuthServiceState>.seeded(const AuthServiceState());
-
-  /// When the token is invalid:
-  /// 1. Clear credentials from storage
-  /// 2. Update BLoC
-  @override
-  Future<void> onTokenInvalid() async {
-    final dataRepository = getIt.get<ISecureStoreRepository>();
-    _keyValueStore.setAcceptedTermsAndPrivacy(false);
-    _keyValueStore.setLoggedIn(false);
-    await Future.wait([dataRepository.clear(), _authBloc.resetState()]);
-  }
+  final _controller = BehaviorSubject<AuthServiceState>.seeded(
+      const AuthServiceState(loggedIn: Pending(), token: Pending()));
 
   @override
-  Future<void> onNewToken(String newToken) async {
-    setToken(newToken);
+  Stream<AuthServiceState> get stream => _controller.stream;
+
+  @override
+  AuthServiceState get state => _controller.value;
+
+  ApiClient get _api => GetIt.I.get<ApiClient>();
+  KeyValueStore get _keyValueStore => GetIt.I.get<KeyValueStore>();
+
+  ISecureStoreRepository get _secureStore =>
+      GetIt.I.get<ISecureStoreRepository>();
+
+  void update(AuthServiceState Function(AuthServiceState s) updater) {
+    final newState = updater(_controller.value);
+    _controller.add(newState);
   }
 
   /// Perform log in.
   @override
-  Future<LoginResult> login(
+  Future<Result<void, LoginErrorType>> login(
     String username,
     String password, {
     required bool acceptedTermsAndPrivacy,
   }) async {
     // If ToS/Privacy not accepted, refuse to log in.
     if (!acceptedTermsAndPrivacy) {
-      return const LoginResult(err: LoginErrorType.termsAndPrivacyNotAccepted);
+      return const Err(LoginErrorType.termsAndPrivacyNotAccepted);
     } else {
       GetIt.I
           .get<KeyValueStore>()
@@ -102,56 +99,91 @@ class AuthService implements IAuthService {
 
     // Username/password validation
     if (username == "" || password == "") {
-      return const LoginResult(err: LoginErrorType.validation);
+      return const Err(LoginErrorType.validation);
     }
     try {
-      final res = await _api.getAuthApi().login(
-          loginRequest: (LoginRequestBuilder()
-                ..username = username
-                ..password = password
-                ..client = (ClientBuilder()..name = "open-polito")
-                ..device = (DeviceBuilder()
-                  ..manufacturer = await DeviceInfoService.getItem(
-                      DeviceInfoKey.manufacturer)
-                  ..model = await DeviceInfoService.getItem(DeviceInfoKey.model)
-                  ..platform =
-                      await DeviceInfoService.getItem(DeviceInfoKey.platform) ??
-                          ""
-                  ..name = await DeviceInfoService.getItem(DeviceInfoKey.name)
-                  ..version =
-                      await DeviceInfoService.getItem(DeviceInfoKey.version))
-                ..preferences = UpdatePreferencesRequestBuilder())
-              .build());
+      final res = await _api.login(LoginRequest(
+          username: username,
+          password: password,
+          preferences: const UpdatePreferencesRequest(),
+          client: const ClientData(name: "open-polito"),
+          device: DeviceData(
+              manufacturer:
+                  await DeviceInfoService.getItem(DeviceInfoKey.manufacturer),
+              model: await DeviceInfoService.getItem(DeviceInfoKey.model),
+              platform:
+                  await DeviceInfoService.getItem(DeviceInfoKey.platform) ?? "",
+              name: await DeviceInfoService.getItem(DeviceInfoKey.name),
+              version:
+                  await DeviceInfoService.getItem(DeviceInfoKey.version))));
 
       final data = res.data?.data;
       if (data == null) {
-        return const LoginResult(err: LoginErrorType.general);
+        return const Err(LoginErrorType.general);
       }
       // Check if valid user type
       if (data.type != "student") {
-        return const LoginResult(err: LoginErrorType.userTypeNotSupported);
+        return const Err(LoginErrorType.userTypeNotSupported);
       }
 
       // Save token etc...
-      await GetIt.I
-          .get<ISecureStoreRepository>()
-          .saveLoginInfo(clientID: data.clientId, token: data.token);
+      await _updateToken(data.token);
+      await _updateClientId(data.clientId);
 
       _keyValueStore.setLoggedIn(true);
 
-      return const LoginResult(err: null);
-    } catch (e, s) {
-      print(e);
-    }
+      return const Ok(null);
+    } catch (e, s) {}
 
-    return const LoginResult(err: LoginErrorType.general);
+    return const Err(LoginErrorType.general);
   }
 
   @override
   Future<void> logout() async {
-    final dataRepository = GetIt.I.get<ISecureStoreRepository>();
-    await Future.wait([_api.getAuthApi().logout(), dataRepository.clear()]);
+    try {
+      await _api.logout();
+    } catch (e) {
+    } finally {
+      invalidate();
+    }
+  }
 
+  Future<void> invalidate() async {
+    await Future.wait([
+      _removeSecureData(),
+      _removeKvData(),
+    ]);
+    update((s) => s.copyWith(loggedIn: const Ok(false), token: Ok(null)));
+  }
+
+  /// Updates token and updates stream state accordingly.
+  Future<void> _updateToken(String t) async {
+    dio.setToken(t);
+
+    await _secureStore.secureWrite(SecureStoreKey.politoApiToken, t);
+    update((s) => s.copyWith(loggedIn: const Ok(true), token: Ok(t)));
+  }
+
+  Future<void> _updateClientId(String id) async {
+    await _secureStore.secureWrite(SecureStoreKey.politoClientId, id);
+  }
+
+  Future<void> _removeSecureData() async {
+    await _secureStore.secureDelete(SecureStoreKey.politoApiToken);
+    await _secureStore.secureDelete(SecureStoreKey.politoClientId);
+  }
+
+  Future<void> _removeKvData() async {
     _keyValueStore.setLoggedIn(false);
+  }
+
+  Future<void> _getToken() async {
+    final token = await _secureStore.secureRead(SecureStoreKey.politoApiToken);
+    if (token == null || token == "") {
+      update(
+          (s) => s.copyWith(loggedIn: const Ok(false), token: const Ok(null)));
+    } else {
+      update((s) => s.copyWith(loggedIn: const Ok(true), token: Ok(token)));
+    }
   }
 }

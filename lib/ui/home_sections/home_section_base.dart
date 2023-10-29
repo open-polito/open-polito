@@ -7,13 +7,13 @@ import 'package:open_polito/ui/layout.dart';
 class HomeSectionBase extends StatelessWidget {
   final String title;
   final IconData icon;
-  final Widget child;
+  final List<Widget> children;
 
   const HomeSectionBase({
     super.key,
     required this.title,
     required this.icon,
-    required this.child,
+    required this.children,
   });
 
   @override
@@ -44,7 +44,18 @@ class HomeSectionBase extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          child,
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: defaultHorizontalPadding,
+                ),
+                ...children,
+              ],
+            ),
+          ),
         ],
       ),
     );

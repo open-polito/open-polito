@@ -2,19 +2,59 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:open_polito/bloc/auth_bloc.dart';
+import 'package:open_polito/logic/app_service.dart';
+import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
+import 'package:open_polito/types.dart';
 
 part 'router.g.dart';
+
+enum RouteType {
+  unknown,
+  main,
+  login,
+}
+
+/// Notifies auth flow changes to the router.
+class AuthNotifier extends ValueNotifier<RouteType> {
+  late final StreamSubscription<AuthServiceState> _subscription;
+
+  AuthNotifier() : super(RouteType.main) {
+    _subscription = appService.authStream.listen((event) {
+      final loggedIn = event.loggedIn;
+      value = switch (loggedIn) {
+        Ok() => loggedIn.data == true ? RouteType.main : RouteType.login,
+        Pending() => RouteType.unknown,
+        Err() => RouteType.login,
+      };
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 final router = GoRouter(
   routes: $appRoutes,
   initialLocation: "/",
+  refreshListenable: AuthNotifier(),
   debugLogDiagnostics: kDebugMode,
+  redirect: (context, state) {
+    final loggedIn = appService.authService.state.loggedIn;
+    if (loggedIn case Ok()) {
+      if (!loggedIn.data) {
+        // we are not logged in. Redirect to login
+        return "/login";
+      }
+    }
+    return null;
+  },
 );
 
 final _mainShellNavigatorKey = GlobalKey<NavigatorState>();
@@ -27,29 +67,14 @@ final _loggedInShellNavigatorKey = GlobalKey<NavigatorState>();
   TypedGoRoute<LoginRouteData>(path: "/login"),
 ])
 class MainShellRouteData extends ShellRouteData {
-  const MainShellRouteData();
+  MainShellRouteData();
 
   static final $navigatorKey = _mainShellNavigatorKey;
 
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthBlocState>(
-        builder: (context, state) => navigator,
-        listenWhen: (previous, current) => previous != current,
-        listener: (context, state) {
-          if (state.data?.loggedIn == true) {
-            const HomeRouteData().go(context);
-          } else if (state.data?.loggedIn == null ||
-              state.data?.loggedIn == false) {
-            if (kDebugMode) {
-              print("NOT LOGGED IN. Going to /login");
-            }
-            const LoginRouteData().go(context);
-          }
-        },
-        bloc: GetIt.I.get<AuthBloc>()..init(),
-      ),
+      body: navigator,
     );
   }
 }

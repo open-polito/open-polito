@@ -21,8 +21,8 @@ class ScreenWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GetIt.I.get<ThemeBloc>(),
+    return BlocProvider.value(
+      value: GetIt.I.get<ThemeBloc>(),
       child: BlocBuilder<ThemeBloc, ThemeBlocState>(
         bloc: GetIt.I.get<ThemeBloc>(),
         builder: (context, state) => SafeArea(

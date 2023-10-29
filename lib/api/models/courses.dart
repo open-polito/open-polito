@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:open_polito/logic/json_converters.dart';
 
 part 'courses.freezed.dart';
 part 'courses.g.dart';
@@ -24,6 +25,15 @@ class GetCourseVirtualClassrooms200Response
 }
 
 @freezed
+class GetCourseFiles200Response with _$GetCourseFiles200Response {
+  const factory GetCourseFiles200Response({
+    required List<CourseDirectoryContent> data,
+  }) = _GetCourseFiles200Response;
+  factory GetCourseFiles200Response.fromJson(Map<String, Object?> json) =>
+      _$GetCourseFiles200ResponseFromJson(json);
+}
+
+@freezed
 class CourseOverview with _$CourseOverview {
   const factory CourseOverview({
     int? id,
@@ -31,7 +41,7 @@ class CourseOverview with _$CourseOverview {
     required String shortcode,
     required int cfu,
     required String teachingPeriod,
-    int? teacherId,
+    @SafeNullableIntConverter() int? teacherId,
     required List<PreviousCourseEdition> previousEditions,
     required bool isOverBooking,
     required bool isInPersonalStudyPlan,
@@ -53,29 +63,29 @@ class PreviousCourseEdition with _$PreviousCourseEdition {
 }
 
 @Freezed(unionKey: "type")
-class VirtualClassroomBase with _$VirtualClassroomBase {
-  @FreezedUnionValue("recording")
-  factory VirtualClassroomBase.virtualClassroom({
-    required int id,
-    required String title,
-    required int teacherId,
-    required String coverUrl,
-    required String videoUrl,
-    required String createdAt,
-    required String duration,
-    required VirtualClassroomType type,
-  }) = VirtualClassroom;
-
+sealed class VirtualClassroomBase with _$VirtualClassroomBase {
   @FreezedUnionValue("live")
-  factory VirtualClassroomBase.virtualClassroomLive({
+  const factory VirtualClassroomBase.live({
     required int id,
     required String title,
-    required int teacherId,
+    @SafeNullableIntConverter() int? teacherId,
     required String meetingId,
-    required String createdAt,
+    required DateTime createdAt,
     bool? isLive,
     required VirtualClassroomType type,
   }) = VirtualClassroomLive;
+
+  @FreezedUnionValue("recording")
+  const factory VirtualClassroomBase.recording({
+    required int id,
+    required String title,
+    @SafeNullableIntConverter() int? teacherId,
+    required String coverUrl,
+    required String videoUrl,
+    required DateTime createdAt,
+    required String duration,
+    required VirtualClassroomType type,
+  }) = VirtualClassroom;
 
   factory VirtualClassroomBase.fromJson(Map<String, Object?> json) =>
       _$VirtualClassroomBaseFromJson(json);
@@ -84,4 +94,33 @@ class VirtualClassroomBase with _$VirtualClassroomBase {
 enum VirtualClassroomType {
   live,
   recording,
+}
+
+@Freezed(unionKey: "type")
+sealed class CourseDirectoryContent with _$CourseDirectoryContent {
+  @FreezedUnionValue("directory")
+  const factory CourseDirectoryContent.directory({
+    required String id,
+    required CourseDirectoryContentType type,
+    required String name,
+    required CourseDirectoryContent files,
+  }) = CourseDirectory;
+
+  @FreezedUnionValue("file")
+  const factory CourseDirectoryContent.file({
+    required String id,
+    required CourseDirectoryContentType type,
+    required String name,
+    required int sizeInKiloBytes,
+    required String mimeType,
+    required DateTime createdAt,
+  }) = CourseFileOverview;
+
+  factory CourseDirectoryContent.fromJson(Map<String, Object?> json) =>
+      _$CourseDirectoryContentFromJson(json);
+}
+
+enum CourseDirectoryContentType {
+  directory,
+  file,
 }

@@ -1,33 +1,42 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:dio/dio.dart';
-import 'package:get_it/get_it.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:open_polito/data/data_repository.dart';
-import 'package:polito_api/polito_api.dart';
+import 'package:open_polito/data/local_data_source.dart';
+import 'package:open_polito/logic/app_service.dart';
+import 'package:open_polito/models/courses.dart';
 
 part 'home_screen_bloc.freezed.dart';
-part 'home_screen_bloc.g.dart';
 
 @freezed
 class HomeScreenBlocState with _$HomeScreenBlocState {
   const factory HomeScreenBlocState({
-    int? a,
+    required Stream<LocalData> data,
+    required List<VirtualClassroomLive> virtualClassrooms,
   }) = _HomeScreenBlocState;
-  factory HomeScreenBlocState.fromJson(Map<String, Object?> json) =>
-      _$HomeScreenBlocStateFromJson(json);
 }
 
 class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
-  HomeScreenBloc() : super(HomeScreenBlocState());
+  HomeScreenBloc()
+      : super(HomeScreenBlocState(
+            data: appService.localDataStream, virtualClassrooms: []));
 
-  IDataRepository get _dataRepository => GetIt.I.get<IDataRepository>();
+  StreamSubscription<LocalData>? sub;
 
-  Future<void> populate() async {}
+  Future<void> init() async {
+    await appService.dataRepository.initHomeScreen();
+  }
 
-  Future<void> debugLogAll() async {
-    final api = GetIt.I.get<PolitoApi>();
+  Future<void> resetAll({
+    required Function() gotoLogin,
+  }) async {
+    await appService.authService.logout();
+    gotoLogin();
+  }
 
-    final courses = await api.getCoursesApi().getCourses();
-    print(courses.toString());
+  @override
+  Future<void> close() {
+    sub?.cancel();
+    return super.close();
   }
 }

@@ -7,7 +7,7 @@ part 'courses.g.dart';
 class CourseData with _$CourseData {
   const factory CourseData({
     CourseOverview? overview,
-    // CourseDirectoryContent? files,
+    List<CourseFileInfo>? files,
     // CourseInfo? courseInfo,
     // Guide? courseGuide,
     // @Default([]) List<CourseNotices> notices,
@@ -21,10 +21,11 @@ class CourseData with _$CourseData {
 @freezed
 class CourseOverview with _$CourseOverview {
   const factory CourseOverview({
+    required int id,
     required String name,
     required String code,
     required int cfu,
-    required CourseTeachingPeriod teachingPeriod,
+    required CourseTeachingPeriod? teachingPeriod,
     required bool isOverbooking,
     required bool isInPersonalStudyPlan,
     required bool isModule,
@@ -42,6 +43,21 @@ class CourseTeachingPeriod with _$CourseTeachingPeriod {
   }) = _CourseTeachingPeriod;
   factory CourseTeachingPeriod.fromJson(Map<String, Object?> json) =>
       _$CourseTeachingPeriodFromJson(json);
+
+  static CourseTeachingPeriod? parse(String s) {
+    try {
+      final parts = s.split("-");
+      final year = int.tryParse(parts[0]);
+      final semester = int.tryParse(parts[1]);
+
+      if (year == null) {
+        return null;
+      }
+
+      return CourseTeachingPeriod(year: year, semester: semester);
+    } catch (err) {}
+    return null;
+  }
 }
 
 @freezed
@@ -64,4 +80,17 @@ class VirtualClassroomLive with _$VirtualClassroomLive {
   }) = _VirtualClassroomLive;
   factory VirtualClassroomLive.fromJson(Map<String, Object?> json) =>
       _$VirtualClassroomLiveFromJson(json);
+}
+
+@freezed
+class CourseFileInfo with _$CourseFileInfo {
+  const factory CourseFileInfo({
+    required String id,
+    required String name,
+    required int sizeKB,
+    required String mimeType,
+    required DateTime createdAt,
+  }) = _CourseFileInfo;
+  factory CourseFileInfo.fromJson(Map<String, Object?> json) =>
+      _$CourseFileInfoFromJson(json);
 }

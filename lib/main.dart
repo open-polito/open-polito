@@ -9,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await configureStuff();
+
   runApp(const MyApp());
 }
 

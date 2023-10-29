@@ -1,13 +1,18 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:open_polito/data/local_data_source.dart';
+import 'package:open_polito/logic/app_service.dart';
+import 'package:open_polito/models/converters.dart';
 import 'package:open_polito/models/courses.dart';
-import 'package:polito_api/polito_api.dart' as api;
+import 'package:open_polito/types.dart';
+import 'package:open_polito/api/api_client.dart' as api;
+import 'package:retrofit/retrofit.dart';
 
 part 'data_repository.freezed.dart';
-part 'data_repository.g.dart';
 
 @freezed
 class DataWrapper<T> with _$DataWrapper<T> {
@@ -22,63 +27,79 @@ class DataWrapper<T> with _$DataWrapper<T> {
 }
 
 typedef WrapperStream<T> = Stream<DataWrapper<T>>;
-// typedef ApiFunction<T> = Future<Response<T>> Function({
-//   ProgressCallback? onSendProgress,
-//   ProgressCallback? onReceiveProgress,
-// });
 
-abstract class IDataRepository {}
+abstract class IDataRepository {
+  Stream<LocalData> get stream;
+  LocalData get state;
 
-@freezed
-class DataRepositoryState with _$DataRepositoryState {
-  const factory DataRepositoryState({
-    required Map<String, CourseData> coursesById,
-  }) = _DataRepositoryState;
-  factory DataRepositoryState.fromJson(Map<String, Object?> json) =>
-      _$DataRepositoryStateFromJson(json);
+  Future<void> initHomeScreen();
 }
 
 class DataRepository extends IDataRepository {
-  api.PolitoApi get _api => GetIt.I.get<api.PolitoApi>();
+  api.ApiClient get _api => GetIt.I.get<api.ApiClient>();
+  LocalDataSource get _local => GetIt.I.get<LocalDataSource>();
 
-  // final StreamController<DataRepositoryState> _controller
+  @override
+  Stream<LocalData> get stream => _local.stream;
 
-  DataRepository();
+  @override
+  LocalData get state => _local.state;
 
-  Future<T?> _w<T>(Future<Response<T>> future) async {
+  DataRepository._();
+
+  static DataRepository init() {
+    return DataRepository._();
+  }
+
+  Future<T?> _w<T>(Future<HttpResponse<T>> Function() futureFn) async {
     try {
-      final res = await future;
-      return res.data;
-    } catch (e) {
+      final authService = appService.authService;
+      final last = authService.state;
+      final token = last.token;
+      if (token case Ok()) {
+        return (await futureFn()).data;
+      }
+      return null;
+    } catch (e, s) {
+      if (kDebugMode) {
+        print("An error happened! $e. Trace: $s");
+      }
       return null;
     }
   }
 
-  // WrapperStream<T> _req<T>(ApiFunction<T> func) {
-  //   StreamController<DataWrapper<T>> controller = StreamController();
+  @override
+  Future<void> initHomeScreen() async {
+    // 1. Fetch courses.
+    // 2. For each course, fetch:
+    //   - live classes
+    //   - files
+    final courseOverviews = await _w(_api.getCourses).then((res) =>
+        (res?.data ?? []).map((overview) => courseOverviewFromAPI(overview)));
 
-  //   DataWrapper<T> wrapper = DataWrapper<T>(
-  //       data: null, res: null, sent: 0, sentTotal: 1, recv: 0, recvTotal: 1);
-  //   controller.add(wrapper);
+    _local.setCourses(
+        courseOverviews.map((e) => CourseData(overview: e)).toList());
 
-  //   try {
-  //     func(
-  //       onSendProgress: (count, total) {
-  //         controller.add(wrapper.copyWith(sent: count, sentTotal: total));
-  //       },
-  //       onReceiveProgress: (count, total) {
-  //         controller.add(wrapper.copyWith(recv: count, recvTotal: total));
-  //       },
-  //     ).then((value) {
-  //       controller.add(wrapper.copyWith(res: value, data: value.));
-  //       controller.close();
-  //     });
-  //   } catch (e) {
-  //     //TODO
-  //   } finally {
-  //     controller.close();
-  //   }
+    final List<Future> futures = [
+      ...courseOverviews.map((courseOverview) =>
+          _w(() => _api.getCourseVirtualClassrooms(courseOverview.id))
+              .then((vcResponse) => _local.setCourseVirtualClassrooms(
+                    courseOverview.id,
+                    (vcResponse?.data ?? [])
+                        .map((vc) => vcFromAPI(vc, courseOverview.id))
+                        .toList(),
+                  ))),
+      ...courseOverviews.map((courseOverview) =>
+          _w(() => _api.getCourseFiles(courseOverview.id))
+              .then((filesResponse) => _local.setCourseFiles(
+                    courseOverview.id,
+                    (filesResponse?.data ?? [])
+                        .map((file) => fileFromAPI(file, courseOverview.id))
+                        .whereType<CourseFileInfo>()
+                        .toList(),
+                  ))),
+    ];
 
-  //   return controller.stream;
-  // }
+    await Future.wait(futures);
+  }
 }
