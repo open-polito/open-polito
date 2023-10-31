@@ -18,9 +18,9 @@ import 'package:open_polito/ui/text_field.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+  const LoginScreen({super.key});
 
-  final _formKey = GlobalKey<FormState>();
+  static final _formKey = GlobalKey<FormState>();
 
   static const maxWidth = 400.0;
 

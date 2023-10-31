@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
-import 'package:open_polito/styles/colors.dart';
 import 'package:open_polito/styles/styles.dart';
 import 'package:open_polito/ui/badge_icon_button.dart';
 

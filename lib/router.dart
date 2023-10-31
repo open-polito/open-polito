@@ -8,6 +8,7 @@ import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
 import 'package:open_polito/types.dart';
+import 'package:open_polito/ui/app_wrapper.dart';
 
 part 'router.g.dart';
 
@@ -74,7 +75,7 @@ class MainShellRouteData extends ShellRouteData {
   @override
   Widget builder(BuildContext context, GoRouterState state, Widget navigator) {
     return Scaffold(
-      body: navigator,
+      body: AppWrapper(child: navigator),
     );
   }
 }
