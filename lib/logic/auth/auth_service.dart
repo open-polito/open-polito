@@ -166,7 +166,7 @@ class AuthService {
               version:
                   await DeviceInfoService.getItem(DeviceInfoKey.version))));
 
-      final data = res.data?.data;
+      final data = res.data.data;
       if (data == null) {
         return const Err(LoginErrorType.general);
       }
@@ -182,7 +182,7 @@ class AuthService {
       await _updater((prev) => prev.copyWith(loggedIn: true));
 
       return const Ok(null);
-    } catch (e, s) {
+    } catch (e) {
       // print("Error in login: $e. Trace: $s");
     }
 
@@ -194,7 +194,6 @@ class AuthService {
       if (!isDemo) {
         await _api.logout();
       }
-    } catch (e) {
     } finally {
       invalidate();
     }

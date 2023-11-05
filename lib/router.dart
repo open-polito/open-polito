@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
-import 'package:open_polito/types.dart';
 import 'package:open_polito/ui/app_wrapper.dart';
 
 part 'router.g.dart';
@@ -104,6 +103,6 @@ class LoginRouteData extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return LoginScreen();
+    return const LoginScreen();
   }
 }

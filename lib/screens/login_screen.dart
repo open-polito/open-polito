@@ -121,6 +121,7 @@ class LoginScreen extends StatelessWidget {
                                       return AppLocalizations.of(context)!
                                           .loginScreen_label_usernameValidation;
                                     }
+                                    return null;
                                   },
                                 ),
                                 const SizedBox(
@@ -142,6 +143,7 @@ class LoginScreen extends StatelessWidget {
                                       return AppLocalizations.of(context)!
                                           .loginScreen_label_passwordValidation;
                                     }
+                                    return null;
                                   },
                                 ),
                                 const SizedBox(

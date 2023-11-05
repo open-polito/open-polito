@@ -16,7 +16,7 @@ class AppWrapper extends StatelessWidget {
           SizedBox.shrink(
             child: Container(
               color: Colors.teal,
-              child: Text("Hello"),
+              child: const Text("Hello"),
             ),
           ),
         ],
