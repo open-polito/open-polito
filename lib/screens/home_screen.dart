@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
+import 'package:open_polito/bloc/search_screen_bloc.dart';
 import 'package:open_polito/router.dart';
 import 'package:open_polito/ui/home_sections/live_classes_section.dart';
 import 'package:open_polito/ui/layout.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
-import 'package:open_polito/ui/text_field.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:open_polito/ui/search_field.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -29,11 +30,12 @@ class HomeScreen extends StatelessWidget {
               Column(
                 children: [
                   DefaultHorizontalPadding(
-                    child: MyTextFormField(
-                        hint: AppLocalizations.of(context)!
-                            .homeScreen_label_search,
-                        icon: Icons.search_rounded,
-                        inputType: MyInputType.text),
+                    child: SearchField(
+                      redirect: true,
+                      onChanged: (query) {
+                        context.read<SearchScreenBloc>().setQuery(query);
+                      },
+                    ),
                   ),
                   const SizedBox(height: 32),
                   if (kDebugMode)

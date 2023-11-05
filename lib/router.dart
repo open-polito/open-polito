@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
+import 'package:open_polito/screens/search_screen.dart';
 import 'package:open_polito/ui/app_wrapper.dart';
 
 part 'router.g.dart';
@@ -60,6 +61,7 @@ final _loggedInShellNavigatorKey = GlobalKey<NavigatorState>();
 @TypedShellRoute<MainShellRouteData>(routes: [
   TypedShellRoute<LoggedInShellRouteData>(routes: [
     TypedGoRoute<HomeRouteData>(path: "/"),
+    TypedGoRoute<SearchRouteData>(path: "/search"),
   ]),
   TypedGoRoute<LoginRouteData>(path: "/login"),
 ])
@@ -104,5 +106,14 @@ class LoginRouteData extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const LoginScreen();
+  }
+}
+
+class SearchRouteData extends GoRouteData {
+  const SearchRouteData();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const SearchScreen();
   }
 }

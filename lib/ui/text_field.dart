@@ -19,6 +19,7 @@ class MyTextFormField extends StatefulWidget {
   final Function(String value)? onChanged;
   final String? Function(String? value)? validator;
   final String? initialValue;
+  final bool enabled;
 
   const MyTextFormField({
     super.key,
@@ -29,6 +30,7 @@ class MyTextFormField extends StatefulWidget {
     this.onChanged,
     this.validator,
     this.initialValue,
+    this.enabled = true,
   });
 
   @override
@@ -43,6 +45,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
     return BlocBuilder<ThemeBloc, ThemeBlocState>(
       bloc: GetIt.I.get<ThemeBloc>(),
       builder: (context, state) => TextFormField(
+        enabled: widget.enabled,
         initialValue: widget.initialValue,
         onFieldSubmitted: widget.onFieldSubmitted,
         onChanged: widget.onChanged,

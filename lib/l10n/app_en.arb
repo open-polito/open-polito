@@ -1,6 +1,7 @@
 {
   "screen_login": "Login",
   "screen_home": "Overview",
+  "screen_search": "Search",
   "loginScreen_input_username": "Username",
   "loginScreen_input_password": "Password",
   "loginScreen_label_consent_part1": "I agree to the ",

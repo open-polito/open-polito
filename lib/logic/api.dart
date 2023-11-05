@@ -31,7 +31,7 @@ class DioWrapper {
       PrettyDioLogger(
         requestHeader: true,
         requestBody: false,
-        responseHeader: false,
+        responseHeader: true,
         responseBody: true,
         request: true,
       ),
