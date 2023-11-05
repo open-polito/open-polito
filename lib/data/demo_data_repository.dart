@@ -1,33 +1,7 @@
-import 'dart:async';
-
-import 'package:open_polito/data/data_repository.dart';
 import 'package:open_polito/data/local_data_source.dart';
 import 'package:open_polito/models/courses.dart';
-import 'package:rxdart/rxdart.dart';
 
-class DemoDataRepository implements IDataRepository {
-  final BehaviorSubject<LocalData> _controller;
-
-  @override
-  LocalData get state => _controller.value;
-
-  @override
-  Stream<LocalData> get stream => _controller.stream;
-
-  DemoDataRepository._(this._controller);
-
-  static DemoDataRepository init() {
-    final controller = BehaviorSubject<LocalData>.seeded(_demoState);
-    return DemoDataRepository._(controller);
-  }
-
-  @override
-  Future<void> initHomeScreen() {
-    return Future.value();
-  }
-}
-
-final _demoState = LocalData(coursesById: {
+final demoState = LocalData(coursesById: {
   1: CourseData(
     files: [
       CourseFileInfo(

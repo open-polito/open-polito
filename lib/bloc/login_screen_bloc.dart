@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:open_polito/logic/app_service.dart';
+import 'package:get_it/get_it.dart';
+import 'package:open_polito/init.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/types.dart';
@@ -22,7 +23,7 @@ class LoginScreenBloc extends Cubit<LoginScreenBlocState> {
       : super(const LoginScreenBlocState(
             username: "", password: "", acceptedTermsAndPrivacy: false));
 
-  IAuthService get _authService => appService.authService;
+  AuthService get _authService => GetIt.I.get<AuthService>();
 
   void setUsername(String u) {
     emit(state.copyWith(username: u));
@@ -65,7 +66,8 @@ class LoginScreenBloc extends Cubit<LoginScreenBlocState> {
   Future<void> loginTrue(
       String username, String password, bool acceptedTermsAndPrivacy,
       {required void Function() gotoHome}) async {
-    appService.setMode(AppMode.account);
+    setAppMode(AppMode.real);
+    await _authService.setRealMode();
     await loginCommon(username, password, acceptedTermsAndPrivacy,
         gotoHome: gotoHome);
   }
@@ -73,7 +75,8 @@ class LoginScreenBloc extends Cubit<LoginScreenBlocState> {
   Future<void> loginDemo({
     required void Function() gotoHome,
   }) async {
-    appService.setMode(AppMode.demo);
+    setAppMode(AppMode.demo);
+    await _authService.setDemoMode();
     await loginCommon("demo", "demo", true, gotoHome: gotoHome);
   }
 }

@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/api/api_client.dart';
 import 'package:open_polito/api/models/auth.dart';
 import 'package:open_polito/data/key_value_store.dart';
+import 'package:open_polito/init.dart';
 import 'package:open_polito/logic/api.dart';
+import 'package:open_polito/logic/utils/getters.dart';
 import 'package:open_polito/types.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:open_polito/data/secure_store.dart';
@@ -16,84 +17,132 @@ import 'package:open_polito/logic/deviceinfo_service.dart';
 
 part 'auth_service.freezed.dart';
 
-abstract class IAuthService {
-  Stream<AuthServiceState> get stream;
-  AuthServiceState get state;
-
-  Future<Result<void, LoginErrorType>> login(
-    String username,
-    String password, {
-    required bool acceptedTermsAndPrivacy,
-  });
-  Future<void> logout();
-  Future<void> invalidate();
-}
-
-@freezed
-class AuthServiceState with _$AuthServiceState {
-  const factory AuthServiceState({
-    required Result<bool, void> loggedIn,
-    required Result<String?, void> token,
-  }) = _AuthServiceState;
-}
-
 typedef OnTokenChangedCallback = Future<void> Function(String? token);
 typedef OnTokenInvalidCallback = Future<void> Function();
 
-class AuthService implements IAuthService {
-  AuthService._({
-    required this.dio,
-  });
+@freezed
+class AuthState with _$AuthState {
+  const factory AuthState({
+    required AppMode appMode,
+    // Persisted
+    bool? loggedIn,
+    String? token,
+    String? clientId,
+  }) = _AuthState;
+}
 
-  Dio dio;
+/// Hydrate [AuthState] from persistent data.
+Future<AuthState> hydrateAuthState() async {
+  final kvStore = GetIt.I.get<KvStore>();
+  final secureStore = GetIt.I.get<ISecureStore>();
 
-  static AuthService init() {
-    final authService = AuthService._(dio: Dio());
-    final dio = setupDio(
-      onTokenInvalid: () async {
-        await authService.invalidate();
-      },
-    );
+  final kvState = kvStore.state;
 
-    authService.dio = dio;
+  final bool loggedIn = switch (kvState) {
+    Ok() => kvState.data.loggedIn ?? false,
+    Err() => false,
+    Pending() => true,
+  };
 
-    authService._getToken();
-    return authService;
+  final [token, clientId] = await Future.wait([
+    secureStore.secureRead(SecureStoreKey.politoApiToken),
+    secureStore.secureRead(SecureStoreKey.politoClientId),
+  ]);
+
+  return AuthState(
+      loggedIn: loggedIn,
+      token: token,
+      appMode: AppMode.real,
+      clientId: clientId);
+}
+
+/// Update [AuthState] and persist changes.
+FutureOr<AuthState> updateAuthState(
+  AuthState prev,
+  Updater<AuthState> updater, {
+  bool demoMode = false,
+}) async {
+  final newState = await updater(prev);
+
+  if (demoMode) {
+    return newState;
   }
 
-  final _controller = BehaviorSubject<AuthServiceState>.seeded(
-      const AuthServiceState(loggedIn: Pending(), token: Pending()));
+  // Save changes if not in demo mode.
 
-  @override
-  Stream<AuthServiceState> get stream => _controller.stream;
+  if (prev.loggedIn != newState.loggedIn) {
+    await getKvStore().setLoggedIn(newState.loggedIn ?? false);
+  }
 
-  @override
-  AuthServiceState get state => _controller.value;
+  if (prev.token != newState.token) {
+    await getSecureStore()
+        .secureWrite(SecureStoreKey.politoApiToken, newState.token);
+  }
+
+  if (prev.clientId != newState.clientId) {
+    await getSecureStore()
+        .secureWrite(SecureStoreKey.politoApiToken, newState.clientId);
+  }
+
+  return newState;
+}
+
+class AuthService {
+  final BehaviorSubject<AuthState> _subject;
+
+  AuthService(this._subject);
+
+  AuthState get state => _subject.value;
+  Stream<AuthState> get stream => _subject.stream;
+
+  bool get isDemo => state.appMode == AppMode.demo;
 
   ApiClient get _api => GetIt.I.get<ApiClient>();
-  KeyValueStore get _keyValueStore => GetIt.I.get<KeyValueStore>();
+  DioWrapper get _dioWrapper => GetIt.I.get<DioWrapper>();
 
-  ISecureStoreRepository get _secureStore =>
-      GetIt.I.get<ISecureStoreRepository>();
-
-  void update(AuthServiceState Function(AuthServiceState s) updater) {
-    final newState = updater(_controller.value);
-    _controller.add(newState);
+  FutureOr<void> _updater(Updater<AuthState> updater) async {
+    if (!isDemo) {
+      final newState = await updateAuthState(state, (prev) => updater(prev));
+      _subject.add(newState);
+    } else {
+      _subject.add(await updater(state));
+    }
   }
 
-  /// Perform log in.
-  @override
-  Future<Result<void, LoginErrorType>> login(
-    String username,
-    String password, {
-    required bool acceptedTermsAndPrivacy,
-  }) async {
+  static Future<AuthService> init() async {
+    return AuthService(BehaviorSubject.seeded(await hydrateAuthState()));
+  }
+
+  FutureOr<void> setRealMode() =>
+      _updater((prev) async => await hydrateAuthState());
+
+  FutureOr<void> setDemoMode() => _updater(
+      (prev) => const AuthState(appMode: AppMode.demo, loggedIn: true));
+
+  Future<void> invalidate() async {
+    if (isDemo) {
+      await _updater((s) => s.copyWith(loggedIn: false, token: null));
+    }
+    await Future.wait([
+      Future(_removeSecureData),
+      Future(_removeKvData),
+    ]);
+    await _updater((s) => s.copyWith(loggedIn: false, token: null));
+  }
+
+  FutureOr<Result<void, LoginErrorType>> login(String username, String password,
+      {required bool acceptedTermsAndPrivacy}) async {
+    // If demo mode, return mock response
+    if (isDemo) {
+      return const Ok(null);
+    }
+
     // If ToS/Privacy not accepted, refuse to log in.
     if (!acceptedTermsAndPrivacy) {
       return const Err(LoginErrorType.termsAndPrivacyNotAccepted);
     } else {
       GetIt.I
-          .get<KeyValueStore>()
+          .get<KvStore>()
           .setAcceptedTermsAndPrivacy(acceptedTermsAndPrivacy);
     }
 
@@ -130,60 +179,39 @@ class AuthService implements IAuthService {
       await _updateToken(data.token);
       await _updateClientId(data.clientId);
 
-      _keyValueStore.setLoggedIn(true);
+      await _updater((prev) => prev.copyWith(loggedIn: true));
 
       return const Ok(null);
-    } catch (e, s) {}
+    } catch (e, s) {
+      // print("Error in login: $e. Trace: $s");
+    }
 
     return const Err(LoginErrorType.general);
   }
 
-  @override
   Future<void> logout() async {
     try {
-      await _api.logout();
+      if (!isDemo) {
+        await _api.logout();
+      }
     } catch (e) {
     } finally {
       invalidate();
     }
   }
 
-  Future<void> invalidate() async {
-    await Future.wait([
-      _removeSecureData(),
-      _removeKvData(),
-    ]);
-    update((s) => s.copyWith(loggedIn: const Ok(false), token: Ok(null)));
+  FutureOr<void> _updateToken(String t) async {
+    _dioWrapper.setToken(t);
+    await _updater((prev) => prev.copyWith(token: t));
   }
 
-  /// Updates token and updates stream state accordingly.
-  Future<void> _updateToken(String t) async {
-    dio.setToken(t);
+  FutureOr<void> _updateClientId(String id) =>
+      _updater((prev) => prev.copyWith(clientId: id));
 
-    await _secureStore.secureWrite(SecureStoreKey.politoApiToken, t);
-    update((s) => s.copyWith(loggedIn: const Ok(true), token: Ok(t)));
-  }
+  FutureOr<void> _removeSecureData() => _updater(
+        (prev) => prev.copyWith(token: null, clientId: null),
+      );
 
-  Future<void> _updateClientId(String id) async {
-    await _secureStore.secureWrite(SecureStoreKey.politoClientId, id);
-  }
-
-  Future<void> _removeSecureData() async {
-    await _secureStore.secureDelete(SecureStoreKey.politoApiToken);
-    await _secureStore.secureDelete(SecureStoreKey.politoClientId);
-  }
-
-  Future<void> _removeKvData() async {
-    _keyValueStore.setLoggedIn(false);
-  }
-
-  Future<void> _getToken() async {
-    final token = await _secureStore.secureRead(SecureStoreKey.politoApiToken);
-    if (token == null || token == "") {
-      update(
-          (s) => s.copyWith(loggedIn: const Ok(false), token: const Ok(null)));
-    } else {
-      update((s) => s.copyWith(loggedIn: const Ok(true), token: Ok(token)));
-    }
-  }
+  FutureOr<void> _removeKvData() =>
+      _updater((prev) => prev.copyWith(loggedIn: null));
 }

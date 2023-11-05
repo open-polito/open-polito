@@ -1,18 +1,30 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/api/api_client.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
+import 'package:open_polito/data/data_repository.dart';
 import 'package:open_polito/data/local_data_source.dart';
 import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/data/key_value_store.dart';
-import 'package:open_polito/logic/app_service.dart';
+import 'package:open_polito/logic/api.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
+import 'package:rxdart/subjects.dart';
+
+enum AppMode {
+  real,
+  demo,
+}
 
 final getIt = GetIt.instance..allowReassignment = true;
+
+final _appModeController = BehaviorSubject.seeded(AppMode.real);
+Stream<AppMode> getAppModeStream() => _appModeController.stream;
+AppMode getAppMode() => _appModeController.value;
 
 /// Configures dependencies with get_it, and other things.
 ///
@@ -20,20 +32,33 @@ final getIt = GetIt.instance..allowReassignment = true;
 /// don't require a dependency with get_it during initialization.
 Future<void> configureStuff() async {
   // Repositories
-  final secureStoreRepository = SecureStoreRepository.init();
-  getIt.registerSingleton<ISecureStoreRepository>(secureStoreRepository);
+  final secureStoreRepository = SecureStore.init();
+  getIt.registerSingleton<ISecureStore>(secureStoreRepository);
 
-  final keyValueStore = await KeyValueStore.init();
-  getIt.registerSingleton<KeyValueStore>(keyValueStore);
+  final keyValueStore = await KvStore.init();
+  getIt.registerSingleton<KvStore>(keyValueStore);
 
   // Data source
-  getIt.registerSingleton<LocalDataSource>(LocalDataSource.init());
+  final localDataSource = LocalDataSource.init();
+  getIt.registerSingleton<LocalDataSource>(localDataSource);
 
-  // Set App to Account mode
-  appService.setMode(AppMode.account);
+  final dataRepository = DataRepository.init(localDataSource: localDataSource);
+  getIt.registerSingleton<DataRepository>(dataRepository);
+
+  // Dio
+  final dio = Dio();
+  final dioWrapper = DioWrapper(dio);
+
+  // Auth service
+  final authService = await AuthService.init();
+  dioWrapper.onTokenInvalid = () async {
+    await authService.invalidate();
+  };
+  getIt.registerSingleton<AuthService>(authService);
+  getIt.registerSingleton<DioWrapper>(dioWrapper);
 
   // API
-  final api = ApiClient((appService.authService as AuthService).dio);
+  final api = ApiClient(dio);
   getIt.registerSingleton<ApiClient>(api);
 
   // BLoCs
@@ -48,4 +73,9 @@ Future<void> configureStuff() async {
     // await secureStoreRepository.clear();
     // await keyValueStore.clear();
   }
+}
+
+/// Changes app mode (demo/real)
+void setAppMode(AppMode mode) {
+  _appModeController.add(mode);
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 sealed class Result<T, E> {}
 
 class Pending<T, E> implements Result<T, E> {
@@ -14,3 +16,5 @@ class Err<T, E> implements Result<T, E> {
   final E err;
   const Err(this.err);
 }
+
+typedef Updater<T> = FutureOr<T> Function(T prev);

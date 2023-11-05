@@ -1,6 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-abstract class ISecureStoreRepository {
+abstract class ISecureStore {
   Future<String?> secureRead(SecureStoreKey key);
   Future<void> secureWrite(SecureStoreKey key, String? value);
   Future<void> secureDelete(SecureStoreKey key);
@@ -19,14 +19,14 @@ enum SecureStoreKey {
   const SecureStoreKey(this.key);
 }
 
-class SecureStoreRepository implements ISecureStoreRepository {
+class SecureStore implements ISecureStore {
   final FlutterSecureStorage _secureStore;
 
-  const SecureStoreRepository._(this._secureStore);
+  const SecureStore._(this._secureStore);
 
-  static SecureStoreRepository init() {
+  static SecureStore init() {
     const secureStore = FlutterSecureStorage();
-    return const SecureStoreRepository._(secureStore);
+    return const SecureStore._(secureStore);
   }
 
   @override

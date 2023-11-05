@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:open_polito/logic/app_service.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
@@ -20,15 +20,14 @@ enum RouteType {
 
 /// Notifies auth flow changes to the router.
 class AuthNotifier extends ValueNotifier<RouteType> {
-  late final StreamSubscription<AuthServiceState> _subscription;
+  late StreamSubscription<AuthState> _subscription;
 
   AuthNotifier() : super(RouteType.main) {
-    _subscription = appService.authStream.listen((event) {
+    _subscription = GetIt.I.get<AuthService>().stream.listen((event) {
       final loggedIn = event.loggedIn;
       value = switch (loggedIn) {
-        Ok() => loggedIn.data == true ? RouteType.main : RouteType.login,
-        Pending() => RouteType.unknown,
-        Err() => RouteType.login,
+        null || true => RouteType.main,
+        false => RouteType.login,
       };
       notifyListeners();
     });
@@ -47,12 +46,10 @@ final router = GoRouter(
   refreshListenable: AuthNotifier(),
   debugLogDiagnostics: kDebugMode,
   redirect: (context, state) {
-    final loggedIn = appService.authService.state.loggedIn;
-    if (loggedIn case Ok()) {
-      if (!loggedIn.data) {
-        // we are not logged in. Redirect to login
-        return "/login";
-      }
+    final loggedIn = GetIt.I.get<AuthService>().state.loggedIn;
+    if (loggedIn == false) {
+      // we are not logged in. Redirect to login
+      return "/login";
     }
     return null;
   },

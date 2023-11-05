@@ -12,7 +12,13 @@ class AppWrapper extends StatelessWidget {
       child: Stack(
         children: [
           child,
-          const MyDrawer(),
+          const SizedBox.shrink(child: MyDrawer()),
+          SizedBox.shrink(
+            child: Container(
+              color: Colors.teal,
+              child: Text("Hello"),
+            ),
+          ),
         ],
       ),
     );

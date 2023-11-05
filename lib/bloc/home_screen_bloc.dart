@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:get_it/get_it.dart';
+import 'package:open_polito/data/data_repository.dart';
 import 'package:open_polito/data/local_data_source.dart';
-import 'package:open_polito/logic/app_service.dart';
+import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/courses.dart';
 
 part 'home_screen_bloc.freezed.dart';
@@ -19,18 +21,18 @@ class HomeScreenBlocState with _$HomeScreenBlocState {
 class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
   HomeScreenBloc()
       : super(HomeScreenBlocState(
-            data: appService.localDataStream, virtualClassrooms: []));
+            data: GetIt.I.get<DataRepository>().stream, virtualClassrooms: []));
 
   StreamSubscription<LocalData>? sub;
 
   Future<void> init() async {
-    await appService.dataRepository.initHomeScreen();
+    await GetIt.I.get<DataRepository>().initHomeScreen();
   }
 
   Future<void> resetAll({
     required Function() gotoLogin,
   }) async {
-    await appService.authService.logout();
+    await GetIt.I.get<AuthService>().logout();
     gotoLogin();
   }
 
