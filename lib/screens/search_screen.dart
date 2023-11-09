@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:open_polito/bloc/search_screen_bloc.dart';
+import 'package:open_polito/bloc/search_bloc.dart';
 import 'package:open_polito/models/search.dart';
 import 'package:open_polito/ui/button.dart';
 import 'package:open_polito/ui/layout.dart';
@@ -13,9 +13,9 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<SearchScreenBloc>(
-      create: (context) => SearchScreenBloc(),
-      child: BlocBuilder<SearchScreenBloc, SearchScreenBlocState>(
+    return BlocProvider<SearchBloc>(
+      create: (context) => SearchBloc(),
+      child: BlocBuilder<SearchBloc, SearchBlocState>(
         builder: (context, state) => ScreenWrapper(
           isPrimaryScreen: false,
           screenName: AppLocalizations.of(context)!.screen_search,
@@ -29,7 +29,8 @@ class SearchScreen extends StatelessWidget {
                         child: SearchField(
                       redirect: false,
                       onChanged: (query) {
-                        context.read<SearchScreenBloc>().setQuery(query);
+                        print("Nw query $query");
+                        context.read<SearchBloc>().add(SetSearchQuery(query));
                       },
                     )),
                     Flexible(child: Text("filter")),
@@ -43,22 +44,22 @@ class SearchScreen extends StatelessWidget {
                     label: "files",
                     type: getBtnType(state.category, SearchCategory.files),
                     onPressed: () => context
-                        .read<SearchScreenBloc>()
-                        .setCategory(SearchCategory.files),
+                        .read<SearchBloc>()
+                        .add(SetSearchCategory(SearchCategory.files)),
                   ),
                   MyButton(
                     label: "recordings",
                     type: getBtnType(state.category, SearchCategory.recordings),
                     onPressed: () => context
-                        .read<SearchScreenBloc>()
-                        .setCategory(SearchCategory.recordings),
+                        .read<SearchBloc>()
+                        .add(SetSearchCategory(SearchCategory.recordings)),
                   ),
                   MyButton(
                     label: "people",
                     type: getBtnType(state.category, SearchCategory.people),
                     onPressed: () => context
-                        .read<SearchScreenBloc>()
-                        .setCategory(SearchCategory.people),
+                        .read<SearchBloc>()
+                        .add(SetSearchCategory(SearchCategory.people)),
                   ),
                 ],
               )),

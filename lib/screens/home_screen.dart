@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
-import 'package:open_polito/bloc/search_screen_bloc.dart';
 import 'package:open_polito/router.dart';
-import 'package:open_polito/ui/home_sections/live_classes_section.dart';
 import 'package:open_polito/ui/layout.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -29,12 +27,9 @@ class HomeScreen extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  DefaultHorizontalPadding(
+                  const DefaultHorizontalPadding(
                     child: SearchField(
                       redirect: true,
-                      onChanged: (query) {
-                        context.read<SearchScreenBloc>().setQuery(query);
-                      },
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -46,18 +41,14 @@ class HomeScreen extends StatelessWidget {
                                   const LoginRouteData().go(context));
                         },
                         child: const Text("Debug reset")),
-                  if (state.virtualClassrooms.isNotEmpty)
-                    LiveClassesSection(
-                      classes: state.virtualClassrooms,
-                      title: AppLocalizations.of(context)!
-                          .homeScreen_section_liveClasses,
-                    ),
-                  StreamBuilder(
-                    stream: state.data,
-                    builder: (context, snapshot) {
-                      return Text(snapshot.data?.toString() ?? "");
-                    },
-                  )
+                  // if (state.virtualClassrooms.isNotEmpty)
+                  //   LiveClassesSection(
+                  //     classes: state.virtualClassrooms,
+                  //     title: AppLocalizations.of(context)!
+                  //         .homeScreen_section_liveClasses,
+                  //   ),
+
+                  Text(state.toString() ?? ""),
                 ],
               ),
             ],

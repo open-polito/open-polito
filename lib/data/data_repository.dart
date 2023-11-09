@@ -1,19 +1,20 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:open_polito/data/demo_data_repository.dart';
-import 'package:open_polito/data/local_data_source.dart';
+import 'package:open_polito/data/demo_data.dart';
+import 'package:open_polito/db/database.dart' as db;
 import 'package:open_polito/init.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/converters.dart';
 import 'package:open_polito/models/courses.dart';
 import 'package:open_polito/api/api_client.dart' as api;
-import 'package:open_polito/models/search.dart';
+import 'package:open_polito/models/db_converters.dart';
+import 'package:open_polito/types.dart';
 import 'package:retrofit/retrofit.dart';
-import 'package:rxdart/subjects.dart';
 
 part 'data_repository.freezed.dart';
 
@@ -31,37 +32,36 @@ class DataWrapper<T> with _$DataWrapper<T> {
 
 typedef WrapperStream<T> = Stream<DataWrapper<T>>;
 
+@freezed
+class InitHomeData with _$InitHomeData {
+  const factory InitHomeData({
+    required Iterable<CourseOverview> courseOverviews,
+    required Map<int, Map<String, CourseDirectoryItem>> fileMapsByCourseId,
+  }) = _InitHomeData;
+}
+
 class DataRepository {
   api.ApiClient get _api => GetIt.I.get<api.ApiClient>();
   AuthService get _authService => GetIt.I.get<AuthService>();
-
-  final LocalDataSource _local;
-
-  final BehaviorSubject<LocalData> _subject =
-      BehaviorSubject.seeded(GetIt.I.get<LocalDataSource>().state);
-
-  Stream<LocalData> get stream => isDemo ? _subject.stream : _local.stream;
-
-  LocalData get state => isDemo ? _subject.value : _local.state;
+  db.AppDatabase get _db => GetIt.I.get<db.AppDatabase>();
 
   bool get isDemo => _authService.isDemo;
 
-  DataRepository._(this._local);
+  DataRepository._();
 
   StreamSubscription<AppMode>? _appModeSub;
 
-  static DataRepository init({
-    required LocalDataSource localDataSource,
-  }) {
-    final instance = DataRepository._(localDataSource);
+  static DataRepository init() {
+    final instance = DataRepository._();
 
     // Listen to app mode changes
     instance._appModeSub = getAppModeStream().listen((event) {
-      final LocalData newState = switch (event) {
-        AppMode.real => instance._local.state,
-        AppMode.demo => demoState,
-      };
-      instance._subject.add(newState);
+      // TODO: uncomment if using stream again
+      // final LocalData newState = switch (event) {
+      //   AppMode.real => instance._local.state,
+      //   AppMode.demo => demoState,
+      // };
+      // instance._subject.add(newState);
       if (kDebugMode) {
         print("DataRepository: Changed to $event mode");
       }
@@ -88,6 +88,35 @@ class DataRepository {
     }
   }
 
+  // TODO: proper offline checking
+  bool isAppOffline() => false;
+
+  // TODO: separate this function
+  Stream<Result<T, void>> withRetries<T>(
+      Future<HttpResponse<T>> Function() caller) async* {
+    const maxAttempts = 5;
+
+    // TODO: precompute durations?
+    Duration getWaitTime(int n) {
+      return Duration(milliseconds: 1000 * exp(n) ~/ 8);
+    }
+
+    for (int i = 0; i < maxAttempts; i++) {
+      if (i > 0) {
+        await Future.delayed(getWaitTime(i));
+      }
+      final data = await _w(caller);
+      if (data != null) {
+        yield Ok(data);
+        return;
+      }
+    }
+
+    // If we got here, all retries failed.
+    yield const Err(null);
+    return;
+  }
+
   /// Takes a function [fn] as input:
   /// - if [isDemo] is `true`, does nothing
   /// - otherwise, runs [fn] and returns its Future.
@@ -98,109 +127,59 @@ class DataRepository {
     return await fn();
   }
 
-  /// Initialize home screen data
-  FutureOr<void> initHomeScreen() => demoNop(() async {
-        if (isDemo) {
-          return;
-        }
-        // 1. Fetch courses.
-        // 2. For each course, fetch:
-        //   - live classes
-        //   - files
-        final courseOverviews = await getCourses();
-        final List<Future> futures = [
-          ...courseOverviews.map((courseOverview) async =>
-              await getCourseVirtualClassrooms(courseOverview.id)),
-          ...courseOverviews.map((courseOverview) async =>
-              await getCourseVirtualClassrooms(courseOverview.id)),
-        ];
-        await Future.wait(futures);
-      });
+  Stream<InitHomeData> initHomeScreen() async* {
+    if (isDemo) {
+      yield InitHomeData(
+          courseOverviews: demoState.overviews,
+          fileMapsByCourseId: demoState.dirMapsByCourse);
+      return;
+    }
 
-  /// Gets course overviews and updates the stream.
-  FutureOr<Iterable<CourseOverview>> getCourses() => _w(_api.getCourses)
-          .then((res) => (res?.data ?? [])
-              .map((overview) => courseOverviewFromAPI(overview)))
-          .then((value) async {
-        final data = value.map((e) => CourseData(overview: e)).toList();
-        await _local.setCourses(data);
-        return value.toList();
-      });
+    const data = InitHomeData(courseOverviews: [], fileMapsByCourseId: {});
 
-  /// Gets course virtual classrooms and updates the stream.
-  FutureOr<Iterable<VirtualClassroom>> getCourseVirtualClassrooms(
-          int courseId) =>
-      _w(() => _api.getCourseVirtualClassrooms(courseId))
-          .then((vcResponse) async {
-        final data =
-            (vcResponse?.data ?? []).map((vc) => vcFromAPI(vc, courseId));
-        await _local.setCourseVirtualClassrooms(courseId, data.toList());
-        return data;
-      });
+    final overviews = ((await _w(_api.getCourses))?.data)
+        ?.map((e) => courseOverviewFromAPI(e));
 
-  /// Gets course files and updates the stream.
-  FutureOr<Iterable<CourseFileInfo>> getCourseFiles(int courseId) =>
-      _w(() => _api.getCourseFiles(courseId)).then((filesResponse) async {
-        final data = (filesResponse?.data ?? [])
-            .map((file) => fileFromAPI(file, courseId))
-            .whereType<CourseFileInfo>();
+    if (overviews != null) {
+      await _db.coursesDao.deleteCourses();
+      await _db.coursesDao
+          .addCourses(overviews.map((e) => dbCourseOverview(e)));
+      yield data.copyWith(courseOverviews: overviews, fileMapsByCourseId: {});
+    }
 
-        _local.setCourseFiles(courseId, data.toList());
+    if (overviews == null) {
+      return;
+    }
 
-        return data;
-      });
+    // Now for each course:
+    // - get files
+    final Map<int, Map<String, CourseDirectoryItem>> fileMap = {};
 
-  /// Gets search results.
-  FutureOr<SearchResult> getSearchResults(
-      SearchCategory searchCategory, String search) async {
-    // TODO: caching rules
+    for (final ov in overviews) {
+      // FILES
+      final apiFiles = (await _w(() => _api.getCourseFiles(ov.id)))?.data;
 
-    final FutureOr<SearchResult> res = await switch (searchCategory) {
-      // TODO: Handle this case.
-      SearchCategory.files => _getFilesSearch(search),
-      SearchCategory.recordings => _getRecordingsSearch(search),
-      SearchCategory.people => _getPeopleSearch(search),
-    };
-
-    return res;
-  }
-
-  FutureOr<FilesSearchResult> _getFilesSearch(String search) async {
-    // TODO: search query
-    final Iterable<Iterable<FileSearchResultItem?>> files =
-        await Future.wait(state.coursesById.entries.map((e) async {
-      final courseId = e.value.overview?.id;
-      if (courseId == null) {
-        return [];
+      if (apiFiles == null) {
+        continue;
       }
-      final courseFiles = await getCourseFiles(courseId);
-      return courseFiles
-          .map((e) => FileSearchResultItem(courseId: courseId, file: e));
-    }));
-    final mappedFiles = files
-        .expand(
-          (element) => element,
-        )
-        .nonNulls;
-    return FilesSearchResult(mappedFiles);
-  }
 
-  FutureOr<RecordingsSearchResult> _getRecordingsSearch(String search) async {
-    return RecordingsSearchResult([]);
-    // TODO: search query
-    // TODO: analyze API spec to understand which endpoint to call.
-    // final Iterable<Iterable<RecordingsSearchResult>> recordings =
-    //     await Future.wait(state.coursesById.entries.map((e) async {
-    //   final courseId = e.value.overview?.id;
-    //   if (courseId == null) {
-    //     return [];
-    //   }
-    //   final courseRecordings = await getcourse
-    // }));
-  }
+      // Delete old files
+      await _db.coursesDao.deleteCourseMaterial(courseId: ov.id);
 
-  FutureOr<PeopleSearchResult> _getPeopleSearch(String search) async {
-    final res = await _w(() => _api.getPeople(search));
-    return PeopleSearchResult(res?.data ?? []);
+      final map = dirMapFromAPI(apiFiles, ov.id);
+      fileMap[ov.id] = map;
+      yield (data.copyWith(fileMapsByCourseId: fileMap));
+    }
+
+    // Cleanup
+    // Delete items for which the course doesn't exist anymore.
+    await _db.coursesDao
+        .deleteCourseMaterialNotInIds(courseIds: overviews.map((e) => e.id));
+
+    // If we don't have to refetch...
+    yield InitHomeData(
+      courseOverviews: overviews,
+      fileMapsByCourseId: fileMap,
+    );
   }
 }

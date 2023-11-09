@@ -47,6 +47,7 @@ class CourseOverview with _$CourseOverview {
     required bool isInPersonalStudyPlan,
     required bool isModule,
     int? moduleNumber,
+    String? year,
   }) = _CourseOverview;
   factory CourseOverview.fromJson(Map<String, Object?> json) =>
       _$CourseOverviewFromJson(json);
@@ -103,7 +104,7 @@ sealed class CourseDirectoryContent with _$CourseDirectoryContent {
     required String id,
     required CourseDirectoryContentType type,
     required String name,
-    required CourseDirectoryContent files,
+    required Iterable<CourseDirectoryContent> files,
   }) = CourseDirectory;
 
   @FreezedUnionValue("file")

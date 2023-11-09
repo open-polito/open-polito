@@ -1,22 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'courses.freezed.dart';
-part 'courses.g.dart';
-
-@freezed
-class CourseData with _$CourseData {
-  const factory CourseData({
-    CourseOverview? overview,
-    List<CourseFileInfo>? files,
-    // CourseInfo? courseInfo,
-    // Guide? courseGuide,
-    // @Default([]) List<CourseNotices> notices,
-    List<VirtualClassroom>? virtualClassrooms,
-    // CoursesCourseIdVideolecturesGet$Response? videoLectures,
-  }) = _CourseData;
-  factory CourseData.fromJson(Map<String, Object?> json) =>
-      _$CourseDataFromJson(json);
-}
 
 @freezed
 class CourseOverview with _$CourseOverview {
@@ -30,19 +14,17 @@ class CourseOverview with _$CourseOverview {
     required bool isInPersonalStudyPlan,
     required bool isModule,
     int? moduleNumber,
+    String? year,
+    int? teacherId,
   }) = _CourseOverview;
-  factory CourseOverview.fromJson(Map<String, Object?> json) =>
-      _$CourseOverviewFromJson(json);
 }
 
 @freezed
 class CourseTeachingPeriod with _$CourseTeachingPeriod {
   const factory CourseTeachingPeriod({
-    required int year,
+    int? year,
     int? semester,
   }) = _CourseTeachingPeriod;
-  factory CourseTeachingPeriod.fromJson(Map<String, Object?> json) =>
-      _$CourseTeachingPeriodFromJson(json);
 
   static CourseTeachingPeriod? parse(String s) {
     try {
@@ -67,8 +49,6 @@ class VirtualClassroom with _$VirtualClassroom {
     required bool isLive,
     VirtualClassroomLive? live,
   }) = _VirtualClassroom;
-  factory VirtualClassroom.fromJson(Map<String, Object?> json) =>
-      _$VirtualClassroomFromJson(json);
 }
 
 @freezed
@@ -78,19 +58,23 @@ class VirtualClassroomLive with _$VirtualClassroomLive {
     required String meetingId,
     required DateTime createdAt,
   }) = _VirtualClassroomLive;
-  factory VirtualClassroomLive.fromJson(Map<String, Object?> json) =>
-      _$VirtualClassroomLiveFromJson(json);
 }
 
 @freezed
-class CourseFileInfo with _$CourseFileInfo {
-  const factory CourseFileInfo({
+sealed class CourseDirectoryItem with _$CourseDirectoryItem {
+  const factory CourseDirectoryItem.file({
     required String id,
+    String? parentId,
     required String name,
-    required int sizeKB,
+    required BigInt sizeKB,
     required String mimeType,
     required DateTime createdAt,
-  }) = _CourseFileInfo;
-  factory CourseFileInfo.fromJson(Map<String, Object?> json) =>
-      _$CourseFileInfoFromJson(json);
+  }) = CourseFileInfo;
+
+  const factory CourseDirectoryItem.dir({
+    required String id,
+    String? parentId,
+    required Iterable<String> children,
+    required String name,
+  }) = CourseDirInfo;
 }

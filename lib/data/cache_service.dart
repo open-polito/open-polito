@@ -1,0 +1,3 @@
+class CacheService {
+  CacheService();
+}

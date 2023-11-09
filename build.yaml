@@ -8,4 +8,5 @@ targets:
           checked: false
           create_field_map: false
       drift_dev:
-        enabled: false
+        options:
+          store_date_time_values_as_text: true

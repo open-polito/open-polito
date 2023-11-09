@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/data_repository.dart';
-import 'package:open_polito/data/local_data_source.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/courses.dart';
 
@@ -13,20 +12,17 @@ part 'home_screen_bloc.freezed.dart';
 @freezed
 class HomeScreenBlocState with _$HomeScreenBlocState {
   const factory HomeScreenBlocState({
-    required Stream<LocalData> data,
-    required List<VirtualClassroomLive> virtualClassrooms,
+    required Iterable<CourseOverview> courseOverviews,
   }) = _HomeScreenBlocState;
 }
 
 class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
-  HomeScreenBloc()
-      : super(HomeScreenBlocState(
-            data: GetIt.I.get<DataRepository>().stream, virtualClassrooms: []));
-
-  StreamSubscription<LocalData>? sub;
+  HomeScreenBloc() : super(const HomeScreenBlocState(courseOverviews: []));
 
   Future<void> init() async {
-    await GetIt.I.get<DataRepository>().initHomeScreen();
+    await for (final d in GetIt.I.get<DataRepository>().initHomeScreen()) {
+      emit(state.copyWith(courseOverviews: d.courseOverviews));
+    }
   }
 
   Future<void> resetAll({
@@ -34,11 +30,5 @@ class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
   }) async {
     await GetIt.I.get<AuthService>().logout();
     gotoLogin();
-  }
-
-  @override
-  Future<void> close() {
-    sub?.cancel();
-    return super.close();
   }
 }

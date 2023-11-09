@@ -8,7 +8,7 @@ import 'package:open_polito/bloc/auth_bloc.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/data/data_repository.dart';
-import 'package:open_polito/data/local_data_source.dart';
+import 'package:open_polito/db/database.dart';
 import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/data/key_value_store.dart';
 import 'package:open_polito/logic/api.dart';
@@ -31,6 +31,10 @@ AppMode getAppMode() => _appModeController.value;
 /// The order of registration doesn't matter, as long as the instances
 /// don't require a dependency with get_it during initialization.
 Future<void> configureStuff() async {
+  // Database
+  final database = AppDatabase();
+  getIt.registerSingleton<AppDatabase>(database);
+
   // Repositories
   final secureStoreRepository = SecureStore.init();
   getIt.registerSingleton<ISecureStore>(secureStoreRepository);
@@ -38,11 +42,7 @@ Future<void> configureStuff() async {
   final keyValueStore = await KvStore.init();
   getIt.registerSingleton<KvStore>(keyValueStore);
 
-  // Data source
-  final localDataSource = LocalDataSource.init();
-  getIt.registerSingleton<LocalDataSource>(localDataSource);
-
-  final dataRepository = DataRepository.init(localDataSource: localDataSource);
+  final dataRepository = DataRepository.init();
   getIt.registerSingleton<DataRepository>(dataRepository);
 
   // Dio
