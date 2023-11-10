@@ -39,6 +39,7 @@ class InitHomeData with _$InitHomeData {
     required Iterable<CourseOverview> courseOverviews,
     required Map<int, Map<String, CourseDirectoryItem>> fileMapsByCourseId,
     required List<VirtualClassroom> classes,
+    required List<CourseFileInfo> latestFiles,
   }) = _InitHomeData;
 }
 
@@ -101,12 +102,16 @@ class DataRepository {
         courseOverviews: demoState.overviews,
         fileMapsByCourseId: demoState.dirMapsByCourse,
         classes: [],
+        latestFiles: [],
       );
       return;
     }
 
-    var data =
-        InitHomeData(courseOverviews: [], fileMapsByCourseId: {}, classes: []);
+    var data = const InitHomeData(
+        courseOverviews: [],
+        fileMapsByCourseId: {},
+        classes: [],
+        latestFiles: []);
 
     final overviews = ((await req(_api.getCourses))?.data)
         ?.map((e) => courseOverviewFromAPI(e));
@@ -141,7 +146,7 @@ class DataRepository {
         // Delete old files
         await _db.coursesDao.deleteCourseMaterial(courseId: ov.id);
 
-        final map = dirMapFromAPI(apiFiles, ov.id);
+        final map = dirMapFromAPI(apiFiles, ov.id, courseName: ov.name);
         fileMap[ov.id] = map;
         data = data.copyWith(fileMapsByCourseId: fileMap);
         yield data;
@@ -158,6 +163,20 @@ class DataRepository {
         yield data;
       }
     }
+
+    // Process latest files
+    final latestFiles = (data.fileMapsByCourseId.values
+            .map((e) => e.values.map((e) => e))
+            .expand((element) => element)
+            .whereType<CourseFileInfo>()
+            .toList()
+          ..sort((a, b) => b.createdAt.difference(a.createdAt).inMilliseconds))
+        .take(10)
+        .toList();
+    data = data.copyWith(
+      latestFiles: latestFiles,
+    );
+    yield data;
 
     // Cleanup
     // Delete items for which the course doesn't exist anymore.

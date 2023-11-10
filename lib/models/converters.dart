@@ -30,13 +30,15 @@ VirtualClassroom vcFromAPI(api.VirtualClassroomBase res, int courseId) =>
 
 /// Convert directory item
 CourseDirectoryItem fileFromAPI(api.CourseDirectoryContent res, int courseId,
-        {String? parentId}) =>
+        {String? parentId, required String courseName}) =>
     switch (res) {
       api.CourseDirectory() => CourseDirInfo(
           id: res.id,
           children: res.files.map((e) => e.id),
           name: res.name,
           parentId: parentId,
+          courseId: courseId,
+          courseName: courseName,
         ),
       api.CourseFileOverview() => CourseFileInfo(
           id: res.id,
@@ -45,6 +47,8 @@ CourseDirectoryItem fileFromAPI(api.CourseDirectoryContent res, int courseId,
           mimeType: res.mimeType,
           createdAt: res.createdAt,
           parentId: parentId,
+          courseId: courseId,
+          courseName: courseName,
         ),
     };
 
@@ -53,15 +57,18 @@ Map<String, CourseDirectoryItem> dirMapFromAPI(
   Iterable<api.CourseDirectoryContent> res,
   int courseId, {
   String? parentId,
+  required String courseName,
 }) {
   final map = <String, CourseDirectoryItem>{};
 
   for (final item in res) {
-    final converted = fileFromAPI(item, courseId, parentId: parentId);
+    final converted =
+        fileFromAPI(item, courseId, parentId: parentId, courseName: courseName);
     map[converted.id] = converted;
 
     if (item case api.CourseDirectory()) {
-      map.addAll(dirMapFromAPI(item.files, courseId, parentId: item.id));
+      map.addAll(dirMapFromAPI(item.files, courseId,
+          parentId: item.id, courseName: courseName));
     }
   }
 

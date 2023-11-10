@@ -19,6 +19,8 @@ class AppTheme with _$AppTheme {
     required Color label,
     required Color primaryScreenTitle,
     required Color homeScreenSectionTitle,
+    required Color cardPrimaryText,
+    required Color cardSecondaryText,
   }) = _AppTheme;
 }
 
@@ -35,4 +37,6 @@ const lightTheme = AppTheme(
   label: AppColors.gray700,
   primaryScreenTitle: AppColors.gray900,
   homeScreenSectionTitle: AppColors.gray600,
+  cardPrimaryText: AppColors.gray900,
+  cardSecondaryText: AppColors.gray600,
 );

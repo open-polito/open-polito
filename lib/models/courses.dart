@@ -69,6 +69,8 @@ sealed class CourseDirectoryItem with _$CourseDirectoryItem {
     required BigInt sizeKB,
     required String mimeType,
     required DateTime createdAt,
+    required int courseId,
+    required String courseName,
   }) = CourseFileInfo;
 
   const factory CourseDirectoryItem.dir({
@@ -76,5 +78,7 @@ sealed class CourseDirectoryItem with _$CourseDirectoryItem {
     String? parentId,
     required Iterable<String> children,
     required String name,
+    required int courseId,
+    required String courseName,
   }) = CourseDirInfo;
 }

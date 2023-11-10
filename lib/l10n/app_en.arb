@@ -28,5 +28,39 @@
     }
   },
   "homeScreen_label_search": "Search for files, lectures, people...",
-  "homeScreen_section_liveClasses": "Live classes"
+  "homeScreen_section_liveClasses": "Live classes",
+  "homeScreen_section_latestFiles": "Latest files",
+
+  "durationPast_seconds": "{n, plural, =1{1 second} other{{n} seconds}} ago",
+  "@durationPast_seconds": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationPast_minutes": "{n, plural, =1{1 minute} other{{n} minutes}} ago",
+  "@durationPast_minutes": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationPast_hours": "{n, plural, =1{1 hour} other{{n} hours}} ago",
+  "@durationPast_hours": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "durationPast_days": "{n, plural, =1{1 day} other{{n} days}} ago",
+  "@durationPast_days": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  }
 }

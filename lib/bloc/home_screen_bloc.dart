@@ -12,24 +12,35 @@ part 'home_screen_bloc.freezed.dart';
 @freezed
 class HomeScreenBlocState with _$HomeScreenBlocState {
   const factory HomeScreenBlocState({
+    required bool initialized,
     required Iterable<CourseOverview> courseOverviews,
     required List<VirtualClassroom> classes,
     required List<VirtualClassroomLive> liveClasses,
+    required List<CourseFileInfo> latestFiles,
   }) = _HomeScreenBlocState;
 }
 
 class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
   HomeScreenBloc()
       : super(const HomeScreenBlocState(
-            courseOverviews: [], classes: [], liveClasses: []));
+            initialized: false,
+            courseOverviews: [],
+            classes: [],
+            liveClasses: [],
+            latestFiles: []));
 
   Future<void> init() async {
+    if (state.initialized) {
+      return;
+    }
+    emit(state.copyWith(initialized: true));
     await for (final d in GetIt.I.get<DataRepository>().initHomeScreen()) {
       emit(
         state.copyWith(
           courseOverviews: d.courseOverviews,
           classes: d.classes,
           liveClasses: d.classes.whereType<VirtualClassroomLive>().toList(),
+          latestFiles: d.latestFiles,
         ),
       );
     }

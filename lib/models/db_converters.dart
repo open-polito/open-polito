@@ -36,7 +36,8 @@ db.CourseOverviewsCompanion dbCourseOverview(CourseOverview c) {
 }
 
 CourseDirectoryItem? courseDirectoryItemFromDB(
-    db.CourseDirItem item, Iterable<db.CourseDirItem> allItems) {
+    db.CourseDirItem item, Iterable<db.CourseDirItem> allItems,
+    {required String courseName}) {
   final type = item.type;
   switch (type) {
     case schema.CourseDirItemType.file:
@@ -51,6 +52,8 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
           mimeType: mimeType,
           createdAt: createdAt,
           parentId: item.parentId,
+          courseId: item.courseId,
+          courseName: courseName,
         );
       }
       break;
@@ -62,6 +65,8 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
             .where((element) => element.parentId == item.itemId)
             .map((e) => e.itemId),
         parentId: item.parentId,
+        courseId: item.courseId,
+        courseName: courseName,
       );
     default:
       return null;

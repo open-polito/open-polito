@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
 import 'package:open_polito/router.dart';
+import 'package:open_polito/ui/home_sections/latest_files_section.dart';
 import 'package:open_polito/ui/home_sections/live_classes_section.dart';
 import 'package:open_polito/ui/layout.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
@@ -47,6 +48,12 @@ class HomeScreen extends StatelessWidget {
                       classes: state.liveClasses,
                       title: AppLocalizations.of(context)!
                           .homeScreen_section_liveClasses,
+                    ),
+                  if (state.latestFiles.isNotEmpty)
+                    LatestFilesSection(
+                      latestFiles: state.latestFiles,
+                      title: AppLocalizations.of(context)!
+                          .homeScreen_section_latestFiles,
                     ),
                   Text(state.toString() ?? ""),
                 ],

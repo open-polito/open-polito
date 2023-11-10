@@ -57,6 +57,7 @@ dependencies:
   url_launcher: ^6.1.14
   openapi_generator_annotations: ^4.13.1
   connectivity_plus: ^5.0.1
+  flutter_tabler_icons: ^1.7.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.18.1
