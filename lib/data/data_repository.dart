@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:open_polito/api/models/courses.dart' as api_models;
 import 'package:open_polito/data/demo_data.dart';
 import 'package:open_polito/db/database.dart' as db;
 import 'package:open_polito/logic/api.dart';
@@ -37,6 +38,7 @@ class InitHomeData with _$InitHomeData {
   const factory InitHomeData({
     required Iterable<CourseOverview> courseOverviews,
     required Map<int, Map<String, CourseDirectoryItem>> fileMapsByCourseId,
+    required List<VirtualClassroom> classes,
   }) = _InitHomeData;
 }
 
@@ -96,12 +98,15 @@ class DataRepository {
   Stream<InitHomeData> initHomeScreen() async* {
     if (isDemo) {
       yield InitHomeData(
-          courseOverviews: demoState.overviews,
-          fileMapsByCourseId: demoState.dirMapsByCourse);
+        courseOverviews: demoState.overviews,
+        fileMapsByCourseId: demoState.dirMapsByCourse,
+        classes: [],
+      );
       return;
     }
 
-    const data = InitHomeData(courseOverviews: [], fileMapsByCourseId: {});
+    const data =
+        InitHomeData(courseOverviews: [], fileMapsByCourseId: {}, classes: []);
 
     final overviews = ((await req(_api.getCourses))?.data)
         ?.map((e) => courseOverviewFromAPI(e));
@@ -117,35 +122,43 @@ class DataRepository {
       return;
     }
 
-    // Now for each course:
-    // - get files
     final Map<int, Map<String, CourseDirectoryItem>> fileMap = {};
 
     for (final ov in overviews) {
       // FILES
-      final apiFiles = (await req(() => _api.getCourseFiles(ov.id)))?.data;
+      final [
+        apiFiles as List<api_models.CourseDirectoryContent>?,
+        apiClasses as List<api_models.VirtualClassroomBase>?,
+      ] = await Future.wait([
+        req(() => _api.getCourseFiles(ov.id)).then((value) => value?.data),
+        req(() => _api.getCourseVirtualClassrooms(ov.id))
+            .then((value) => value?.data),
+      ]);
 
-      if (apiFiles == null) {
-        continue;
+      // Process files
+      if (apiFiles != null) {
+        // Delete old files
+        await _db.coursesDao.deleteCourseMaterial(courseId: ov.id);
+
+        final map = dirMapFromAPI(apiFiles, ov.id);
+        fileMap[ov.id] = map;
+        yield data.copyWith(fileMapsByCourseId: fileMap);
+
+        // Save new material list
+        await _db.coursesDao.addCourseMaterial(
+            map.values.map((e) => dbCourseDirItem(e, ov.id)));
       }
 
-      // Delete old files
-      await _db.coursesDao.deleteCourseMaterial(courseId: ov.id);
-
-      final map = dirMapFromAPI(apiFiles, ov.id);
-      fileMap[ov.id] = map;
-      yield (data.copyWith(fileMapsByCourseId: fileMap));
+      // Process classes
+      if (apiClasses != null) {
+        final classes = apiClasses.map((e) => vcFromAPI(e, ov.id));
+        yield data.copyWith(classes: [...data.classes, ...classes]);
+      }
     }
 
     // Cleanup
     // Delete items for which the course doesn't exist anymore.
     await _db.coursesDao
         .deleteCourseMaterialNotInIds(courseIds: overviews.map((e) => e.id));
-
-    // If we don't have to refetch...
-    yield InitHomeData(
-      courseOverviews: overviews,
-      fileMapsByCourseId: fileMap,
-    );
   }
 }

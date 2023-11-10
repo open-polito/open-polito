@@ -68,3 +68,26 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
   }
   return null;
 }
+
+db.CourseDirItemsCompanion dbCourseDirItem(
+    CourseDirectoryItem item, int courseId) {
+  return switch (item) {
+    CourseFileInfo() => db.CourseDirItemsCompanion(
+        courseId: Value(courseId),
+        createdAt: Value(item.createdAt),
+        itemId: Value(item.id),
+        mimeType: Value(item.mimeType),
+        name: Value(item.name),
+        parentId: Value(item.parentId),
+        sizeKB: Value(item.sizeKB),
+        type: const Value(schema.CourseDirItemType.file),
+      ),
+    CourseDirInfo() => db.CourseDirItemsCompanion(
+        courseId: Value(courseId),
+        itemId: Value(item.id),
+        name: Value(item.name),
+        parentId: Value(item.parentId),
+        type: const Value(schema.CourseDirItemType.dir),
+      ),
+  };
+}

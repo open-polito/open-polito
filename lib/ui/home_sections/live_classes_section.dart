@@ -93,7 +93,7 @@ class LiveClassWidget extends StatelessWidget {
 
 class LiveClassesSection extends StatelessWidget {
   final String title;
-  final List<VirtualClassroomLive> classes;
+  final Iterable<VirtualClassroomLive> classes;
 
   const LiveClassesSection({
     super.key,
@@ -106,13 +106,11 @@ class LiveClassesSection extends StatelessWidget {
     return HomeSectionBase(
       title: title,
       icon: Icons.live_tv_rounded,
-      children: classes
-          .map((e) => LiveClassWidget(
-              courseName: e.title,
-              classTitle: e.title,
-              elapsedSinceStart: e.createdAt.toString(),
-              meetingUrl: e.meetingId))
-          .toList(),
+      children: classes.map((e) => LiveClassWidget(
+          courseName: e.title,
+          classTitle: e.title,
+          elapsedSinceStart: e.createdAt.toString(),
+          meetingUrl: "")),
     );
   }
 }

@@ -7,7 +7,7 @@ import 'package:open_polito/ui/layout.dart';
 class HomeSectionBase extends StatelessWidget {
   final String title;
   final IconData icon;
-  final List<Widget> children;
+  final Iterable<Widget> children;
 
   const HomeSectionBase({
     super.key,
