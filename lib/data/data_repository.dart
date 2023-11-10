@@ -105,7 +105,7 @@ class DataRepository {
       return;
     }
 
-    const data =
+    var data =
         InitHomeData(courseOverviews: [], fileMapsByCourseId: {}, classes: []);
 
     final overviews = ((await req(_api.getCourses))?.data)
@@ -115,7 +115,8 @@ class DataRepository {
       await _db.coursesDao.deleteCourses();
       await _db.coursesDao
           .addCourses(overviews.map((e) => dbCourseOverview(e)));
-      yield data.copyWith(courseOverviews: overviews, fileMapsByCourseId: {});
+      data = data.copyWith(courseOverviews: overviews, fileMapsByCourseId: {});
+      yield data;
     }
 
     if (overviews == null) {
@@ -142,7 +143,8 @@ class DataRepository {
 
         final map = dirMapFromAPI(apiFiles, ov.id);
         fileMap[ov.id] = map;
-        yield data.copyWith(fileMapsByCourseId: fileMap);
+        data = data.copyWith(fileMapsByCourseId: fileMap);
+        yield data;
 
         // Save new material list
         await _db.coursesDao.addCourseMaterial(
@@ -152,7 +154,8 @@ class DataRepository {
       // Process classes
       if (apiClasses != null) {
         final classes = apiClasses.map((e) => vcFromAPI(e, ov.id));
-        yield data.copyWith(classes: [...data.classes, ...classes]);
+        data = data.copyWith(classes: [...data.classes, ...classes]);
+        yield data;
       }
     }
 
