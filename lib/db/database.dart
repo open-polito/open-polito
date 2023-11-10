@@ -27,6 +27,7 @@ class AppDatabase extends _$AppDatabase {
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
+    // TODO: change. For example, this is ~/Documents on Linux.
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(join(dbFolder.path, "db.sqlite"));
     return NativeDatabase.createInBackground(file);

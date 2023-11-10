@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
-import 'package:open_polito/bloc/login_screen_bloc.dart';
+import 'package:open_polito/bloc/login_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/config.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
@@ -38,7 +38,7 @@ class LoginScreen extends StatelessWidget {
         ],
         child: BlocBuilder<ThemeBloc, ThemeBlocState>(
           builder: (context, themeState) =>
-              BlocBuilder<LoginScreenBloc, LoginScreenBlocState>(
+              BlocBuilder<LoginScreenBloc, LoginBlocState>(
             builder: (context, loginState) =>
                 BlocBuilder<AuthBloc, AuthBlocState>(
               builder: (context, authState) => Center(

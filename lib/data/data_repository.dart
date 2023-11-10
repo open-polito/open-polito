@@ -7,7 +7,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/demo_data.dart';
 import 'package:open_polito/db/database.dart' as db;
-import 'package:open_polito/init.dart';
+import 'package:open_polito/logic/api.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/converters.dart';
 import 'package:open_polito/models/courses.dart';
@@ -49,43 +49,9 @@ class DataRepository {
 
   DataRepository._();
 
-  StreamSubscription<AppMode>? _appModeSub;
-
   static DataRepository init() {
     final instance = DataRepository._();
-
-    // Listen to app mode changes
-    instance._appModeSub = getAppModeStream().listen((event) {
-      // TODO: uncomment if using stream again
-      // final LocalData newState = switch (event) {
-      //   AppMode.real => instance._local.state,
-      //   AppMode.demo => demoState,
-      // };
-      // instance._subject.add(newState);
-      if (kDebugMode) {
-        print("DataRepository: Changed to $event mode");
-      }
-    });
-
     return instance;
-  }
-
-  /// Wrapper for API requests.
-  /// This function is guaranteed to return null if there is no token
-  Future<T?> _w<T>(Future<HttpResponse<T>> Function() futureFn) async {
-    try {
-      final last = _authService.state;
-      final token = last.token;
-      if (token != null) {
-        return (await futureFn()).data;
-      }
-      return null;
-    } catch (e, s) {
-      if (kDebugMode) {
-        print("An error happened! $e. Trace: $s");
-      }
-      return null;
-    }
   }
 
   // TODO: proper offline checking
@@ -105,7 +71,7 @@ class DataRepository {
       if (i > 0) {
         await Future.delayed(getWaitTime(i));
       }
-      final data = await _w(caller);
+      final data = await req(caller);
       if (data != null) {
         yield Ok(data);
         return;
@@ -137,7 +103,7 @@ class DataRepository {
 
     const data = InitHomeData(courseOverviews: [], fileMapsByCourseId: {});
 
-    final overviews = ((await _w(_api.getCourses))?.data)
+    final overviews = ((await req(_api.getCourses))?.data)
         ?.map((e) => courseOverviewFromAPI(e));
 
     if (overviews != null) {
@@ -157,7 +123,7 @@ class DataRepository {
 
     for (final ov in overviews) {
       // FILES
-      final apiFiles = (await _w(() => _api.getCourseFiles(ov.id)))?.data;
+      final apiFiles = (await req(() => _api.getCourseFiles(ov.id)))?.data;
 
       if (apiFiles == null) {
         continue;

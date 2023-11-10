@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_polito/logic/auth/auth_model.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
@@ -24,10 +25,11 @@ class AuthNotifier extends ValueNotifier<RouteType> {
 
   AuthNotifier() : super(RouteType.main) {
     _subscription = GetIt.I.get<AuthService>().stream.listen((event) {
-      final loggedIn = event.loggedIn;
-      value = switch (loggedIn) {
-        null || true => RouteType.main,
-        false => RouteType.login,
+      final authStatus = event.authStatus;
+      value = switch (authStatus) {
+        AuthStatus.pending => RouteType.main,
+        AuthStatus.authorized => RouteType.main,
+        AuthStatus.unauthorized => RouteType.login,
       };
       notifyListeners();
     });
@@ -46,9 +48,14 @@ final router = GoRouter(
   refreshListenable: AuthNotifier(),
   debugLogDiagnostics: kDebugMode,
   redirect: (context, state) {
-    final loggedIn = GetIt.I.get<AuthService>().state.loggedIn;
-    if (loggedIn == false) {
+    final authState = GetIt.I.get<AuthService>().state;
+    final authStatus = authState.authStatus;
+    if (authStatus == AuthStatus.unauthorized) {
       // we are not logged in. Redirect to login
+      if (kDebugMode) {
+        print(
+            "[Router] Not logged in. Will redirect to login. Auth state is: $authState");
+      }
       return "/login";
     }
     return null;

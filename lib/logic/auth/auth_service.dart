@@ -6,12 +6,12 @@ import 'package:get_it/get_it.dart';
 import 'package:open_polito/api/api_client.dart';
 import 'package:open_polito/api/models/auth.dart';
 import 'package:open_polito/data/key_value_store.dart';
+import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/init.dart';
 import 'package:open_polito/logic/api.dart';
 import 'package:open_polito/logic/utils/getters.dart';
 import 'package:open_polito/types.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
 import 'package:open_polito/logic/deviceinfo_service.dart';
 
@@ -20,47 +20,62 @@ part 'auth_service.freezed.dart';
 typedef OnTokenChangedCallback = Future<void> Function(String? token);
 typedef OnTokenInvalidCallback = Future<void> Function();
 
+/// Authentication state.
 @freezed
 class AuthState with _$AuthState {
   const factory AuthState({
+    //
+    // Not persisted
+    //
+
     required AppMode appMode,
+    required AuthStatus authStatus,
+
+    //
     // Persisted
+    //
+
+    /// Used exclusively to "remember" that the user has logged in,
+    /// and, conversely, to check if the user was logged in last time.
     bool? loggedIn,
     String? token,
     String? clientId,
   }) = _AuthState;
 }
 
+/// Demo mode default state
+const _defaultDemoState =
+    AuthState(appMode: AppMode.demo, authStatus: AuthStatus.authorized);
+
+/// Real mode default state
+const _defaultRealState =
+    AuthState(appMode: AppMode.real, authStatus: AuthStatus.pending);
+
 /// Hydrate [AuthState] from persistent data.
-Future<AuthState> hydrateAuthState() async {
-  final kvStore = GetIt.I.get<KvStore>();
-  final secureStore = GetIt.I.get<ISecureStore>();
+///
+/// Pass [initial] because the class has some data that is not persisted.
+/// This data might be assigned before hydration.
+Future<AuthState> _hydrateAuthState(AuthState initial) async {
+  final secureStore = getSecureStore();
 
-  final kvState = kvStore.state;
-
-  final bool loggedIn = switch (kvState) {
-    Ok() => kvState.data.loggedIn ?? false,
-    Err() => false,
-    Pending() => true,
-  };
-
+  final bool loggedIn = await _getLoggedIn();
   final [token, clientId] = await Future.wait([
     secureStore.secureRead(SecureStoreKey.politoApiToken),
     secureStore.secureRead(SecureStoreKey.politoClientId),
   ]);
 
-  return AuthState(
-      loggedIn: loggedIn,
-      token: token,
-      appMode: AppMode.real,
-      clientId: clientId);
+  return initial.copyWith(
+    loggedIn: loggedIn,
+    token: token,
+    clientId: clientId,
+  );
 }
 
 /// Update [AuthState] and persist changes.
-FutureOr<AuthState> updateAuthState(
+FutureOr<AuthState> _updateAuthState(
   AuthState prev,
   Updater<AuthState> updater, {
-  bool demoMode = false,
+  required bool demoMode,
 }) async {
   final newState = await updater(prev);
 
@@ -81,16 +96,34 @@ FutureOr<AuthState> updateAuthState(
 
   if (prev.clientId != newState.clientId) {
     await getSecureStore()
-        .secureWrite(SecureStoreKey.politoApiToken, newState.clientId);
+        .secureWrite(SecureStoreKey.politoClientId, newState.clientId);
   }
 
   return newState;
 }
 
-class AuthService {
-  final BehaviorSubject<AuthState> _subject;
+/// Get loggedIn value from key-value store.
+Future<bool> _getLoggedIn() async {
+  await for (final kvState in getKvStore().stream) {
+    if (kDebugMode) {
+      print("[AuthService _getLoggedIn] New kvState: $kvState");
+    }
+    if (kvState case Ok()) {
+      if (kDebugMode) {
+        print("[AuthService _getLoggedIn] New kvState is Ok: ${kvState.data}");
+      }
+      return kvState.data.loggedIn ?? false;
+    }
+  }
+  return false;
+}
 
-  AuthService(this._subject);
+class AuthService {
+  AuthService._();
+
+  /// Auth state. It is assigned with a default value at initialization.
+  final BehaviorSubject<AuthState> _subject =
+      BehaviorSubject.seeded(_defaultRealState);
 
   AuthState get state => _subject.value;
   Stream<AuthState> get stream => _subject.stream;
@@ -101,33 +134,77 @@ class AuthService {
   DioWrapper get _dioWrapper => GetIt.I.get<DioWrapper>();
 
   FutureOr<void> _updater(Updater<AuthState> updater) async {
-    if (!isDemo) {
-      final newState = await updateAuthState(state, (prev) => updater(prev));
-      _subject.add(newState);
-    } else {
-      _subject.add(await updater(state));
+    final prevState = state;
+    final newState = await updater(prevState);
+
+    if (kDebugMode) {
+      print("[AuthService _updater] New state: $newState");
     }
+
+    if (!isDemo) {
+      await _updateAuthState(state, (prev) => newState, demoMode: isDemo);
+    }
+
+    _subject.add(newState);
+  }
+
+  /// Does preliminary checks to determine whether user is authorized
+  /// or has to log in. Also handles state hydration, as part of the
+  /// auth checking logic.
+  Future<void> _authCheckAndHydrate() async {
+    await _updater((prev) => prev.copyWith(authStatus: AuthStatus.pending));
+    final bool loggedIn = await _getLoggedIn();
+    if (kDebugMode) {
+      print("[AuthService] loggedIn is $loggedIn");
+    }
+    if (!loggedIn) {
+      // Was not logged in last time, therefore user is not authorized.
+      await _updater(
+          (prev) => prev.copyWith(authStatus: AuthStatus.unauthorized));
+      return;
+    }
+    // Was logged in last time. To be more confident about this, also check
+    // that there is a stored token and client id.
+    // This is where we rehydrate the auth state.
+    await _updater((prev) => _hydrateAuthState(prev));
+    final token = state.token;
+    final clientId = state.clientId;
+    if (token == null ||
+        token.isEmpty ||
+        clientId == null ||
+        clientId.isEmpty) {
+      // At least one of the values is null or empty. User unauthorized.
+      await _updater(
+          (prev) => prev.copyWith(authStatus: AuthStatus.unauthorized));
+      return;
+    }
+    // Values (token, etc...) are valid too! User is definitely authorized,
+    // unless the token has expired, which will be verified when making
+    // an API request anyway.
+    await _updater((prev) => prev.copyWith(authStatus: AuthStatus.authorized));
   }
 
   static Future<AuthService> init() async {
-    return AuthService(BehaviorSubject.seeded(await hydrateAuthState()));
+    final instance = AuthService._();
+    // Run function after returning instance because we don't want to wait
+    // for all checks to complete before having an usable instance.
+    return instance.._authCheckAndHydrate();
   }
 
-  FutureOr<void> setRealMode() =>
-      _updater((prev) async => await hydrateAuthState());
+  FutureOr<void> setRealMode() async {
+    await _updater((prev) => _defaultRealState);
+    // When returning to real mode, we need to check authorization again!
+    await _authCheckAndHydrate();
+  }
 
-  FutureOr<void> setDemoMode() => _updater(
-      (prev) => const AuthState(appMode: AppMode.demo, loggedIn: true));
+  FutureOr<void> setDemoMode() async {
+    await _updater((prev) => _defaultDemoState);
+  }
 
   Future<void> invalidate() async {
-    if (isDemo) {
-      await _updater((s) => s.copyWith(loggedIn: false, token: null));
+    if (!isDemo) {
+      await _resetAuthData();
     }
-    await Future.wait([
-      Future(_removeSecureData),
-      Future(_removeKvData),
-    ]);
-    await _updater((s) => s.copyWith(loggedIn: false, token: null));
   }
 
   FutureOr<Result<void, LoginErrorType>> login(String username, String password,
@@ -150,7 +227,10 @@ class AuthService {
     if (username == "" || password == "") {
       return const Err(LoginErrorType.validation);
     }
+
     try {
+      // NOTE: Don't wrap this request with the [req] wrapper function
+      // because we don't have a valid token before this request.
       final res = await _api.login(LoginRequest(
           username: username,
           password: password,
@@ -167,9 +247,6 @@ class AuthService {
                   await DeviceInfoService.getItem(DeviceInfoKey.version))));
 
       final data = res.data.data;
-      if (data == null) {
-        return const Err(LoginErrorType.general);
-      }
       // Check if valid user type
       if (data.type != "student") {
         return const Err(LoginErrorType.userTypeNotSupported);
@@ -179,7 +256,13 @@ class AuthService {
       await _updateToken(data.token);
       await _updateClientId(data.clientId);
 
-      await _updater((prev) => prev.copyWith(loggedIn: true));
+      // User is authorized
+      await _updater((prev) => prev.copyWith(
+            authStatus: AuthStatus.authorized,
+            // Next time the app is opened, it will remember that
+            // the user has already logged in.
+            loggedIn: true,
+          ));
 
       return const Ok(null);
     } catch (e) {
@@ -195,7 +278,7 @@ class AuthService {
         await _api.logout();
       }
     } finally {
-      invalidate();
+      await invalidate();
     }
   }
 
@@ -204,13 +287,10 @@ class AuthService {
     await _updater((prev) => prev.copyWith(token: t));
   }
 
-  FutureOr<void> _updateClientId(String id) =>
-      _updater((prev) => prev.copyWith(clientId: id));
+  FutureOr<void> _updateClientId(String id) async =>
+      await _updater((prev) => prev.copyWith(clientId: id));
 
-  FutureOr<void> _removeSecureData() => _updater(
-        (prev) => prev.copyWith(token: null, clientId: null),
+  FutureOr<void> _resetAuthData() => _updater(
+        (_) => _defaultRealState.copyWith(authStatus: AuthStatus.unauthorized),
       );
-
-  FutureOr<void> _removeKvData() =>
-      _updater((prev) => prev.copyWith(loggedIn: null));
 }

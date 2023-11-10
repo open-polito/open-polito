@@ -22,28 +22,21 @@ enum AppMode {
 
 final getIt = GetIt.instance..allowReassignment = true;
 
-final _appModeController = BehaviorSubject.seeded(AppMode.real);
-Stream<AppMode> getAppModeStream() => _appModeController.stream;
-AppMode getAppMode() => _appModeController.value;
-
 /// Configures dependencies with get_it, and other things.
 ///
 /// The order of registration doesn't matter, as long as the instances
 /// don't require a dependency with get_it during initialization.
 Future<void> configureStuff() async {
-  // Database
-  final database = AppDatabase();
-  getIt.registerSingleton<AppDatabase>(database);
-
-  // Repositories
+  // Storage
   final secureStoreRepository = SecureStore.init();
   getIt.registerSingleton<ISecureStore>(secureStoreRepository);
 
   final keyValueStore = await KvStore.init();
   getIt.registerSingleton<KvStore>(keyValueStore);
 
-  final dataRepository = DataRepository.init();
-  getIt.registerSingleton<DataRepository>(dataRepository);
+  // Database
+  final database = AppDatabase();
+  getIt.registerSingleton<AppDatabase>(database);
 
   // Dio
   final dio = Dio();
@@ -56,6 +49,11 @@ Future<void> configureStuff() async {
   };
   getIt.registerSingleton<AuthService>(authService);
   getIt.registerSingleton<DioWrapper>(dioWrapper);
+
+  // Repositories
+
+  final dataRepository = DataRepository.init();
+  getIt.registerSingleton<DataRepository>(dataRepository);
 
   // API
   final api = ApiClient(dio);
@@ -73,9 +71,4 @@ Future<void> configureStuff() async {
     // await secureStoreRepository.clear();
     // await keyValueStore.clear();
   }
-}
-
-/// Changes app mode (demo/real)
-void setAppMode(AppMode mode) {
-  _appModeController.add(mode);
 }
