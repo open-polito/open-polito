@@ -142,6 +142,8 @@ class AuthService {
     }
 
     if (!isDemo) {
+      // Update token for DioWrapper
+      _dioWrapper.setToken(newState.token ?? "");
       await _updateAuthState(state, (prev) => newState, demoMode: isDemo);
     }
 
@@ -252,16 +254,16 @@ class AuthService {
         return const Err(LoginErrorType.userTypeNotSupported);
       }
 
-      // Save token etc...
-      await _updateToken(data.token);
-      await _updateClientId(data.clientId);
-
       // User is authorized
       await _updater((prev) => prev.copyWith(
             authStatus: AuthStatus.authorized,
             // Next time the app is opened, it will remember that
             // the user has already logged in.
             loggedIn: true,
+            // Save token. NOTE: The updater function will take care of
+            // updating the token for the DioWrapper too.
+            token: data.token,
+            clientId: data.clientId,
           ));
 
       return const Ok(null);
@@ -281,14 +283,6 @@ class AuthService {
       await invalidate();
     }
   }
-
-  FutureOr<void> _updateToken(String t) async {
-    _dioWrapper.setToken(t);
-    await _updater((prev) => prev.copyWith(token: t));
-  }
-
-  FutureOr<void> _updateClientId(String id) async =>
-      await _updater((prev) => prev.copyWith(clientId: id));
 
   FutureOr<void> _resetAuthData() => _updater(
         (_) => _defaultRealState.copyWith(authStatus: AuthStatus.unauthorized),

@@ -41,6 +41,7 @@ Future<void> configureStuff() async {
   // Dio
   final dio = Dio();
   final dioWrapper = DioWrapper(dio);
+  getIt.registerSingleton<DioWrapper>(dioWrapper);
 
   // Auth service
   final authService = await AuthService.init();
@@ -48,7 +49,6 @@ Future<void> configureStuff() async {
     await authService.invalidate();
   };
   getIt.registerSingleton<AuthService>(authService);
-  getIt.registerSingleton<DioWrapper>(dioWrapper);
 
   // Repositories
 
