@@ -14,14 +14,20 @@ CourseOverview courseOverviewFromAPI(api.CourseOverview res) => CourseOverview(
       year: res.year,
     );
 
-VirtualClassroom vcFromAPI(api.VirtualClassroomBase res, int courseId) =>
+CourseVirtualClassroom vcFromAPI(
+        api.VirtualClassroomBase res, int courseId, String courseName) =>
     switch (res) {
-      api.VirtualClassroom() =>
-        VirtualClassroom(courseId: courseId, isLive: false),
-      api.VirtualClassroomLive() => VirtualClassroom(
+      api.VirtualClassroom() => CourseVirtualClassroom(
           courseId: courseId,
+          courseName: courseName,
+          isLive: false,
+          recording: res,
+        ),
+      api.VirtualClassroomLive() => CourseVirtualClassroom(
+          courseId: courseId,
+          courseName: courseName,
           isLive: true,
-          live: VirtualClassroomLive(
+          live: CourseVirtualClassroomLive(
             title: res.title,
             meetingId: res.meetingId,
             createdAt: res.createdAt,

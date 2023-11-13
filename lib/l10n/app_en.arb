@@ -30,6 +30,7 @@
   "homeScreen_label_search": "Search for files, lectures, people...",
   "homeScreen_section_liveClasses": "Live classes",
   "homeScreen_section_latestFiles": "Latest files",
+  "homeScreen_section_latestRecordings": "Latest recordings",
 
   "durationPast_seconds": "{n, plural, =1{1 second} other{{n} seconds}} ago",
   "@durationPast_seconds": {

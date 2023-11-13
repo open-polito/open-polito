@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:open_polito/api/models/courses.dart';
 
 part 'courses.freezed.dart';
 
@@ -43,21 +44,23 @@ class CourseTeachingPeriod with _$CourseTeachingPeriod {
 }
 
 @freezed
-class VirtualClassroom with _$VirtualClassroom {
-  const factory VirtualClassroom({
+class CourseVirtualClassroom with _$CourseVirtualClassroom {
+  const factory CourseVirtualClassroom({
     required int courseId,
+    String? courseName,
     required bool isLive,
-    VirtualClassroomLive? live,
-  }) = _VirtualClassroom;
+    CourseVirtualClassroomLive? live,
+    VirtualClassroom? recording,
+  }) = _CourseVirtualClassroom;
 }
 
 @freezed
-class VirtualClassroomLive with _$VirtualClassroomLive {
-  const factory VirtualClassroomLive({
+class CourseVirtualClassroomLive with _$CourseVirtualClassroomLive {
+  const factory CourseVirtualClassroomLive({
     required String title,
     required String meetingId,
     required DateTime createdAt,
-  }) = _VirtualClassroomLive;
+  }) = _CourseVirtualClassroomLive;
 }
 
 @freezed

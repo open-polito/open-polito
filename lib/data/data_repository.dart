@@ -38,7 +38,7 @@ class InitHomeData with _$InitHomeData {
   const factory InitHomeData({
     required Iterable<CourseOverview> courseOverviews,
     required Map<int, Map<String, CourseDirectoryItem>> fileMapsByCourseId,
-    required List<VirtualClassroom> classes,
+    required List<CourseVirtualClassroom> classes,
     required List<CourseFileInfo> latestFiles,
   }) = _InitHomeData;
 }
@@ -101,17 +101,18 @@ class DataRepository {
       yield InitHomeData(
         courseOverviews: demoState.overviews,
         fileMapsByCourseId: demoState.dirMapsByCourse,
-        classes: [],
+        classes: demoState.recordedClasses,
         latestFiles: [],
       );
       return;
     }
 
     var data = const InitHomeData(
-        courseOverviews: [],
-        fileMapsByCourseId: {},
-        classes: [],
-        latestFiles: []);
+      courseOverviews: [],
+      fileMapsByCourseId: {},
+      classes: [],
+      latestFiles: [],
+    );
 
     final overviews = ((await req(_api.getCourses))?.data)
         ?.map((e) => courseOverviewFromAPI(e));
@@ -156,11 +157,22 @@ class DataRepository {
             map.values.map((e) => dbCourseDirItem(e, ov.id)));
       }
 
-      // Process classes
-      if (apiClasses != null) {
-        final classes = apiClasses.map((e) => vcFromAPI(e, ov.id));
-        data = data.copyWith(classes: [...data.classes, ...classes]);
+      final classes = apiClasses?.map((e) => vcFromAPI(e, ov.id, ov.name));
+
+      // Process recorded classes
+      final recordedClasses =
+          classes?.where((element) => element.isLive == false);
+      if (recordedClasses != null) {
+        // Delete old classes
+        await _db.coursesDao.deleteCourseRecordedClasses(courseId: ov.id);
+
+        data = data.copyWith(classes: [...data.classes, ...recordedClasses]);
         yield data;
+
+        // Save new classes
+        await _db.coursesDao.addCourseRecordedClasses(recordedClasses
+            .map((e) => dbCourseRecordedClass(e, ov.id))
+            .nonNulls);
       }
     }
 
@@ -178,9 +190,21 @@ class DataRepository {
     );
     yield data;
 
+    // Sort class recordings
+    final recordings = (data.classes.map((e) => e).toList()
+          ..sort((a, b) => b.recording!.createdAt
+              .difference(a.recording!.createdAt)
+              .inMilliseconds))
+        .take(10)
+        .toList();
+    data = data.copyWith(classes: recordings);
+    yield data;
+
+    final courseIds = overviews.map((e) => e.id);
     // Cleanup
     // Delete items for which the course doesn't exist anymore.
+    await _db.coursesDao.deleteCourseMaterialNotInIds(courseIds: courseIds);
     await _db.coursesDao
-        .deleteCourseMaterialNotInIds(courseIds: overviews.map((e) => e.id));
+        .deleteCourseRecordedClassesNotInIds(courseIds: courseIds);
   }
 }

@@ -19,7 +19,7 @@ class TopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeBloc, ThemeBlocState>(
       builder: (context, state) => Padding(
-        padding: const EdgeInsets.fromLTRB(0, 64, 0, 32),
+        padding: const EdgeInsets.fromLTRB(0, 16, 0, 32),
         child: Row(
           children: [
             IconButton(

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:open_polito/api/models/courses.dart' as api_courses;
 import 'package:open_polito/models/courses.dart';
 
 part 'demo_data.freezed.dart';
@@ -8,6 +9,7 @@ class DemoState with _$DemoState {
   const factory DemoState({
     required Iterable<CourseOverview> overviews,
     required Map<int, Map<String, CourseDirectoryItem>> dirMapsByCourse,
+    required List<CourseVirtualClassroom> recordedClasses,
   }) = _DemoState;
 }
 
@@ -33,4 +35,18 @@ final demoState = DemoState(overviews: [
       courseName: "My Course",
     ),
   },
-});
+}, recordedClasses: [
+  CourseVirtualClassroom(
+    courseId: 1,
+    isLive: false,
+    recording: api_courses.VirtualClassroom(
+      id: 1,
+      title: "Example virtual classroom",
+      coverUrl: "https://placehold.co/600x400.png",
+      videoUrl: "https://example.com",
+      createdAt: DateTime.now(),
+      duration: "01:19:24",
+      type: api_courses.VirtualClassroomType.recording,
+    ),
+  ),
+]);

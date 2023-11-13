@@ -22,7 +22,7 @@ class LiveClassWidget extends StatelessWidget {
         width: 200,
         child: DecoratedBox(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(8),
             color: Colors.red.shade400,
           ),
           child: Padding(
@@ -93,7 +93,7 @@ class LiveClassWidget extends StatelessWidget {
 
 class LiveClassesSection extends StatelessWidget {
   final String title;
-  final Iterable<VirtualClassroomLive> classes;
+  final Iterable<CourseVirtualClassroomLive> classes;
 
   const LiveClassesSection({
     super.key,

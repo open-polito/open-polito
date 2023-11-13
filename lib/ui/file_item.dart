@@ -49,7 +49,7 @@ class FileItemWidget extends StatelessWidget {
             width: 300,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(8),
                 color: bgColor,
               ),
               child: Padding(

@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
+import 'package:open_polito/api/models/courses.dart' as api_courses;
 import 'package:open_polito/db/database.dart' as db;
+import 'package:open_polito/db/schema/course.dart';
 import 'package:open_polito/db/schema/schema.dart' as schema;
 import 'package:open_polito/models/courses.dart';
 
@@ -95,4 +97,25 @@ db.CourseDirItemsCompanion dbCourseDirItem(
         type: const Value(schema.CourseDirItemType.dir),
       ),
   };
+}
+
+db.CourseRecordedClassesCompanion? dbCourseRecordedClass(
+    CourseVirtualClassroom item, int courseId) {
+  final vc = item.recording;
+  // Do not process live classes or null items
+  if (vc?.type == api_courses.VirtualClassroomType.live || vc == null) {
+    return null;
+  }
+  return db.CourseRecordedClassesCompanion(
+    classId: Value(vc.id),
+    courseId: Value(courseId),
+    coverUrl: Value(vc.coverUrl),
+    createdAt: Value(vc.createdAt),
+    durationStr: Value(vc.duration),
+    teacherId: Value(vc.teacherId),
+    title: Value(vc.title),
+    type: const Value(
+        CourseClassType.virtualClassroom), // This is a virtual classroom
+    videoUrl: Value(vc.videoUrl),
+  );
 }

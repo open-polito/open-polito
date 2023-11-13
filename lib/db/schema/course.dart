@@ -8,6 +8,14 @@ enum CourseDirItemType {
   file,
 }
 
+enum CourseClassType {
+  /// Standard class type
+  virtualClassroom,
+
+  /// Legacy class type
+  videoLecture,
+}
+
 class CourseOverviews extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get courseId => integer().unique()();
@@ -46,7 +54,7 @@ class CourseNotices extends Table {
 
 class CourseDirItems extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get itemId => text()();
+  TextColumn get itemId => text().unique()();
 
   TextColumn get type => textEnum<CourseDirItemType>()();
   TextColumn get name => text()();
@@ -62,4 +70,27 @@ class CourseDirItems extends Table {
   /// `null` if in root directory.
   TextColumn get parentId =>
       text().references(CourseDirItems, #itemId).nullable()();
+}
+
+@DataClassName("CourseRecordedClass")
+class CourseRecordedClasses extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get classId => integer()();
+
+  @override
+  List<Set<Column<Object>>>? get uniqueKeys => [
+        {classId, type}
+      ];
+
+  TextColumn get type => textEnum<CourseClassType>()();
+  TextColumn get title => text().nullable()();
+  IntColumn get teacherId => integer().nullable()();
+  TextColumn get abstract => text().nullable()();
+  TextColumn get coverUrl => text().nullable()();
+  TextColumn get videoUrl => text().nullable()();
+  TextColumn get audioUrl => text().nullable()();
+  DateTimeColumn get createdAt => dateTime().nullable()();
+  TextColumn get durationStr => text().nullable()();
+
+  IntColumn get courseId => integer().references(CourseOverviews, #courseId)();
 }

@@ -14,7 +14,8 @@ part 'database.g.dart';
   CoursePreviousEditions,
   CourseNotices,
   CourseDirItems,
-  DownloadItems
+  CourseRecordedClasses,
+  DownloadItems,
 ], daos: [
   CoursesDao,
 ])

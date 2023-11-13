@@ -5,7 +5,7 @@ import 'package:open_polito/models/utils.dart';
 
 part 'courses_dao.g.dart';
 
-@DriftAccessor(tables: [CourseOverviews, CourseDirItems])
+@DriftAccessor(tables: [CourseOverviews, CourseDirItems, CourseRecordedClasses])
 class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   CoursesDao(super.db);
 
@@ -66,6 +66,50 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
       {required Iterable<int> courseIds}) async {
     await (delete(courseDirItems)
           ..where((tbl) => tbl.courseId.isNotIn(courseIds)))
+        .go();
+  }
+
+  /// Get all recorded classes
+  ///
+  /// If [courseId] is not specified, returns all recorded classes
+  /// from all courses.
+  Future<Iterable<CourseRecordedClass>> getCourseRecordedClasses(
+      {int? courseId}) {
+    if (courseId != null) {
+      return (select(courseRecordedClasses)
+            ..where((tbl) => tbl.courseId.equals(courseId)))
+          .get();
+    }
+    return select(courseRecordedClasses).get();
+  }
+
+  /// Set course recorded classes
+  Future<void> addCourseRecordedClasses(
+      Iterable<CourseRecordedClassesCompanion> classes) async {
+    await batch((batch) {
+      batch.insertAll(courseRecordedClasses, classes);
+    });
+  }
+
+  /// Remove all recorded classes
+  ///
+  /// If [courseId] is not specified, remove recorded classes
+  /// from all courses.
+  Future<void> deleteCourseRecordedClasses({int? courseId}) async {
+    if (courseId != null) {
+      await (delete(courseRecordedClasses)
+            ..where((tbl) => tbl.courseId.equals(courseId)))
+          .go();
+    } else {
+      await (delete(courseRecordedClasses)).go();
+    }
+  }
+
+  /// Delete recorded classes that don't belong to any course in [courseIds].
+  Future<void> deleteCourseRecordedClassesNotInIds(
+      {required Iterable<int> courseIds}) async {
+    await (delete(courseRecordedClasses)
+          ..where((tbl) => tbl.classId.isNotIn(courseIds)))
         .go();
   }
 }

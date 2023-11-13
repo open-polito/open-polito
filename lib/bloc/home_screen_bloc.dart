@@ -14,8 +14,8 @@ class HomeScreenBlocState with _$HomeScreenBlocState {
   const factory HomeScreenBlocState({
     required bool initialized,
     required Iterable<CourseOverview> courseOverviews,
-    required List<VirtualClassroom> classes,
-    required List<VirtualClassroomLive> liveClasses,
+    required List<CourseVirtualClassroom> classes,
+    required List<CourseVirtualClassroomLive> liveClasses,
     required List<CourseFileInfo> latestFiles,
   }) = _HomeScreenBlocState;
 }
@@ -39,7 +39,8 @@ class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
         state.copyWith(
           courseOverviews: d.courseOverviews,
           classes: d.classes,
-          liveClasses: d.classes.whereType<VirtualClassroomLive>().toList(),
+          liveClasses:
+              d.classes.whereType<CourseVirtualClassroomLive>().toList(),
           latestFiles: d.latestFiles,
         ),
       );
