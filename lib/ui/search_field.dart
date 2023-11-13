@@ -23,7 +23,7 @@ class SearchField extends StatelessWidget {
       ),
       onTap: () {
         if (redirect) {
-          const SearchRouteData().go(context);
+          const SearchRouteData().push(context);
         }
       },
     );
