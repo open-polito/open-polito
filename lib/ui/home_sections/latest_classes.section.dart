@@ -34,7 +34,7 @@ class LatestClassesSection extends StatelessWidget {
             courseName: e.courseName ?? "",
             timeString: localizedTimeDelta(
                 now, e.recording!.createdAt, appLocalizations),
-            sizeString: e.recording!.duration,
+            durationString: e.recording!.duration,
             onDownloadTap: () {}, // TODO: add behavior
             onItemTap: () {}, // TODO: add behavior
             thumbnailUrl: e.recording!.coverUrl,
