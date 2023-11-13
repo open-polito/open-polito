@@ -64,7 +64,7 @@ class HomeScreen extends StatelessWidget {
                         title: AppLocalizations.of(context)!
                             .homeScreen_section_latestRecordings),
                   const SizedBox(height: 32),
-                  Text(state.toString() ?? ""),
+                  Text(state.toString()),
                 ],
               ),
             ],
