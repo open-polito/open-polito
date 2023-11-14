@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:open_polito/api/models/people.dart';
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/api/models/models.dart';
+import 'package:open_polito/models/models.dart';
 
 part 'search.freezed.dart';
 
@@ -12,7 +12,7 @@ sealed class SearchResult with _$SearchResult {
   ) = FilesSearchResult;
   const factory SearchResult.recordings(
       Iterable<CourseVirtualClassroom> items) = RecordingsSearchResult;
-  const factory SearchResult.people(Iterable<PersonOverview> items) =
+  const factory SearchResult.people(Iterable<ApiPersonOverview> items) =
       PeopleSearchResult;
 }
 

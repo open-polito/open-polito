@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:open_polito/api/models/courses.dart' as api_courses;
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/api/models/models.dart';
+import 'package:open_polito/models/models.dart';
 
 part 'demo_data.freezed.dart';
 
@@ -39,14 +39,14 @@ final demoState = DemoState(overviews: [
   CourseVirtualClassroom(
     courseId: 1,
     isLive: false,
-    recording: api_courses.VirtualClassroom(
+    recording: ApiVirtualClassroom(
       id: 1,
       title: "Example virtual classroom",
       coverUrl: "https://placehold.co/600x400.png",
       videoUrl: "https://example.com",
       createdAt: DateTime.now(),
       duration: "01:19:24",
-      type: api_courses.VirtualClassroomType.recording,
+      type: ApiVirtualClassroomType.recording,
     ),
   ),
 ]);

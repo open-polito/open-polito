@@ -2,18 +2,15 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:open_polito/api/models/courses.dart' as api_models;
+import 'package:open_polito/api/models/models.dart';
 import 'package:open_polito/data/demo_data.dart';
-import 'package:open_polito/db/database.dart' as db;
+import 'package:open_polito/db/database.dart';
 import 'package:open_polito/logic/api.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
-import 'package:open_polito/models/converters.dart';
-import 'package:open_polito/models/courses.dart';
-import 'package:open_polito/api/api_client.dart' as api;
-import 'package:open_polito/models/db_converters.dart';
+import 'package:open_polito/models/models.dart';
+import 'package:open_polito/api/api_client.dart';
 import 'package:open_polito/types.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -44,9 +41,9 @@ class InitHomeData with _$InitHomeData {
 }
 
 class DataRepository {
-  api.ApiClient get _api => GetIt.I.get<api.ApiClient>();
+  ApiClient get _api => GetIt.I.get<ApiClient>();
   AuthService get _authService => GetIt.I.get<AuthService>();
-  db.AppDatabase get _db => GetIt.I.get<db.AppDatabase>();
+  AppDatabase get _db => GetIt.I.get<AppDatabase>();
 
   bool get isDemo => _authService.isDemo;
 
@@ -96,6 +93,21 @@ class DataRepository {
     return await fn();
   }
 
+  FutureOr<Iterable<CourseOverview>> getCourses() => _throttle(
+        key: "getCourses",
+        apiFn: () async => (await req(_api.getCourses))?.data,
+        localFn: () async {
+          final data = await _db.coursesDao.getCourses();
+          return data.map((e) => courseOverviewFromDB(e));
+        },
+        localUpdater: (apiData) async {
+          final items =
+              apiData.map((e) => dbCourseOverview(courseOverviewFromAPI(e)));
+          await _db.coursesDao
+              .setCourses(items, apiData.map((e) => e.id).nonNulls.toList());
+        },
+      );
+
   Stream<InitHomeData> initHomeScreen() async* {
     if (isDemo) {
       yield InitHomeData(
@@ -119,8 +131,10 @@ class DataRepository {
 
     if (overviews != null) {
       await _db.coursesDao.deleteCourses();
-      await _db.coursesDao
-          .addCourses(overviews.map((e) => dbCourseOverview(e)));
+      await _db.coursesDao.setCourses(
+        overviews.map((e) => dbCourseOverview(e)),
+        overviews.map((e) => e.id).toList(),
+      );
       data = data.copyWith(courseOverviews: overviews, fileMapsByCourseId: {});
       yield data;
     }
@@ -134,8 +148,8 @@ class DataRepository {
     for (final ov in overviews) {
       // FILES
       final [
-        apiFiles as List<api_models.CourseDirectoryContent>?,
-        apiClasses as List<api_models.VirtualClassroomBase>?,
+        apiFiles as List<ApiCourseDirectoryContent>?,
+        apiClasses as List<ApiVirtualClassroomBase>?,
       ] = await Future.wait([
         req(() => _api.getCourseFiles(ov.id)).then((value) => value?.data),
         req(() => _api.getCourseVirtualClassrooms(ov.id))
@@ -144,9 +158,6 @@ class DataRepository {
 
       // Process files
       if (apiFiles != null) {
-        // Delete old files
-        await _db.coursesDao.deleteCourseMaterial(courseId: ov.id);
-
         final map = dirMapFromAPI(apiFiles, ov.id, courseName: ov.name);
         fileMap[ov.id] = map;
         data = data.copyWith(fileMapsByCourseId: fileMap);
@@ -163,9 +174,6 @@ class DataRepository {
       final recordedClasses =
           classes?.where((element) => element.isLive == false);
       if (recordedClasses != null) {
-        // Delete old classes
-        await _db.coursesDao.deleteCourseRecordedClasses(courseId: ov.id);
-
         data = data.copyWith(classes: [...data.classes, ...recordedClasses]);
         yield data;
 
@@ -201,10 +209,88 @@ class DataRepository {
     yield data;
 
     final courseIds = overviews.map((e) => e.id);
-    // Cleanup
-    // Delete items for which the course doesn't exist anymore.
-    await _db.coursesDao.deleteCourseMaterialNotInIds(courseIds: courseIds);
-    await _db.coursesDao
-        .deleteCourseRecordedClassesNotInIds(courseIds: courseIds);
   }
+}
+
+/// Throttle timeouts
+Map<String, DateTime> _throttleTimes = {};
+
+/// Default throttle timeout
+const _defaultTimeout = Duration(seconds: 5);
+
+enum RateLimitingType {
+  debounce,
+  throttle,
+}
+
+FutureOr<T> _throttle<T, R>({
+  required String key,
+  required FutureOr<R?> Function() apiFn,
+  required FutureOr<T> Function() localFn,
+  required FutureOr<void> Function(R apiData) localUpdater,
+  Duration timeout = _defaultTimeout,
+}) =>
+    _rateLimit(
+      type: RateLimitingType.throttle,
+      key: key,
+      apiFn: apiFn,
+      localFn: localFn,
+      localUpdater: localUpdater,
+    );
+
+FutureOr<T> _debounce<T, R>({
+  required String key,
+  required FutureOr<R?> Function() apiFn,
+  required FutureOr<T> Function() localFn,
+  required FutureOr<void> Function(R apiData) localUpdater,
+  Duration timeout = _defaultTimeout,
+}) =>
+    _rateLimit(
+      type: RateLimitingType.debounce,
+      key: key,
+      apiFn: apiFn,
+      localFn: localFn,
+      localUpdater: localUpdater,
+    );
+
+/// Generic rate limiting function.
+///
+/// Do not use directly. Use [_throttle] or [_debounce] instead.
+///
+/// Based on the selected rate limiting type:
+/// - if it should refresh from API, calls [apiFn], then updates the local data
+///   by calling [localUpdater]
+/// - always calls [localFn] and returns its result.
+FutureOr<T> _rateLimit<T, R>({
+  required RateLimitingType type,
+  required String key,
+  required FutureOr<R?> Function() apiFn,
+  required FutureOr<T> Function() localFn,
+  required FutureOr<void> Function(R apiData) localUpdater,
+  Duration timeout = _defaultTimeout,
+}) async {
+  final now = DateTime.now();
+  final lastTimeout = _throttleTimes[key];
+  if (lastTimeout == null ||
+      now.difference(lastTimeout).compareTo(timeout) >= 0) {
+    // Can call API
+    final res = await apiFn();
+    if (res != null) {
+      // API call successful
+      await localUpdater(res);
+
+      // Reset throttle
+      _throttleTimes[key] = DateTime.now();
+    }
+  }
+  // If debouncing, always need to register new time
+  /**
+   * TODO: actually you'd need a Timer when debouncing because
+   * we always run the latest function if the timer is over.
+   */
+  if (type == RateLimitingType.debounce) {
+    _throttleTimes[key] = DateTime.now();
+  }
+  // Now fetch locally
+  return await localFn();
 }

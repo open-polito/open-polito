@@ -1,7 +1,7 @@
-import 'package:open_polito/api/models/courses.dart' as api;
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/api/models/models.dart';
+import 'package:open_polito/models/models.dart';
 
-CourseOverview courseOverviewFromAPI(api.CourseOverview res) => CourseOverview(
+CourseOverview courseOverviewFromAPI(ApiCourseOverview res) => CourseOverview(
       cfu: res.cfu,
       code: res.shortcode,
       id: res.id ?? 0,
@@ -15,15 +15,15 @@ CourseOverview courseOverviewFromAPI(api.CourseOverview res) => CourseOverview(
     );
 
 CourseVirtualClassroom vcFromAPI(
-        api.VirtualClassroomBase res, int courseId, String courseName) =>
+        ApiVirtualClassroomBase res, int courseId, String courseName) =>
     switch (res) {
-      api.VirtualClassroom() => CourseVirtualClassroom(
+      ApiVirtualClassroom() => CourseVirtualClassroom(
           courseId: courseId,
           courseName: courseName,
           isLive: false,
           recording: res,
         ),
-      api.VirtualClassroomLive() => CourseVirtualClassroom(
+      ApiVirtualClassroomLive() => CourseVirtualClassroom(
           courseId: courseId,
           courseName: courseName,
           isLive: true,
@@ -35,10 +35,10 @@ CourseVirtualClassroom vcFromAPI(
     };
 
 /// Convert directory item
-CourseDirectoryItem fileFromAPI(api.CourseDirectoryContent res, int courseId,
+CourseDirectoryItem fileFromAPI(ApiCourseDirectoryContent res, int courseId,
         {String? parentId, required String courseName}) =>
     switch (res) {
-      api.CourseDirectory() => CourseDirInfo(
+      ApiCourseDirectory() => CourseDirInfo(
           id: res.id,
           children: res.files.map((e) => e.id),
           name: res.name,
@@ -46,7 +46,7 @@ CourseDirectoryItem fileFromAPI(api.CourseDirectoryContent res, int courseId,
           courseId: courseId,
           courseName: courseName,
         ),
-      api.CourseFileOverview() => CourseFileInfo(
+      ApiCourseFileOverview() => CourseFileInfo(
           id: res.id,
           name: res.name,
           sizeKB: BigInt.from(res.sizeInKiloBytes),
@@ -60,7 +60,7 @@ CourseDirectoryItem fileFromAPI(api.CourseDirectoryContent res, int courseId,
 
 /// Convert API's directory tree into map structure.
 Map<String, CourseDirectoryItem> dirMapFromAPI(
-  Iterable<api.CourseDirectoryContent> res,
+  Iterable<ApiCourseDirectoryContent> res,
   int courseId, {
   String? parentId,
   required String courseName,
@@ -72,7 +72,7 @@ Map<String, CourseDirectoryItem> dirMapFromAPI(
         fileFromAPI(item, courseId, parentId: parentId, courseName: courseName);
     map[converted.id] = converted;
 
-    if (item case api.CourseDirectory()) {
+    if (item case ApiCourseDirectory()) {
       map.addAll(dirMapFromAPI(item.files, courseId,
           parentId: item.id, courseName: courseName));
     }

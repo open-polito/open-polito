@@ -1,11 +1,10 @@
 import 'package:drift/drift.dart';
-import 'package:open_polito/api/models/courses.dart' as api_courses;
-import 'package:open_polito/db/database.dart' as db;
-import 'package:open_polito/db/schema/course.dart';
-import 'package:open_polito/db/schema/schema.dart' as schema;
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/api/models/models.dart';
+import 'package:open_polito/db/database.dart';
+import 'package:open_polito/db/schema/schema.dart';
+import 'package:open_polito/models/models.dart';
 
-CourseOverview courseOverviewFromDB(db.CourseOverview c) {
+CourseOverview courseOverviewFromDB(DbCourse c) {
   return CourseOverview(
     id: c.courseId,
     name: c.name,
@@ -21,8 +20,8 @@ CourseOverview courseOverviewFromDB(db.CourseOverview c) {
   );
 }
 
-db.CourseOverviewsCompanion dbCourseOverview(CourseOverview c) {
-  return db.CourseOverviewsCompanion(
+DbCoursesCompanion dbCourseOverview(CourseOverview c) {
+  return DbCoursesCompanion(
     cfu: Value(c.cfu),
     code: Value(c.code),
     courseId: Value(c.id),
@@ -38,11 +37,11 @@ db.CourseOverviewsCompanion dbCourseOverview(CourseOverview c) {
 }
 
 CourseDirectoryItem? courseDirectoryItemFromDB(
-    db.CourseDirItem item, Iterable<db.CourseDirItem> allItems,
+    DbCourseDirItem item, Iterable<DbCourseDirItem> allItems,
     {required String courseName}) {
   final type = item.type;
   switch (type) {
-    case schema.CourseDirItemType.file:
+    case DbCourseDirItemType.file:
       final sizeKB = item.sizeKB;
       final mimeType = item.mimeType;
       final createdAt = item.createdAt;
@@ -59,7 +58,7 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
         );
       }
       break;
-    case schema.CourseDirItemType.dir:
+    case DbCourseDirItemType.dir:
       return CourseDirectoryItem.dir(
         id: item.itemId,
         name: item.name,
@@ -76,10 +75,10 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
   return null;
 }
 
-db.CourseDirItemsCompanion dbCourseDirItem(
+DbCourseDirItemsCompanion dbCourseDirItem(
     CourseDirectoryItem item, int courseId) {
   return switch (item) {
-    CourseFileInfo() => db.CourseDirItemsCompanion(
+    CourseFileInfo() => DbCourseDirItemsCompanion(
         courseId: Value(courseId),
         createdAt: Value(item.createdAt),
         itemId: Value(item.id),
@@ -87,26 +86,26 @@ db.CourseDirItemsCompanion dbCourseDirItem(
         name: Value(item.name),
         parentId: Value(item.parentId),
         sizeKB: Value(item.sizeKB),
-        type: const Value(schema.CourseDirItemType.file),
+        type: const Value(DbCourseDirItemType.file),
       ),
-    CourseDirInfo() => db.CourseDirItemsCompanion(
+    CourseDirInfo() => DbCourseDirItemsCompanion(
         courseId: Value(courseId),
         itemId: Value(item.id),
         name: Value(item.name),
         parentId: Value(item.parentId),
-        type: const Value(schema.CourseDirItemType.dir),
+        type: const Value(DbCourseDirItemType.dir),
       ),
   };
 }
 
-db.CourseRecordedClassesCompanion? dbCourseRecordedClass(
+DbCourseRecordedClassesCompanion? dbCourseRecordedClass(
     CourseVirtualClassroom item, int courseId) {
   final vc = item.recording;
   // Do not process live classes or null items
-  if (vc?.type == api_courses.VirtualClassroomType.live || vc == null) {
+  if (vc?.type == ApiVirtualClassroomType.live || vc == null) {
     return null;
   }
-  return db.CourseRecordedClassesCompanion(
+  return DbCourseRecordedClassesCompanion(
     classId: Value(vc.id),
     courseId: Value(courseId),
     coverUrl: Value(vc.coverUrl),
@@ -115,7 +114,7 @@ db.CourseRecordedClassesCompanion? dbCourseRecordedClass(
     teacherId: Value(vc.teacherId),
     title: Value(vc.title),
     type: const Value(
-        CourseClassType.virtualClassroom), // This is a virtual classroom
+        DbCourseClassType.virtualClassroom), // This is a virtual classroom
     videoUrl: Value(vc.videoUrl),
   );
 }

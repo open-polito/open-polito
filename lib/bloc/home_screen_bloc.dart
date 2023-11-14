@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/data/data_repository.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/models/models.dart';
 
 part 'home_screen_bloc.freezed.dart';
 

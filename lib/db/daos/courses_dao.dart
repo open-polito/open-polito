@@ -1,36 +1,44 @@
 import 'package:drift/drift.dart';
 import 'package:open_polito/db/database.dart';
 import 'package:open_polito/db/schema/schema.dart';
-import 'package:open_polito/models/utils.dart';
+import 'package:open_polito/models/models.dart';
 
 part 'courses_dao.g.dart';
 
-@DriftAccessor(tables: [CourseOverviews, CourseDirItems, CourseRecordedClasses])
+@DriftAccessor(tables: [DbCourses, DbCourseDirItems, DbCourseRecordedClasses])
 class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   CoursesDao(super.db);
 
   /// Get course overviews
-  Future<Iterable<CourseOverview>> getCourses() {
-    return select(courseOverviews).get();
+  Future<Iterable<DbCourse>> getCourses() {
+    return select(dbCourses).get();
   }
 
   /// Delete all courses
   Future<void> deleteCourses() async {
-    await delete(courseOverviews).go();
+    await delete(dbCourses).go();
   }
 
-  /// Add courses
-  Future<void> addCourses(Iterable<CourseOverviewsCompanion> courses) async {
-    await batch((batch) {
-      batch.insertAll(courseOverviews, courses);
+  /// Sets courses.
+  ///
+  /// Deletes all courses not in [courseIds], to avoid stale data.
+  Future<void> setCourses(
+      Iterable<DbCoursesCompanion> items, List<int> courseIds) async {
+    await transaction(() async {
+      await batch((batch) {
+        batch.insertAll(dbCourses, items, mode: InsertMode.replace);
+      });
+      // delete old data
+      await (delete(dbCourses)..where((tbl) => tbl.courseId.isNotIn(courseIds)))
+          .go();
     });
   }
 
   /// Add course material
   Future<void> addCourseMaterial(
-      Iterable<CourseDirItemsCompanion> items) async {
+      Iterable<DbCourseDirItemsCompanion> items) async {
     await batch((batch) {
-      batch.insertAll(courseDirItems, items);
+      batch.insertAll(dbCourseDirItems, items);
     });
   }
 
@@ -38,7 +46,7 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   ///
   /// If [filesOnly], only returns files. In this case, specify [sortBy]
   /// and/or [sortOrder] to override the default sorting key and default order.
-  Future<Iterable<CourseDirItem>> getCourseMaterial({
+  Future<Iterable<DbCourseDirItem>> getCourseMaterial({
     bool filesOnly = false,
     // TODO: enable
     SortBy sortBy = SortBy.createdAt,
@@ -46,27 +54,12 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
     SortOrder sortOrder = SortOrder.desc,
   }) {
     if (filesOnly) {
-      return (select(courseDirItems)
-            ..where((tbl) => tbl.type.equalsValue(CourseDirItemType.file))
+      return (select(dbCourseDirItems)
+            ..where((tbl) => tbl.type.equalsValue(DbCourseDirItemType.file))
             ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
           .get();
     }
-    return select(courseDirItems).get();
-  }
-
-  /// Delete all course material from course with id matching [courseId].
-  Future<void> deleteCourseMaterial({required int courseId}) async {
-    await (delete(courseDirItems)
-          ..where((tbl) => tbl.courseId.equals(courseId)))
-        .go();
-  }
-
-  /// Delete all course material not belonging to the courses in [courseIds].
-  Future<void> deleteCourseMaterialNotInIds(
-      {required Iterable<int> courseIds}) async {
-    await (delete(courseDirItems)
-          ..where((tbl) => tbl.courseId.isNotIn(courseIds)))
-        .go();
+    return select(dbCourseDirItems).get();
   }
 
   /// Get all recorded classes
@@ -76,40 +69,18 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   Future<Iterable<CourseRecordedClass>> getCourseRecordedClasses(
       {int? courseId}) {
     if (courseId != null) {
-      return (select(courseRecordedClasses)
+      return (select(dbCourseRecordedClasses)
             ..where((tbl) => tbl.courseId.equals(courseId)))
           .get();
     }
-    return select(courseRecordedClasses).get();
+    return select(dbCourseRecordedClasses).get();
   }
 
   /// Set course recorded classes
   Future<void> addCourseRecordedClasses(
-      Iterable<CourseRecordedClassesCompanion> classes) async {
+      Iterable<DbCourseRecordedClassesCompanion> classes) async {
     await batch((batch) {
-      batch.insertAll(courseRecordedClasses, classes);
+      batch.insertAll(dbCourseRecordedClasses, classes);
     });
-  }
-
-  /// Remove all recorded classes
-  ///
-  /// If [courseId] is not specified, remove recorded classes
-  /// from all courses.
-  Future<void> deleteCourseRecordedClasses({int? courseId}) async {
-    if (courseId != null) {
-      await (delete(courseRecordedClasses)
-            ..where((tbl) => tbl.courseId.equals(courseId)))
-          .go();
-    } else {
-      await (delete(courseRecordedClasses)).go();
-    }
-  }
-
-  /// Delete recorded classes that don't belong to any course in [courseIds].
-  Future<void> deleteCourseRecordedClassesNotInIds(
-      {required Iterable<int> courseIds}) async {
-    await (delete(courseRecordedClasses)
-          ..where((tbl) => tbl.classId.isNotIn(courseIds)))
-        .go();
   }
 }

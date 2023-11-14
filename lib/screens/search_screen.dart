@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_polito/bloc/search_bloc.dart';
-import 'package:open_polito/models/search.dart';
+import 'package:open_polito/models/models.dart';
 import 'package:open_polito/ui/button.dart';
 import 'package:open_polito/ui/layout.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';

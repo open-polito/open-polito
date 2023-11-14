@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:open_polito/bloc/transformers.dart';
-import 'package:open_polito/models/search.dart';
+import 'package:open_polito/models/models.dart';
 
 part 'search_bloc.freezed.dart';
 

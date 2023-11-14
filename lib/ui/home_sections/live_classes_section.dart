@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/models/models.dart';
 import 'package:open_polito/styles/styles.dart';
 import 'package:open_polito/ui/home_sections/home_section_base.dart';
 

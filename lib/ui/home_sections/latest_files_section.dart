@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/logic/utils/file_type_utils.dart';
 import 'package:open_polito/logic/utils/formatters.dart';
-import 'package:open_polito/models/courses.dart';
+import 'package:open_polito/models/models.dart';
 import 'package:open_polito/ui/file_item.dart';
 import 'package:open_polito/ui/home_sections/home_section_base.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/api/api_client.dart';
-import 'package:open_polito/api/models/auth.dart';
+import 'package:open_polito/api/models/models.dart';
 import 'package:open_polito/data/key_value_store.dart';
 import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/init.dart';
@@ -233,12 +233,12 @@ class AuthService {
     try {
       // NOTE: Don't wrap this request with the [req] wrapper function
       // because we don't have a valid token before this request.
-      final res = await _api.login(LoginRequest(
+      final res = await _api.login(ApiLoginRequest(
           username: username,
           password: password,
-          preferences: const UpdatePreferencesRequest(),
-          client: const ClientData(name: "open-polito"),
-          device: DeviceData(
+          preferences: const ApiUpdatePreferencesRequest(),
+          client: const ApiClientData(name: "open-polito"),
+          device: ApiDeviceData(
               manufacturer:
                   await DeviceInfoService.getItem(DeviceInfoKey.manufacturer),
               model: await DeviceInfoService.getItem(DeviceInfoKey.model),

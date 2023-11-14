@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-enum DownloadStatus {
+enum DbDownloadStatus {
   /// This item has not been downloaded. It's idle.
   newItem,
 
@@ -14,7 +14,7 @@ enum DownloadStatus {
   downloaded,
 }
 
-enum DownloadItemType {
+enum DbDownloadItemType {
   /// File from course material
   file,
 
@@ -22,11 +22,14 @@ enum DownloadItemType {
   video,
 }
 
-class DownloadItems extends Table {
+class DbDownloadItems extends Table {
+  @override
+  String? get tableName => "download_items";
+
   IntColumn get id => integer().autoIncrement()();
 
-  TextColumn get status => textEnum<DownloadStatus>()();
-  TextColumn get type => textEnum<DownloadItemType>()();
+  TextColumn get status => textEnum<DbDownloadStatus>()();
+  TextColumn get type => textEnum<DbDownloadItemType>()();
 
   Int64Column get totalSize => int64().nullable()();
   Int64Column get totalDowloaded => int64().nullable()();

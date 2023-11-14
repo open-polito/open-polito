@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:open_polito/api/models/courses.dart';
+import 'package:open_polito/api/models/models.dart';
 
 part 'courses.freezed.dart';
 
@@ -50,7 +50,7 @@ class CourseVirtualClassroom with _$CourseVirtualClassroom {
     String? courseName,
     required bool isLive,
     CourseVirtualClassroomLive? live,
-    VirtualClassroom? recording,
+    ApiVirtualClassroom? recording,
   }) = _CourseVirtualClassroom;
 }
 

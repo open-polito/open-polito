@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-enum CourseDirItemType {
+enum DbCourseDirItemType {
   /// Directory
   dir,
 
@@ -8,7 +8,7 @@ enum CourseDirItemType {
   file,
 }
 
-enum CourseClassType {
+enum DbCourseClassType {
   /// Standard class type
   virtualClassroom,
 
@@ -16,7 +16,10 @@ enum CourseClassType {
   videoLecture,
 }
 
-class CourseOverviews extends Table {
+class DbCourses extends Table {
+  @override
+  String? get tableName => "courses";
+
   IntColumn get id => integer().autoIncrement()();
   IntColumn get courseId => integer().unique()();
 
@@ -32,16 +35,23 @@ class CourseOverviews extends Table {
   IntColumn get teacherId => integer().nullable()();
 }
 
-class CoursePreviousEditions extends Table {
+class DbCoursePreviousEditions extends Table {
+  @override
+  String? get tableName => "course_previous_editions";
+
   IntColumn get id => integer().autoIncrement()();
   IntColumn get editionId => integer().unique()();
 
   TextColumn get year => text()();
 
-  IntColumn get parentId => integer().references(CourseOverviews, #courseId)();
+  IntColumn get courseId => integer().customConstraint(
+      "NOT NULL REFERENCES courses (course_id) ON DELETE CASCADE")();
 }
 
-class CourseNotices extends Table {
+class DbCourseNotices extends Table {
+  @override
+  String? get tableName => "course_notices";
+
   IntColumn get id => integer().autoIncrement()();
   IntColumn get noticeId => integer().unique()();
 
@@ -49,14 +59,18 @@ class CourseNotices extends Table {
   DateTimeColumn get expiresAt => dateTime()();
   TextColumn get content => text()();
 
-  IntColumn get courseId => integer().references(CourseOverviews, #courseId)();
+  IntColumn get courseId => integer().customConstraint(
+      "NOT NULL REFERENCES courses (course_id) ON DELETE CASCADE")();
 }
 
-class CourseDirItems extends Table {
+class DbCourseDirItems extends Table {
+  @override
+  String? get tableName => "course_dir_items";
+
   IntColumn get id => integer().autoIncrement()();
   TextColumn get itemId => text().unique()();
 
-  TextColumn get type => textEnum<CourseDirItemType>()();
+  TextColumn get type => textEnum<DbCourseDirItemType>()();
   TextColumn get name => text()();
 
   // exclusively used for file
@@ -64,16 +78,20 @@ class CourseDirItems extends Table {
   TextColumn get mimeType => text().nullable()();
   DateTimeColumn get createdAt => dateTime().nullable()();
 
-  IntColumn get courseId => integer().references(CourseOverviews, #courseId)();
+  IntColumn get courseId => integer().customConstraint(
+      "NOT NULL REFERENCES courses (course_id) ON DELETE CASCADE")();
 
   /// Parent directory id.
   /// `null` if in root directory.
   TextColumn get parentId =>
-      text().references(CourseDirItems, #itemId).nullable()();
+      text().references(DbCourseDirItems, #itemId).nullable()();
 }
 
 @DataClassName("CourseRecordedClass")
-class CourseRecordedClasses extends Table {
+class DbCourseRecordedClasses extends Table {
+  @override
+  String? get tableName => "course_recorded_classes";
+
   IntColumn get id => integer().autoIncrement()();
   IntColumn get classId => integer()();
 
@@ -82,7 +100,7 @@ class CourseRecordedClasses extends Table {
         {classId, type}
       ];
 
-  TextColumn get type => textEnum<CourseClassType>()();
+  TextColumn get type => textEnum<DbCourseClassType>()();
   TextColumn get title => text().nullable()();
   IntColumn get teacherId => integer().nullable()();
   TextColumn get abstract => text().nullable()();
@@ -92,5 +110,6 @@ class CourseRecordedClasses extends Table {
   DateTimeColumn get createdAt => dateTime().nullable()();
   TextColumn get durationStr => text().nullable()();
 
-  IntColumn get courseId => integer().references(CourseOverviews, #courseId)();
+  IntColumn get courseId => integer().customConstraint(
+      "NOT NULL REFERENCES courses (course_id) ON DELETE CASCADE")();
 }

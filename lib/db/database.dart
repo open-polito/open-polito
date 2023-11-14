@@ -10,12 +10,12 @@ import 'package:path_provider/path_provider.dart';
 part 'database.g.dart';
 
 @DriftDatabase(tables: [
-  CourseOverviews,
-  CoursePreviousEditions,
-  CourseNotices,
-  CourseDirItems,
-  CourseRecordedClasses,
-  DownloadItems,
+  DbCourses,
+  DbCoursePreviousEditions,
+  DbCourseNotices,
+  DbCourseDirItems,
+  DbCourseRecordedClasses,
+  DbDownloadItems,
 ], daos: [
   CoursesDao,
 ])

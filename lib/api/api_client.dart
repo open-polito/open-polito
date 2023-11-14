@@ -1,7 +1,5 @@
 import 'package:dio/dio.dart' hide Headers;
-import 'package:open_polito/api/models/auth.dart';
-import 'package:open_polito/api/models/courses.dart';
-import 'package:open_polito/api/models/people.dart';
+import 'package:open_polito/api/models/models.dart';
 import 'package:retrofit/retrofit.dart';
 
 part 'api_client.g.dart';
