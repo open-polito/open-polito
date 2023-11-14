@@ -57,26 +57,3 @@ CourseDirectoryItem fileFromAPI(ApiCourseDirectoryContent res, int courseId,
           courseName: courseName,
         ),
     };
-
-/// Convert API's directory tree into map structure.
-Map<String, CourseDirectoryItem> dirMapFromAPI(
-  Iterable<ApiCourseDirectoryContent> res,
-  int courseId, {
-  String? parentId,
-  required String courseName,
-}) {
-  final map = <String, CourseDirectoryItem>{};
-
-  for (final item in res) {
-    final converted =
-        fileFromAPI(item, courseId, parentId: parentId, courseName: courseName);
-    map[converted.id] = converted;
-
-    if (item case ApiCourseDirectory()) {
-      map.addAll(dirMapFromAPI(item.files, courseId,
-          parentId: item.id, courseName: courseName));
-    }
-  }
-
-  return map;
-}

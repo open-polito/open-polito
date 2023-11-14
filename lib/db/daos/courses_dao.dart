@@ -38,8 +38,50 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   Future<void> addCourseMaterial(
       Iterable<DbCourseDirItemsCompanion> items) async {
     await batch((batch) {
-      batch.insertAll(dbCourseDirItems, items);
+      batch.insertAll(dbCourseDirItems, items, mode: InsertMode.replace);
     });
+  }
+
+  /// Returns n latest files.
+  Future<Iterable<(DbCourseDirItem, String)>> getLatestFiles() async {
+    final query = select(dbCourseDirItems).join([
+      innerJoin(
+          dbCourses, dbCourses.courseId.equalsExp(dbCourseDirItems.courseId))
+    ])
+      ..where(dbCourseDirItems.type.equalsValue(DbCourseDirItemType.file))
+      ..orderBy([OrderingTerm.desc(dbCourseDirItems.createdAt)])
+      ..limit(10);
+    final data = (await query.get()).map((e) => (
+          e.readTable(dbCourseDirItems),
+          e.readTable(dbCourses).name,
+        ));
+
+    return data;
+  }
+
+  // Returns n latest recorded classes
+  Future<Iterable<(DbCourseRecordedClass, String)>>
+      getLatestRecordedClasses() async {
+    final query = select(dbCourseRecordedClasses).join([
+      innerJoin(dbCourses,
+          dbCourses.courseId.equalsExp(dbCourseRecordedClasses.courseId))
+    ])
+      ..orderBy([OrderingTerm.desc(dbCourseRecordedClasses.createdAt)])
+      ..limit(10);
+    final data = (await query.get()).map((e) => (
+          e.readTable(dbCourseRecordedClasses),
+          e.readTable(dbCourses).name,
+        ));
+
+    return data;
+  }
+
+  /// Returns the course name from id
+  Future<String?> getCourseNameById(int id) async {
+    return (await (select(dbCourseDirItems)
+              ..where((tbl) => tbl.courseId.equals(id)))
+            .getSingleOrNull())
+        ?.name;
   }
 
   /// Get course material.
@@ -47,26 +89,42 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   /// If [filesOnly], only returns files. In this case, specify [sortBy]
   /// and/or [sortOrder] to override the default sorting key and default order.
   Future<Iterable<DbCourseDirItem>> getCourseMaterial({
+    int? courseId,
+
+    /// Return only children of this directory id
+    String? parentId,
     bool filesOnly = false,
     // TODO: enable
     SortBy sortBy = SortBy.createdAt,
     // TODO: enable
     SortOrder sortOrder = SortOrder.desc,
+    bool paginated = false,
+    int pageIndex = 0,
+    int? maxResults,
   }) {
-    if (filesOnly) {
-      return (select(dbCourseDirItems)
-            ..where((tbl) => tbl.type.equalsValue(DbCourseDirItemType.file))
-            ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]))
-          .get();
+    const elementsPerPage = 5;
+    final query = select(dbCourseDirItems)
+      ..where((tbl) => Expression.and([
+            if (filesOnly) tbl.type.equalsValue(DbCourseDirItemType.file),
+            if (courseId != null) tbl.courseId.equals(courseId),
+            if (parentId != null) tbl.parentId.equals(parentId),
+          ]))
+      ..orderBy([(tbl) => OrderingTerm.desc(tbl.createdAt)]);
+
+    if (paginated) {
+      query.limit(elementsPerPage, offset: elementsPerPage * pageIndex);
+    } else if (maxResults != null) {
+      query.limit(maxResults);
     }
-    return select(dbCourseDirItems).get();
+
+    return query.get();
   }
 
   /// Get all recorded classes
   ///
   /// If [courseId] is not specified, returns all recorded classes
   /// from all courses.
-  Future<Iterable<CourseRecordedClass>> getCourseRecordedClasses(
+  Future<Iterable<DbCourseRecordedClass>> getCourseRecordedClasses(
       {int? courseId}) {
     if (courseId != null) {
       return (select(dbCourseRecordedClasses)
@@ -80,7 +138,8 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   Future<void> addCourseRecordedClasses(
       Iterable<DbCourseRecordedClassesCompanion> classes) async {
     await batch((batch) {
-      batch.insertAll(dbCourseRecordedClasses, classes);
+      batch.insertAll(dbCourseRecordedClasses, classes,
+          mode: InsertMode.replace);
     });
   }
 }

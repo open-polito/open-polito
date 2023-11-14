@@ -107,8 +107,8 @@ class LiveClassesSection extends StatelessWidget {
       title: title,
       icon: Icons.live_tv_rounded,
       children: classes.map((e) => LiveClassWidget(
-          courseName: e.title,
-          classTitle: e.title,
+          courseName: e.title ?? "",
+          classTitle: e.title ?? "",
           elapsedSinceStart: e.createdAt.toString(),
           meetingUrl: "")),
     );

@@ -57,9 +57,9 @@ class CourseVirtualClassroom with _$CourseVirtualClassroom {
 @freezed
 class CourseVirtualClassroomLive with _$CourseVirtualClassroomLive {
   const factory CourseVirtualClassroomLive({
-    required String title,
-    required String meetingId,
-    required DateTime createdAt,
+    String? title,
+    String? meetingId,
+    DateTime? createdAt,
   }) = _CourseVirtualClassroomLive;
 }
 

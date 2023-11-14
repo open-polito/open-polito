@@ -44,12 +44,13 @@ class HomeScreen extends StatelessWidget {
                                   const LoginRouteData().go(context));
                         },
                         child: const Text("Debug reset")),
-                  if (state.liveClasses.isNotEmpty)
-                    LiveClassesSection(
-                      classes: state.liveClasses,
-                      title: AppLocalizations.of(context)!
-                          .homeScreen_section_liveClasses,
-                    ),
+                  // TODO: live classes
+                  // if (state.liveClasses.isNotEmpty)
+                  //   LiveClassesSection(
+                  //     classes: state.liveClasses,
+                  //     title: AppLocalizations.of(context)!
+                  //         .homeScreen_section_liveClasses,
+                  //   ),
                   const SizedBox(height: 32),
                   if (state.latestFiles.isNotEmpty)
                     LatestFilesSection(

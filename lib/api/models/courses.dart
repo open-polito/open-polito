@@ -68,24 +68,24 @@ sealed class ApiVirtualClassroomBase with _$ApiVirtualClassroomBase {
   @FreezedUnionValue("live")
   const factory ApiVirtualClassroomBase.live({
     required int id,
-    required String title,
+    String? title,
     @SafeNullableIntConverter() int? teacherId,
-    required String meetingId,
-    required DateTime createdAt,
+    String? meetingId,
+    DateTime? createdAt,
     bool? isLive,
-    required ApiVirtualClassroomType type,
+    ApiVirtualClassroomType? type,
   }) = ApiVirtualClassroomLive;
 
   @FreezedUnionValue("recording")
   const factory ApiVirtualClassroomBase.recording({
     required int id,
-    required String title,
+    String? title,
     @SafeNullableIntConverter() int? teacherId,
-    required String coverUrl,
-    required String videoUrl,
-    required DateTime createdAt,
-    required String duration,
-    required ApiVirtualClassroomType type,
+    String? coverUrl,
+    String? videoUrl,
+    DateTime? createdAt,
+    String? duration,
+    ApiVirtualClassroomType? type,
   }) = ApiVirtualClassroom;
 
   factory ApiVirtualClassroomBase.fromJson(Map<String, Object?> json) =>

@@ -7,7 +7,7 @@ class VideoItemWidget extends StatelessWidget {
   final String title, courseName, timeString, durationString;
   final void Function() onItemTap, onDownloadTap;
 
-  final String thumbnailUrl;
+  final String? thumbnailUrl;
 
   const VideoItemWidget({
     super.key,
@@ -20,7 +20,7 @@ class VideoItemWidget extends StatelessWidget {
     required this.durationString,
     required this.onItemTap,
     required this.onDownloadTap,
-    required this.thumbnailUrl,
+    this.thumbnailUrl,
   });
 
   @override
@@ -50,15 +50,18 @@ class VideoItemWidget extends StatelessWidget {
                           height: 80,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(8),
-                            image: thumbnailUrl.isNotEmpty
-                                ? DecorationImage(
-                                    image: NetworkImage(thumbnailUrl),
-                                    fit: BoxFit.cover,
-                                  )
+                            image:
+                                thumbnailUrl != null && thumbnailUrl!.isNotEmpty
+                                    ? DecorationImage(
+                                        image: NetworkImage(thumbnailUrl!),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                            color: thumbnailUrl == null || thumbnailUrl!.isEmpty
+                                ? Colors.black
                                 : null,
-                            color: thumbnailUrl.isEmpty ? Colors.black : null,
                           ),
-                          child: thumbnailUrl.isEmpty
+                          child: thumbnailUrl == null || thumbnailUrl!.isEmpty
                               ? Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Center(

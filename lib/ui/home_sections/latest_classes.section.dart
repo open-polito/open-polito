@@ -25,21 +25,23 @@ class LatestClassesSection extends StatelessWidget {
       builder: (context, state) => HomeSectionBase(
         title: title,
         icon: Icons.video_collection_outlined,
-        children: classes.map(
-          (e) => VideoItemWidget(
+        children: classes.map((e) {
+          final createdAt = e.recording?.createdAt;
+          return VideoItemWidget(
             bgColor: state.theme.elementBackground,
             titleColor: state.theme.cardPrimaryText,
             smallTextColor: state.theme.cardSecondaryText,
-            title: e.recording!.title,
+            title: e.recording?.title ?? "",
             courseName: e.courseName ?? "",
-            timeString: localizedTimeDelta(
-                now, e.recording!.createdAt, appLocalizations),
-            durationString: e.recording!.duration,
+            timeString: createdAt != null
+                ? localizedTimeDelta(now, createdAt, appLocalizations)
+                : "",
+            durationString: e.recording?.duration ?? "",
             onDownloadTap: () {}, // TODO: add behavior
             onItemTap: () {}, // TODO: add behavior
-            thumbnailUrl: e.recording!.coverUrl,
-          ),
-        ),
+            thumbnailUrl: e.recording?.coverUrl,
+          );
+        }),
       ),
     );
   }

@@ -87,7 +87,7 @@ class DbCourseDirItems extends Table {
       text().references(DbCourseDirItems, #itemId).nullable()();
 }
 
-@DataClassName("CourseRecordedClass")
+@DataClassName("DbCourseRecordedClass")
 class DbCourseRecordedClasses extends Table {
   @override
   String? get tableName => "course_recorded_classes";

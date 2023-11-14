@@ -15,7 +15,6 @@ class HomeScreenBlocState with _$HomeScreenBlocState {
     required bool initialized,
     required Iterable<CourseOverview> courseOverviews,
     required List<CourseVirtualClassroom> classes,
-    required List<CourseVirtualClassroomLive> liveClasses,
     required List<CourseFileInfo> latestFiles,
   }) = _HomeScreenBlocState;
 }
@@ -26,7 +25,6 @@ class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
             initialized: false,
             courseOverviews: [],
             classes: [],
-            liveClasses: [],
             latestFiles: []));
 
   Future<void> init() async {
@@ -38,9 +36,7 @@ class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
       emit(
         state.copyWith(
           courseOverviews: d.courseOverviews,
-          classes: d.classes,
-          liveClasses:
-              d.classes.whereType<CourseVirtualClassroomLive>().toList(),
+          classes: d.latestClasses,
           latestFiles: d.latestFiles,
         ),
       );

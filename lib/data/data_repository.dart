@@ -34,8 +34,7 @@ typedef WrapperStream<T> = Stream<DataWrapper<T>>;
 class InitHomeData with _$InitHomeData {
   const factory InitHomeData({
     required Iterable<CourseOverview> courseOverviews,
-    required Map<int, Map<String, CourseDirectoryItem>> fileMapsByCourseId,
-    required List<CourseVirtualClassroom> classes,
+    required List<CourseVirtualClassroom> latestClasses,
     required List<CourseFileInfo> latestFiles,
   }) = _InitHomeData;
 }
@@ -93,18 +92,97 @@ class DataRepository {
     return await fn();
   }
 
-  FutureOr<Iterable<CourseOverview>> getCourses() => _throttle(
+  FutureOr<Iterable<CourseOverview>?> getCourses() => _throttle(
         key: "getCourses",
-        apiFn: () async => (await req(_api.getCourses))?.data,
+        apiFn: () async => (await req(_api.getCourses))
+            ?.data
+            .map((e) => courseOverviewFromAPI(e)),
         localFn: () async {
           final data = await _db.coursesDao.getCourses();
           return data.map((e) => courseOverviewFromDB(e));
         },
         localUpdater: (apiData) async {
-          final items =
-              apiData.map((e) => dbCourseOverview(courseOverviewFromAPI(e)));
+          final items = apiData.map((e) => dbCourseOverview(e));
           await _db.coursesDao
               .setCourses(items, apiData.map((e) => e.id).nonNulls.toList());
+        },
+      );
+
+  Future<Iterable<CourseFileInfo>?> getLatestFiles() async {
+    final items = await _db.coursesDao.getLatestFiles();
+    return items
+        .map((e) => courseDirectoryItemFromDB(
+              e.$1,
+              items.map((a) => a.$1),
+              courseName: e.$2,
+            ))
+        .whereType<CourseFileInfo>();
+  }
+
+  Future<Iterable<CourseVirtualClassroom>?> getLatestVirtualClassrooms() async {
+    final items = await _db.coursesDao.getLatestRecordedClasses();
+    return items.map((e) => vcFromDB(e.$1, courseName: e.$2));
+  }
+
+  FutureOr<Iterable<CourseDirectoryItem>?> getCourseMaterial(
+    int courseId,
+    String courseName, {
+    /// Force local fetch
+    bool forceLocal = false,
+
+    /// Return paginated, otherwise returns all results
+    bool paginated = false,
+
+    /// Page number (only when pagination enabled)
+    int pageIndex = 0,
+
+    /// Get only children of this directory
+    String? parentId,
+
+    /// Don't use this together with pagination
+    int? maxResults,
+  }) =>
+      _throttle(
+        key: "getCourseMaterial_$courseId",
+        apiFn: () async =>
+            (await req(() => _api.getCourseFiles(courseId)))?.data,
+        localFn: () async {
+          final data = await _db.coursesDao.getCourseMaterial(
+            courseId: courseId,
+            pageIndex: pageIndex,
+            paginated: paginated,
+            parentId: parentId,
+            maxResults: maxResults,
+          );
+
+          return data
+              .map((e) =>
+                  courseDirectoryItemFromDB(e, data, courseName: courseName))
+              .nonNulls;
+        },
+        localUpdater: (apiData) async {
+          final items = dbCourseDirItemsFromAPI(apiData,
+              courseId: courseId, parentId: null);
+          await _db.coursesDao.addCourseMaterial(items);
+        },
+      );
+
+  FutureOr<Iterable<CourseVirtualClassroom>?> getCourseVirtualClassrooms(
+          int courseId, String courseName) =>
+      _throttle(
+        key: "getCourseVirtualClassrooms_$courseId",
+        apiFn: () async =>
+            (await req(() => _api.getCourseVirtualClassrooms(courseId)))
+                ?.data
+                .map((e) => vcFromAPI(e, courseId, courseName)),
+        localFn: () async {
+          final data =
+              await _db.coursesDao.getCourseRecordedClasses(courseId: courseId);
+          return data.map((e) => vcFromDB(e, courseName: courseName));
+        },
+        localUpdater: (apiData) async {
+          await _db.coursesDao.addCourseRecordedClasses(
+              apiData.map((e) => dbCourseRecordedClass(e, courseId)).nonNulls);
         },
       );
 
@@ -112,8 +190,7 @@ class DataRepository {
     if (isDemo) {
       yield InitHomeData(
         courseOverviews: demoState.overviews,
-        fileMapsByCourseId: demoState.dirMapsByCourse,
-        classes: demoState.recordedClasses,
+        latestClasses: demoState.recordedClasses,
         latestFiles: [],
       );
       return;
@@ -121,94 +198,32 @@ class DataRepository {
 
     var data = const InitHomeData(
       courseOverviews: [],
-      fileMapsByCourseId: {},
-      classes: [],
+      latestClasses: [],
       latestFiles: [],
     );
 
-    final overviews = ((await req(_api.getCourses))?.data)
-        ?.map((e) => courseOverviewFromAPI(e));
-
-    if (overviews != null) {
-      await _db.coursesDao.deleteCourses();
-      await _db.coursesDao.setCourses(
-        overviews.map((e) => dbCourseOverview(e)),
-        overviews.map((e) => e.id).toList(),
-      );
-      data = data.copyWith(courseOverviews: overviews, fileMapsByCourseId: {});
-      yield data;
-    }
+    final overviews = await getCourses();
 
     if (overviews == null) {
       return;
     }
 
-    final Map<int, Map<String, CourseDirectoryItem>> fileMap = {};
+    data = data.copyWith(courseOverviews: overviews);
+    yield data;
 
     for (final ov in overviews) {
-      // FILES
-      final [
-        apiFiles as List<ApiCourseDirectoryContent>?,
-        apiClasses as List<ApiVirtualClassroomBase>?,
-      ] = await Future.wait([
-        req(() => _api.getCourseFiles(ov.id)).then((value) => value?.data),
-        req(() => _api.getCourseVirtualClassrooms(ov.id))
-            .then((value) => value?.data),
-      ]);
-
-      // Process files
-      if (apiFiles != null) {
-        final map = dirMapFromAPI(apiFiles, ov.id, courseName: ov.name);
-        fileMap[ov.id] = map;
-        data = data.copyWith(fileMapsByCourseId: fileMap);
-        yield data;
-
-        // Save new material list
-        await _db.coursesDao.addCourseMaterial(
-            map.values.map((e) => dbCourseDirItem(e, ov.id)));
-      }
-
-      final classes = apiClasses?.map((e) => vcFromAPI(e, ov.id, ov.name));
-
-      // Process recorded classes
-      final recordedClasses =
-          classes?.where((element) => element.isLive == false);
-      if (recordedClasses != null) {
-        data = data.copyWith(classes: [...data.classes, ...recordedClasses]);
-        yield data;
-
-        // Save new classes
-        await _db.coursesDao.addCourseRecordedClasses(recordedClasses
-            .map((e) => dbCourseRecordedClass(e, ov.id))
-            .nonNulls);
-      }
+      await getCourseMaterial(ov.id, ov.name);
+      await getCourseVirtualClassrooms(ov.id, ov.name);
     }
 
-    // Process latest files
-    final latestFiles = (data.fileMapsByCourseId.values
-            .map((e) => e.values.map((e) => e))
-            .expand((element) => element)
-            .whereType<CourseFileInfo>()
-            .toList()
-          ..sort((a, b) => b.createdAt.difference(a.createdAt).inMilliseconds))
-        .take(10)
-        .toList();
+    final latestFiles = await getLatestFiles();
+    final latestClasses = await getLatestVirtualClassrooms();
+
     data = data.copyWith(
-      latestFiles: latestFiles,
+      latestFiles: latestFiles?.toList() ?? [],
+      latestClasses: latestClasses?.toList() ?? [],
     );
     yield data;
-
-    // Sort class recordings
-    final recordings = (data.classes.map((e) => e).toList()
-          ..sort((a, b) => b.recording!.createdAt
-              .difference(a.recording!.createdAt)
-              .inMilliseconds))
-        .take(10)
-        .toList();
-    data = data.copyWith(classes: recordings);
-    yield data;
-
-    final courseIds = overviews.map((e) => e.id);
   }
 }
 
@@ -223,12 +238,18 @@ enum RateLimitingType {
   throttle,
 }
 
-FutureOr<T> _throttle<T, R>({
+enum RateLimitingForceMode {
+  api,
+  local,
+}
+
+FutureOr<T?> _throttle<T, R>({
   required String key,
   required FutureOr<R?> Function() apiFn,
-  required FutureOr<T> Function() localFn,
+  required FutureOr<T?> Function() localFn,
   required FutureOr<void> Function(R apiData) localUpdater,
   Duration timeout = _defaultTimeout,
+  RateLimitingForceMode? forceMode,
 }) =>
     _rateLimit(
       type: RateLimitingType.throttle,
@@ -236,14 +257,16 @@ FutureOr<T> _throttle<T, R>({
       apiFn: apiFn,
       localFn: localFn,
       localUpdater: localUpdater,
+      forceMode: forceMode,
     );
 
-FutureOr<T> _debounce<T, R>({
+FutureOr<T?> _debounce<T, R>({
   required String key,
   required FutureOr<R?> Function() apiFn,
-  required FutureOr<T> Function() localFn,
+  required FutureOr<T?> Function() localFn,
   required FutureOr<void> Function(R apiData) localUpdater,
   Duration timeout = _defaultTimeout,
+  RateLimitingForceMode? forceMode,
 }) =>
     _rateLimit(
       type: RateLimitingType.debounce,
@@ -251,6 +274,7 @@ FutureOr<T> _debounce<T, R>({
       apiFn: apiFn,
       localFn: localFn,
       localUpdater: localUpdater,
+      forceMode: forceMode,
     );
 
 /// Generic rate limiting function.
@@ -261,17 +285,28 @@ FutureOr<T> _debounce<T, R>({
 /// - if it should refresh from API, calls [apiFn], then updates the local data
 ///   by calling [localUpdater]
 /// - always calls [localFn] and returns its result.
-FutureOr<T> _rateLimit<T, R>({
+FutureOr<T?> _rateLimit<T, R>({
   required RateLimitingType type,
   required String key,
   required FutureOr<R?> Function() apiFn,
-  required FutureOr<T> Function() localFn,
+  required FutureOr<T?> Function() localFn,
   required FutureOr<void> Function(R apiData) localUpdater,
   Duration timeout = _defaultTimeout,
+  RateLimitingForceMode? forceMode,
 }) async {
+  // If forcing local mode, then return local immediately
+  if (forceMode == RateLimitingForceMode.local) {
+    return await localFn();
+  }
   final now = DateTime.now();
   final lastTimeout = _throttleTimes[key];
-  if (lastTimeout == null ||
+
+  // Call API if any of this applies (by priority):
+  // - the API call is forced
+  // - no previous timeout exists
+  // - the previous timeout expired
+  if (forceMode == RateLimitingForceMode.api ||
+      lastTimeout == null ||
       now.difference(lastTimeout).compareTo(timeout) >= 0) {
     // Can call API
     final res = await apiFn();

@@ -21,14 +21,14 @@ CourseOverview courseOverviewFromDB(DbCourse c) {
 }
 
 DbCoursesCompanion dbCourseOverview(CourseOverview c) {
-  return DbCoursesCompanion(
-    cfu: Value(c.cfu),
-    code: Value(c.code),
-    courseId: Value(c.id),
-    isInPersonalStudyPlan: Value(c.isInPersonalStudyPlan),
-    isModule: Value(c.isModule),
-    isOverBooking: Value(c.isOverbooking),
-    name: Value(c.name),
+  return DbCoursesCompanion.insert(
+    cfu: c.cfu,
+    code: c.code,
+    courseId: c.id,
+    isInPersonalStudyPlan: c.isInPersonalStudyPlan,
+    isModule: c.isModule,
+    isOverBooking: c.isOverbooking,
+    name: c.name,
     moduleNumber: Value(c.moduleNumber),
     semester: Value(c.teachingPeriod?.semester),
     teacherId: Value(c.teacherId),
@@ -78,24 +78,44 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
 DbCourseDirItemsCompanion dbCourseDirItem(
     CourseDirectoryItem item, int courseId) {
   return switch (item) {
-    CourseFileInfo() => DbCourseDirItemsCompanion(
-        courseId: Value(courseId),
+    CourseFileInfo() => DbCourseDirItemsCompanion.insert(
+        courseId: courseId,
         createdAt: Value(item.createdAt),
-        itemId: Value(item.id),
+        itemId: item.id,
         mimeType: Value(item.mimeType),
-        name: Value(item.name),
+        name: item.name,
         parentId: Value(item.parentId),
         sizeKB: Value(item.sizeKB),
-        type: const Value(DbCourseDirItemType.file),
+        type: DbCourseDirItemType.file,
       ),
-    CourseDirInfo() => DbCourseDirItemsCompanion(
-        courseId: Value(courseId),
-        itemId: Value(item.id),
-        name: Value(item.name),
+    CourseDirInfo() => DbCourseDirItemsCompanion.insert(
+        courseId: courseId,
+        itemId: item.id,
+        name: item.name,
         parentId: Value(item.parentId),
-        type: const Value(DbCourseDirItemType.dir),
+        type: DbCourseDirItemType.dir,
       ),
   };
+}
+
+CourseVirtualClassroom vcFromDB(
+  DbCourseRecordedClass item, {
+  required String courseName,
+}) {
+  return CourseVirtualClassroom(
+      courseId: item.courseId,
+      courseName: courseName,
+      isLive: false, // stored classes are never live!
+      recording: ApiVirtualClassroom(
+        id: item.classId,
+        title: item.title,
+        coverUrl: item.coverUrl,
+        videoUrl: item.videoUrl,
+        createdAt: item.createdAt,
+        duration: item.durationStr,
+        type:
+            ApiVirtualClassroomType.recording, // stored classes are never live!
+      ));
 }
 
 DbCourseRecordedClassesCompanion? dbCourseRecordedClass(
@@ -105,16 +125,57 @@ DbCourseRecordedClassesCompanion? dbCourseRecordedClass(
   if (vc?.type == ApiVirtualClassroomType.live || vc == null) {
     return null;
   }
-  return DbCourseRecordedClassesCompanion(
-    classId: Value(vc.id),
-    courseId: Value(courseId),
+  return DbCourseRecordedClassesCompanion.insert(
+    classId: vc.id,
+    courseId: courseId,
     coverUrl: Value(vc.coverUrl),
     createdAt: Value(vc.createdAt),
     durationStr: Value(vc.duration),
     teacherId: Value(vc.teacherId),
     title: Value(vc.title),
-    type: const Value(
-        DbCourseClassType.virtualClassroom), // This is a virtual classroom
+    type: DbCourseClassType.virtualClassroom, // This is a virtual classroom
     videoUrl: Value(vc.videoUrl),
   );
+}
+
+Iterable<DbCourseDirItemsCompanion> dbCourseDirItemsFromAPI(
+  Iterable<ApiCourseDirectoryContent> items, {
+  required int courseId,
+
+  /// if null, items are in root directory
+  String? parentId,
+}) {
+  final list = <DbCourseDirItemsCompanion>[];
+  final thisLevelItems = items.map((e) {
+    return switch (e) {
+      ApiCourseDirectory() => DbCourseDirItemsCompanion.insert(
+          itemId: e.id,
+          type: DbCourseDirItemType.dir,
+          name: e.name,
+          courseId: courseId,
+        ),
+      ApiCourseFileOverview() => DbCourseDirItemsCompanion.insert(
+          itemId: e.id,
+          type: DbCourseDirItemType.file,
+          name: e.name,
+          courseId: courseId,
+          createdAt: Value(e.createdAt),
+          mimeType: Value(e.mimeType),
+          parentId: Value(parentId),
+          sizeKB: Value(BigInt.from(e.sizeInKiloBytes)),
+        ),
+    };
+  });
+
+  list.addAll(thisLevelItems);
+
+  for (final originalItem in items) {
+    if (originalItem case ApiCourseDirectory()) {
+      final children = originalItem.files;
+      list.addAll(dbCourseDirItemsFromAPI(children,
+          courseId: courseId, parentId: originalItem.id));
+    }
+  }
+
+  return list;
 }
