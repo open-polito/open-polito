@@ -4,11 +4,11 @@ part 'common.freezed.dart';
 part 'common.g.dart';
 
 @freezed
-class ErrorResponse with _$ErrorResponse {
-  const factory ErrorResponse({
+class ApiErrorResponse with _$ApiErrorResponse {
+  const factory ApiErrorResponse({
     int? code,
     String? message,
-  }) = _ErrorResponse;
-  factory ErrorResponse.fromJson(Map<String, Object?> json) =>
-      _$ErrorResponseFromJson(json);
+  }) = _ApiErrorResponse;
+  factory ApiErrorResponse.fromJson(Map<String, Object?> json) =>
+      _$ApiErrorResponseFromJson(json);
 }

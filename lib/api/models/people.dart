@@ -6,40 +6,40 @@ part 'people.g.dart';
 
 /// GET /people
 @freezed
-class GetPeople200Response with _$GetPeople200Response {
-  const factory GetPeople200Response({
-    required List<PersonOverview> data,
-  }) = _GetPeople200Response;
-  factory GetPeople200Response.fromJson(Map<String, Object?> json) =>
-      _$GetPeople200ResponseFromJson(json);
+class ApiGetPeople200Response with _$ApiGetPeople200Response {
+  const factory ApiGetPeople200Response({
+    required List<ApiPersonOverview> data,
+  }) = _ApiGetPeople200Response;
+  factory ApiGetPeople200Response.fromJson(Map<String, Object?> json) =>
+      _$ApiGetPeople200ResponseFromJson(json);
 }
 
 /// GET /people/{id}
 @freezed
-class GetPerson200Response with _$GetPerson200Response {
-  const factory GetPerson200Response({
-    required Person data,
-  }) = _GetPerson200Response;
-  factory GetPerson200Response.fromJson(Map<String, Object?> json) =>
-      _$GetPerson200ResponseFromJson(json);
+class ApiGetPerson200Response with _$ApiGetPerson200Response {
+  const factory ApiGetPerson200Response({
+    required ApiPerson data,
+  }) = _ApiGetPerson200Response;
+  factory ApiGetPerson200Response.fromJson(Map<String, Object?> json) =>
+      _$ApiGetPerson200ResponseFromJson(json);
 }
 
 @freezed
-class PersonOverview with _$PersonOverview {
-  const factory PersonOverview({
+class ApiPersonOverview with _$ApiPersonOverview {
+  const factory ApiPersonOverview({
     @SafeNullableIntConverter() int? id,
     String? firstName,
     String? lastName,
     String? picture,
     String? role,
-  }) = _PersonOverview;
-  factory PersonOverview.fromJson(Map<String, Object?> json) =>
-      _$PersonOverviewFromJson(json);
+  }) = _ApiPersonOverview;
+  factory ApiPersonOverview.fromJson(Map<String, Object?> json) =>
+      _$ApiPersonOverviewFromJson(json);
 }
 
 @freezed
-class Person with _$Person {
-  const factory Person({
+class ApiPerson with _$ApiPerson {
+  const factory ApiPerson({
     // Inherited from [PersonOverview]
     @SafeNullableIntConverter() int? id,
     String? firstName,
@@ -48,33 +48,34 @@ class Person with _$Person {
     String? role,
     // Own properties
     String? email,
-    List<PhoneNumber>? phoneNumbers,
+    List<ApiPhoneNumber>? phoneNumbers,
     String? facilityShortName,
     String? profileUrl,
-    List<PersonCourse>? courses,
-  }) = _Person;
-  factory Person.fromJson(Map<String, Object?> json) => _$PersonFromJson(json);
+    List<ApiPersonCourse>? courses,
+  }) = _ApiPerson;
+  factory ApiPerson.fromJson(Map<String, Object?> json) =>
+      _$ApiPersonFromJson(json);
 }
 
 @freezed
-class PhoneNumber with _$PhoneNumber {
-  const factory PhoneNumber({
+class ApiPhoneNumber with _$ApiPhoneNumber {
+  const factory ApiPhoneNumber({
     String? full,
     String? internal,
-  }) = _PhoneNumber;
-  factory PhoneNumber.fromJson(Map<String, Object?> json) =>
-      _$PhoneNumberFromJson(json);
+  }) = _ApiPhoneNumber;
+  factory ApiPhoneNumber.fromJson(Map<String, Object?> json) =>
+      _$ApiPhoneNumberFromJson(json);
 }
 
 @freezed
-class PersonCourse with _$PersonCourse {
-  const factory PersonCourse({
+class ApiPersonCourse with _$ApiPersonCourse {
+  const factory ApiPersonCourse({
     @SafeNullableIntConverter() int? id,
     String? shortcode,
     String? name,
     String? role,
     @SafeNullableIntConverter() int? year,
-  }) = _PersonCourse;
-  factory PersonCourse.fromJson(Map<String, Object?> json) =>
-      _$PersonCourseFromJson(json);
+  }) = _ApiPersonCourse;
+  factory ApiPersonCourse.fromJson(Map<String, Object?> json) =>
+      _$ApiPersonCourseFromJson(json);
 }

@@ -4,73 +4,73 @@ part 'auth.freezed.dart';
 part 'auth.g.dart';
 
 @freezed
-class LoginRequest with _$LoginRequest {
-  const factory LoginRequest({
+class ApiLoginRequest with _$ApiLoginRequest {
+  const factory ApiLoginRequest({
     required String username,
     required String password,
-    ClientData? client,
-    DeviceData? device,
-    required UpdatePreferencesRequest preferences,
-  }) = _LoginRequest;
-  factory LoginRequest.fromJson(Map<String, Object?> json) =>
-      _$LoginRequestFromJson(json);
+    ApiClientData? client,
+    ApiDeviceData? device,
+    required ApiUpdatePreferencesRequest preferences,
+  }) = _ApiLoginRequest;
+  factory ApiLoginRequest.fromJson(Map<String, Object?> json) =>
+      _$ApiLoginRequestFromJson(json);
 }
 
 @freezed
-class Login200Response with _$Login200Response {
-  const factory Login200Response({
-    required Identity data,
-  }) = _Login200Response;
-  factory Login200Response.fromJson(Map<String, Object?> json) =>
-      _$Login200ResponseFromJson(json);
+class ApiLogin200Response with _$ApiLogin200Response {
+  const factory ApiLogin200Response({
+    required ApiIdentity data,
+  }) = _ApiLogin200Response;
+  factory ApiLogin200Response.fromJson(Map<String, Object?> json) =>
+      _$ApiLogin200ResponseFromJson(json);
 }
 
 @freezed
-class ClientData with _$ClientData {
-  const factory ClientData({
+class ApiClientData with _$ApiClientData {
+  const factory ApiClientData({
     required String name,
     String? id,
-  }) = _ClientData;
-  factory ClientData.fromJson(Map<String, Object?> json) =>
-      _$ClientDataFromJson(json);
+  }) = _ApiClientData;
+  factory ApiClientData.fromJson(Map<String, Object?> json) =>
+      _$ApiClientDataFromJson(json);
 }
 
 @freezed
-class DeviceData with _$DeviceData {
-  const factory DeviceData({
+class ApiDeviceData with _$ApiDeviceData {
+  const factory ApiDeviceData({
     String? name,
     required String platform,
     String? version,
     String? model,
     String? manufacturer,
-  }) = _DeviceData;
-  factory DeviceData.fromJson(Map<String, Object?> json) =>
-      _$DeviceDataFromJson(json);
+  }) = _ApiDeviceData;
+  factory ApiDeviceData.fromJson(Map<String, Object?> json) =>
+      _$ApiDeviceDataFromJson(json);
 }
 
 @freezed
-class UpdatePreferencesRequest with _$UpdatePreferencesRequest {
-  const factory UpdatePreferencesRequest({
+class ApiUpdatePreferencesRequest with _$ApiUpdatePreferencesRequest {
+  const factory ApiUpdatePreferencesRequest({
     String? fcmRegistrationToken,
-    PreferencesLanguage? language,
-  }) = _UpdatePreferencesRequest;
-  factory UpdatePreferencesRequest.fromJson(Map<String, Object?> json) =>
-      _$UpdatePreferencesRequestFromJson(json);
+    ApiPreferencesLanguage? language,
+  }) = _ApiUpdatePreferencesRequest;
+  factory ApiUpdatePreferencesRequest.fromJson(Map<String, Object?> json) =>
+      _$ApiUpdatePreferencesRequestFromJson(json);
 }
 
-enum PreferencesLanguage {
+enum ApiPreferencesLanguage {
   it,
   en,
 }
 
 @freezed
-class Identity with _$Identity {
-  const factory Identity({
+class ApiIdentity with _$ApiIdentity {
+  const factory ApiIdentity({
     required String username,
     required String type,
     required String clientId,
     required String token,
-  }) = _Identity;
-  factory Identity.fromJson(Map<String, Object?> json) =>
-      _$IdentityFromJson(json);
+  }) = _ApiIdentity;
+  factory ApiIdentity.fromJson(Map<String, Object?> json) =>
+      _$ApiIdentityFromJson(json);
 }

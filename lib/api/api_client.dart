@@ -28,33 +28,36 @@ abstract class ApiClient {
 
   @POST("/auth/login")
   @Headers(postHeaders)
-  Future<Res<Login200Response>> login(@Body() LoginRequest req);
+  Future<Res<ApiLogin200Response>> login(@Body() ApiLoginRequest req);
 
   @DELETE("/auth/logout")
   Future<void> logout();
 
   @GET("/courses")
   @Headers(postHeaders)
-  Future<Res<GetCourses200Response>> getCourses();
+  Future<Res<ApiGetCourses200Response>> getCourses();
 
   @GET("/courses/{courseId}/virtual-classrooms")
   @Headers(postHeaders)
-  Future<Res<GetCourseVirtualClassrooms200Response>> getCourseVirtualClassrooms(
+  Future<Res<ApiGetCourseVirtualClassrooms200Response>>
+      getCourseVirtualClassrooms(
     @Path() int courseId, {
     @Query("live") bool? live,
   });
 
   @GET("/courses/{courseId}/files")
   @Headers(postHeaders)
-  Future<Res<GetCourseFiles200Response>> getCourseFiles(@Path() int courseId);
+  Future<Res<ApiGetCourseFiles200Response>> getCourseFiles(
+      @Path() int courseId);
 
   @GET("/people")
   @Headers(postHeaders)
-  Future<Res<GetPeople200Response>> getPeople(@Query("search") String search);
+  Future<Res<ApiGetPeople200Response>> getPeople(
+      @Query("search") String search);
 
   @GET("/people/{personId}")
   @Headers(postHeaders)
-  Future<Res<GetPerson200Response>> getPerson(
+  Future<Res<ApiGetPerson200Response>> getPerson(
     @Path() int personId,
   );
 }
