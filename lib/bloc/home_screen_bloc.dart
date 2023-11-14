@@ -16,6 +16,7 @@ class HomeScreenBlocState with _$HomeScreenBlocState {
     required Iterable<CourseOverview> courseOverviews,
     required List<CourseVirtualClassroom> classes,
     required List<CourseFileInfo> latestFiles,
+    required Iterable<CourseVirtualClassroom> liveClasses,
   }) = _HomeScreenBlocState;
 }
 
@@ -25,7 +26,8 @@ class HomeScreenBloc extends Cubit<HomeScreenBlocState> {
             initialized: false,
             courseOverviews: [],
             classes: [],
-            latestFiles: []));
+            latestFiles: [],
+            liveClasses: []));
 
   Future<void> init() async {
     if (state.initialized) {

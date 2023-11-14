@@ -36,6 +36,7 @@ class InitHomeData with _$InitHomeData {
     required Iterable<CourseOverview> courseOverviews,
     required List<CourseVirtualClassroom> latestClasses,
     required List<CourseFileInfo> latestFiles,
+    required Iterable<CourseVirtualClassroom> liveClasses,
   }) = _InitHomeData;
 }
 
@@ -186,12 +187,29 @@ class DataRepository {
         },
       );
 
+  Future<Iterable<CourseVirtualClassroom>?> getCourseLiveClassrooms(
+      int courseId, String courseName) async {
+    final res =
+        await req(() => _api.getCourseVirtualClassrooms(courseId, live: true));
+    return res?.data.map((e) => vcFromAPI(e, courseId, courseName));
+  }
+
+  Future<Iterable<CourseVirtualClassroom>?> getAllLiveClassrooms(
+      Iterable<(int, String)> courses) async {
+    return (await Future.wait(
+            courses.map((c) => getCourseLiveClassrooms(c.$1, c.$2))))
+        .nonNulls
+        .expand((element) => element)
+        .nonNulls;
+  }
+
   Stream<InitHomeData> initHomeScreen() async* {
     if (isDemo) {
       yield InitHomeData(
         courseOverviews: demoState.overviews,
         latestClasses: demoState.recordedClasses,
         latestFiles: [],
+        liveClasses: [],
       );
       return;
     }
@@ -200,6 +218,7 @@ class DataRepository {
       courseOverviews: [],
       latestClasses: [],
       latestFiles: [],
+      liveClasses: [],
     );
 
     final overviews = await getCourses();
@@ -218,10 +237,13 @@ class DataRepository {
 
     final latestFiles = await getLatestFiles();
     final latestClasses = await getLatestVirtualClassrooms();
+    final liveClasses =
+        await getAllLiveClassrooms(overviews.map((e) => (e.id, e.name)));
 
     data = data.copyWith(
       latestFiles: latestFiles?.toList() ?? [],
       latestClasses: latestClasses?.toList() ?? [],
+      liveClasses: liveClasses?.toList() ?? [],
     );
     yield data;
   }

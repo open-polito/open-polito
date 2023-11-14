@@ -30,18 +30,16 @@ class ScreenWrapper extends StatelessWidget {
             padding:
                 withPadding ? const EdgeInsets.fromLTRB(16, 64, 16, 32) : null,
             color: state.theme.background,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  if (isPrimaryScreen)
-                    DefaultHorizontalPadding(
-                      child: TopBar(
-                        screenName: screenName,
-                      ),
+            child: Column(
+              children: [
+                if (isPrimaryScreen)
+                  DefaultHorizontalPadding(
+                    child: TopBar(
+                      screenName: screenName,
                     ),
-                  child,
-                ],
-              ),
+                  ),
+                Expanded(child: child),
+              ],
             ),
           ),
         ),

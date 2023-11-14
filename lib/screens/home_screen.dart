@@ -25,50 +25,46 @@ class HomeScreen extends StatelessWidget {
           BlocProvider.value(value: GetIt.I.get<HomeScreenBloc>()..init()),
         ],
         child: BlocBuilder<HomeScreenBloc, HomeScreenBlocState>(
-          builder: (context, state) => ListView(
-            shrinkWrap: true,
-            children: [
-              Column(
-                children: [
-                  const DefaultHorizontalPadding(
-                    child: SearchField(
-                      redirect: true,
-                    ),
+          builder: (context, state) => SingleChildScrollView(
+            child: Column(
+              children: [
+                const DefaultHorizontalPadding(
+                  child: SearchField(
+                    redirect: true,
                   ),
-                  const SizedBox(height: 32),
-                  if (kDebugMode)
-                    TextButton(
-                        onPressed: () {
-                          context.read<HomeScreenBloc>().resetAll(
-                              gotoLogin: () =>
-                                  const LoginRouteData().go(context));
-                        },
-                        child: const Text("Debug reset")),
-                  // TODO: live classes
-                  // if (state.liveClasses.isNotEmpty)
-                  //   LiveClassesSection(
-                  //     classes: state.liveClasses,
-                  //     title: AppLocalizations.of(context)!
-                  //         .homeScreen_section_liveClasses,
-                  //   ),
-                  const SizedBox(height: 32),
-                  if (state.latestFiles.isNotEmpty)
-                    LatestFilesSection(
-                      latestFiles: state.latestFiles,
+                ),
+                const SizedBox(height: 32),
+                if (kDebugMode)
+                  TextButton(
+                      onPressed: () {
+                        context.read<HomeScreenBloc>().resetAll(
+                            gotoLogin: () =>
+                                const LoginRouteData().go(context));
+                      },
+                      child: const Text("Debug reset")),
+                if (state.liveClasses.isNotEmpty)
+                  LiveClassesSection(
+                    classes: state.liveClasses,
+                    title: AppLocalizations.of(context)!
+                        .homeScreen_section_liveClasses,
+                  ),
+                const SizedBox(height: 32),
+                if (state.latestFiles.isNotEmpty)
+                  LatestFilesSection(
+                    latestFiles: state.latestFiles,
+                    title: AppLocalizations.of(context)!
+                        .homeScreen_section_latestFiles,
+                  ),
+                const SizedBox(height: 32),
+                if (state.classes.isNotEmpty)
+                  LatestClassesSection(
+                      classes: state.classes,
                       title: AppLocalizations.of(context)!
-                          .homeScreen_section_latestFiles,
-                    ),
-                  const SizedBox(height: 32),
-                  if (state.classes.isNotEmpty)
-                    LatestClassesSection(
-                        classes: state.classes,
-                        title: AppLocalizations.of(context)!
-                            .homeScreen_section_latestRecordings),
-                  const SizedBox(height: 32),
-                  Text(state.toString()),
-                ],
-              ),
-            ],
+                          .homeScreen_section_latestRecordings),
+                const SizedBox(height: 32),
+                Text(state.toString()),
+              ],
+            ),
           ),
         ),
       ),

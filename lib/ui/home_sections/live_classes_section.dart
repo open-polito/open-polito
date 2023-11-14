@@ -93,7 +93,7 @@ class LiveClassWidget extends StatelessWidget {
 
 class LiveClassesSection extends StatelessWidget {
   final String title;
-  final Iterable<CourseVirtualClassroomLive> classes;
+  final Iterable<CourseVirtualClassroom> classes;
 
   const LiveClassesSection({
     super.key,
@@ -107,10 +107,11 @@ class LiveClassesSection extends StatelessWidget {
       title: title,
       icon: Icons.live_tv_rounded,
       children: classes.map((e) => LiveClassWidget(
-          courseName: e.title ?? "",
-          classTitle: e.title ?? "",
-          elapsedSinceStart: e.createdAt.toString(),
-          meetingUrl: "")),
+            courseName: e.courseName ?? "",
+            classTitle: e.live?.title ?? "",
+            elapsedSinceStart: e.live?.createdAt.toString() ?? "",
+            meetingUrl: "", // TODO: how do I get the meeting URL???
+          )),
     );
   }
 }
