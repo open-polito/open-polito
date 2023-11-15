@@ -10,7 +10,7 @@ import 'package:open_polito/models/models.dart';
 import 'package:open_polito/ui/screen_wrapper.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// TODO: UI desing
+// TODO: UI design
 // TODO: all features
 
 class VideoPlayerScreen extends StatefulWidget {
