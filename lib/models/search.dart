@@ -7,12 +7,12 @@ part 'search.freezed.dart';
 @freezed
 sealed class SearchResult with _$SearchResult {
   const factory SearchResult.files(
-    Iterable<FileSearchResultItem> items,
+    List<FileSearchResultItem> items,
     // TODO: books
   ) = FilesSearchResult;
-  const factory SearchResult.recordings(
-      Iterable<CourseVirtualClassroom> items) = RecordingsSearchResult;
-  const factory SearchResult.people(Iterable<ApiPersonOverview> items) =
+  const factory SearchResult.recordings(List<CourseVirtualClassroom> items) =
+      RecordingsSearchResult;
+  const factory SearchResult.people(List<ApiPersonOverview> items) =
       PeopleSearchResult;
 }
 

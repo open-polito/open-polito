@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:open_polito/bloc/transformers.dart';
+import 'package:open_polito/data/data_repository/data_repository.dart';
 import 'package:open_polito/models/models.dart';
 
 part 'search_bloc.freezed.dart';
@@ -67,8 +69,10 @@ class SearchBloc extends Bloc<SearchBlocEvent, SearchBlocState> {
     if (kDebugMode) {
       print("[SearchScreenBloc] New query: $query (in category $category)");
     }
-    // final res =
-    //     await GetIt.I.get<DataRepository>().getSearchResults(category, query);
-    return state.copyWith(searchResult: FilesSearchResult([]));
+    final res = await GetIt.I.get<DataRepository>().getSearchResults(query,
+        category: category,
+        sortOrder: SortOrder.desc,
+        sortBy: SortBy.createdAt);
+    return state.copyWith(searchResult: res);
   }
 }

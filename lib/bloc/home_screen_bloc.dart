@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:open_polito/data/data_repository.dart';
+import 'package:open_polito/data/data_repository/data_repository.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/models.dart';
 

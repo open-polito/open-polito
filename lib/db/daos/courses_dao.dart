@@ -142,4 +142,50 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
           mode: InsertMode.replace);
     });
   }
+
+  Future<Iterable<DbCourseDirItem>> searchFiles(
+    String q, {
+    required SearchCategory category,
+    required SortBy sortBy,
+    required SortOrder sortOrder,
+  }) async {
+    final orderingTerm = switch (sortOrder) {
+      SortOrder.asc => OrderingTerm.asc,
+      SortOrder.desc => OrderingTerm.desc,
+    };
+    final sortByCol = switch (sortBy) {
+      SortBy.name => dbCourseDirItems.name,
+      SortBy.size => dbCourseDirItems.sizeKB,
+      SortBy.createdAt => dbCourseDirItems.createdAt,
+    };
+    final query = select(dbCourseDirItems)
+      ..where((tbl) => tbl.name.like(q))
+      ..orderBy([
+        (_) => orderingTerm(sortByCol),
+      ]);
+    return await query.get();
+  }
+
+  Future<Iterable<DbCourseRecordedClass>> searchVideos(
+    String q, {
+    required SearchCategory category,
+    required SortBy sortBy,
+    required SortOrder sortOrder,
+  }) async {
+    final orderingTerm = switch (sortOrder) {
+      SortOrder.asc => OrderingTerm.asc,
+      SortOrder.desc => OrderingTerm.desc,
+    };
+    final sortByCol = switch (sortBy) {
+      SortBy.name => dbCourseRecordedClasses.title,
+      SortBy.size => null,
+      SortBy.createdAt => dbCourseRecordedClasses.createdAt,
+    };
+    final query = select(dbCourseRecordedClasses)
+      ..where((tbl) => tbl.title.like(q))
+      ..orderBy([
+        if (sortByCol != null) (_) => orderingTerm(sortByCol),
+      ]);
+    return await query.get();
+  }
 }
