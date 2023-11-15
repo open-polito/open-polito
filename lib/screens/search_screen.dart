@@ -6,6 +6,7 @@ import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/logic/utils/file_type_utils.dart';
 import 'package:open_polito/logic/utils/formatters.dart';
 import 'package:open_polito/models/models.dart';
+import 'package:open_polito/router.dart';
 import 'package:open_polito/styles/styles.dart';
 import 'package:open_polito/ui/button.dart';
 import 'package:open_polito/ui/file_item.dart';
@@ -113,8 +114,8 @@ class SearchScreen extends StatelessWidget {
                               AppLocalizations.of(context)!),
                           sizeString: localizedSizeFromKB(
                               file.file.sizeKB.toInt(), languageCode),
-                          onItemTap: () => {}, // TODO: behavior
-                          onDownloadTap: () => {}, // TODO: behavior
+                          onItemTap: () {}, // TODO: behavior
+                          onDownloadTap: () {}, // TODO: behavior
                         );
                       }
                       if (searchResult case RecordingsSearchResult()) {
@@ -130,7 +131,9 @@ class SearchScreen extends StatelessWidget {
                               recording.recording?.createdAt ?? now,
                               AppLocalizations.of(context)!),
                           durationString: recording.recording?.duration ?? "",
-                          onItemTap: () {}, // TODO: behavior
+                          onItemTap: () {
+                            VideoPlayerRouteData(recording).push(context);
+                          },
                           onDownloadTap: () {}, // TODO: behavior
                         );
                       }

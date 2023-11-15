@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/logic/utils/formatters.dart';
 import 'package:open_polito/models/models.dart';
+import 'package:open_polito/router.dart';
 import 'package:open_polito/ui/home_sections/home_section_base.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:open_polito/ui/video_item.dart';
@@ -38,7 +39,9 @@ class LatestClassesSection extends StatelessWidget {
                 : "",
             durationString: e.recording?.duration ?? "",
             onDownloadTap: () {}, // TODO: add behavior
-            onItemTap: () {}, // TODO: add behavior
+            onItemTap: () {
+              VideoPlayerRouteData(e).push(context);
+            },
             thumbnailUrl: e.recording?.coverUrl,
           );
         }),
