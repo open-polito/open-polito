@@ -14,13 +14,17 @@ class LoginBlocState with _$LoginBlocState {
     required String password,
     required bool acceptedTermsAndPrivacy,
     @Default(Ok(null)) Result<void, LoginErrorType> loginStatus,
+    @Default(true) bool loginBtnEnabled,
   }) = _LoginBlocState;
 }
 
 class LoginScreenBloc extends Cubit<LoginBlocState> {
   LoginScreenBloc()
       : super(const LoginBlocState(
-            username: "", password: "", acceptedTermsAndPrivacy: false));
+          username: "",
+          password: "",
+          acceptedTermsAndPrivacy: false,
+        ));
 
   AuthService get _authService => GetIt.I.get<AuthService>();
 
@@ -45,6 +49,7 @@ class LoginScreenBloc extends Cubit<LoginBlocState> {
       {required void Function() gotoHome}) async {
     emit(state.copyWith(
       loginStatus: const Pending(),
+      loginBtnEnabled: false,
     ));
 
     final loginResult = await _authService.login(
@@ -59,6 +64,7 @@ class LoginScreenBloc extends Cubit<LoginBlocState> {
 
     emit(state.copyWith(
       loginStatus: loginResult,
+      loginBtnEnabled: true,
     ));
   }
 

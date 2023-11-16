@@ -67,6 +67,7 @@ class SearchScreen extends StatelessWidget {
                       onPressed: () => context
                           .read<SearchBloc>()
                           .add(SetSearchCategory(SearchCategory.files)),
+                      enabled: true,
                     ),
                     MyButton(
                       label: "recordings",
@@ -75,6 +76,7 @@ class SearchScreen extends StatelessWidget {
                       onPressed: () => context
                           .read<SearchBloc>()
                           .add(SetSearchCategory(SearchCategory.recordings)),
+                      enabled: true,
                     ),
                     MyButton(
                       label: "people",
@@ -83,6 +85,7 @@ class SearchScreen extends StatelessWidget {
                       onPressed: () => context
                           .read<SearchBloc>()
                           .add(SetSearchCategory(SearchCategory.people)),
+                      enabled: true,
                     ),
                   ],
                 )),

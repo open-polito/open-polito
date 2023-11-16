@@ -14,6 +14,7 @@ class MyButton extends StatelessWidget {
   final MyButtonType type;
   final void Function()? onPressed;
   final bool? loading;
+  final bool enabled;
 
   const MyButton({
     super.key,
@@ -21,6 +22,7 @@ class MyButton extends StatelessWidget {
     required this.type,
     required this.onPressed,
     this.loading,
+    required this.enabled,
   });
 
   @override
@@ -28,7 +30,7 @@ class MyButton extends StatelessWidget {
     return BlocBuilder<ThemeBloc, ThemeBlocState>(
       bloc: GetIt.I.get<ThemeBloc>(),
       builder: (context, state) => TextButton(
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : null,
         style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll(
                 type == MyButtonType.primary

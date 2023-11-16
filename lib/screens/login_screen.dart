@@ -216,6 +216,7 @@ class LoginScreen extends StatelessWidget {
                                       .loginScreen_action_login,
                                   type: MyButtonType.primary,
                                   loading: loginState.loginStatus is Pending,
+                                  enabled: loginState.loginStatus is! Pending,
                                   onPressed: () {
                                     if (_formKey.currentState?.validate() ==
                                         true) {
@@ -247,14 +248,16 @@ class LoginScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 MyButton(
-                                    label: AppLocalizations.of(context)!
-                                        .loginScreen_action_demo,
-                                    type: MyButtonType.secondary,
-                                    onPressed: () {
-                                      context.read<LoginScreenBloc>().loginDemo(
-                                          gotoHome: () => const HomeRouteData()
-                                              .go(context));
-                                    }),
+                                  label: AppLocalizations.of(context)!
+                                      .loginScreen_action_demo,
+                                  type: MyButtonType.secondary,
+                                  enabled: loginState.loginStatus is! Pending,
+                                  onPressed: () {
+                                    context.read<LoginScreenBloc>().loginDemo(
+                                        gotoHome: () =>
+                                            const HomeRouteData().go(context));
+                                  },
+                                ),
                               ],
                             ),
                           ),
