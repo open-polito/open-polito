@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
@@ -55,6 +56,11 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
             builder: (context, state) => Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                TextButton(
+                    onPressed: () {
+                      context.pop();
+                    },
+                    child: const Text("Back")),
                 Flexible(
                   fit: FlexFit.loose,
                   child: Video(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:open_polito/bloc/search_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/logic/utils/file_type_utils.dart';
@@ -44,7 +45,12 @@ class SearchScreen extends StatelessWidget {
                 DefaultHorizontalPadding(
                   child: Row(
                     children: [
-                      Flexible(child: Text("back")),
+                      Flexible(
+                          child: TextButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: Text("back"))),
                       Expanded(
                           child: SearchField(
                         redirect: false,
