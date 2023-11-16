@@ -13,7 +13,7 @@ extension DataRepositorySearch on DataRepository {
   }) =>
       demoDefault(
         real: () async {
-          final processedQuery = query.toLowerCase();
+          final processedQuery = query.toLowerCase().trim();
           switch (category) {
             case SearchCategory.files:
               final files = <FileSearchResultItem>[];
