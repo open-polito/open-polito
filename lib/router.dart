@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:open_polito/logic/auth/auth_model.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
 import 'package:open_polito/models/models.dart';
+import 'package:open_polito/screens/download_screen.dart';
 import 'package:open_polito/screens/home_screen.dart';
 import 'package:open_polito/screens/login_screen.dart';
 import 'package:open_polito/screens/search_screen.dart';
@@ -72,6 +73,7 @@ final _loggedInShellNavigatorKey = GlobalKey<NavigatorState>();
     TypedGoRoute<HomeRouteData>(path: "/"),
     TypedGoRoute<SearchRouteData>(path: "/search"),
     TypedGoRoute<VideoPlayerRouteData>(path: "/play"),
+    TypedGoRoute<DownloaderRouteData>(path: "/downloads"),
   ]),
   TypedGoRoute<LoginRouteData>(path: "/login"),
 ])
@@ -136,5 +138,14 @@ class VideoPlayerRouteData extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return VideoPlayerScreen(videoData: $extra);
+  }
+}
+
+class DownloaderRouteData extends GoRouteData {
+  const DownloaderRouteData();
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const DownloadScreen();
   }
 }

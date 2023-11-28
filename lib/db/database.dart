@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:open_polito/db/daos/courses_dao.dart';
+import 'package:open_polito/db/daos/downloads_dao.dart';
 import 'package:open_polito/db/schema/schema.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,6 +19,7 @@ part 'database.g.dart';
   DbDownloadItems,
 ], daos: [
   CoursesDao,
+  DownloadsDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

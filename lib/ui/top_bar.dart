@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
+import 'package:open_polito/router.dart';
 import 'package:open_polito/styles/styles.dart';
 import 'package:open_polito/ui/badge_icon_button.dart';
 
@@ -46,10 +47,14 @@ class TopBar extends StatelessWidget {
                   BadgeIconButton(
                     icon: Icons.download_rounded,
                     badgeCount: downloadBadgeCount,
+                    onTap: () {
+                      const DownloaderRouteData().push(context);
+                    },
                   ),
                   BadgeIconButton(
                     icon: Icons.notifications_rounded,
                     badgeCount: downloadBadgeCount,
+                    onTap: () {}, // TODO: go to notifications screen
                   )
                 ],
               ),

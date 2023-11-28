@@ -7,8 +7,14 @@ import 'package:open_polito/styles/styles.dart';
 class BadgeIconButton extends StatelessWidget {
   final int? badgeCount;
   final IconData icon;
+  final void Function() onTap;
 
-  const BadgeIconButton({super.key, this.badgeCount, required this.icon});
+  const BadgeIconButton({
+    super.key,
+    this.badgeCount,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +32,7 @@ class BadgeIconButton extends StatelessWidget {
                     shape: BoxShape.circle,
                     color: state.theme.elementBackground),
                 child: IconButton(
-                    onPressed: () {},
+                    onPressed: onTap,
                     icon: Icon(
                       icon,
                       color: state.theme.icon,

@@ -24,3 +24,14 @@ class Err<T, E> implements Result<T, E> {
 /// Useful in streams to emit new values by updating a previous one,
 /// for example using `copyWith`.
 typedef Updater<T> = FutureOr<T> Function(T prev);
+
+/// Represent the platform as enum to allow pattern matching
+enum PlatformType {
+  android,
+  iOS,
+  linux,
+  macOS,
+  windows,
+  web,
+  unknown,
+}
