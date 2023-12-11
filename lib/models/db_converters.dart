@@ -3,6 +3,7 @@ import 'package:open_polito/api/models/models.dart';
 import 'package:open_polito/db/database.dart';
 import 'package:open_polito/db/schema/schema.dart';
 import 'package:open_polito/models/models.dart';
+import 'package:path/path.dart';
 
 CourseOverview courseOverviewFromDB(DbCourse c) {
   return CourseOverview(
@@ -55,6 +56,7 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
           parentId: item.parentId,
           courseId: item.courseId,
           courseName: courseName,
+          path: item.path,
         );
       }
       break;
@@ -68,6 +70,7 @@ CourseDirectoryItem? courseDirectoryItemFromDB(
         parentId: item.parentId,
         courseId: item.courseId,
         courseName: courseName,
+        path: item.path,
       );
     default:
       return null;
@@ -87,6 +90,7 @@ DbCourseDirItemsCompanion dbCourseDirItem(
         parentId: Value(item.parentId),
         sizeKB: Value(item.sizeKB),
         type: DbCourseDirItemType.file,
+        path: item.path,
       ),
     CourseDirInfo() => DbCourseDirItemsCompanion.insert(
         courseId: courseId,
@@ -94,6 +98,7 @@ DbCourseDirItemsCompanion dbCourseDirItem(
         name: item.name,
         parentId: Value(item.parentId),
         type: DbCourseDirItemType.dir,
+        path: item.path,
       ),
   };
 }
@@ -144,6 +149,9 @@ Iterable<DbCourseDirItemsCompanion> dbCourseDirItemsFromAPI(
 
   /// if null, items are in root directory
   String? parentId,
+
+  /// This level's base path
+  required String basePath,
 }) {
   final list = <DbCourseDirItemsCompanion>[];
   final thisLevelItems = items.map((e) {
@@ -153,6 +161,7 @@ Iterable<DbCourseDirItemsCompanion> dbCourseDirItemsFromAPI(
           type: DbCourseDirItemType.dir,
           name: e.name,
           courseId: courseId,
+          path: join(basePath, e.name),
         ),
       ApiCourseFileOverview() => DbCourseDirItemsCompanion.insert(
           itemId: e.id,
@@ -163,6 +172,7 @@ Iterable<DbCourseDirItemsCompanion> dbCourseDirItemsFromAPI(
           mimeType: Value(e.mimeType),
           parentId: Value(parentId),
           sizeKB: Value(BigInt.from(e.sizeInKiloBytes)),
+          path: join(basePath, e.name),
         ),
     };
   });
@@ -173,7 +183,9 @@ Iterable<DbCourseDirItemsCompanion> dbCourseDirItemsFromAPI(
     if (originalItem case ApiCourseDirectory()) {
       final children = originalItem.files;
       list.addAll(dbCourseDirItemsFromAPI(children,
-          courseId: courseId, parentId: originalItem.id));
+          courseId: courseId,
+          parentId: originalItem.id,
+          basePath: join(basePath, originalItem.name)));
     }
   }
 

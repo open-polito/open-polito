@@ -1,6 +1,9 @@
 const downloadsDirectoryBaseName = "open_polito";
 const videosDirectoryBaseName = "__videos";
 
+/// Download chunk size
+const chunkSize = 1024 * 1024 * 8;
+
 /// All possible types of items handled by [DownloadService].
 enum DownloadItemType {
   /// File from the course material

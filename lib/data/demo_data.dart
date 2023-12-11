@@ -33,6 +33,7 @@ final demoState = DemoState(overviews: [
       createdAt: DateTime(2023, 10, 20, 12, 20, 54),
       courseId: 1,
       courseName: "My Course",
+      path: "",
     ),
   },
 }, recordedClasses: [

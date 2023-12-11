@@ -74,6 +74,7 @@ sealed class CourseDirectoryItem with _$CourseDirectoryItem {
     required DateTime createdAt,
     required int courseId,
     required String courseName,
+    required String path,
   }) = CourseFileInfo;
 
   const factory CourseDirectoryItem.dir({
@@ -83,5 +84,6 @@ sealed class CourseDirectoryItem with _$CourseDirectoryItem {
     required String name,
     required int courseId,
     required String courseName,
+    required String path,
   }) = CourseDirInfo;
 }

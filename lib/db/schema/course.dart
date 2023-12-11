@@ -73,6 +73,9 @@ class DbCourseDirItems extends Table {
   TextColumn get type => textEnum<DbCourseDirItemType>()();
   TextColumn get name => text()();
 
+  /// Path relative to course's dir
+  TextColumn get path => text()();
+
   // exclusively used for file
   Int64Column get sizeKB => int64().nullable()();
   TextColumn get mimeType => text().nullable()();

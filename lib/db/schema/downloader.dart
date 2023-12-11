@@ -1,17 +1,11 @@
 import 'package:drift/drift.dart';
 
 enum DbDownloadStatus {
-  /// This item has not been downloaded. It's idle.
-  newItem,
-
   /// Added to queue. Download not started yet.
   enqueued,
 
   /// Downloading. The file download is partial, or otherwise not complete.
   downloading,
-
-  /// File successfully downloaded.
-  downloaded,
 }
 
 enum DbDownloadItemType {
@@ -28,16 +22,28 @@ class DbDownloadItems extends Table {
 
   IntColumn get id => integer().autoIncrement()();
 
+  /// Unique item id from API
+  TextColumn get itemId => text()();
+
   TextColumn get status => textEnum<DbDownloadStatus>()();
   TextColumn get type => textEnum<DbDownloadItemType>()();
 
-  Int64Column get totalSize => int64().nullable()();
-  Int64Column get totalDowloaded => int64().nullable()();
-  TextColumn get downloadUrl => text().nullable()();
-  TextColumn get fileName => text().nullable()();
+  IntColumn get totalSize => integer().nullable()();
+  IntColumn get totalDowloaded => integer().nullable()();
+  TextColumn get url => text()();
 
-  // Metadata from API to display item
-  TextColumn get originalName => text().nullable()();
+  /// Relative path to file, from base directory
+  TextColumn get path => text()();
 
-  // TODO: finish
+  /// Name displayed in the UI. Not guaranteed to be the filename
+  TextColumn get displayName => text()();
+  TextColumn get mimeType => text().nullable()();
+
+  TextColumn get courseName => text()();
+
+  /// Original file creation datetime
+  DateTimeColumn get createdAt => dateTime()();
+
+  /// Temporary directory where partial item is stored
+  TextColumn get tempPath => text().nullable()();
 }

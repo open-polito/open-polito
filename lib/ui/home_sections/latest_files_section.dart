@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:open_polito/bloc/download_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
+import 'package:open_polito/db/schema/schema.dart';
 import 'package:open_polito/logic/utils/file_type_utils.dart';
 import 'package:open_polito/logic/utils/formatters.dart';
 import 'package:open_polito/models/models.dart';
@@ -36,7 +39,14 @@ class LatestFilesSection extends StatelessWidget {
             iconColor: iconInfo.color,
             name: e.name,
             nameColor: state.theme.cardPrimaryText,
-            onDownloadTap: () {}, // TODO: add behavior
+            onDownloadTap: () {
+              GetIt.I.get<DownloadBloc>().add(EnqueueItem(
+                    itemId: e.id,
+                    type: DbDownloadItemType.file,
+                    courseName: e.courseName,
+                    courseId: e.courseId,
+                  ));
+            },
             onItemTap: () {}, // TODO: add behavior
             sizeString: localizedSizeFromKB(e.sizeKB.toInt(), languageCode),
             smallTextColor: state.theme.cardSecondaryText,

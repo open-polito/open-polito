@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:open_polito/api/api_client.dart';
 import 'package:open_polito/bloc/auth_bloc.dart';
+import 'package:open_polito/bloc/download_bloc.dart';
 import 'package:open_polito/bloc/home_screen_bloc.dart';
 import 'package:open_polito/bloc/theme_bloc.dart';
 import 'package:open_polito/data/data_repository/data_repository.dart';
@@ -13,6 +14,7 @@ import 'package:open_polito/data/secure_store.dart';
 import 'package:open_polito/data/key_value_store.dart';
 import 'package:open_polito/logic/api.dart';
 import 'package:open_polito/logic/auth/auth_service.dart';
+import 'package:open_polito/logic/downloader/downloader.dart';
 
 enum AppMode {
   real,
@@ -49,6 +51,10 @@ Future<void> configureStuff() async {
   };
   getIt.registerSingleton<AuthService>(authService);
 
+  // Download service
+  final downloadService =
+      await DownloadService.init(database, dioWrapper, authService);
+
   // Repositories
 
   final dataRepository = DataRepository.init();
@@ -65,6 +71,7 @@ Future<void> configureStuff() async {
   getIt.registerSingleton<AuthBloc>(authBloc);
 
   getIt.registerSingleton<HomeScreenBloc>(HomeScreenBloc());
+  getIt.registerSingleton<DownloadBloc>(DownloadBloc(downloadService));
 
   if (kDebugMode) {
     // await secureStoreRepository.clear();

@@ -79,7 +79,8 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
   /// Returns the course name from id
   Future<String?> getCourseNameById(int id) async {
     return (await (select(dbCourseDirItems)
-              ..where((tbl) => tbl.courseId.equals(id)))
+              ..where((tbl) => tbl.courseId.equals(id))
+              ..limit(1))
             .getSingleOrNull())
         ?.name;
   }
@@ -141,6 +142,14 @@ class CoursesDao extends DatabaseAccessor<AppDatabase> with _$CoursesDaoMixin {
       batch.insertAll(dbCourseRecordedClasses, classes,
           mode: InsertMode.replace);
     });
+  }
+
+  Future<DbCourseDirItem?> getFile(String itemId) async {
+    final res = await (select(dbCourseDirItems)
+          ..where((tbl) => tbl.itemId.equals(itemId))
+          ..limit(1))
+        .getSingleOrNull();
+    return res;
   }
 
   Future<Iterable<DbCourseDirItem>> searchFiles(

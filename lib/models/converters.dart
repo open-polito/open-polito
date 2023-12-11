@@ -1,5 +1,6 @@
 import 'package:open_polito/api/models/models.dart';
 import 'package:open_polito/models/models.dart';
+import 'package:path/path.dart';
 
 CourseOverview courseOverviewFromAPI(ApiCourseOverview res) => CourseOverview(
       cfu: res.cfu,
@@ -35,8 +36,13 @@ CourseVirtualClassroom vcFromAPI(
     };
 
 /// Convert directory item
-CourseDirectoryItem fileFromAPI(ApiCourseDirectoryContent res, int courseId,
-        {String? parentId, required String courseName}) =>
+CourseDirectoryItem fileFromAPI(
+  ApiCourseDirectoryContent res,
+  int courseId, {
+  String? parentId,
+  required String courseName,
+  required String path,
+}) =>
     switch (res) {
       ApiCourseDirectory() => CourseDirInfo(
           id: res.id,
@@ -45,6 +51,7 @@ CourseDirectoryItem fileFromAPI(ApiCourseDirectoryContent res, int courseId,
           parentId: parentId,
           courseId: courseId,
           courseName: courseName,
+          path: join(path, res.name),
         ),
       ApiCourseFileOverview() => CourseFileInfo(
           id: res.id,
@@ -55,5 +62,6 @@ CourseDirectoryItem fileFromAPI(ApiCourseDirectoryContent res, int courseId,
           parentId: parentId,
           courseId: courseId,
           courseName: courseName,
+          path: join(path, res.name),
         ),
     };

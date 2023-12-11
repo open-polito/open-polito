@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:open_polito/logic/downloader/download_utils.dart';
 import 'package:open_polito/logic/utils/cross_platform.dart';
 import 'package:path/path.dart';
@@ -12,6 +13,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// Try to create temp file of specified [size] at [basePath].
+///
+/// [basePath] is absolute.
 ///
 /// Returns the path of this temp file.
 /// Returns null if fails.
@@ -70,6 +73,23 @@ Future<String?> createRandomFilename(String basePath, [int length = 8]) async {
   return null;
 }
 
+/// Move file from temporary location to final directory.
+///
+/// [fromPath] and [toPath] are absolute.
+Future<Either<void, void>> moveToFinalPath(
+    String fromPath, String toPath) async {
+  try {
+    if (kDebugMode) {
+      print("Moving file $fromPath to $toPath");
+    }
+    final from = File(fromPath);
+    await from.rename(toPath);
+    return right(null);
+  } catch (e) {
+    return left(null);
+  }
+}
+
 /// Write [bytes] chunk to file at [path] from [offset].
 Future<Either<void, void>> writeChunk(
     String path, int offset, List<int> bytes) async {
@@ -122,6 +142,18 @@ FutureOr<String?> getDownloadsBaseDir() async {
     android: () => dataPath,
     iOS: () => dataPath,
     linux: () => join(dataPath, downloadsDirectoryBaseName),
+    macOS: () => null,
+    windows: () => null,
+    web: () => null,
+  );
+}
+
+/// Return app's base directory where temporary/partial files are stored.
+FutureOr<String?> getTempFilesBaseDir() async {
+  return crossPlatformFutureOr(
+    android: () => null,
+    iOS: () => null,
+    linux: () async => (await getApplicationCacheDirectory()).path,
     macOS: () => null,
     windows: () => null,
     web: () => null,

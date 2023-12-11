@@ -201,8 +201,12 @@ class DataRepository {
                 .nonNulls;
           },
           localUpdater: (apiData) async {
-            final items = dbCourseDirItemsFromAPI(apiData,
-                courseId: courseId, parentId: null);
+            final items = dbCourseDirItemsFromAPI(
+              apiData,
+              courseId: courseId,
+              parentId: null,
+              basePath: "",
+            );
             await db.coursesDao.addCourseMaterial(items);
           },
         ),
